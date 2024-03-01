@@ -2,6 +2,6 @@ mysql:
   dns: COMP9900:root@tcp(8.134.248.247:3306)/comp9900?charset=utf8mb4&parseTime=True&loc=Local
 
 redis:
-  Addr: "localhost:6379"
-  Password: ""
+  Addr: "longsizhuo.com:6379"
+  Password: "COMP9900"
   DB: 0
