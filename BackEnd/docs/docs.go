@@ -131,34 +131,7 @@ const docTemplate = `{
     },
     "definitions": {
         "User.CreateUserRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password",
-                "phone",
-                "rePassword"
-            ],
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "rePassword": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "User.RequestData": {
             "type": "object",

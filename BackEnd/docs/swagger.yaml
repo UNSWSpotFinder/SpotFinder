@@ -1,24 +1,5 @@
 definitions:
   User.CreateUserRequest:
-    properties:
-      avatar:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      rePassword:
-        type: string
-    required:
-    - email
-    - name
-    - password
-    - phone
-    - rePassword
     type: object
   User.RequestData:
     properties:

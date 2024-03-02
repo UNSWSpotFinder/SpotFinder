@@ -2,16 +2,15 @@ package User
 
 import (
 	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/api/gmail/v1"
-	"gorm.io/gorm"
+	_ "gorm.io/gorm"
 	"net/http"
 	"time"
 )
-
-var DB *gorm.DB
 
 // RequestData 从前端传回来的数据存储到这个结构体中
 type RequestData struct {
@@ -28,10 +27,10 @@ type RequestData struct {
 // @Success 200 {string} json{"code", "message"}
 // @Router /user/list [get]
 func GetUserList(c *gin.Context) {
-	users, err := User.GetUserList(DB)
+	users, err := User.GetUserList(Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Cannot get user list",
+			"error": err,
 		})
 		return
 	}
@@ -89,7 +88,7 @@ func CreateUser(c *gin.Context) {
 	user.Password = request.Password
 
 	// 判断邮箱是否已经注册过
-	isRegistry, err := User.CheckEmailAlreadyIn(DB, &user)
+	isRegistry, err := User.CheckEmailAlreadyIn(Service.DB, &user)
 	if isRegistry {
 		c.JSON(http.StatusExpectationFailed, gin.H{
 			"error": "Email is Already Registered",
@@ -102,7 +101,7 @@ func CreateUser(c *gin.Context) {
 		})
 	}
 	fmt.Println(user)
-	if err := User.CreateUser(DB, &user); err != nil {
+	if err := User.CreateUser(Service.DB, &user); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
