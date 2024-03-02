@@ -3,6 +3,7 @@ package Router
 import (
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/Service/User"
+	"capstone-project-9900h14atiktokk/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	swaggerFiles "github.com/swaggo/files"
@@ -13,6 +14,8 @@ import (
 func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	r := gin.Default()
 
+	docs.SwaggerInfo.Title = "TikTokk"
+	docs.SwaggerInfo.BasePath = ""
 	// swagger init
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

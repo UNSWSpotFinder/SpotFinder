@@ -4,6 +4,8 @@ import (
 	"capstone-project-9900h14atiktokk/Router"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/util"
+	"github.com/pkg/browser"
+	"log"
 )
 
 func main() {
@@ -15,6 +17,11 @@ func main() {
 	r := Router.Router(srv, redisCli)
 	err := r.Run(":8080")
 	if err != nil {
+		return
+	}
+	err = browser.OpenURL("http://localhost:8080/swagger/index.html")
+	if err != nil {
+		log.Fatal(err)
 		return
 	}
 }

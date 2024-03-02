@@ -47,7 +47,6 @@ type CreationRequest struct {
 
 // CreateUserRequest 从前端传回来的数据存储到这个结构体中
 type CreateUserRequest struct {
-	User.Basic
 	Name       string `json:"name" binding:"required"`
 	Password   string `json:"password" binding:"required"`
 	RePassword string `json:"rePassword" binding:"required"`
