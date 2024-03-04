@@ -8,6 +8,9 @@ import (
 
 // GetUserList 获取用户列表 db用Init获取
 func GetUserList(db *gorm.DB) ([]*Basic, error) {
+	if db == nil {
+		return nil, errors.New("db is nil")
+	}
 	var users []*Basic
 	// 随机获取10个用户
 	if err := db.Order("RAND()").Limit(10).Find(&users).Error; err != nil {

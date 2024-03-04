@@ -1,3 +1,17 @@
+# 第一次运行：
+如果您有Python环境：
+```shell
+cd ./BackEnd/util/
+python3 .\quickstart.py
+```
+为什么要用Python？因为Golang的代码会导致网页传不回来token
+如果您没有Python环境：
+```shell
+cd ./BackEnd/util/
+docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp python:3 python ./quickstart.py
+```
+这个代码会找到当前文件夹的credentials.json，登陆后生成一个token.json，然后就可以成功调用了。
+
 # 变量名字的命名规则
 1. **命名开始**：变量名必须以字母（A-Z 和 a-z）或下划线（_）开始，后面可以跟任意数量的字母、数字（0-9）或下划线。
 2. **驼峰命名法**：推荐使用驼峰命名法（CamelCase）来命名变量。其中，导出的变量（即可在包外访问的变量）应该使用大写字母开头的驼峰命名法（如 ExportedVariable），而非导出的变量（即只在包内部访问的变量）应使用小写字母开头的驼峰命名法（如 internalVariable）。

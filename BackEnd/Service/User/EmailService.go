@@ -5,15 +5,23 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/api/gmail/v1"
+	"net/http"
 	"strings"
 )
 
 // Ctx 全局变量
-var (
-	Ctx = context.Background()
-)
+var Ctx = context.Background()
+var RedisClient *redis.Client
+
+// CodeStructData 验证验证码所需要的结构体
+type CodeStructData struct {
+	Email string `json:"to"`
+	// Code 验证码
+	Code string `json:"code"`
+}
 
 // GenerateCode 生成6位数字验证码
 func GenerateCode() string {
@@ -52,7 +60,7 @@ func SendEmail(srv *gmail.Service, to, subject, body string) error {
 }
 
 // verifyCode 验证码校验处理函数
-func verifyCode(email, code string, RedisClient *redis.Client) bool {
+func verifyCode(email, code string) bool {
 	theGenerateCode, err := RedisClient.Get(Ctx, email).Result()
 	if err != nil {
 		fmt.Printf("Error getting key: %f\n", err)
@@ -74,4 +82,33 @@ func verifyCode(email, code string, RedisClient *redis.Client) bool {
 	}
 	fmt.Println(valid)
 	return valid
+}
+
+// VerifiedCodeHandler 验证码校验处理函数
+//
+//	@Summary		Verify code
+//	@Description	Verify the code/
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			emailconfigs	body	CodeStructData	true	"Recipient emailconfigs address"	Format(emailconfigs)
+//	@Success		200		{object}	RequestData	"OK"
+//
+// @Failure 		400 	{string} 	string "code error"
+// @Failure 		400 	{string} 	string "unmarshal error"
+//
+//	@Router			/verify [post]
+func VerifiedCodeHandler(c *gin.Context) {
+	var codeStructData CodeStructData
+	err := c.ShouldBindJSON(&codeStructData)
+	if err != nil {
+		c.JSON(400, "unmarshal error")
+		return
+	}
+	valid := verifyCode(codeStructData.Email, codeStructData.Code)
+	if !valid {
+		c.JSON(400, "code error")
+		return
+	}
+	c.JSON(http.StatusOK, "login success")
 }
