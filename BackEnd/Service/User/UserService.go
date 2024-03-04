@@ -2,16 +2,15 @@ package User
 
 import (
 	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Service"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/api/gmail/v1"
-	"gorm.io/gorm"
+	_ "gorm.io/gorm"
 	"net/http"
 	"time"
 )
-
-var DB *gorm.DB
 
 // RequestData 从前端传回来的数据存储到这个结构体中
 type RequestData struct {
@@ -22,16 +21,16 @@ type RequestData struct {
 // @Summary 获取用户列表
 // @Schemes
 // @Description do ping
-// @Tags example
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {string} json{"code", "message"}
 // @Router /user/list [get]
 func GetUserList(c *gin.Context) {
-	users, err := User.GetUserList(DB)
+	users, err := User.GetUserList(Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Cannot get user list",
+			"error": err,
 		})
 		return
 	}
@@ -47,7 +46,6 @@ type CreationRequest struct {
 
 // CreateUserRequest 从前端传回来的数据存储到这个结构体中
 type CreateUserRequest struct {
-	User.Basic
 	Name       string `json:"name" binding:"required"`
 	Password   string `json:"password" binding:"required"`
 	RePassword string `json:"rePassword" binding:"required"`
@@ -58,6 +56,8 @@ type CreateUserRequest struct {
 
 // CreateUser
 // @Summary 创建用户
+// @Schemes
+// @Tags User
 // @Consumes application/x-www-form-urlencoded
 // @Description do ping
 // @Param user body CreateUserRequest true "用户信息"
@@ -90,7 +90,7 @@ func CreateUser(c *gin.Context) {
 	user.Password = request.Password
 
 	// 判断邮箱是否已经注册过
-	isRegistry, err := User.CheckEmailAlreadyIn(DB, &user)
+	isRegistry, err := User.CheckEmailAlreadyIn(Service.DB, &user)
 	if isRegistry {
 		c.JSON(http.StatusExpectationFailed, gin.H{
 			"error": "Email is Already Registered",
@@ -103,7 +103,7 @@ func CreateUser(c *gin.Context) {
 		})
 	}
 	fmt.Println(user)
-	if err := User.CreateUser(DB, &user); err != nil {
+	if err := User.CreateUser(Service.DB, &user); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -120,7 +120,7 @@ func CreateUser(c *gin.Context) {
 //
 //	@Summary		Send code
 //	@Description	发送验证码到指定邮箱，并存储验证码到Redis
-//	@Tags			Code
+//	@Tags			User
 //	@Accept			json
 //	@Produce		json
 //	@Param			emailconfigs body RequestData	true	"Recipient emailconfigs address"	Format(emailconfigs)

@@ -1,6 +1,7 @@
 mysql:
   dns: COMP9900:root@tcp(8.134.248.247:3306)/comp9900?charset=utf8mb4&parseTime=True&loc=Local
 
+#如果连接不上就把longsizhuo.com 改成公网IP：175.178.112.118
 redis:
   Addr: "longsizhuo.com:6379"
   Password: "COMP9900"

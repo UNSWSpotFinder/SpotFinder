@@ -1,5 +1,32 @@
 definitions:
+  User.CodeStructData:
+    properties:
+      code:
+        description: Code 验证码
+        type: string
+      to:
+        type: string
+    type: object
   User.CreateUserRequest:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      rePassword:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    - rePassword
     type: object
   User.RequestData:
     properties:
@@ -44,6 +71,8 @@ paths:
           schema:
             type: string
       summary: 创建用户
+      tags:
+      - User
   /user/create/sendEmail:
     post:
       consumes:
@@ -70,7 +99,7 @@ paths:
           description: Internal Server Error
       summary: Send code
       tags:
-      - Code
+      - User
   /user/list:
     get:
       consumes:
@@ -85,5 +114,32 @@ paths:
             type: string
       summary: 获取用户列表
       tags:
-      - example
+      - User
+  /verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify the code/
+      parameters:
+      - description: Recipient emailconfigs address
+        format: emailconfigs
+        in: body
+        name: emailconfigs
+        required: true
+        schema:
+          $ref: '#/definitions/User.CodeStructData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User.RequestData'
+        "400":
+          description: unmarshal error
+          schema:
+            type: string
+      summary: Verify code
+      tags:
+      - User
 swagger: "2.0"

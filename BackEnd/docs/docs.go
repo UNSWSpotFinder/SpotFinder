@@ -42,6 +42,9 @@ const docTemplate = `{
         "/user/create": {
             "post": {
                 "description": "do ping",
+                "tags": [
+                    "User"
+                ],
                 "summary": "创建用户",
                 "parameters": [
                     {
@@ -74,7 +77,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Code"
+                    "User"
                 ],
                 "summary": "Send code",
                 "parameters": [
@@ -115,7 +118,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "User"
                 ],
                 "summary": "获取用户列表",
                 "responses": {
@@ -127,11 +130,91 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/verify": {
+            "post": {
+                "description": "Verify the code/",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Verify code",
+                "parameters": [
+                    {
+                        "format": "emailconfigs",
+                        "description": "Recipient emailconfigs address",
+                        "name": "emailconfigs",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.CodeStructData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/User.RequestData"
+                        }
+                    },
+                    "400": {
+                        "description": "unmarshal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "User.CodeStructData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 验证码",
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "User.CreateUserRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "phone",
+                "rePassword"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "rePassword": {
+                    "type": "string"
+                }
+            }
         },
         "User.RequestData": {
             "type": "object",
