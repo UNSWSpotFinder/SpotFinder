@@ -2,6 +2,7 @@ package Router
 
 import (
 	"capstone-project-9900h14atiktokk/Service"
+	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/docs"
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,9 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 
 	r.GET("/index", Service.GetIndex)
 	r.GET("/user/list", User.GetUserList)
+	r.GET("/spot/list", Spots.SpotsQueryController)
+	r.PUT("/spot/delete/:id", Spots.DeleteSpotController)
+	r.POST("spot/create", Spots.CreateSpotController)
 	r.POST("/user/create", User.CreateUser)
 	r.POST("/user/create/verifyEmail", User.VerifiedCodeHandler)
 	r.POST("/user/create/sendEmail", func(c *gin.Context) {

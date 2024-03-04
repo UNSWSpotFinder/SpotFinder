@@ -1,4 +1,6 @@
 definitions:
+  Spot.Basic:
+    type: object
   User.CodeStructData:
     properties:
       code:
@@ -55,6 +57,79 @@ paths:
       summary: ping example
       tags:
       - example
+  /spots:
+    get:
+      consumes:
+      - application/json
+      description: get list of all spots(will do page query later)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: list of spots'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 'error: Cannot get spot list'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get the list of spots
+      tags:
+      - spots
+    post:
+      consumes:
+      - application/json
+      description: create a spot
+      parameters:
+      - description: spot info
+        in: body
+        name: spot
+        required: true
+        schema:
+          $ref: '#/definitions/Spot.Basic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message", "Add spot successfully
+          schema:
+            type: string
+        "500":
+          description: error", "unable to add spot"}
+          schema:
+            type: string
+      summary: Create a spot
+      tags:
+      - spots
+  /spots/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a spot by id
+      parameters:
+      - description: Spot ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Delete spot successfully'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: 'error: Cannot delete spot'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a spot(soft delete)
+      tags:
+      - spots
   /user/create:
     post:
       description: do ping

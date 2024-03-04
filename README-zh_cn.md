@@ -2,7 +2,7 @@
 如果您有Python环境：
 ```shell
 cd ./BackEnd/util/
-python3 ./quickstart.py
+python3 .\quickstart.py
 ```
 为什么要用Python？因为Golang的代码会导致网页传不回来token
 如果您没有Python环境：
