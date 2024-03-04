@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// DB 全局数据库链接
 var DB *gorm.DB
 
 // GetIndex PingExample godoc
