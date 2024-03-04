@@ -21,7 +21,7 @@ type RequestData struct {
 // @Summary 获取用户列表
 // @Schemes
 // @Description do ping
-// @Tags example
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {string} json{"code", "message"}
@@ -56,6 +56,8 @@ type CreateUserRequest struct {
 
 // CreateUser
 // @Summary 创建用户
+// @Schemes
+// @Tags User
 // @Consumes application/x-www-form-urlencoded
 // @Description do ping
 // @Param user body CreateUserRequest true "用户信息"
@@ -118,7 +120,7 @@ func CreateUser(c *gin.Context) {
 //
 //	@Summary		Send code
 //	@Description	发送验证码到指定邮箱，并存储验证码到Redis
-//	@Tags			Code
+//	@Tags			User
 //	@Accept			json
 //	@Produce		json
 //	@Param			emailconfigs body RequestData	true	"Recipient emailconfigs address"	Format(emailconfigs)
