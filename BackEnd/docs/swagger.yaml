@@ -1,0 +1,144 @@
+definitions:
+  User.CodeStructData:
+    properties:
+      code:
+        description: Code 验证码
+        type: string
+      email:
+        type: string
+    type: object
+  User.CreateUserRequest:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      rePassword:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    - rePassword
+    type: object
+  User.RequestData:
+    properties:
+      to:
+        example: longsizhuo@gmail.com
+        format: emailconfigs
+        type: string
+    required:
+    - to
+    type: object
+info:
+  contact: {}
+paths:
+  /index:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ping example
+      tags:
+      - example
+  /user/create:
+    post:
+      description: do ping
+      parameters:
+      - description: 用户信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.CreateUserRequest'
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: 创建用户
+      tags:
+      - User
+  /user/create/sendEmail:
+    post:
+      consumes:
+      - application/json
+      description: 发送验证码到指定邮箱，并存储验证码到Redis
+      parameters:
+      - description: Recipient emailconfigs address
+        format: emailconfigs
+        in: body
+        name: emailconfigs
+        required: true
+        schema:
+          $ref: '#/definitions/User.RequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User.RequestData'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Send code
+      tags:
+      - User
+  /user/create/verifyEmail:
+    post:
+      consumes:
+      - application/json
+      description: Verify the code/
+      parameters:
+      - description: email and code
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/User.CodeStructData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User.RequestData'
+        "400":
+          description: unmarshal error
+          schema:
+            type: string
+      summary: Verify code
+      tags:
+      - User
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: 获取用户列表
+      tags:
+      - User
+swagger: "2.0"
