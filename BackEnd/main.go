@@ -16,7 +16,12 @@ func main() {
 	// 全局数据库链接
 	Service.DB = db
 	r := Router.Router(srv, redisCli)
-	err := r.Run(":8080")
+	err := browser.OpenURL("http://localhost:8080/swagger/index.html")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	err = r.Run(":8080")
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"}, // 允许前端应用的源
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "DELETE", "OPTIONS"},
@@ -24,11 +29,6 @@ func main() {
 		AllowCredentials: true,
 	}))
 	if err != nil {
-		return
-	}
-	err = browser.OpenURL("http://localhost:8080/swagger/index.html")
-	if err != nil {
-		log.Fatal(err)
 		return
 	}
 }
