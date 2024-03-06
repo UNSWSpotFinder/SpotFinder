@@ -11,6 +11,8 @@ definitions:
     properties:
       avatar:
         type: string
+      dateBirth:
+        type: string
       email:
         type: string
       name:

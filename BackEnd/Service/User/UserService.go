@@ -84,6 +84,15 @@ func CreateUser(c *gin.Context) {
 	user.Avatar = request.Avatar
 	user.DateBirth = request.DateBirth
 
+	// 判断日期是否合法 DD/MM/YYYY
+	_, err := time.Parse("02/01/2006", request.DateBirth)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Date format error",
+		})
+		return
+	}
+
 	if request.Password != request.RePassword {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Password not equal",
