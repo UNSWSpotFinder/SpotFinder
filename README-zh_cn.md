@@ -9,8 +9,10 @@
    设置环境变量GOPATH为您的工作目录路径。同时，确保将$GOPATH/bin（Linux和MacOS）或%GOPATH%/bin（Windows）添加到您的系统环境变量PATH中。
    下载并安装项目依赖：
 3. ```shell
+   # in the root directory
    cd ./BackEnd/
-   go mod tidy
+   # 
+   go mod tidy 
    go run main.go
    ```
    

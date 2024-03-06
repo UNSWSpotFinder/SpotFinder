@@ -52,6 +52,7 @@ type CreateUserRequest struct {
 	Phone      string `json:"phone" binding:"required"`
 	Email      string `json:"email" binding:"required"`
 	Avatar     string `json:"avatar"`
+	DateBirth  string `json:"dateBirth"`
 }
 
 // CreateUser
@@ -80,6 +81,8 @@ func CreateUser(c *gin.Context) {
 	user.Email = request.Email
 	user.Name = request.Name
 	user.CreateTime = time.Now()
+	user.Avatar = request.Avatar
+	user.DateBirth = request.DateBirth
 
 	if request.Password != request.RePassword {
 		c.JSON(http.StatusInternalServerError, gin.H{
