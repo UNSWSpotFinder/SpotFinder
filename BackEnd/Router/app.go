@@ -25,7 +25,9 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	r.GET("/index", Service.GetIndex)
 	r.GET("/user/list", User.GetUserList)
 	r.POST("/user/create", User.CreateUser)
-	r.POST("/user/create/verifyEmail", User.VerifiedCodeHandler)
+	r.POST("/user/create/verifyEmail", func(c *gin.Context) {
+		User.VerifiedCodeHandler(c, redisCli)
+	})
 	r.POST("/user/create/sendEmail", func(c *gin.Context) {
 		User.SendCodeHandler(srv, c, redisCli)
 	})

@@ -4,12 +4,14 @@ definitions:
       code:
         description: Code 验证码
         type: string
-      to:
+      email:
         type: string
     type: object
   User.CreateUserRequest:
     properties:
       avatar:
+        type: string
+      dateBirth:
         type: string
       email:
         type: string
@@ -100,31 +102,15 @@ paths:
       summary: Send code
       tags:
       - User
-  /user/list:
-    get:
-      consumes:
-      - application/json
-      description: do ping
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: code", "message"}
-          schema:
-            type: string
-      summary: 获取用户列表
-      tags:
-      - User
-  /verify:
+  /user/create/verifyEmail:
     post:
       consumes:
       - application/json
       description: Verify the code/
       parameters:
-      - description: Recipient emailconfigs address
-        format: emailconfigs
+      - description: email and code
         in: body
-        name: emailconfigs
+        name: json
         required: true
         schema:
           $ref: '#/definitions/User.CodeStructData'
@@ -140,6 +126,21 @@ paths:
           schema:
             type: string
       summary: Verify code
+      tags:
+      - User
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: 获取用户列表
       tags:
       - User
 swagger: "2.0"
