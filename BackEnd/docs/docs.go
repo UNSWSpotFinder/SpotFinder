@@ -198,6 +198,9 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
+                "dateBirth": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
