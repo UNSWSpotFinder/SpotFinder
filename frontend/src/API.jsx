@@ -5,9 +5,26 @@ import Stack from '@mui/material/Stack';
 import React, { useState, useEffect, createContext,useContext } from 'react';
 
 import { styled } from '@mui/material';
-
+const port = '8080';
+export const meetErrorLog = (error) => {
+    console.log(error);
+    let errorText = '';
+    // switch case to show the error
+    switch (error) {
+      case 'info':
+        errorText = 'Invalid username or password !';
+        break;
+      case 'access':
+        errorText = 'No permission, please log in first!';
+        break;
+      default:
+        errorText = 'Network error! Please try again.';
+        break;
+    }
+    return errorText;
+  };
 export const ErrorContext = createContext({
-    snackbarData: { severity: 'info', message: '1' },
+    snackbarData: { severity: 'info', message: '1',timestamp: new Date().getTime()},
     setOpenSnackbar: () => {}, // 提供一个空函数避免调用时出错
   });
 export const useError = () => useContext(ErrorContext);
@@ -15,6 +32,7 @@ export const ErrorProvider = ({ children }) => {
   const [snackbarData, setSnackbarData] = useState({
     severity: 'success',
     message: '',
+    timestamp: new Date().getTime()
   });
   const setOpenSnackbar = (data) => {
     setSnackbarData(data);
@@ -36,7 +54,7 @@ const [open, setOpen] = useState(false);
     if (snackbarData.message) {
       setOpen(true);
     }
-  }, [snackbarData.message]);
+  }, [snackbarData.message, snackbarData.timestamp]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -54,3 +72,92 @@ return (
   </Snackbar>
 );
 };
+export const callAPIsendEmailCode = (path,input)=>{
+    return new Promise((resolve, reject) =>{
+        fetch('http://localhost:'+String(port)+'/'+String(path),{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify(input),
+        })
+        .then((response)=>{
+            if(response.ok){
+                console.log('success');
+                console.log(response);
+                return resolve(response);
+            }
+            else if (response.status===400){
+                const errorReason = 'Email not correct!';
+                return reject(errorReason);
+            }
+            else{
+                const errorReason = 'There is a problem with the network connection!';
+                return reject(errorReason);
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    })
+    
+}
+export const callAPIverifyEmailCode = (path,input)=>{
+    return new Promise((resolve, reject) =>{
+        console.log(input);
+        console.log('http://localhost:'+String(port)+'/'+String(path));
+        fetch('http://localhost:'+String(port)+'/'+String(path),{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify(input),
+        })
+        .then((response)=>{
+            if(response.ok){
+                console.log('success');
+                return resolve(response.json());
+            }
+            else if (response.status===400){
+                const errorReason = 'Incorrect verification code.';
+                return reject(errorReason);
+            }
+            else{
+                const errorReason = 'There is a problem with the network connection!';
+                return reject(errorReason);
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    })
+    
+}
+export const callAPIloginUser=(path,input)=>{
+
+}
+// 用户注册
+export const callAPIRegistUser=(path,input)=>{
+     return new Promise((resolve, reject) =>{
+        console.log(input);
+        console.log('http://localhost:'+String(port)+'/'+String(path));
+        fetch('http://localhost:'+String(port)+'/'+String(path),{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify(input),
+        })
+        .then((response)=>{
+            if(response.ok){
+                console.log('success');
+                return resolve(response.json());
+            }
+            else if (response.status===400){
+                const errorReason = 'There exit some information not correct!';
+                return reject(errorReason);
+            }
+            else{
+                const errorReason = 'There is a problem with the network connection!';
+                return reject(errorReason);
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    })
+}

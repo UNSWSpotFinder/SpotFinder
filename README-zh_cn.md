@@ -1,16 +1,36 @@
 # 第一次运行：
-如果您有Python环境：
-```shell
-cd ./BackEnd/util/
-python3 ./quickstart.py
-```
-为什么要用Python？因为Golang的代码会导致网页传不回来token
-如果您没有Python环境：
-```shell
-cd ./BackEnd/util/
-docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp python:3 python ./quickstart.py
-```
-这个代码会找到当前文件夹的credentials.json，登陆后生成一个token.json，然后就可以成功调用了。
+1. 安装Go环境：
+   访问Go语言的官方网站下载页面：https://golang.org/dl/。
+   根据您的操作系统下载相应版本的Go安装包。
+   安装Go，并根据安装向导完成安装。
+   安装完成后，打开命令行（Windows的CMD或PowerShell，MacOS或Linux的Terminal），输入go version来验证Go是否正确安装。
+2. 配置工作空间：
+   创建一个工作目录用于存放Go项目和代码（例如：~/go）。
+   设置环境变量GOPATH为您的工作目录路径。同时，确保将$GOPATH/bin（Linux和MacOS）或%GOPATH%/bin（Windows）添加到您的系统环境变量PATH中。
+   下载并安装项目依赖：
+3. ```shell
+   # in the root directory
+   cd ./BackEnd/
+   # 
+   go mod tidy 
+   go run main.go
+   ```
+   
+在项目目录内，运行go build来编译项目。这将在当前目录下生成一个可执行文件。
+运行编译后的可执行文件。在Linux或Mac上，可以通过./projectname来运行；在Windows上，可以直接运行projectname.exe。
+2. 如果您有Python环境：
+   ```shell
+   cd ./BackEnd/util/
+   python3 ./quickstart.py
+   ```
+   为什么要用Python？因为Golang的代码会导致网页传不回来token
+   如果您没有Python环境：
+   ```shell
+   cd ./BackEnd/util/
+   docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp python:3 python ./quickstart.py
+   ```
+   这个代码会找到当前文件夹的credentials.json，登陆后生成一个token.json，然后就可以成功调用了。
+3. 
 
 # 变量名字的命名规则
 1. **命名开始**：变量名必须以字母（A-Z 和 a-z）或下划线（_）开始，后面可以跟任意数量的字母、数字（0-9）或下划线。

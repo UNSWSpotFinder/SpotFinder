@@ -10,7 +10,7 @@ type Basic struct {
 	Name       string     `gorm:"type:varchar(255);not null"`
 	Password   string     `gorm:"type:varchar(255);not null"`
 	Phone      string     `gorm:"type:varchar(20);not null"`
-	DateBirth  time.Time  `gorm:"type:datetime;not null"`
+	DateBirth  string     `gorm:"type:varchar(20);not null"`
 	Avatar     string     `gorm:"type:mediumtext;not null"`
 	Email      string     `gorm:"type:varchar(100);not null"`
 	CreateTime time.Time  `gorm:"type:datetime;null"`

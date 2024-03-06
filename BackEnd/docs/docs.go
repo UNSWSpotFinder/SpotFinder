@@ -108,30 +108,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/list": {
-            "get": {
-                "description": "do ping",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "获取用户列表",
-                "responses": {
-                    "200": {
-                        "description": "code\", \"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/verify": {
+        "/user/create/verifyEmail": {
             "post": {
                 "description": "Verify the code/",
                 "consumes": [
@@ -146,9 +123,8 @@ const docTemplate = `{
                 "summary": "Verify code",
                 "parameters": [
                     {
-                        "format": "emailconfigs",
-                        "description": "Recipient emailconfigs address",
-                        "name": "emailconfigs",
+                        "description": "email and code",
+                        "name": "json",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -171,6 +147,29 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/list": {
+            "get": {
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取用户列表",
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -181,7 +180,7 @@ const docTemplate = `{
                     "description": "Code 验证码",
                     "type": "string"
                 },
-                "to": {
+                "email": {
                     "type": "string"
                 }
             }
@@ -197,6 +196,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "avatar": {
+                    "type": "string"
+                },
+                "dateBirth": {
                     "type": "string"
                 },
                 "email": {

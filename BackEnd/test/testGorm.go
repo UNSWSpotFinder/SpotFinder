@@ -12,6 +12,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/fogleman/gg"
 	"golang.org/x/exp/rand"
+	"strconv"
 	"time"
 )
 
@@ -94,12 +95,21 @@ func main() {
 		earning := gofakeit.Float64Range(0, 1000)
 		topUp := gofakeit.Float64Range(0, 1000)
 		Account := earning + topUp
+
+		// 生成随机的日期
+		day := strconv.Itoa(gofakeit.Number(1, 31))       // 将日转换为字符串
+		month := strconv.Itoa(gofakeit.Number(1, 12))     // 将月转换为字符串
+		year := strconv.Itoa(gofakeit.Number(1950, 2000)) // 将年转换为字符串
+
+		// 构造出生日期字符串
+		dateBirth := day + "/" + month + "/" + year
+
 		// 为每个用户创建不同的数据
 		user := User.Basic{
 			Name:       gofakeit.Name(),
 			Password:   gofakeit.Password(true, true, true, false, false, 10),
 			Phone:      gofakeit.Phone(),
-			DateBirth:  gofakeit.Date(),
+			DateBirth:  dateBirth,
 			Avatar:     userAvatar,
 			Email:      gofakeit.Email(),
 			CreateTime: time.Now(),
