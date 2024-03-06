@@ -42,6 +42,7 @@ export function UserLoginPage(){
             setOpenSnackbar({
                 severity: 'success',
                 message:  'Login successful',
+                timestamp: new Date().getTime()
             });
         }
         else{
@@ -49,6 +50,7 @@ export function UserLoginPage(){
             setOpenSnackbar({
                 severity: 'warning',
                 message:  'Password Incorrect!',
+                timestamp: new Date().getTime()
             });
 
         }
@@ -149,6 +151,7 @@ export function UserLoginPageForgetPassword(){
             setOpenSnackbar({
                 severity: 'success',
                 message:  Email  + ' has a been verifed!',
+                timestamp: new Date().getTime()
             });
         }
         else{
@@ -156,6 +159,7 @@ export function UserLoginPageForgetPassword(){
             setOpenSnackbar({
                 severity: 'warning',
                 message:  'Incorrect verification code',
+                timestamp: new Date().getTime()
             });
         }
     }
