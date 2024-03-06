@@ -70,7 +70,7 @@ export function UserRegistPage() {
     setSelectedFileName(filePath);
   };
   const handleBirthdayChange = (date) => {
-    console.log(date);
+    console.log(dayjs(date));
     setBirthDate(dayjs(date));
   };
   const EditPhoto = () => {
@@ -113,7 +113,7 @@ export function UserRegistPage() {
   function verifyEmail() {
     const data = {
       code: code,
-      to: Email,
+      email: Email,
     };
     console.log(data);
     // call api to login
@@ -140,19 +140,7 @@ export function UserRegistPage() {
         console.log(error);
       });
   }
-
   function Regist() {
-    if (Password !== Password1) {
-      console.log('');
-    }
-    const data={
-        avatar: selectedFileName,
-        email:Email,
-        name:name,
-        password:Password,
-        phone: phone,
-        rePassword: Password1
-    }
     if(!isverifyed){
         setOpenSnackbar({
             severity:'info',
@@ -161,10 +149,53 @@ export function UserRegistPage() {
         });
         return;
     }
+    if (phone==''){
+        setOpenSnackbar({
+            severity:'warning',
+            message:'Please fill in your mobile phone number.',
+            timestamp:new Date().getTime
+        });
+        return;
+    }
+    if(name==''){
+        setOpenSnackbar({
+            severity:'warning',
+            message:'Please fill in a name so we know how to call you.',
+            timestamp:new Date().getTime
+        });
+        return;
+    }
+    if(Password.length<6||Password.length>16){
+        setOpenSnackbar({
+            severity:'warning',
+            message:'Password must be between 6-16 characters!',
+            timestamp:new Date().getTime
+        });
+        return;
+    }
+    if (Password !== Password1) {
+        setOpenSnackbar({
+            severity:'warning',
+            message:'The two password inputs are inconsistent!',
+            timestamp:new Date().getTime
+        });
+        return;
+    }
+    console.log(BirthDate);
+    const formattedDate = dayjs(BirthDate).format('YYYY-MM-DD HH:mm:ss');
+    console.log(formattedDate)
+    const data={
+        avatar: selectedFileName,
+        dateBirth:formattedDate,
+        email:Email,
+        name:name,
+        password:Password,
+        phone: phone,
+        rePassword: Password1
+    }
     if(Password!=Password1){
 
     }
-    
     callAPIRegistUser('user/create',data)
     .then((response)=>{
         console.log(response);
@@ -393,7 +424,7 @@ export function UserRegistPage() {
                   Select your profile photo
                 </button>
               </div>
-              <button type='button' className='btn btn-primary logbtn'>
+              <button type='button' className='btn btn-primary logbtn' onClick={Regist}>
                 SIGN UP
               </button>
             </form>

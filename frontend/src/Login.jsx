@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { motion,AnimatePresence } from 'framer-motion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { useError } from './API';
+import {
+    useError,
+    callAPIverifyEmailCode,
+    callAPIsendEmailCode
+  } from './API';
 // 用户登录页面
 export function UserLoginPage(){
     const { _ , setOpenSnackbar } = useError();
@@ -143,26 +147,6 @@ export function UserLoginPageForgetPassword(){
     // 新密码和确认新密码
     const [Password1,setPassword1]=useState('');
     const [Password2,setPassword2]=useState('');
-    function verifyEmail(){
-        if(code==='123456'){
-            setverifyVisibility(false);
-            setisverifyed(true);
-            setisverifyError(false);
-            setOpenSnackbar({
-                severity: 'success',
-                message:  Email  + ' has a been verifed!',
-                timestamp: new Date().getTime()
-            });
-        }
-        else{
-            setisverifyError(true);
-            setOpenSnackbar({
-                severity: 'warning',
-                message:  'Incorrect verification code',
-                timestamp: new Date().getTime()
-            });
-        }
-    }
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
       };
@@ -184,6 +168,61 @@ export function UserLoginPageForgetPassword(){
     let forgetpassword = () => {
         navigate('/password');
     }
+    function sendCode() {
+        const data = {
+          to: Email,
+        };
+        callAPIsendEmailCode('user/create/sendEmail', data)
+        .then((response)=>{
+            console.log(response);
+            setverifyVisibility(true);
+            // set open snackbar
+            setOpenSnackbar({
+              severity: 'success',
+              message: 'We have send to ' + Email + ' a code.',
+              timestamp: new Date().getTime()
+            });
+        })
+        .catch((error)=>{
+            // when meet error
+            console.log(error);
+            setOpenSnackbar({
+                severity: 'error',
+                message: error,
+                timestamp: new Date().getTime()
+            });
+        })
+      }
+      function verifyEmail() {
+        const data = {
+          code: code,
+          email: Email,
+        };
+        console.log(data);
+        // call api to login
+        callAPIverifyEmailCode('user/create/verifyEmail', data)
+          .then((response) => {
+            console.log(response);
+            // set open snackbar
+            setverifyVisibility(false);
+            setisverifyed(true);
+            setisverifyError(false);
+            setOpenSnackbar({
+              severity: 'success',
+              message: Email + ' has a been verifed!',
+              timestamp: new Date().getTime()
+            });
+          })
+          .catch((error) => {
+            // when meet error
+            setOpenSnackbar({
+              severity: 'error',
+              message: error,
+              timestamp: new Date().getTime()
+            });
+            console.log(error);
+          });
+      }
     return(
         <div className='overall'>
             <motion.div 
@@ -211,7 +250,7 @@ export function UserLoginPageForgetPassword(){
                                     <label htmlFor="exampleInputEmail1" className="form-label title">Email</label>
                                     <div className='emailverify'>
                                         <input type="email" className="form-control rightcontrol-r setmargin"  onChange={handleEmailChange} value={Email}></input>
-                                        <button className='sendcode' disabled={isverifyed} type='button' onClick={()=>{setverifyVisibility(true)}}>{isverifyed?'Verified':(verifyVisibility?'Resend code':'Send code')}</button>
+                                        <button className='sendcode' disabled={isverifyed} type='button' onClick={sendCode}>{isverifyed?'Verified':(verifyVisibility?'Resend code':'Send code')}</button>
                                     </div>
                                     {verifyVisibility && (
                                         <motion.div

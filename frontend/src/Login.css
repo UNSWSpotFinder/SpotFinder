@@ -109,6 +109,9 @@ button.logbtn{
 button.logbtn:hover{
     background-color:#9e0005 ;
 }
+button.logbtn:active{
+    background-color:#690003 !important;
+}
 .formpart-col{
     width: 100%;
     margin-top: 5px;
