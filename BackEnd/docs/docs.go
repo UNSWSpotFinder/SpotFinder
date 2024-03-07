@@ -38,7 +38,85 @@ const docTemplate = `{
                 }
             }
         },
-        "/spots": {
+        "/spot/create": {
+            "post": {
+                "description": "create a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Create a spot",
+                "parameters": [
+                    {
+                        "description": "spot info",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spot.Basic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Add spot successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to add spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/delete/{id}": {
+            "put": {
+                "description": "delete a spot by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Delete a spot(soft delete)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/list": {
             "get": {
                 "description": "get list of all spots(will do page query later)",
                 "consumes": [
@@ -67,9 +145,11 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "create a spot",
+            }
+        },
+        "/spot/update": {
+            "put": {
+                "description": "update a spot",
                 "consumes": [
                     "application/json"
                 ],
@@ -79,7 +159,7 @@ const docTemplate = `{
                 "tags": [
                     "spots"
                 ],
-                "summary": "Create a spot",
+                "summary": "Update a spot",
                 "parameters": [
                     {
                         "description": "spot info",
@@ -93,55 +173,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "message\", \"Add spot successfully",
+                        "description": "message\", \"Update spot successfully\"}",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "error\", \"unable to add spot\"}",
+                        "description": "error\", \"unable to update spot\"}",
                         "schema": {
                             "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/spots/{id}": {
-            "delete": {
-                "description": "delete a spot by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Delete a spot(soft delete)",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Spot ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: Delete spot successfully",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "error: Cannot delete spot",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
                         }
                     }
                 }

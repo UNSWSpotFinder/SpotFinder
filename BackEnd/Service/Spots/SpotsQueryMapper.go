@@ -50,3 +50,10 @@ func AddSpot(spot *Spot.Basic, db *gorm.DB) error {
 	return nil
 
 }
+
+func UpdateSpot(spot *Spot.Basic, db *gorm.DB) error {
+	if err := db.Model(&spot).Updates(spot).Error; err != nil {
+		return err
+	}
+	return nil
+}
