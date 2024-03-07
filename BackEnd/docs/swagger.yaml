@@ -39,6 +39,22 @@ definitions:
     required:
     - to
     type: object
+  User.loginRequestData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  User.modifyRequestData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      repassword:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -57,6 +73,28 @@ paths:
       summary: ping example
       tags:
       - example
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 登陆
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.loginRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            type: string
+      summary: 登陆
+      tags:
+      - User
   /user/create:
     post:
       description: do ping
@@ -141,6 +179,28 @@ paths:
           schema:
             type: string
       summary: 获取用户列表
+      tags:
+      - User
+  /user/modifyPasswd:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码
+      parameters:
+      - description: User Email
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/User.modifyRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated
+          schema:
+            type: string
+      summary: 修改密码
       tags:
       - User
 swagger: "2.0"
