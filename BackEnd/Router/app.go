@@ -37,5 +37,8 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	r.POST("/user/create/sendEmail", func(c *gin.Context) {
 		User.SendCodeHandler(srv, c, redisCli)
 	})
+	r.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
+	r.POST("/login", User.LoginHandler)
 	return r
+
 }
