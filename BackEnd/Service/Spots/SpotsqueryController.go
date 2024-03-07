@@ -15,7 +15,7 @@ import (
 // @Produce  json
 // @Success 200 {object} map[string]interface{} "message: list of spots"
 // @Failure 500 {object} map[string]interface{} "error: Cannot get spot list"
-// @Router /spots [get]
+// @Router /spot/list [get]
 func SpotsQueryController(c *gin.Context) {
 	Spots, err := GetSpotList(Service.DB)
 	if err != nil {
@@ -39,9 +39,9 @@ func SpotsQueryController(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Spot ID"
-// @Success {string} json{"message", "delete spot successfully"}
-// @Failure {string} json{"message", "cannot delete spot"}
-// @Router /spots/{id} [delete]
+// @Success 200 {string} json{"code", "message"}
+// @failure 500 {string} json{"code", "message"}
+// @Router /spot/delete/{id} [put]
 func DeleteSpotController(c *gin.Context) {
 	// 获取参数(可改query参数了）
 	id := c.Param("id")
@@ -68,7 +68,7 @@ func DeleteSpotController(c *gin.Context) {
 // @Param   spot  body Spot.Basic true "spot info"
 // @Success 200 {string} json{"message", "Add spot successfully"}
 // @Failure 500 {string} json{"error", "unable to add spot"}
-// @Router /spots [post]
+// @Router /spot/create [post]
 func CreateSpotController(c *gin.Context) {
 	var spot *Spot.Basic
 	if err := c.ShouldBindJSON(&spot); err != nil {
@@ -86,6 +86,37 @@ func CreateSpotController(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "Add spot successfully",
+	})
+
+}
+
+// UpdateSpotController
+// @Summary Update a spot
+// @Description update a spot
+// @Tags spots
+// @Accept  json
+// @Produce  json
+// @Param   spot  body Spot.Basic true "spot info"
+// @Success 200 {string} json{"message", "Update spot successfully"}
+// @Failure 500 {string} json{"error", "unable to update spot"}
+// @Router /spot/update [put]
+func UpdateSpotController(c *gin.Context) {
+	var spot *Spot.Basic
+	if err := c.ShouldBindJSON(&spot); err != nil {
+		c.JSON(400, gin.H{
+			"error": "Cannot bind spot",
+		})
+		return
+	}
+	err := UpdateSpot(spot, Service.DB)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Update spot successfully",
 	})
 
 }
