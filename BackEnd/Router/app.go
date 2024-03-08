@@ -28,7 +28,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	r.GET("/spot/list", Spots.SpotsQueryController)
 	r.PUT("/spot/delete/:id", Spots.DeleteSpotController)
 	r.PUT("/spot/update", Spots.UpdateSpotController)
-	r.POST("spot/create", Spots.CreateSpotController)
+	r.POST("/spot/create", Spots.CreateSpotController)
 	r.POST("/user/create", User.CreateUser)
 	r.POST("/user/create/verifyEmail", User.VerifiedCodeHandler)
 	r.POST("/user/create/sendEmail", func(c *gin.Context) {

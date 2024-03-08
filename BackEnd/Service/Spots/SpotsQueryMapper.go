@@ -44,6 +44,8 @@ func deleteSpot(id int, db *gorm.DB) error {
 
 // to be tested
 func AddSpot(spot *Spot.Basic, db *gorm.DB) error {
+	spot.CreatedAt = time.Now()
+	spot.UpdatedAt = time.Now()
 	if err := db.Create(&spot).Error; err != nil {
 		return err
 	}

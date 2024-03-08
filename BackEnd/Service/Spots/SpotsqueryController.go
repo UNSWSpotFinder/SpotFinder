@@ -5,6 +5,7 @@ import (
 	"capstone-project-9900h14atiktokk/Service"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 // SpotsQueryController
@@ -59,18 +60,35 @@ func DeleteSpotController(c *gin.Context) {
 	return
 }
 
+type CreateSpotSimple struct {
+	OwnerId       uint64     `json:"ownerId" binding:"required"` // 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
+	SpotName      string     `json:"spotName" binding:"required"`
+	SpotAddr      string     `json:"spotAddr" binding:"required"`
+	SpotType      string     `json:"spotType" binding:"required"`
+	IsOccupied    bool       `json:"isOccupy" binding:"required"`  // 将字段名更改为驼峰式并匹配JSON键
+	IsVisible     bool       `json:"isVisible" binding:"required"` // 同上
+	Rate          float64    `json:"rate" binding:"omitempty"`     // 保留float64类型，omitempty表明非必需字段
+	Size          string     `json:"size" binding:"required"`
+	Pictures      []string   `json:"pictures" binding:"omitempty"` // 照片应为字符串切片，omitempty表明非必需字段
+	PricePerDay   float64    `json:"pricePerDay" binding:"omitempty"`
+	PricePerWeek  float64    `json:"pricePerWeek" binding:"omitempty"`
+	PricePerMonth float64    `json:"pricePerMonth" binding:"omitempty"`
+	DeletedAt     *time.Time `json:"deletedAt,omitempty"`
+}
+
 // CreateSpotController
 // @Summary Create a spot
 // @Description create a spot
 // @Tags spots
 // @Accept  json
 // @Produce  json
-// @Param   spot  body Spot.Basic true "spot info"
+// @Param   spot  body CreateSpotSimple true "spot info"
 // @Success 200 {string} json{"message", "Add spot successfully"}
 // @Failure 500 {string} json{"error", "unable to add spot"}
 // @Router /spot/create [post]
 func CreateSpotController(c *gin.Context) {
 	var spot *Spot.Basic
+
 	if err := c.ShouldBindJSON(&spot); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Cannot bind spot",
