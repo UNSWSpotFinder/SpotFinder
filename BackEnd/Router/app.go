@@ -2,11 +2,12 @@ package Router
 
 import (
 	"capstone-project-9900h14atiktokk/Service"
+	"capstone-project-9900h14atiktokk/Service/Manager"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/docs"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
-	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"google.golang.org/api/gmail/v1"
@@ -39,6 +40,8 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	})
 	r.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	r.POST("/login", User.LoginHandler)
+	r.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
+	r.POST("/manager/create", Manager.CreateManagerHandler)
 	return r
 
 }

@@ -1,0 +1,2 @@
+3.8 添加了manager角色，请注意manager只会存在于app.yml中的mangers.manger中。
+请注意manager的名称将会是主键，后期也可以改成id是主键，即一个用户可以用有多个管理角色。
