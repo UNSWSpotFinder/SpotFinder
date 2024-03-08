@@ -5,6 +5,7 @@
     padding: 0px;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 div.Navbar{
     width: 100%;
@@ -190,20 +191,206 @@ p.image-container-txt{
 }
 
 div.FilterPart{
-    height: 60px;
+    height: 80px;
     width: 100%;
     background-color: #F2F2F2;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items:center;
 }
 select.mglr{
     margin: 0px 5px;
+    width: 10%;
+    min-width: 130px;
+    height: 70%;
+    font-size: 12px;
+    border-radius: 20px;
+}
+select.mglr-r{
+    margin: 0px 5px;
+    width: 10%;
+    min-width: 90px;
+    height: 70%;
+    font-size: 12px;
+    border-radius: 20px;
 }
 .popular{
     background-color: white !important;
     color: black !important;
 }
 div.pricerange{
-    flex-direction: c;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 5px;
+    align-items: center;
+}
+label.pricerange{
+    font-size: 13px;
+    font-weight: 500;
+    color: black;
+    padding: 0px;
+}
+input.pricerange{
+    width: 50px;
+    height: 50%;
+    font-size: 14px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(0, 0, 0);
+    margin: 0px;
+    padding: 0px 5px;
+}
+.timechoice{
+    max-width: 25%;
+    margin: 0px 5px 0px 0px;
+}
+button.selectcar{
+    width: 120px;
+    font-size: 10px;
+    height: 70%;
+    background-color: black;
+    color: white;
+    font-weight: 500;
+    border: 0px;
+    border-radius: 10px;
+    margin: 0px 10px;
+    transition: 0.3s;
+}
+button.selectcar:hover{
+    background-color: rgb(220, 220, 220);
+    color: black;
+}
+div.marginLR{
+    display: flex;
+    margin: 0px 5px;
+    width: 100%;
+}
+div.ListingPart{
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 0px 0px 0px 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+div.SpaceOverall{
+    height: 135px;
+    box-shadow: 0px 0px 10px 0px rgba(164, 164, 164, 0.5);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 0px 7px;
+    margin: 0px 10px 10px 0px;
+}
+@media (max-width: 1200px) and (min-width:800px) {
+    div.SpaceOverall{
+        width: calc(50vw - 15px);
+        min-width: 385px;
+    }
+}
+@media (min-width: 1200px) {
+    div.SpaceOverall{
+        width: calc(33.33vw - 14px);
+    }
+}
+img.spaceimg{
+    border-radius: 12px;
+    object-fit: cover;
+}
+div.info{
+    height:90%;
+    margin-left:10px ;
+    width: 100%;
+}
+p.space-title{
+    padding: 0px;
+    margin: 0px;
+    font-size: 16px;
+    color: #555555;
+}
+p.space-price{
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    margin-top: 4px;
+    color: #7F7F7F;
+}
+p.space-location{
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    margin-top: 2px;
+    color: #7F7F7F;
+}
+p.space-type{
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    margin-top: 2px;
+    color: #7F7F7F;
+    margin-bottom: 2px;
+}
+div.order-part{
+    display: flex;
+    margin-top: 7px;
+}
+img.order-times{
+    width: 20px;
+    height: 20px;
+}
+p.times{
+    padding: 0px;
+    margin: 0px 0px 0px 3px;
+    font-size: 13px;
+    color: #7F7F7F;
+}
+div.right-top{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+div.right-bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 30px;
+    margin-bottom: 5px;
+}
+div.rate-part{
+    display: flex;
+    justify-content: center;
+}
+img.rate-img{
+    width: 20px;
+    height: 20px;
+    margin-right: 2px;
+}
+p.rate-txt{
+    color: #333333;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+}
+button.specific-info{
+    border: 0px;
+    background-color:#E22229;
+    border-radius: 5px;
+    color: white;
+    height: 30px;
+    width: 180px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: 0.3s;
+    margin: 1px 0px;
+}
+button.specific-info:hover{
+    background-color:#ba191e;
 }

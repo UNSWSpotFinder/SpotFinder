@@ -19,6 +19,8 @@ import {
 export function UserRegistPage() {
   // 上下文错误
   const { snackbarData, setOpenSnackbar } = useError();
+  //  按钮不可用性
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   //  初始化路由选择器
   let navigate = useNavigate();
   // 两个密码可见性
@@ -85,14 +87,41 @@ export function UserRegistPage() {
   let goeslogin = () => {
     navigate('/userlogin');
   };
+  useEffect(() => {
+    let timeoutId;
+    // 在按钮可点击状态改变后，设置一个定时器来在 30 秒后将其重新设为可点击状态
+    if (isButtonDisabled) {
+        timeoutId = setTimeout(() => {
+            setIsButtonDisabled(false);
+        }, 30000); // 30 秒
+    }
+
+    // 清除定时器以避免内存泄漏
+    return () => clearTimeout(timeoutId);
+    }, [isButtonDisabled]);
   function sendCode() {
+    if (isButtonDisabled) {
+        setOpenSnackbar({
+            severity:'info',
+            message:'Verification codes are sent too frequently',
+            timestamp:new Date().getTime
+        });
+        return;
+    }
     const data = {
       to: Email,
     };
+    console.log(isButtonDisabled);
     callAPIsendEmailCode('user/create/sendEmail', data)
     .then((response)=>{
-        console.log(response);
         setverifyVisibility(true);
+        setIsButtonDisabled(true);
+        console.log(response);
+        setOpenSnackbar({
+            severity:'warning',
+            message:'Please fill in your mobile phone number.',
+            timestamp:new Date().getTime
+        });
         // set open snackbar
         setOpenSnackbar({
           severity: 'success',
@@ -110,6 +139,9 @@ export function UserRegistPage() {
         });
     })
   }
+ 
+
+
   function verifyEmail() {
     const data = {
       code: code,
@@ -182,7 +214,7 @@ export function UserRegistPage() {
         return;
     }
     console.log(BirthDate);
-    const formattedDate = dayjs(BirthDate).format('YYYY-MM-DD HH:mm:ss');
+    const formattedDate = dayjs(BirthDate).format('MM/DD/YYYY');
     console.log(formattedDate)
     const data={
         avatar: selectedFileName,
@@ -281,7 +313,7 @@ export function UserRegistPage() {
                   ></input>
                   <button
                     className='sendcode'
-                    disabled={isverifyed}
+                    disabled={isverifyed || isButtonDisabled}
                     type='button'
                     onClick={sendCode}
                   >

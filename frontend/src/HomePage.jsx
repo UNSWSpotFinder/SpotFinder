@@ -4,6 +4,11 @@ import React, {
     useContext,
     LabelHTMLAttributes,
   } from 'react';
+import dayjs from 'dayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
 import { useNavigate,BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
@@ -37,13 +42,6 @@ export function HomePageLarge() {
       // 主页背景框
       <div className='HomeOverall'>
             {/* 根据路由返回不同的model */}
-            <Routes>
-                <Route path="/userlogin"   element={<UserLoginPage/>} />
-                <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-                <Route path="/userregist"  element={<UserRegistPage/>} /> 
-                <Route path="/adminlogin"  element={<AdminLoginPage/>} /> 
-                <Route path="/adminregist" element={<AdminRegistPage/>} />
-            </Routes>
         {/* 导航栏 */}
         <div className='Navbar'>
             {/* Logo图像 */}
@@ -82,34 +80,112 @@ export function HomePageLarge() {
         </div>
         {/* 过滤器部分 */}
         <div className='FilterPart'>
-        <select class="form-select mglr" aria-label="Default select example">
-            <option selected>Sort by sales</option>
-            <option value="1">Highest sales</option>
-            <option value="2">Lowest sales</option>
+        <select defaultValue={"0"} className="form-select mglr" aria-label="Default select example">
+            <option value="0">Highest sales</option>
+            <option value="1">Lowest sales</option>
         </select>
-        <select class="form-select mglr" aria-label="Default select example">
-            <option selected>Sort by rating</option>
-            <option value="1">Highest rates</option>
-            <option value="2">Lowest rates</option>
+        <select defaultValue={"0"} className="form-select mglr" aria-label="Default select example">
+            <option value="0">Highest rates</option>
+            <option value="1">Lowest rates</option>
         </select>
-        <select class="form-select mglr" aria-label="Default select example">
-            <option selected>Booking duration</option>
-            <option value="1">Weekly</option>
-            <option value="2">Daily</option>
+        <select defaultValue={"0"} className="form-select mglr-r" aria-label="Default select example">
+            <option value="0">Weekly</option>
+            <option value="1">Daily</option>
             <option value="2">Hourly</option>
         </select>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+                className='timechoice'
+                label="Parking time"
+                value={dayjs(new Date())}
+            />
+            <DateTimePicker
+                className = 'timechoice'
+                label = "Leaving time"
+                value = {dayjs(new Date())}
+            />
+        </LocalizationProvider>
         <div className='pricerange'>
-            <label>min price</label>
-            <input></input>
+            <label className='pricerange'>MIN$</label>
+            <input className='pricerange'></input>
         </div>
         <div className='pricerange'>
-            <label>max price</label>
-            <input></input>
+            <label className='pricerange'>MAX$</label>
+            <input className='pricerange'></input>
         </div>
+        <button className='selectcar'>SELECT YOUR CAR</button>
         </div>
         {/* 所有车位列表 */}
         <div className='ListingPart'>
-
+                <div className='SpaceOverall'>
+                    <img className='spaceimg' src='img/sample.jpeg' width={'116px'} height={'116px'}>
+                    </img>
+                    <div className='info'>
+                        <div className='right-top'>
+                            <p className='space-title'>UNSW Parking Space</p>
+                            <div className='rate-part'>
+                                <img src='img/star.png' className='rate-img'></img>
+                                <p className='rate-txt'>5.0</p>
+                            </div>
+                        </div>
+                        <p className='space-price'>$38.00/day</p>
+                        <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
+                        <p className='space-type'>Fits a 4WD/SUV</p>
+                        <div className='right-bottom'>
+                            <div className='order-part'>
+                                <img src='img/booking.png' className='order-times'></img>
+                                <p className='times'>1000</p>
+                            </div>
+                            <button className='specific-info'>Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div className='SpaceOverall'>
+                    <img className='spaceimg' src='img/sample.jpeg' width={'116px'} height={'116px'}>
+                    </img>
+                    <div className='info'>
+                        <div className='right-top'>
+                            <p className='space-title'>UNSW Parking Space</p>
+                            <div className='rate-part'>
+                                <img src='img/star.png' className='rate-img'></img>
+                                <p className='rate-txt'>5.0</p>
+                            </div>
+                        </div>
+                        <p className='space-price'>$38.00/day</p>
+                        <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
+                        <p className='space-type'>Fits a 4WD/SUV</p>
+                        <div className='right-bottom'>
+                            <div className='order-part'>
+                                <img src='img/booking.png' className='order-times'></img>
+                                <p className='times'>1000</p>
+                            </div>
+                            <button className='specific-info'>Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div className='SpaceOverall'>
+                    <img className='spaceimg' src='img/sample.jpeg' width={'116px'} height={'116px'}>
+                    </img>
+                    <div className='info'>
+                        <div className='right-top'>
+                            <p className='space-title'>UNSW Parking Space</p>
+                            <div className='rate-part'>
+                                <img src='img/star.png' className='rate-img'></img>
+                                <p className='rate-txt'>5.0</p>
+                            </div>
+                        </div>
+                        <p className='space-price'>$38.00/day</p>
+                        <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
+                        <p className='space-type'>Fits a 4WD/SUV</p>
+                        <div className='right-bottom'>
+                            <div className='order-part'>
+                                <img src='img/booking.png' className='order-times'></img>
+                                <p className='times'>1000</p>
+                            </div>
+                            <button className='specific-info'>Book Now</button>
+                        </div>
+                    </div>
+                </div>
         </div>
       </div>
     );
@@ -141,14 +217,7 @@ let goesRegistAdmin=()=>{
 return (
     // 主页背景框
     <div className='HomeOverall'>
-        {/* 根据路由返回不同的model */}
-        <Routes>
-            <Route path="/userlogin"   element={<UserLoginPage/>} />
-            <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-            <Route path="/userregist"  element={<UserRegistPage/>} /> 
-            <Route path="/adminlogin"  element={<AdminLoginPage/>} /> 
-            <Route path="/adminregist" element={<AdminRegistPage/>} />
-        </Routes>
+
     {/* 导航栏 */}
     <div className='Navbar'>
         {/* Logo图像 */}
@@ -186,7 +255,6 @@ return (
     </div>
     {/* 所有车位列表 */}
     <div className='ListingPart'>
-
     </div>
     </div>
 );
