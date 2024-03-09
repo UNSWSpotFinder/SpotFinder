@@ -10,9 +10,11 @@ import React, {
   ReactNode,
 } from 'react';
 import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
+import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link,useParams} from 'react-router-dom';
 import './App.css';
+import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 
 // 导入Dashboard相关页面组件
 import DashboardTop from './components/DashboardTop';
@@ -39,7 +41,7 @@ function App() {
   let layoutComponentHost;
   let LayoutComponentHome;
   let LayoutDetail;
-  if (windowWidth > 760) {
+  if (windowWidth > 800) {
     layoutComponentHost = null;
     LayoutComponentHome = <HomePageLarge/>;
     LayoutDetail = null;
@@ -52,10 +54,18 @@ function App() {
     <ErrorProvider>
       <GlobalSnackbar/>
         <BrowserRouter>
+            <Routes>
+                <Route path="/userlogin"   element={<UserLoginPage/>} />
+                <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
+                <Route path="/userregist"  element={<UserRegistPage/>} /> 
+                <Route path="/adminlogin"  element={<AdminLoginPage/>} /> 
+                <Route path="/adminregist" element={<AdminRegistPage/>} />
+                <Route path='/*' element={<></>}/>
+            </Routes>
           <Routes>
-            <Route path="/user/*" element={LayoutComponentHome} />
+            <Route path="/:username" element={LayoutComponentHome} />
             {/* DashboardTop作为父路由 */}
-            <Route path="/dashboard" element={<DashboardTop />}>
+            <Route path="/:username/dashboard" element={<DashboardTop />}>
             <Route index element={<Dashboard />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="listings" element={<Listings />} />
