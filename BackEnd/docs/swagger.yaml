@@ -101,7 +101,7 @@ paths:
       summary: ping example
       tags:
       - example
-  /spot/create:
+  /spot/create/{UserID}:
     post:
       consumes:
       - application/json
@@ -152,11 +152,11 @@ paths:
       summary: Delete a spot(soft delete)
       tags:
       - spots
-  /spot/list:
+  /spot/list/{page}/{pageSize}:
     get:
       consumes:
       - application/json
-      description: get list of all spots(will do page query later)
+      description: get list of all spots(PageQuery)
       produces:
       - application/json
       responses:
@@ -171,6 +171,56 @@ paths:
             additionalProperties: true
             type: object
       summary: Get the list of spots
+      tags:
+      - spots
+  /spot/ownedCar/choseSize/{plateNumber}:
+    get:
+      consumes:
+      - application/json
+      description: chose size with my car
+      parameters:
+      - description: Plate Number
+        in: path
+        name: plateNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: spots", "list of spots"}
+          schema:
+            type: string
+        "500":
+          description: error", "unable to get spot list"}
+          schema:
+            type: string
+      summary: Chose size with user's car plate number,param is plate number
+      tags:
+      - spots
+  /spot/ownedList/{ownerId}:
+    get:
+      consumes:
+      - application/json
+      description: show all owned spots by User
+      parameters:
+      - description: Owner ID
+        in: path
+        name: ownerId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: spots", "list of spots"}
+          schema:
+            type: string
+        "500":
+          description: error", "unable to get spot list"}
+          schema:
+            type: string
+      summary: Show all owned spots
       tags:
       - spots
   /spot/update:
@@ -197,6 +247,47 @@ paths:
           schema:
             type: string
       summary: Update a spot
+      tags:
+      - spots
+  /spot/update/spotPrice:
+    put:
+      consumes:
+      - application/json
+      description: 'update a spot''s price, got four query parameters by order: spotID,
+        perDay, perNight, perMonth'
+      parameters:
+      - description: Spot ID
+        in: query
+        name: spotID
+        required: true
+        type: string
+      - description: Price per day
+        in: query
+        name: perDay
+        required: true
+        type: string
+      - description: Price per night
+        in: query
+        name: perNight
+        required: true
+        type: string
+      - description: Price per month
+        in: query
+        name: perMonth
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message", "Update spot price successfully"}
+          schema:
+            type: string
+        "500":
+          description: error", "unable to update spot price"}
+          schema:
+            type: string
+      summary: Update a spot's price
       tags:
       - spots
   /user/create:
