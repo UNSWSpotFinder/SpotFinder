@@ -161,6 +161,40 @@ export const callAPIRegistUser=(path,input)=>{
         })
     })
 }
+// 管理员注册
+export const callAPIRegistAdmin=(path,input)=>{
+    return new Promise((resolve, reject) =>{
+       console.log(input);
+       console.log('http://localhost:'+String(port)+'/'+String(path));
+       fetch('http://localhost:'+String(port)+'/'+String(path),{
+       method:'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body:JSON.stringify(input),
+       })
+       .then((response)=>{
+        if (response.status === 200) {
+            console.log('success');
+            return response.json().then(data => resolve(data));
+          } else {
+            // 如果状态码不是200，我们要解析JSON来找出错误原因
+            response.json().then(data => {
+              let errorReason = 'An unknown error occurred.';
+              if(data.error=='invalid manager'){
+                errorReason = 'It looks like you are not an employee of our company.';
+              }
+              else if(data.error){
+                errorReason = 'User has been registered!';
+              }
+              reject(errorReason);
+            })
+            .catch(() => { reject(new Error('Error parsing response JSON.'));});
+          }
+       })
+       .catch((error)=>{
+           console.log(error);
+       })
+   })
+}
 // 用户登录
 export const callAPILoginUser=(path,input)=>{
     return new Promise((resolve, reject) =>{
@@ -180,6 +214,10 @@ export const callAPILoginUser=(path,input)=>{
                const errorReason = 'Username does not exist or password is incorrect!';
                return reject(errorReason);
            }
+           else if (response.status===500){
+            const errorReason = 'Username does not exist or password is incorrect!';
+            return reject(errorReason);
+          }
            else{
                const errorReason = 'There is a problem with the network connection!';
                return reject(errorReason);

@@ -249,7 +249,7 @@ div.inner-left{
     display: flex;
     flex-direction: column;
     height: 100%;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 select.mglr{
     margin: 0px 5px 0px 0px;
@@ -502,4 +502,11 @@ div.filter-bottom{
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+div.width-20{
+    max-width: 25%;
+    min-width: 130px;
+    margin: 0px;
+    padding: 0px;
+    margin-right: 10px;
 }

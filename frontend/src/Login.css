@@ -36,6 +36,15 @@ div.contentmain{
     align-items: center;
     flex-direction: column;
 }
+div.contentmain-admin{
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 img.Logo{
     margin: 0px;
     padding: 0px;
@@ -58,10 +67,24 @@ button.backbtn:hover{
 }
 div.LoginUser{
     width: 100%;
+    justify-content: center;
     padding: 0px 0px 0px 50px;
-
+}
+div.LoginUser-admin{
+    width: 100%;
+    padding: 0px 10%;
 }
 p.welcomemain{
+    font-family: Arial;
+    font-size: 20px;
+    color: #880010;
+    font-weight: 700;
+    margin: 0px;
+    padding: 0px;
+}
+p.welcomemain-admin{
+    width: 100%;
+    text-align: center;
     font-family: Arial;
     font-size: 20px;
     color: #880010;
@@ -106,6 +129,13 @@ button.logbtn{
     font-size: 12px;
     width: 85%;
 }
+button.logbtn-admin{
+    margin: 20px 0px 0px 0px;
+    background-color:#E22229 ;
+    border: 0px;
+    font-size: 12px;
+    width: 100%;
+}
 button.logbtn:hover{
     background-color:#9e0005 ;
 }
@@ -113,6 +143,15 @@ button.logbtn:active{
     background-color:#690003 !important;
 }
 .formpart-col{
+    width: 100%;
+    margin-top: 5px;
+    padding: 0px;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.formpart-col-admin{
     width: 100%;
     margin-top: 5px;
     padding: 0px;
@@ -140,6 +179,7 @@ div.seepart{
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-bottom: 10px;
 }
 label.pwdsee{
     font-size: 12px;
@@ -164,6 +204,13 @@ a.forget:hover{
 div.logbottom{
     margin-top: 15px;
     width: 85%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+}
+div.logbottom-admin{
+    margin-top: 15px;
+    width: 100%;
     height: auto;
     display: flex;
     justify-content: center;

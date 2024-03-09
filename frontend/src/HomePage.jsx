@@ -42,13 +42,23 @@ export function HomePageLarge() {
   let goesRegistUser = () => {
     navigate('/userregist');
   };
-  // 进入Admin登录页面
-  let goesLoginAdmin = () => {
-    navigate('/adminlogin');
-  };
   // 进入Admin注册页面
   let goesRegistAdmin = () => {
     navigate('/adminregist');
+  };
+  let CreatSpace = () => {
+    if (token) {
+      console.log(token);
+    } else {
+      navigate('/userlogin');
+    }
+  };
+  let ChooseCar = () => {
+    if (token) {
+      console.log(token);
+    } else {
+      navigate('/userlogin');
+    }
   };
   let logout = () => {
     if (localStorage.getItem('token')) {
@@ -61,6 +71,32 @@ export function HomePageLarge() {
       });
     }
   };
+  const [clickCount, setClickCount] = useState(0);
+
+  // 设置连续点击的时间限制，例如500毫秒内必须完成三连击
+  const clickTimeLimit = 1000;
+
+  let timeoutId = null;
+  // 进入Admin登录页面
+  const goesLoginAdmin = () => {
+    if (clickCount === 0) {
+      // 首次点击时，设置一个定时器
+      // 如果用户在指定时间内没有完成三连击，将重置点击计数
+      timeoutId = setTimeout(() => {
+        setClickCount(0);
+      }, clickTimeLimit);
+    }
+
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (newCount === 5) {
+      // 如果达到三连击，清除定时器，执行路由跳转，并重置点击计数
+      clearTimeout(timeoutId);
+      navigate('/adminlogin');
+      setClickCount(0);
+    }
+  };
   // 主页内容
   return (
     // 主页背景框
@@ -69,7 +105,11 @@ export function HomePageLarge() {
       {/* 导航栏 */}
       <div className='Navbar'>
         {/* Logo图像 */}
-        <img src='/img/LOGO.svg' className='Applogo'></img>
+        <img
+          src='/img/LOGO.svg'
+          className='Applogo'
+          onClick={goesLoginAdmin}
+        ></img>
         {/* 搜索区域 */}
         <div className='SearchPart'>
           {/* 搜索图标 */}
@@ -78,7 +118,9 @@ export function HomePageLarge() {
           <input className='Searchbar' placeholder='Search by location'></input>
         </div>
         {/* 新建车位按钮 */}
-        <button className='newspace'>Lease your Car Space</button>
+        <button className='newspace' onClick={CreatSpace}>
+          Lease your Car Space
+        </button>
         {/* 登录注册按钮组 */}
         {token ? (
           <div className='signwarper'>
@@ -163,7 +205,9 @@ export function HomePageLarge() {
           <label className='pricerange'>MAX$</label>
           <input className='pricerange'></input>
         </div>
-        <button className='selectcar'>SELECT YOUR CAR</button>
+        <button className='selectcar' onClick={ChooseCar}>
+          SELECT YOUR CAR
+        </button>
       </div>
       {/* 所有车位列表 */}
       <div className='ListingPart'>
@@ -254,6 +298,33 @@ export function HomePageLarge() {
 }
 
 export function HomePageSmall() {
+    const [clickCount, setClickCount] = useState(0);
+
+    // 设置连续点击的时间限制，例如500毫秒内必须完成三连击
+    const clickTimeLimit = 1000;
+  
+    let timeoutId = null;
+    // 进入Admin登录页面
+    const goesLoginAdmin = () => {
+      if (clickCount === 0) {
+        // 首次点击时，设置一个定时器
+        // 如果用户在指定时间内没有完成三连击，将重置点击计数
+        timeoutId = setTimeout(() => {
+          setClickCount(0);
+        }, clickTimeLimit);
+      }
+  
+      const newCount = clickCount + 1;
+      setClickCount(newCount);
+  
+      if (newCount === 5) {
+        // 如果达到三连击，清除定时器，执行路由跳转，并重置点击计数
+        clearTimeout(timeoutId);
+        navigate('/adminlogin');
+        setClickCount(0);
+      }
+    };
+  const { _, setOpenSnackbar } = useError();
   let token = localStorage.getItem('token');
   console.log(token);
   // 调库
@@ -266,10 +337,6 @@ export function HomePageSmall() {
   // 进入用户注册页面
   let goesRegistUser = () => {
     navigate('/userregist');
-  };
-  // 进入Admin登录页面
-  let goesLoginAdmin = () => {
-    navigate('/adminlogin');
   };
   // 进入Admin注册页面
   let goesRegistAdmin = () => {
@@ -285,6 +352,20 @@ export function HomePageSmall() {
   const handleLeavingTimeChange = (time) => {
     setLeavingTime(time);
   };
+  let logout = () => {
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+      navigate('/');
+      setOpenSnackbar({
+        severity: 'success',
+        message: 'Logout successful',
+        timestamp: new Date().getTime(),
+      });
+    }
+  };
+  let goesDashboard = () => {
+    navigate('/user/Dashboard');
+  };
   // 主页内容
   return (
     // 主页背景框
@@ -292,7 +373,7 @@ export function HomePageSmall() {
       {/* 导航栏 */}
       <div className='Navbar'>
         {/* Logo图像 */}
-        <img src='/img/LOGO.svg' className='Applogo'></img>
+        <img src='/img/LOGO.svg' className='Applogo' onClick={goesLoginAdmin}></img>
         {/* 搜索区域 */}
         <div className='SearchPartsmall'>
           {/* 搜索图标 */}
@@ -303,11 +384,11 @@ export function HomePageSmall() {
         {/* 登录注册按钮组 */}
         {token ? (
           <div className='signwarper'>
-            <button className='sign' onClick={goesLoginUser}>
+            <button className='sign' onClick={goesDashboard}>
               DashBoard
             </button>
             {/* 注册 */}
-            <button className='sign' onClick={goesRegistUser}>
+            <button className='sign' onClick={logout}>
               Exit
             </button>
           </div>
@@ -358,14 +439,18 @@ export function HomePageSmall() {
               <option value='1'>Lowest rates</option>
             </select>
           </div>
-          <div className='hflex'>
-            <label className='pricerange-s'>MIN$</label>
-            <input className='pricerange-s'></input>
+          <div className="input-group width-20">
+            <span className="input-group-text">MIN$</span>
+            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)"></input>
           </div>
-          <div className='hflex'>
+          <div className="input-group width-20">
+            <span className="input-group-text">MAX$</span>
+            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)"></input>
+          </div>
+          {/* <div className='hflex'>
             <label className='pricerange-s'>MAX$</label>
             <input className='pricerange-s'></input>
-          </div>
+          </div> */}
 
           <button className='selectcar'>SELECT YOUR CAR</button>
         </div>
