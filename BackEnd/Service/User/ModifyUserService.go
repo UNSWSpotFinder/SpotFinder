@@ -7,7 +7,7 @@ import (
 )
 
 type modifyRequestData struct {
-	Email    string `json:"email" `
+	Email    string `json:"email" example:"longsizhuo@gmail.com"`
 	Passwd   string `json:"password"`
 	Repasswd string `json:"repassword"`
 }
@@ -47,4 +47,31 @@ func ModifyPasswdHandler(c *gin.Context) {
 	c.JSON(200, "Password updated")
 	return
 
+}
+
+// ModifyUserInfoHandler 修改用户信息
+// @Summary 修改用户信息
+// @Description 修改用户信息
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body User.Basic true "User"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/modifyUserInfo [post]
+func ModifyUserInfoHandler(c *gin.Context) {
+	var newData User.Basic
+	err := c.ShouldBindJSON(&newData)
+	if err != nil {
+		c.JSON(400, "Data binding error")
+		return
+	}
+	err = User.ModifyUserInfo(Service.DB, &newData)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	c.JSON(200, "User information updated")
+	return
 }

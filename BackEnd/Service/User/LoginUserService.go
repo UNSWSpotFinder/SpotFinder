@@ -24,13 +24,16 @@ type loginRequestData struct {
 // @Error 500 {string} string "SQL error message"
 // @Router /login [post]
 func LoginHandler(c *gin.Context) {
-	var newData User.Basic
+	var newData loginRequestData
+	var user User.Basic
 	err := c.ShouldBindJSON(&newData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data binding error"})
 		return
 	}
-	JWT, err := User.Login(Service.DB, &newData)
+	user.Email = newData.Email
+	user.Password = newData.Passwd
+	JWT, err := User.Login(Service.DB, &user)
 	if err != nil {
 		// 根据错误类型返回不同的HTTP状态码
 		if err.Error() == "user not found" || err.Error() == "password mismatch" {
@@ -42,4 +45,5 @@ func LoginHandler(c *gin.Context) {
 	}
 	// 如果一切正常，将JWT令牌发送给客户端
 	c.JSON(http.StatusOK, gin.H{"token": JWT})
+	return
 }
