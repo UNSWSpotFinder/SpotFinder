@@ -15,7 +15,9 @@ import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
 import { BrowserRouter, Routes, Route, Link,useParams} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
-
+import{
+  CreatSpace, EditSpace
+} from './CarSpaceOperation';
 // 导入Dashboard相关页面组件
 import DashboardTop from './components/DashboardTop';
 import Dashboard from './components/Dashboard';
@@ -64,6 +66,8 @@ function App() {
             </Routes>
           <Routes>
             <Route path="/:username" element={LayoutComponentHome} />
+            <Route path="/:username/createspace" element = {<CreatSpace/>} />
+            <Route path="/:username/editspace" element = {<EditSpace/>} />
             {/* DashboardTop作为父路由 */}
             <Route path="/:username/dashboard" element={<DashboardTop />}>
             <Route index element={<Dashboard />} />
