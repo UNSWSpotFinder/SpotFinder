@@ -10,8 +10,8 @@
 div.Navbar{
     width: 100%;
     height: 70px;
-    margin: 0px 10px 0px 0px;
-    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 10px 0px 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -31,7 +31,6 @@ div.SearchPart{
 }
 div.SearchPartsmall{
     width: calc(100% - 320px);
-    min-width: 200px;
     height: 100%;
     margin: 0px;
     padding: 0px;
@@ -60,9 +59,9 @@ img.searchbtn{
     border-radius: 20px;
     width: 20px;
     height: 20px;
-    margin: 0px;
+    margin: 0px 0px 0px 10px;
     padding: 5px;
-    right: 467px;
+    right: 475px;
     position: absolute;
     z-index: 1;
     background-color: rgb(210, 0, 0);
@@ -74,7 +73,7 @@ img.searchbtnsmall{
     height: 20px;
     margin: 0px;
     padding: 5px;
-    right: 247px;
+    right: 260px;
     position: absolute;
     z-index: 1;
     background-color: rgb(210, 0, 0);
@@ -146,8 +145,28 @@ p.image-container-title{
     width: 60%;
     color: rgb(0, 0, 0); /* 文字颜色 */
 }
+p.image-container-title-small{
+    font-weight: 800;
+    font-size: 20px;
+    font-family: Arial;
+    position: absolute;
+    top: calc(15vw); /* 根据需要调整 */
+    left: 5%; /* 根据需要调整 */
+    width: 60%;
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
 p.image-container-sub{
     font-weight: 400;
+    font-family: Arial;
+    position: absolute;
+    left: 5%; /* 根据需要调整 */
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
+p.image-container-sub-small{
+    font-size: 12px;
+    font-weight: 400;
+    width: 44%;
+    top: calc(28vw);
     font-family: Arial;
     position: absolute;
     left: 5%; /* 根据需要调整 */
@@ -159,6 +178,17 @@ p.image-container-txt{
     position: absolute;
     left: 5%; /* 根据需要调整 */
     width: 40%;
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
+p.image-container-txt-small{
+    font-size: 12px;
+    font-weight: 400;
+    width: 40%;
+    top: calc(42vw);
+    font-weight: 200;
+    font-family: Arial;
+    position: absolute;
+    left: 5%; /* 根据需要调整 */
     color: rgb(0, 0, 0); /* 文字颜色 */
 }
 @media (max-width: 1200px) {
@@ -193,22 +223,60 @@ p.image-container-txt{
 div.FilterPart{
     height: 80px;
     width: 100%;
-    background-color: #F2F2F2;
+    padding: 5px;
+    background-color: #f9f9f9;
     display: flex;
     justify-content: space-between;
     align-items:center;
 }
+div.FilterPart-small{
+    height: 155px;
+    width: 100%;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 10px 10px 10px;
+    border-bottom: 1px solid rgb(238, 238, 238);
+}
+
+div.filter-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+div.inner-left{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-right: 20px;
+}
 select.mglr{
-    margin: 0px 5px;
+    margin: 0px 5px 0px 0px;
     width: 10%;
     min-width: 130px;
     height: 70%;
     font-size: 12px;
     border-radius: 20px;
 }
-select.mglr-r{
-    margin: 0px 5px;
+select.mglr-s{
+    margin: 0px 5px 5px 0px;
     width: 10%;
+    min-width: 130px;
+    font-size: 12px;
+    border-radius: 20px;
+}
+select.mglr-r{
+    margin: 0px 5px 0px 0px;
+    width: 10%;
+    min-width: 90px;
+    height: 70%;
+    font-size: 12px;
+    border-radius: 20px;
+}
+select.mglr-s-r{
+    margin: 0px 5px 0px 0px;
+    width: 100px;
     min-width: 90px;
     height: 70%;
     font-size: 12px;
@@ -246,25 +314,51 @@ input.pricerange{
     margin: 0px;
     padding: 0px 5px;
 }
+label.pricerange-s{
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    padding: 0px 5px 0px 0px;
+}
+input.pricerange-s{
+    height: 60%;
+    width: 60%;
+    font-size: 16px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(0, 0, 0);
+    margin: 0px 5px 0px 0px;
+    padding: 0px 5px;
+}
 .timechoice{
-    max-width: 25%;
+    width: 20%;
     margin: 0px 5px 0px 0px;
 }
+.timechoice-s{
+    margin: 0px 10px;
+    width: 40%;
+}
+div.hflex{
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
 button.selectcar{
-    width: 120px;
+    width: 140px;
     font-size: 10px;
-    height: 70%;
+    height: 50px;
     background-color: black;
     color: white;
     font-weight: 500;
     border: 0px;
     border-radius: 10px;
-    margin: 0px 10px;
     transition: 0.3s;
+    margin-left: 5px;
 }
 button.selectcar:hover{
-    background-color: rgb(220, 220, 220);
-    color: black;
+    background-color: rgb(55, 55, 55);
+    color: rgb(255, 255, 255);
 }
 div.marginLR{
     display: flex;
@@ -288,17 +382,27 @@ div.SpaceOverall{
     padding: 0px 7px;
     margin: 0px 10px 10px 0px;
 }
+
+@media (max-width: 800px) {
+    div.SpaceOverall{
+        width: calc(100vw - 15px);
+        min-width: 385px;
+    }
+}
+
 @media (max-width: 1200px) and (min-width:800px) {
     div.SpaceOverall{
         width: calc(50vw - 15px);
         min-width: 385px;
     }
 }
+
 @media (min-width: 1200px) {
     div.SpaceOverall{
         width: calc(33.33vw - 14px);
     }
 }
+
 img.spaceimg{
     border-radius: 12px;
     object-fit: cover;
@@ -393,4 +497,9 @@ button.specific-info{
 }
 button.specific-info:hover{
     background-color:#ba191e;
+}
+div.filter-bottom{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

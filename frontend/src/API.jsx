@@ -147,8 +147,8 @@ export const callAPIRegistUser=(path,input)=>{
                 console.log('success');
                 return resolve(response.json());
             }
-            else if (response.status===400){
-                const errorReason = 'There exit some information not correct!';
+            else if (response.status===417){
+                const errorReason = 'This email has been registed!';
                 return reject(errorReason);
             }
             else{
@@ -160,4 +160,62 @@ export const callAPIRegistUser=(path,input)=>{
             console.log(error);
         })
     })
+}
+// 用户登录
+export const callAPILoginUser=(path,input)=>{
+    return new Promise((resolve, reject) =>{
+       console.log(input);
+       console.log('http://localhost:'+String(port)+'/'+String(path));
+       fetch('http://localhost:'+String(port)+'/'+String(path),{
+       method:'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body:JSON.stringify(input),
+       })
+       .then((response)=>{
+           if(response.ok){
+               console.log('success');
+               return resolve(response.json());
+           }
+           else if (response.status===401){
+               const errorReason = 'Username does not exist or password is incorrect!';
+               return reject(errorReason);
+           }
+           else{
+               const errorReason = 'There is a problem with the network connection!';
+               return reject(errorReason);
+           }
+       })
+       .catch((error)=>{
+           console.log(error);
+       })
+   })
+}
+// 密码修改
+export const callAPIResetPwdUser=(path,input)=>{
+    return new Promise((resolve, reject) =>{
+       console.log(input);
+       console.log('http://localhost:'+String(port)+'/'+String(path));
+       fetch('http://localhost:'+String(port)+'/'+String(path),{
+       method:'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body:JSON.stringify(input),
+       })
+       .then((response)=>{
+           if(response.ok){
+               console.log('success');
+               return resolve(response.json());
+           }
+           else if (response.status===401){
+               const errorReason = 'Username does not exist or password is incorrect!';
+               return reject(errorReason);
+           }
+           else{
+               const errorReason = 'There is a problem with the network connection!';
+               return reject(errorReason);
+           }
+       })
+       .catch((error)=>{
+           console.log(error);
+       })
+   })
 }

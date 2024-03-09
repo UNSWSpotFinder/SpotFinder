@@ -104,7 +104,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'info',
             message:'Verification codes are sent too frequently',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -120,7 +120,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Please fill in your mobile phone number.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         // set open snackbar
         setOpenSnackbar({
@@ -177,7 +177,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'info',
             message:'Please Verify your Email address first!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -185,7 +185,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Please fill in your mobile phone number.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -193,7 +193,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Please fill in a name so we know how to call you.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -201,7 +201,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Password must be between 6-16 characters!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -209,7 +209,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'The two password inputs are inconsistent!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -225,25 +225,22 @@ export function UserRegistPage() {
         phone: phone,
         rePassword: Password1
     }
-    if(Password!=Password1){
-
-    }
     callAPIRegistUser('user/create',data)
     .then((response)=>{
         console.log(response);
         setOpenSnackbar({
             severity:'success',
             message:'Welcome join SpotFinder ' + name + '.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         })
     })
     .catch((error)=>{
         setOpenSnackbar({
             severity:'warning',
             message:error,
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
-    })
+    });
   }
   return (
     <div className='overall'>

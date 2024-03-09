@@ -7,7 +7,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import {
     useError,
     callAPIverifyEmailCode,
-    callAPIsendEmailCode
+    callAPIsendEmailCode,
+    callAPILoginUser,
+    callAPIResetPwdUser
   } from './API';
 // 用户登录页面
 export function UserLoginPage(){
@@ -41,22 +43,37 @@ export function UserLoginPage(){
     }
     // 检查登录
     function login(){
-        if(Password ==='123456' && Email==='123456'){
-            navigate('/user/123456');
+        if(Password.length<6 || Password.length > 16 || Email===''){
             setOpenSnackbar({
-                severity: 'success',
-                message:  'Login successful',
+                severity: 'warning',
+                message:  'Invaild email or password.',
                 timestamp: new Date().getTime()
             });
         }
         else{
+            const data={
+                email: Email,
+                password: Password
+            }
+            callAPILoginUser('login',data)
+            .then((response)=>{
+                console.log(response);
+                setOpenSnackbar({
+                    severity:'success',
+                    message:'Welcome back SpotFinder ' + Email + '.',
+                    timestamp:new Date().getTime()
+                });
+                localStorage.setItem('token',response);
+                navigate('/user/'+Email);
+            })
+            .catch((error)=>{
+                setOpenSnackbar({
+                    severity:'warning',
+                    message:error,
+                    timestamp:new Date().getTime()
+                });
+            })
             console.log('not corect '+Password+' '+ Email);
-            setOpenSnackbar({
-                severity: 'warning',
-                message:  'Password Incorrect!',
-                timestamp: new Date().getTime()
-            });
-
         }
     }
     // 登录页面设计
@@ -165,8 +182,49 @@ export function UserLoginPageForgetPassword(){
     let goesRegist= ()=>{
         navigate('/userregist');
     }
-    let forgetpassword = () => {
-        navigate('/password');
+    let resetPassword = () => {
+        if(Password1.length<6||Password1.length>16){
+            setOpenSnackbar({
+                severity:'warning',
+                message:'Password must be between 6-16 characters!',
+                timestamp:new Date().getTime()
+            });
+            return;
+        }
+        if (Password2 !== Password1) {
+            setOpenSnackbar({
+                severity:'warning',
+                message:'The two password inputs are inconsistent!',
+                timestamp:new Date().getTime()
+            });
+            return;
+        }
+        const data={
+            email: Email,
+            password: Password1,
+            repassword: Password2
+        }
+        console.log(data);
+        callAPIResetPwdUser('user/modifyPasswd', data)
+        .then((response)=>{
+            console.log(response);
+            // set open snackbar
+            setOpenSnackbar({
+              severity: 'success',
+              message: 'Password reset successful',
+              timestamp: new Date().getTime()
+            });
+            navigate('/userlogin');
+        })
+        .catch((error)=>{
+            // when meet error
+            console.log(error);
+            setOpenSnackbar({
+                severity: 'error',
+                message: error,
+                timestamp: new Date().getTime()
+            });
+        })
     }
     function sendCode() {
         const data = {
@@ -295,7 +353,7 @@ export function UserLoginPageForgetPassword(){
                                     <label className="pwdsee" htmlFor="exampleCheck1">show password</label>
                                 </div>
                             </div>
-                            <button type="button" className="btn btn-primary logbtn">Reset Password</button>
+                            <button type="button" className="btn btn-primary logbtn" onClick={resetPassword}>Reset Password</button>
                             </motion.div>)
                             }
                         </form>

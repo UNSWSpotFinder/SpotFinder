@@ -3,7 +3,7 @@ div.backgrounds{
     height: 100%;
     opacity: 0.5;
     background-color: black;
-    position: absolute;
+    position: fixed;
     z-index: 3;
 }
 div.overall{
