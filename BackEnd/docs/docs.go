@@ -116,9 +116,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/spot/list": {
+        "/spot/list/{page}/{pageSize}": {
             "get": {
-                "description": "get list of all spots(will do page query later)",
+                "description": "get list of all spots(PageQuery)",
                 "consumes": [
                     "application/json"
                 ],

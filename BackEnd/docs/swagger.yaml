@@ -152,11 +152,11 @@ paths:
       summary: Delete a spot(soft delete)
       tags:
       - spots
-  /spot/list:
+  /spot/list/{page}/{pageSize}:
     get:
       consumes:
       - application/json
-      description: get list of all spots(will do page query later)
+      description: get list of all spots(PageQuery)
       produces:
       - application/json
       responses:
