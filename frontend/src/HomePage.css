@@ -1,0 +1,209 @@
+.HomeOverall {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+}
+div.Navbar{
+    width: 100%;
+    height: 70px;
+    margin: 0px 10px 0px 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0px 0px 10px 0px rgba(164, 164, 164, 0.5);
+}
+div.SearchPart{
+    width: calc(100% - 520px);
+    min-width: 200px;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+}
+div.SearchPartsmall{
+    width: calc(100% - 320px);
+    min-width: 200px;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+}
+input.Searchbar{
+    width: 100%;
+    border-radius: 25px;
+    padding-left: 13px;
+    height: 45%;
+    border: 0px;
+    transition: box-shadow 0.3s; 
+    box-shadow: 0px 1px 5px 1px rgba(170, 170, 170, 0.5);
+    position: relative;
+    font-size: 12px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+input.Searchbar::placeholder{
+    color: rgb(200, 200, 200);
+}
+img.searchbtn{
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+    padding: 5px;
+    right: 467px;
+    position: absolute;
+    z-index: 1;
+    background-color: rgb(210, 0, 0);
+    cursor: pointer;
+}
+img.searchbtnsmall{
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+    padding: 5px;
+    right: 247px;
+    position: absolute;
+    z-index: 1;
+    background-color: rgb(210, 0, 0);
+    cursor: pointer;
+}
+input.Searchbar:hover{
+    box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
+}
+img.searchbtn:hover + .Searchbar {
+    box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
+}
+img.searchbtnsmall:hover + .Searchbar {
+    box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
+}
+button.newspace{
+    border-radius: 30px;
+    min-width: 200px;
+    max-width: 200px;
+    font-weight: bold;
+    border: 0px;
+    margin-left: 20px;
+    height: 50%;
+    background-color: rgb(250, 250, 250);
+    border: 1px solid rgb(230, 230, 230);
+    color: rgb(114, 114, 114);
+    transition: 0.3s;
+    font-size: 12px;
+    cursor: pointer;
+}
+button.newspace:hover{
+    color: rgb(0, 0, 0);
+    background-color: rgb(230, 230, 230);
+}
+div.signwarper{
+    margin: 0px 10px 0px 0px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+button.sign{
+    border-radius: 5px;
+    width: 100px;
+    font-weight: bold;
+    border: 0px;
+    margin-left:15px;
+    height: 50%;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(0, 0, 0);
+    transition: 0.3s;
+    font-size: 12px;
+    cursor: pointer;
+}
+button.sign:hover{
+    background-color: rgb(230, 230, 230);
+}
+input:focus {
+    outline: none; 
+}
+img.Applogo{
+    height: 100%;
+    margin: 0px 0px 0px 10px;
+}
+p.image-container-title{
+    font-weight: 800;
+    font-family: Arial;
+    position: absolute;
+    top: calc(10vw); /* 根据需要调整 */
+    left: 5%; /* 根据需要调整 */
+    width: 60%;
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
+p.image-container-sub{
+    font-weight: 400;
+    font-family: Arial;
+    position: absolute;
+    left: 5%; /* 根据需要调整 */
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
+p.image-container-txt{
+    font-weight: 200;
+    font-family: Arial;
+    position: absolute;
+    left: 5%; /* 根据需要调整 */
+    width: 40%;
+    color: rgb(0, 0, 0); /* 文字颜色 */
+}
+@media (max-width: 1200px) {
+    p.image-container-sub{
+        font-size: 19.0px;
+        top: calc(25vw); /* 根据需要调整 */
+        width: 45%;
+    }
+    p.image-container-txt{
+        font-size: 20px;
+        top: calc(40vw); /* 根据需要调整 */
+    }
+    p.image-container-title{
+        font-size: 30px;
+    }
+}
+@media (min-width: 1200px) {
+    p.image-container-sub{
+        font-size: 25px;
+        width: 40%;
+        top: calc(24vw); /* 根据需要调整 */
+    }
+    p.image-container-txt{
+        font-size: 25px;
+        top: calc(38vw); /* 根据需要调整 */
+    }
+    p.image-container-title{
+        font-size: 45px;
+    }
+}
+
+div.FilterPart{
+    height: 60px;
+    width: 100%;
+    background-color: #F2F2F2;
+    display: flex;
+    justify-content: space-around;
+    align-items:center;
+}
+select.mglr{
+    margin: 0px 5px;
+}
+.popular{
+    background-color: white !important;
+    color: black !important;
+}
+div.pricerange{
+    flex-direction: c;
+}

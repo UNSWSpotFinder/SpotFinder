@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/fogleman/gg"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/exp/rand"
 	"strconv"
 	"time"
@@ -104,10 +105,11 @@ func main() {
 		// 构造出生日期字符串
 		dateBirth := day + "/" + month + "/" + year
 
+		hashPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 		// 为每个用户创建不同的数据
 		user := User.Basic{
 			Name:       gofakeit.Name(),
-			Password:   gofakeit.Password(true, true, true, false, false, 10),
+			Password:   string(hashPassword),
 			Phone:      gofakeit.Phone(),
 			DateBirth:  dateBirth,
 			Avatar:     userAvatar,

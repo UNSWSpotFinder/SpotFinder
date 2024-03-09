@@ -21,9 +21,17 @@ import (
 )
 
 func InitConfig() *gmail.Service {
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		configPath = "Config" // 默认路径
+	}
+	tokenPath := os.Getenv("TOKEN_PATH")
+	if tokenPath == "" {
+		tokenPath = "util/credentials.json" // 默认路径
+	}
 	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("config")
+	viper.AddConfigPath(configPath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println(err)
