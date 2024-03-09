@@ -38,7 +38,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/spot/create": {
+        "/spot/create/{UserID}": {
             "post": {
                 "description": "create a spot",
                 "consumes": [
@@ -147,6 +147,82 @@ const docTemplate = `{
                 }
             }
         },
+        "/spot/ownedCar/choseSize/{plateNumber}": {
+            "get": {
+                "description": "chose size with my car",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Chose size with user's car plate number,param is plate number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plate Number",
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/ownedList/{ownerId}": {
+            "get": {
+                "description": "show all owned spots by User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Show all owned spots",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Owner ID",
+                        "name": "ownerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/spot/update": {
             "put": {
                 "description": "update a spot",
@@ -180,6 +256,65 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "error\", \"unable to update spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/update/spotPrice": {
+            "put": {
+                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Update a spot's price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per day",
+                        "name": "perDay",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per night",
+                        "name": "perNight",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per month",
+                        "name": "perMonth",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Update spot price successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to update spot price\"}",
                         "schema": {
                             "type": "string"
                         }

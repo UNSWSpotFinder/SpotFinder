@@ -99,7 +99,7 @@ type CreateSpotSimple struct {
 // @Param   spot  body CreateSpotSimple true "spot info"
 // @Success 200 {string} json{"message", "Add spot successfully"}
 // @Failure 500 {string} json{"error", "unable to add spot"}
-// @Router /spot/create/{customer.ID} [post]
+// @Router /spot/create/{UserID} [post]
 func CreateSpotController(c *gin.Context) {
 	var spot *Spot.Basic
 
@@ -129,6 +129,16 @@ func CreateSpotController(c *gin.Context) {
 
 }
 
+// ShowAllOwnedSpotHandler
+// @Summary Show all owned spots
+// @Description show all owned spots by User
+// @Tags spots
+// @Accept  json
+// @Produce  json
+// @Param ownerId path int true "Owner ID"
+// @Success 200 {string} json{"spots", "list of spots"}
+// @Failure 500 {string} json{"error", "unable to get spot list"}
+// @Router /spot/ownedList/{ownerId} [get]
 func ShowAllOwnedSpotHandler(c *gin.Context) { //根据用户id获取车位列表
 	// 获取参数
 	// 调用showAllOwnedSpot
@@ -182,6 +192,16 @@ func UpdateSpotController(c *gin.Context) {
 
 }
 
+// ChoseSizeWithMyCarHandler
+// @Summary Chose size with user's car plate number,param is plate number
+// @Description chose size with my car
+// @Tags spots
+// @Accept  json
+// @Produce  json
+// @Param   plateNumber path string true "Plate Number"
+// @Success 200 {string} json{"spots", "list of spots"}
+// @Failure 500 {string} json{"error", "unable to get spot list"}
+// @Router /spot/ownedCar/choseSize/{plateNumber} [get]
 func ChoseSizeWithMyCarHandler(c *gin.Context) { //根据用户自己设置的车位大小，展示符合的车位信息
 	// 获取query参数
 	// 调用ChoseSizeWithMyCar
@@ -208,6 +228,19 @@ func ChoseSizeWithMyCarHandler(c *gin.Context) { //根据用户自己设置的�
 
 }
 
+// UpdateSpotPriceHandler
+// @Summary Update a spot's price
+// @Description update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth
+// @Tags spots
+// @Accept  json
+// @Produce  json
+// @Param   spotID query string true "Spot ID"
+// @Param   perDay query string true "Price per day"
+// @Param   perNight query string true "Price per night"
+// @Param   perMonth query string true "Price per month"
+// @Success 200 {string} json{"message", "Update spot price successfully"}
+// @Failure 500 {string} json{"error", "unable to update spot price"}
+// @Router /spot/update/spotPrice [put]
 func UpdateSpotPriceHandler(c *gin.Context) {
 	//用户自己设置每天每周每月价格
 	// 获取参数
@@ -239,11 +272,5 @@ func UpdateSpotPriceHandler(c *gin.Context) {
 	return
 
 	//Setp2: 更新价格
-
-}
-
-func getSpotListbySizedHandler(c *gin.Context) { //根据用户id获取车位列表
-
-	// 获取参数
 
 }

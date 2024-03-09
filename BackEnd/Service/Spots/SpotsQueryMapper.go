@@ -137,6 +137,7 @@ func showAllOwnedSpot(user *User.Basic, userId string, db *gorm.DB) ([]Spot.Basi
 }
 
 func UpdateSpot(spot *Spot.Basic, db *gorm.DB) error {
+
 	if err := db.Model(&spot).Updates(spot).Error; err != nil {
 		return err
 	}
@@ -148,7 +149,7 @@ func ChoseSizeWithMyCar(user *User.Basic, plateNumber string, db *gorm.DB) ([]*S
 
 	//需要拿到id，从jwt token里拿用户id
 
-	db.First(user, "id = ?", user.ID) // 找到用户的车辆大小信息
+	db.First(&user, "id = ?", 18) // 找到用户的车辆大小信息,默认拿第18号用户的信息
 
 	//用户的车辆信息是一个json的字符串集合，需要解析
 	type CarInfo struct {
@@ -188,7 +189,7 @@ func UpdateSpotPrice(spot *Spot.Basic, user *User.Basic, spotID string, pricePer
 
 	spotIDInt, _ := strconv.Atoi(spotID)
 
-	db.First(&user, "id = ?", 18)
+	db.First(&user, "id = ?", 18) //先默认用第18号用户
 
 	db.First(&spot, "id = ?", spotIDInt)
 
