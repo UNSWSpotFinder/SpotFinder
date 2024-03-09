@@ -40,10 +40,10 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-type CreationRequest struct {
-	User.Basic
-	RePassword string `json:"rePassword"`
-}
+//type CreationRequest struct {
+//	User.Basic
+//	RePassword string `json:"rePassword"`
+//}
 
 // CreateUserRequest 从前端传回来的数据存储到这个结构体中
 type CreateUserRequest struct {
@@ -124,7 +124,7 @@ func CreateUser(c *gin.Context) {
 			"error": err,
 		})
 	}
-	fmt.Println(user)
+	//fmt.Println(user)
 	if err := User.CreateUser(Service.DB, &user); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
