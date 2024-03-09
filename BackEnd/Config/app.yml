@@ -10,3 +10,5 @@ redis:
 managers:
   manager: ["longsizhuo","yuboyang","guojiaqi","huayang","wangxuan","wangyunfan"]
 
+secrete:
+  key: "Wpk2nIYnITtpFgVcmfYGVsbg4yGRzEiIl1MZF0wJmmE="

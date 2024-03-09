@@ -14,6 +14,16 @@ type modifyPasswordData struct {
 	Repasswd string `json:"repassword"`
 }
 
+type modifyUserInfoData struct {
+	// Email 不能被修改，不能在这里修改，是主键
+	Email     string `json:"email" example:"longsizhuo@gmail.com"`
+	Name      string `json:"name" example:"longsizhuo"`
+	Phone     string `json:"phone" example:"123456"`
+	DateBirth string `json:"dateBirth" example:"25/02/1999"`
+	Avatar    string `json:"avata" example:"avata"`
+	Address   string `json:"address" example:"address"`
+}
+
 // ModifyPasswdHandler 修改密码
 // @Summary 修改密码
 // @Description 修改密码
@@ -25,19 +35,37 @@ type modifyPasswordData struct {
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
 // @Router /user/modifyPasswd [post]
+// @Security BearerAuth
 func ModifyPasswdHandler(c *gin.Context) {
+	// 从JWT中获取的email和role
+	emailFromToken, exists := c.Get("email")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	role, _ := c.Get("role")
+
 	var request modifyPasswordData
-	var newUserData User.Basic
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
-		c.JSON(400, "Data binding error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Data binding error"})
 		return
 	}
+
+	// 如果用户不是管理员，并且请求的邮箱与令牌的邮箱不匹配，则拒绝请求
+	if role != "admin" && emailFromToken != request.Email {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden to change other user's password"})
+		return
+	}
+
+	// 检查新密码和确认密码是否一致
 	if request.Password != request.Repasswd {
-		c.JSON(400, "Password not same")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Password not same"})
 		return
 	}
-	newUserData.Email = request.Email
+
+	// 生成新的哈希密码
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -45,17 +73,16 @@ func ModifyPasswdHandler(c *gin.Context) {
 		})
 		return
 	}
-	newUserData.Password = string(hashedPassword)
 
+	// 更新密码
+	newUserData := User.Basic{Email: request.Email, Password: string(hashedPassword)}
 	err = User.ModifyPasswd(Service.DB, &newUserData)
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
 		return
 	}
 
-	c.JSON(200, "Password updated")
-	return
-
+	c.JSON(http.StatusOK, gin.H{"message": "Password updated"})
 }
 
 // ModifyUserInfoHandler 修改用户信息
@@ -64,19 +91,44 @@ func ModifyPasswdHandler(c *gin.Context) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user body User.Basic true "User"
+// @Param user body modifyUserInfoData true "User"
 // @Success 200 {string} string "User information updated"
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
 // @Router /user/modifyUserInfo [post]
+// @Security BearerAuth
 func ModifyUserInfoHandler(c *gin.Context) {
-	var newData User.Basic
-	err := c.ShouldBindJSON(&newData)
+	// 从JWT中获取的email和role
+	emailFromToken, exists := c.Get("email")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	role, _ := c.Get("role")
+
+	var user User.Basic
+	var request modifyUserInfoData
+	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		c.JSON(400, "Data binding error")
 		return
 	}
-	err = User.ModifyUserInfo(Service.DB, &newData)
+
+	user.Email = request.Email
+	user.Name = request.Name
+	user.Phone = request.Phone
+	user.DateBirth = request.DateBirth
+	user.Avatar = request.Avatar
+	user.Addr = request.Address
+
+	// 如果用户不是管理员，并且请求的邮箱与令牌的邮箱不匹配，则拒绝请求
+	if role != "admin" && emailFromToken != request.Email {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden to change other user's information"})
+		return
+
+	}
+	// 更新用户信息
+	err = User.ModifyUserInfo(Service.DB, &user)
 	if err != nil {
 		c.JSON(500, err)
 		return
