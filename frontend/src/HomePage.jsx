@@ -52,9 +52,9 @@ export function HomePageLarge() {
   };
   let CreatSpace = () => {
     if (token) {
-      console.log(token);
+        navigate('/'+currentuser+'/createspace');
     } else {
-      navigate('/userlogin');
+        navigate('/userlogin');
     }
   };
   let ChooseCar = () => {
@@ -341,10 +341,6 @@ export function HomePageSmall() {
   // 进入用户注册页面
   let goesRegistUser = () => {
     navigate('/userregist');
-  };
-  // 进入Admin注册页面
-  let goesRegistAdmin = () => {
-    navigate('/adminregist');
   };
   const [parkingTime, setParkingTime] = useState(dayjs(new Date()));
   const [leavingTime, setLeavingTime] = useState(dayjs(new Date()));
