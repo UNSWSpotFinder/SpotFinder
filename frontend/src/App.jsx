@@ -12,7 +12,7 @@ import React, {
 import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link,useParams} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 
@@ -63,9 +63,9 @@ function App() {
                 <Route path='/*' element={<></>}/>
             </Routes>
           <Routes>
-            <Route path="/user/*" element={LayoutComponentHome} />
+            <Route path="/:username" element={LayoutComponentHome} />
             {/* DashboardTop作为父路由 */}
-            <Route path="/dashboard" element={<DashboardTop />}>
+            <Route path="/:username/dashboard" element={<DashboardTop />}>
             <Route index element={<Dashboard />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="listings" element={<Listings />} />

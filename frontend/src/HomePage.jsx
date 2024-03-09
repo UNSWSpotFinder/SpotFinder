@@ -29,7 +29,8 @@ import { useError } from './API';
 // 未登录状态的用户页面
 export function HomePageLarge() {
   const { _, setOpenSnackbar } = useError();
-  let token = localStorage.getItem('token');
+  let token = localStorage.getItem('token') || null;
+  let currentuser = localStorage.getItem('email') || null;
   console.log(token);
   // 调库
   let navigate = useNavigate();
@@ -45,6 +46,9 @@ export function HomePageLarge() {
   // 进入Admin注册页面
   let goesRegistAdmin = () => {
     navigate('/adminregist');
+  };
+  let goesDashboard = () => {
+    navigate('/'+currentuser+'/dashboard');
   };
   let CreatSpace = () => {
     if (token) {
@@ -124,7 +128,7 @@ export function HomePageLarge() {
         {/* 登录注册按钮组 */}
         {token ? (
           <div className='signwarper'>
-            <button className='sign' onClick={goesLoginUser}>
+            <button className='sign' onClick={goesDashboard}>
               DashBoard
             </button>
             {/* 注册 */}
@@ -364,7 +368,7 @@ export function HomePageSmall() {
     }
   };
   let goesDashboard = () => {
-    navigate('/user/Dashboard');
+    navigate('/:username/dashboard');
   };
   // 主页内容
   return (

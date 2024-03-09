@@ -67,7 +67,8 @@ export function UserLoginPage(){
                     timestamp:new Date().getTime()
                 });
                 localStorage.setItem('token',response.token);
-                navigate('/user/'+Email);
+                localStorage.setItem('email',Email);
+                navigate(`/${Email}`);
             })
             .catch((error)=>{
                 setOpenSnackbar({
@@ -438,7 +439,7 @@ export function AdminLoginPage(){
                     timestamp:new Date().getTime()
                 });
                 localStorage.setItem('token',response.token);
-                navigate('/user/'+Email);
+                navigate(`/${Email}`);
             })
             .catch((error)=>{
                 setOpenSnackbar({
