@@ -1,0 +1,77 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    height: auto; /* 根据内容自动调整高度 */
+  }
+  
+  .info-avatar-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .personal-info, .avatar-section {
+    width: 48%; /* 或根据需求调整宽度 */
+  }
+  
+  .action-buttons-container {
+    display: flex;
+    justify-content: flex-end; /* 按钮组靠右对齐 */
+    padding: 10px 0; /* 根据需要调整上下内边距 */
+  }
+  
+  .action-buttons {
+    /* 如果需要，为按钮组添加更多样式 */
+  }
+  
+  .cancel-button, .save-button {
+    margin-right: 10px; /* 添加按钮之间的间隔 */
+    background-color: #e11e2c; /* 红色背景 */
+    color: #fff; /* 白色文字 */
+    font-weight:bold ;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .cancel-button, .save-button {
+    margin-right: 10px; /* 添加按钮之间的间隔 */
+    background-color: #e11e2c; /* 红色背景 */
+    color: #fff; /* 白色文字 */
+    font-weight:bold ;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  /* Profile.css */
+
+.form-group label {
+    display: block; /* 这会使得label占据整行 */
+    margin-bottom: 0.5em; /* 添加一些空间在label和input之间 */
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%; /* 使input和select填满容器的宽度 */
+    padding: 0.5em;
+    margin-bottom: 1em; /* 为下一个表单元素提供空间 */
+  }
+
+  
+  /* 如果您希望这些按钮在屏幕较小时堆叠，您可以添加媒体查询 */
+  @media (max-width: 600px) {
+    .info-avatar-container {
+      flex-direction: column;
+    }
+  
+    .personal-info, .avatar-section {
+      width: 100%; /* 在较小屏幕上占满整个宽度 */
+    }
+  
+    .action-buttons-container {
+      justify-content: center; /* 在较小屏幕上按钮居中 */
+    }
+  }
+  
+  /* 根据实际需要调整媒体查询中的宽度值 */
+  
