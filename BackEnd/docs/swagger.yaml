@@ -1,4 +1,27 @@
 definitions:
+  Manager.createManagerRequestData:
+    properties:
+      adminID:
+        example: "123456"
+        type: string
+      name:
+        example: longsizhuo
+        type: string
+      password:
+        example: "123456"
+        type: string
+      phone:
+        example: "123456"
+        type: string
+      repassword:
+        example: "123456"
+        type: string
+    required:
+    - adminID
+    - name
+    type: object
+  User.Basic:
+    type: object
   User.CodeStructData:
     properties:
       code:
@@ -49,6 +72,7 @@ definitions:
   User.modifyRequestData:
     properties:
       email:
+        example: longsizhuo@gmail.com
         type: string
       password:
         type: string
@@ -95,6 +119,28 @@ paths:
       summary: 登陆
       tags:
       - User
+  /manager/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建管理员
+      parameters:
+      - description: Manager
+        in: body
+        name: manager
+        required: true
+        schema:
+          $ref: '#/definitions/Manager.createManagerRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Manager created
+          schema:
+            type: string
+      summary: 创建管理员
+      tags:
+      - Manager
   /user/create:
     post:
       description: do ping
@@ -201,6 +247,28 @@ paths:
           schema:
             type: string
       summary: 修改密码
+      tags:
+      - User
+  /user/modifyUserInfo:
+    post:
+      consumes:
+      - application/json
+      description: 修改用户信息
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.Basic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      summary: 修改用户信息
       tags:
       - User
 swagger: "2.0"

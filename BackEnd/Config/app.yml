@@ -6,3 +6,7 @@ redis:
   Addr: "longsizhuo.com:6379"
   Password: "COMP9900"
   DB: 0
+
+managers:
+  manager: ["longsizhuo","yuboyang","guojiaqi","huayang","wangxuan","wangyunfan"]
+

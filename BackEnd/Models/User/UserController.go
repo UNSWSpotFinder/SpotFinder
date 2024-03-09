@@ -73,18 +73,27 @@ func Login(db *gorm.DB, user *Basic) (string, error) {
 		return "", errors.New("password mismatch")
 	}
 	// 登录成功，返回JWT
-	return GenerateToken(user.Email)
+	return GenerateToken(user.Email, "user")
 }
 
 // GenerateToken 生成JWT令牌
-func GenerateToken(userEmail string) (string, error) {
+func GenerateToken(userEmail string, userRole string) (string, error) {
 	// 创建一个新的令牌对象，指定签名方法和令牌中的数据
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": userEmail,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+		"role":  userRole,
 	})
 
 	// 使用密钥签名令牌
 	tokenString, err := token.SignedString([]byte("your_secret_key"))
 	return tokenString, err
+}
+
+// ModifyUserInfo 修改用户信息
+func ModifyUserInfo(db *gorm.DB, user *Basic) error {
+	if err := db.Model(&user).Where("email=?", user.Email).Updates(&user).Error; err != nil {
+		return err
+	}
+	return nil
 }
