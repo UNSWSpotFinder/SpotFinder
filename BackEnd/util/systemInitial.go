@@ -23,7 +23,7 @@ import (
 func InitConfig() *gmail.Service {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "Config" // 默认路径
+		configPath = "./Config/app.yml" // 默认路径
 	}
 	tokenPath := os.Getenv("TOKEN_PATH")
 	if tokenPath == "" {
@@ -31,7 +31,7 @@ func InitConfig() *gmail.Service {
 	}
 	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(configPath)
+	viper.SetConfigFile(configPath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println(err)
