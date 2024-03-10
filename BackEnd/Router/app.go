@@ -43,13 +43,14 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	})
 	public.POST("/login", User.LoginHandler) // Login might typically be public
 	public.POST("/manager/create", Manager.CreateManagerHandler)
-
+	public.POST("/manager/login", Manager.LoginHandler)
 	// Private (authenticated) routes
 	private := r.Group("/")
 	SecreteKey := viper.GetString("secrete.key")
 	private.Use(Service.AuthMiddleware(SecreteKey)) // Use your actual secret key here, not "BearerAuth"
 	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
+	private.GET("/user/info", User.GetUserInfoHandler)
 
 	return r
 

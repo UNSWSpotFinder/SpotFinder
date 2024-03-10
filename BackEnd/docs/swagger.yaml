@@ -1,4 +1,13 @@
 definitions:
+  Manager.AdminInfo:
+    properties:
+      adminID:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
   Manager.createManagerRequestData:
     properties:
       adminID:
@@ -19,6 +28,17 @@ definitions:
     required:
     - adminID
     - name
+    type: object
+  Manager.loginRequestData:
+    properties:
+      adminID:
+        example: longsizhuoIsTheBest
+        type: string
+      password:
+        example: "123456"
+        type: string
+    required:
+    - adminID
     type: object
   User.CodeStructData:
     properties:
@@ -51,6 +71,75 @@ definitions:
     - phone
     - rePassword
     type: object
+  User.InfoDetail:
+    properties:
+      account:
+        example: 0
+        type: number
+      addr:
+        example: ""
+        type: string
+      avatar:
+        example: avata
+        type: string
+      carInfo:
+        example: '{}'
+        type: string
+      createTime:
+        example: "2021-07-01 00:00:00"
+        type: string
+      dateBirth:
+        example: 25/02/1999
+        type: string
+      deleteTime:
+        example: "2021-07-01 00:00:00"
+        type: string
+      earning:
+        example: 0
+        type: number
+      email:
+        example: longsizhuo@gmail.com
+        type: string
+      leasedSpot:
+        example: '{}'
+        type: string
+      name:
+        example: longsizhuo
+        type: string
+      ownedSpot:
+        example: '{}'
+        type: string
+      phone:
+        example: "123456"
+        type: string
+      topUp:
+        example: 0
+        type: number
+    required:
+    - name
+    type: object
+  User.ModifyUserInfoData:
+    properties:
+      address:
+        example: address
+        type: string
+      avata:
+        example: avata
+        type: string
+      dateBirth:
+        example: 25/02/1999
+        type: string
+      email:
+        description: Email 不能被修改，不能在这里修改，是主键
+        example: longsizhuo@gmail.com
+        type: string
+      name:
+        example: longsizhuo
+        type: string
+      phone:
+        example: "123456"
+        type: string
+    type: object
   User.RequestData:
     properties:
       to:
@@ -77,28 +166,6 @@ definitions:
       password:
         type: string
       repassword:
-        type: string
-    type: object
-  User.modifyUserInfoData:
-    properties:
-      address:
-        example: address
-        type: string
-      avata:
-        example: avata
-        type: string
-      dateBirth:
-        example: 25/02/1999
-        type: string
-      email:
-        description: Email 不能被修改，不能在这里修改，是主键
-        example: longsizhuo@gmail.com
-        type: string
-      name:
-        example: longsizhuo
-        type: string
-      phone:
-        example: "123456"
         type: string
     type: object
 info:
@@ -180,6 +247,28 @@ paths:
       summary: 创建管理员
       tags:
       - Manager
+  /manager/login:
+    post:
+      consumes:
+      - application/json
+      description: 管理员登陆
+      parameters:
+      - description: Manager
+        in: body
+        name: manager
+        required: true
+        schema:
+          $ref: '#/definitions/Manager.loginRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            type: string
+      summary: 管理员登陆
+      tags:
+      - Manager
   /user/create:
     post:
       description: do ping
@@ -251,6 +340,34 @@ paths:
       summary: Verify code
       tags:
       - User
+  /user/info:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户信息。如果未提供email查询参数，则返回当前用户的信息。如果提供了email查询参数，只有管理员可以查询其他用户的信息。
+      parameters:
+      - description: 要查询的用户邮箱
+        in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取管理员信息
+          schema:
+            $ref: '#/definitions/Manager.AdminInfo'
+        "400":
+          description: 错误的请求
+        "401":
+          description: 未授权或无权限
+        "500":
+          description: 内部服务器错误
+      security:
+      - BearerAuth: []
+      summary: Get user information
+      tags:
+      - User
   /user/list:
     get:
       consumes:
@@ -301,7 +418,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/User.modifyUserInfoData'
+          $ref: '#/definitions/User.ModifyUserInfoData'
       produces:
       - application/json
       responses:
