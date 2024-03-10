@@ -194,7 +194,7 @@ func UpdateSpotController(c *gin.Context) {
 
 // ChoseSizeWithMyCarHandler
 // @Summary Chose size with user's car plate number,param is plate number
-// @Description chose size with my car
+// @Description chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试
 // @Tags spots
 // @Accept  json
 // @Produce  json
@@ -230,7 +230,7 @@ func ChoseSizeWithMyCarHandler(c *gin.Context) { //根据用户自己设置的�
 
 // UpdateSpotPriceHandler
 // @Summary Update a spot's price
-// @Description update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth
+// @Description update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试
 // @Tags spots
 // @Accept  json
 // @Produce  json

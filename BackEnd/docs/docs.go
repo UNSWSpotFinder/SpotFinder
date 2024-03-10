@@ -38,6 +38,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/login": {
+            "post": {
+                "description": "登陆",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "登陆",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.loginRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/create": {
+            "post": {
+                "description": "创建管理员",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "创建管理员",
+                "parameters": [
+                    {
+                        "description": "Manager",
+                        "name": "manager",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Manager.createManagerRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Manager created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/spot/create/{UserID}": {
             "post": {
                 "description": "create a spot",
@@ -149,7 +217,7 @@ const docTemplate = `{
         },
         "/spot/ownedCar/choseSize/{plateNumber}": {
             "get": {
-                "description": "chose size with my car",
+                "description": "chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试",
                 "consumes": [
                     "application/json"
                 ],
@@ -265,7 +333,7 @@ const docTemplate = `{
         },
         "/spot/update/spotPrice": {
             "put": {
-                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth",
+                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试",
                 "consumes": [
                     "application/json"
                 ],
@@ -391,6 +459,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/create/verifyEmail": {
+            "post": {
+                "description": "Verify the code/",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Verify code",
+                "parameters": [
+                    {
+                        "description": "email and code",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.CodeStructData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/User.RequestData"
+                        }
+                    },
+                    "400": {
+                        "description": "unmarshal error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/list": {
             "get": {
                 "description": "do ping",
@@ -414,9 +522,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/verify": {
+        "/user/modifyPasswd": {
             "post": {
-                "description": "Verify the code/",
+                "description": "修改密码",
                 "consumes": [
                     "application/json"
                 ],
@@ -426,28 +534,55 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Verify code",
+                "summary": "修改密码",
                 "parameters": [
                     {
-                        "format": "emailconfigs",
-                        "description": "Recipient emailconfigs address",
-                        "name": "emailconfigs",
+                        "description": "User Email",
+                        "name": "email",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.CodeStructData"
+                            "$ref": "#/definitions/User.modifyPasswordData"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Password updated",
                         "schema": {
-                            "$ref": "#/definitions/User.RequestData"
+                            "type": "string"
                         }
-                    },
-                    "400": {
-                        "description": "unmarshal error",
+                    }
+                }
+            }
+        },
+        "/user/modifyUserInfo": {
+            "post": {
+                "description": "修改用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "修改用户信息",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.Basic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User information updated",
                         "schema": {
                             "type": "string"
                         }
@@ -457,6 +592,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "Manager.createManagerRequestData": {
+            "type": "object",
+            "required": [
+                "adminID",
+                "name"
+            ],
+            "properties": {
+                "adminID": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "repassword": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
         "Spot.Basic": {
             "type": "object"
         },
@@ -521,6 +685,9 @@ const docTemplate = `{
                 }
             }
         },
+        "User.Basic": {
+            "type": "object"
+        },
         "User.CodeStructData": {
             "type": "object",
             "properties": {
@@ -528,7 +695,7 @@ const docTemplate = `{
                     "description": "Code 验证码",
                     "type": "string"
                 },
-                "to": {
+                "email": {
                     "type": "string"
                 }
             }
@@ -544,6 +711,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "avatar": {
+                    "type": "string"
+                },
+                "dateBirth": {
                     "type": "string"
                 },
                 "email": {
@@ -573,6 +743,32 @@ const docTemplate = `{
                     "type": "string",
                     "format": "emailconfigs",
                     "example": "longsizhuo@gmail.com"
+                }
+            }
+        },
+        "User.loginRequestData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "User.modifyPasswordData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "repassword": {
+                    "type": "string"
                 }
             }
         }

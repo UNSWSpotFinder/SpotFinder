@@ -15,13 +15,13 @@ func main() {
 	// 全局数据库链接
 	Service.DB = db
 	r := Router.Router(srv, redisCli)
-	err := r.Run(":8080")
-	if err != nil {
-		return
-	}
-	err = browser.OpenURL("http://localhost:8080/swagger/index.html")
+	err := browser.OpenURL("http://localhost:8080/swagger/index.html")
 	if err != nil {
 		log.Fatal(err)
+		return
+	}
+	err = r.Run(":8080")
+	if err != nil {
 		return
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/api/gmail/v1"
 	_ "gorm.io/gorm"
 	"net/http"
@@ -39,10 +40,10 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-type CreationRequest struct {
-	User.Basic
-	RePassword string `json:"rePassword"`
-}
+//type CreationRequest struct {
+//	User.Basic
+//	RePassword string `json:"rePassword"`
+//}
 
 // CreateUserRequest 从前端传回来的数据存储到这个结构体中
 type CreateUserRequest struct {
@@ -52,6 +53,7 @@ type CreateUserRequest struct {
 	Phone      string `json:"phone" binding:"required"`
 	Email      string `json:"email" binding:"required"`
 	Avatar     string `json:"avatar"`
+	DateBirth  string `json:"dateBirth"`
 }
 
 // CreateUser
@@ -80,6 +82,17 @@ func CreateUser(c *gin.Context) {
 	user.Email = request.Email
 	user.Name = request.Name
 	user.CreateTime = time.Now()
+	user.Avatar = request.Avatar
+	user.DateBirth = request.DateBirth
+
+	// 判断日期是否合法 DD/MM/YYYY
+	_, err := time.Parse("02/01/2006", request.DateBirth)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Date format error",
+		})
+		return
+	}
 
 	if request.Password != request.RePassword {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -87,7 +100,16 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	user.Password = request.Password
+
+	// 密码加密
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to hash password",
+		})
+		return
+	}
+	user.Password = string(hashedPassword)
 
 	// 判断邮箱是否已经注册过
 	isRegistry, err := User.CheckEmailAlreadyIn(Service.DB, &user)
@@ -102,7 +124,7 @@ func CreateUser(c *gin.Context) {
 			"error": err,
 		})
 	}
-	fmt.Println(user)
+	//fmt.Println(user)
 	if err := User.CreateUser(Service.DB, &user); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -146,7 +168,7 @@ func SendCodeHandler(srv *gmail.Service, c *gin.Context, redisCli *redis.Client)
 
 	err = SendEmail(srv, requestData.Email, "Credential Code", "您的验证码是 "+code)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "我怀疑你断网了")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "我怀疑你断网了"})
 		return
 	}
 

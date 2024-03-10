@@ -1,4 +1,25 @@
 definitions:
+  Manager.createManagerRequestData:
+    properties:
+      adminID:
+        example: "123456"
+        type: string
+      name:
+        example: longsizhuo
+        type: string
+      password:
+        example: "123456"
+        type: string
+      phone:
+        example: "123456"
+        type: string
+      repassword:
+        example: "123456"
+        type: string
+    required:
+    - adminID
+    - name
+    type: object
   Spot.Basic:
     type: object
   Spots.CreateSpotSimple:
@@ -45,17 +66,21 @@ definitions:
     - spotName
     - spotType
     type: object
+  User.Basic:
+    type: object
   User.CodeStructData:
     properties:
       code:
         description: Code 验证码
         type: string
-      to:
+      email:
         type: string
     type: object
   User.CreateUserRequest:
     properties:
       avatar:
+        type: string
+      dateBirth:
         type: string
       email:
         type: string
@@ -83,6 +108,23 @@ definitions:
     required:
     - to
     type: object
+  User.loginRequestData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  User.modifyPasswordData:
+    properties:
+      email:
+        example: longsizhuo@gmail.com
+        type: string
+      password:
+        type: string
+      repassword:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -101,6 +143,50 @@ paths:
       summary: ping example
       tags:
       - example
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 登陆
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.loginRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            type: string
+      summary: 登陆
+      tags:
+      - User
+  /manager/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建管理员
+      parameters:
+      - description: Manager
+        in: body
+        name: manager
+        required: true
+        schema:
+          $ref: '#/definitions/Manager.createManagerRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Manager created
+          schema:
+            type: string
+      summary: 创建管理员
+      tags:
+      - Manager
   /spot/create/{UserID}:
     post:
       consumes:
@@ -177,7 +263,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: chose size with my car
+      description: chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试
       parameters:
       - description: Plate Number
         in: path
@@ -254,7 +340,7 @@ paths:
       consumes:
       - application/json
       description: 'update a spot''s price, got four query parameters by order: spotID,
-        perDay, perNight, perMonth'
+        perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试'
       parameters:
       - description: Spot ID
         in: query
@@ -335,31 +421,15 @@ paths:
       summary: Send code
       tags:
       - User
-  /user/list:
-    get:
-      consumes:
-      - application/json
-      description: do ping
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: code", "message"}
-          schema:
-            type: string
-      summary: 获取用户列表
-      tags:
-      - User
-  /verify:
+  /user/create/verifyEmail:
     post:
       consumes:
       - application/json
       description: Verify the code/
       parameters:
-      - description: Recipient emailconfigs address
-        format: emailconfigs
+      - description: email and code
         in: body
-        name: emailconfigs
+        name: json
         required: true
         schema:
           $ref: '#/definitions/User.CodeStructData'
@@ -375,6 +445,65 @@ paths:
           schema:
             type: string
       summary: Verify code
+      tags:
+      - User
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: 获取用户列表
+      tags:
+      - User
+  /user/modifyPasswd:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码
+      parameters:
+      - description: User Email
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/User.modifyPasswordData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated
+          schema:
+            type: string
+      summary: 修改密码
+      tags:
+      - User
+  /user/modifyUserInfo:
+    post:
+      consumes:
+      - application/json
+      description: 修改用户信息
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.Basic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      summary: 修改用户信息
       tags:
       - User
 swagger: "2.0"
