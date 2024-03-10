@@ -70,6 +70,13 @@
     go mod init
     go mod tidy
     ```
+6. ![img.png](img/img.png)
+    重新update main branch，重新安装golang
+```shell
+    go mod tidy
+    go run main.go
+```
+
 
 
 # 变量名字的命名规则
