@@ -3,3 +3,30 @@
 
 3.9 添加了修改用户密码、用户信息，注册manager角色的功能。 添加了鉴权的操作，即返回JWT token，密钥为 `› openssl rand -base64 32` 生成的字符串。存储在app.yml中的secrete.key中。
 router中添加了鉴权的中间件，即需要在请求头中添加`Authorization: Bearer`字段，值为JWT token。将router分为了两个部分，一个是需要鉴权的，一个是不需要鉴权的。
+
+March 2, 2024
+
+Today marked the commencement of a significant development phase: the initiation of Swagger documentation and the deployment of the Redis server. Delving into the backend complexities, I addressed numerous persistent bugs, thereby streamlining processes and strengthening the foundation of our project.
+
+March 3, 2024
+
+Attention was dedicated to enhancing the backend framework, with substantial updates aimed at boosting system efficiency. Rectifying data integrity issues, notably the loss of crucial user data, constituted a notable achievement. Furthermore, the implementation of an automated browser launching feature upon server startup introduced an added layer of convenience, epitomizing the day’s productive spirit.
+
+March 4, 2024
+
+The day was predominantly spent addressing and resolving numerous bugs associated with the Email Service. Central to the user experience is communication efficiency; hence, today’s efforts were directed precisely towards this end. The incremental yet notable improvements are paving the way for a more robust communication system.
+
+March 5, 2024
+
+Significant strides were made in setting up the initial configurations for the Redis Server, aimed at enhancing data caching and retrieval speeds. These technical enhancements are vital for the project's scalability and overall performance enhancement.
+
+March 8, 2024
+
+The project was further refined through the improvement of documentation and the deployment of additional Redis functionalities. The day was primarily spent ironing out minor bugs and enhancing project functionalities, ensuring a smoother and more reliable user experience.
+
+March 9, 2024
+
+This day was marked by significant updates and enhancements, particularly focusing on user management and authentication. I introduced the manager role, highlighting the concept of access control within our project. Moreover, I addressed password modification functionalities and implemented a robust authentication mechanism, underscored by the integration of JWT tokens. These advancements represent not merely technical milestones but also steps towards a more secure and user-friendly environment.
+
+March 10, 2024
+成功添加了docker，以后后端就可以在容器中运行了。直接在主界面运行make就可以了

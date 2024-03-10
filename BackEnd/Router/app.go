@@ -42,6 +42,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 		User.SendCodeHandler(srv, c, redisCli)
 	})
 	public.POST("/login", User.LoginHandler) // Login might typically be public
+	public.POST("/manager/create", Manager.CreateManagerHandler)
 
 	// Private (authenticated) routes
 	private := r.Group("/")
@@ -49,7 +50,6 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.Use(Service.AuthMiddleware(SecreteKey)) // Use your actual secret key here, not "BearerAuth"
 	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
-	private.POST("/manager/create", Manager.CreateManagerHandler)
 
 	return r
 
