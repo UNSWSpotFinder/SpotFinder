@@ -17,18 +17,18 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 )
 
+var BasePath = "./"
+
 func InitConfig() *gmail.Service {
-	configPath := os.Getenv("CONFIG_PATH")
-	if configPath == "" {
-		configPath = "./Config/app.yml" // 默认路径
+	if basePath := os.Getenv("BASE_PATH"); basePath != "" {
+		BasePath = basePath
 	}
-	tokenPath := os.Getenv("TOKEN_PATH")
-	if tokenPath == "" {
-		tokenPath = "util/credentials.json" // 默认路径
-	}
+	configPath := filepath.Join(BasePath, "Config", "app.yml")
+	tokenPath := filepath.Join(BasePath, "util", "credentials.json")
 	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configPath)
@@ -42,7 +42,7 @@ func InitConfig() *gmail.Service {
 
 	// google API, if you cant use this, use the Python version.
 	ctx := context.Background()
-	b, err := os.ReadFile("util/credentials.json")
+	b, err := os.ReadFile(tokenPath)
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -81,7 +81,7 @@ func GetClient(config *oauth2.Config, c *gin.Context) *http.Client {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.
-	tokFile := "util/token.json"
+	tokFile := filepath.Join(BasePath, "util", "token.json")
 	tok, err := tokenFromFile(tokFile, c)
 	if err != nil {
 		tok = getTokenFromWeb(config)

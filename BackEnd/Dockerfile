@@ -16,12 +16,15 @@ FROM alpine:latest
 
 # 从builder镜像中复制文件到当前目录
 COPY --from=builder /app/main .
-
+COPY ./Config/app.yml /app/Config/
+COPY ./util/credentials.json /app/util/
+COPY ./util/token.json /app/util/
 # 显示当前目录下的所有文件和文件夹，以确保所有东西都已复制
 RUN ls -la
 
+ENV BASE_PATH /app
 # 暴露端口
 EXPOSE 8080
-
+RUN ls -la /app/util/
 # 运行应用
-#CMD ["./main"]
+CMD ["./main"]
