@@ -126,9 +126,6 @@
         "/manager/login": {
             "post": {
                 "description": "管理员登陆",
-        "/spot/create/{userId}": {
-            "post": {
-                "description": "create a spot",
                 "consumes": [
                     "application/json"
                 ],
@@ -147,6 +144,29 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/Manager.loginRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/create/{userId}": {
+            "post": {
+                "description": "create a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
                     "spots"
                 ],
                 "summary": "Create a spot",
@@ -369,7 +389,6 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Login Success",
                         "description": "message\", \"Update spot successfully\"}",
                         "schema": {
                             "type": "string"
@@ -436,7 +455,7 @@
                     },
                     "500": {
                         "description": "error\", \"unable to update spot price\"}",
-                      "schema": {
+                        "schema": {
                             "type": "string"
                         }
                     }
@@ -756,6 +775,9 @@
                 "password": {
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
         "Spot.Basic": {
             "type": "object"
         },
