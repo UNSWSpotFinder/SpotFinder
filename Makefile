@@ -1,34 +1,30 @@
 # Makefile
 
 # 变量
-GOLANG_VERSION=1.20
-PYTHON_IMAGE=python:3.9
-BACKEND_DIR=./BackEnd
-UTIL_DIR=./BackEnd/util
+DOCKER_COMPOSE_CMD = docker-compose
+DOCKER_COMPOSE_FILE = BackEnd/Docker-compose.yml
+SERVICE_NAME = backend  # 如果你有不同的服务名，请更改这里
 
-# 构建Go应用
-build-go:
-	cd $(BACKEND_DIR) && go build -o main .
+# 定义 'run' 目标
+run:
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) build $(SERVICE_NAME)
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) up -d $(SERVICE_NAME)
 
-# 运行Go应用
-run-go: build-go
-	cd $(BACKEND_DIR) && ./main
+# 使用docker-compose构建服务
+docker-compose-build:
+	$(DOCKER_COMPOSE) build $(SERVICE_NAME)
 
-# 运行Python脚本
-run-python:
-	cd $(UTIL_DIR) && python3 ./quickstart.py
+# 使用docker-compose启动服务
+docker-compose-up:
+	$(DOCKER_COMPOSE) up -d $(SERVICE_NAME)
 
-# Docker：构建Go应用的Docker镜像
-docker-build-go:
-	docker build --build-arg GOLANG_VERSION=$(GOLANG_VERSION) -t go-app -f Dockerfile.go .
+# 使用docker-compose停止服务
+docker-compose-down:
+	$(DOCKER_COMPOSE) down
 
-# Docker：运行Go应用容器
-docker-run-go:
-	docker run --rm -d -p 8080:8080 --name go-app go-app
-
-# Docker：运行Python脚本容器
-docker-run-python:
-	docker run --rm -v "$(PWD)/$(UTIL_DIR):/app" -w "/app" $(PYTHON_IMAGE) python3 ./quickstart.py
+# 查看服务日志
+docker-compose-logs:
+	$(DOCKER_COMPOSE) logs $(SERVICE_NAME)
 
 # 默认目标
-.PHONY: build-go run-go run-python docker-build-go docker-run-go docker-run-python
+.PHONY: docker-compose-build docker-compose-up docker-compose-down docker-compose-logs
