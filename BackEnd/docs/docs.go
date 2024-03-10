@@ -202,13 +202,13 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Page",
                         "name": "page",
-                        "in": "query"
+                        "in": "path"
                     },
                     {
                         "type": "integer",
                         "description": "PageSize",
                         "name": "pageSize",
-                        "in": "query"
+                        "in": "path"
                     }
                 ],
                 "responses": {
