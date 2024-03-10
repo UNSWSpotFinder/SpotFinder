@@ -38,11 +38,9 @@ const docTemplate = `{
                 }
             }
         },
-
         "/login": {
             "post": {
                 "description": "登陆",
-
                 "consumes": [
                     "application/json"
                 ],
@@ -50,7 +48,6 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-
                     "User"
                 ],
                 "summary": "登陆",
@@ -62,15 +59,12 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/User.loginRequestData"
-
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-
                         "description": "Login Success",
-
                         "schema": {
                             "type": "string"
                         }
@@ -78,11 +72,9 @@ const docTemplate = `{
                 }
             }
         },
-
         "/manager/create": {
             "post": {
                 "description": "创建管理员",
-
                 "consumes": [
                     "application/json"
                 ],
@@ -90,7 +82,6 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-
                     "Manager"
                 ],
                 "summary": "创建管理员",
@@ -102,15 +93,296 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/Manager.createManagerRequestData"
-
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-
                         "description": "Manager created",
-
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/create/{UserID}": {
+            "post": {
+                "description": "create a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Create a spot",
+                "parameters": [
+                    {
+                        "description": "spot info",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spots.CreateSpotSimple"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Add spot successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to add spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/delete/{id}": {
+            "put": {
+                "description": "delete a spot by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Delete a spot(soft delete)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/list/{page}/{pageSize}": {
+            "get": {
+                "description": "get list of all spots(PageQuery)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Get the list of spots",
+                "responses": {
+                    "200": {
+                        "description": "message: list of spots",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error: Cannot get spot list",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/ownedCar/choseSize/{plateNumber}": {
+            "get": {
+                "description": "chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Chose size with user's car plate number,param is plate number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plate Number",
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/ownedList/{ownerId}": {
+            "get": {
+                "description": "show all owned spots by User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Show all owned spots",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Owner ID",
+                        "name": "ownerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/update": {
+            "put": {
+                "description": "update a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Update a spot",
+                "parameters": [
+                    {
+                        "description": "spot info",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spot.Basic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Update spot successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to update spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/update/spotPrice": {
+            "put": {
+                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Update a spot's price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per day",
+                        "name": "perDay",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per night",
+                        "name": "perNight",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per month",
+                        "name": "perMonth",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Update spot price successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to update spot price\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -270,7 +542,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.modifyRequestData"
+                            "$ref": "#/definitions/User.modifyPasswordData"
                         }
                     }
                 ],
@@ -320,7 +592,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-
         "Manager.createManagerRequestData": {
             "type": "object",
             "required": [
@@ -350,10 +621,73 @@ const docTemplate = `{
                 }
             }
         },
+        "Spot.Basic": {
+            "type": "object"
+        },
+        "Spots.CreateSpotSimple": {
+            "type": "object",
+            "required": [
+                "isOccupy",
+                "isVisible",
+                "ownerId",
+                "size",
+                "spotAddr",
+                "spotName",
+                "spotType"
+            ],
+            "properties": {
+                "deletedAt": {
+                    "type": "string"
+                },
+                "isOccupy": {
+                    "description": "将字段名更改为驼峰式并匹配JSON键",
+                    "type": "boolean"
+                },
+                "isVisible": {
+                    "description": "同上",
+                    "type": "boolean"
+                },
+                "ownerId": {
+                    "description": "使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键",
+                    "type": "integer"
+                },
+                "pictures": {
+                    "description": "照片应为字符串切片，omitempty表明非必需字段",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pricePerDay": {
+                    "type": "number"
+                },
+                "pricePerMonth": {
+                    "type": "number"
+                },
+                "pricePerWeek": {
+                    "type": "number"
+                },
+                "rate": {
+                    "description": "保留float64类型，omitempty表明非必需字段",
+                    "type": "number"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "spotAddr": {
+                    "type": "string"
+                },
+                "spotName": {
+                    "type": "string"
+                },
+                "spotType": {
+                    "type": "string"
+                }
+            }
+        },
         "User.Basic": {
             "type": "object"
         },
-
         "User.CodeStructData": {
             "type": "object",
             "properties": {
@@ -423,7 +757,7 @@ const docTemplate = `{
                 }
             }
         },
-        "User.modifyRequestData": {
+        "User.modifyPasswordData": {
             "type": "object",
             "properties": {
                 "email": {
