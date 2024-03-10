@@ -8,6 +8,8 @@ COPY . .
 
 RUN go mod tidy
 RUN go mod download
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag init
 # 构建应用的命令也可以暂时注释掉，因为此时我们只检查文件
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
