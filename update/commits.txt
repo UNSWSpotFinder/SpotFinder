@@ -1,0 +1,48 @@
+f0849c1 - Loong Loong, 3 minutes ago : 3.9 添加了修改用户密码、用户信息，注册manager角色的功能。 添加了鉴权的操作，即返回JWT token，密钥为 `› openssl rand -base64 32` 生成的字符串。存储在app.yml中的secrete.key中。 router中添加了鉴权的中间件，即需要在请求头中添加`Authorization: Bearer`字段，值为JWT token。将router分为了两个部分，一个是需要鉴权的，一个是不需要鉴权的。
+032177b - Loong Loong, 6 hours ago : Merge pull request #28 from longsizhuo/token
+2e7aab8 - Loong Loong, 6 hours ago : Merge pull request #27 from longsizhuo/main
+1f35a04 - Loong Loong, 7 hours ago : fix bugs about modify password
+71c1f1d - Loong Loong, 11 hours ago : token.json
+49b3431 - Loong Loong, 24 hours ago : manager role added，添加了manager角色，请注意manager只会存在于app.yml中的mangers.manger中。                    请注意manager的名称将会是主键，后期也可以改成id是主键，即一个用户可以用有多个管理角色。
+f5fd588 - Loong Loong, 2 days ago : Merge pull request #25 from longsizhuo/main
+23689e7 - Loong Loong, 2 days ago : Manually fix conflicts with frontend
+e3a944f - Loong Loong, 2 days ago : Merge pull request #21 from YBY-44/new_test
+a32c536 - Loong Loong, 2 days ago : Merge branch 'main' into new_test
+fe2c89f - Loong Loong, 2 days ago : Merge pull request #24 from longsizhuo/main
+3965f11 - Loong Loong, 2 days ago : Merge branch '9900h14atiktokk:main' into main
+e4e5ceb - Loong Loong, 2 days ago : Added login functionality and password modification. Implemented password encryption and updated testGorm.go to align with the new data structure after password encryption. Made minor adjustments to enable Docker builds. Transitioned the database from the Mingo version to my own version.
+64c1d38 - yby, 2 days ago : refresh
+0aba094 - yby, 3 days ago : fixed kua yu qing qiu
+b30ee3e - YBY-44, 3 days ago : Merge branch '9900h14atiktokk:main' into main
+5ae7411 - Loong Loong, 3 days ago : Merge pull request #20 from longsizhuo/main
+9969b7d - Loong Loong, 3 days ago : Merge branch '9900h14atiktokk:main' into main
+56de5fd - Loong Loong, 3 days ago : Fix: 1. Lost DateBirth and Avatar. 2. Make browser be automatic opened when the server open
+c3972b0 - yby, 3 days ago : update backend
+b6e7314 - yby, 3 days ago : update backend
+4427ae0 - yby, 3 days ago : update backend
+c70c540 - YBY-44, 3 days ago : Merge branch '9900h14atiktokk:main' into main
+40ec2e4 - Loong Loong, 3 days ago : Merge pull request #19 from longsizhuo/main
+1294852 - Loong Loong, 3 days ago : Fix: 1. Lost DateBirth and Avatar. 2. Make browser be automatic opened when the server open
+47ad5ab - YBY-44, 3 days ago : Merge branch '9900h14atiktokk:main' into main
+1e1e4c5 - Loong Loong, 3 days ago : Merge branch '9900h14atiktokk:main' into main
+5e26c1a - Sizhuo Long, 4 days ago : cors
+1b9edc4 - Sizhuo Long, 4 days ago : cors
+06aa792 - Loong Loong, 4 days ago : Merge pull request #17 from longsizhuo/main
+b2795bb - Sizhuo Long, 4 days ago : Fix: Many BUGs about Email Service
+fa83e8f - yby, 4 days ago : user login and regist
+deb02ab - YANG HU, 5 days ago : Merge pull request #12 from longsizhuo/main
+46c9da3 - Loong Loong, 5 days ago : Merge branch '9900h14atiktokk:main' into main
+210c667 - Loong Loong, 5 days ago : Redis Server initial
+5f0e89b - Sizhuo Long, 7 days ago : Swagger docs initialed
+4b23172 - Sizhuo Long, 7 days ago : Swagger docs initialed
+0eea51f - YANG HU, 7 days ago : Merge pull request #4 from longsizhuo/main
+bf8fd72 - Loong Loong, 8 days ago : Merge remote-tracking branch 'origin/main'
+dd15558 - Loong Loong, 8 days ago : Redis Server initial
+b4ea9b1 - Sizhuo Long, 8 days ago : Swagger docs added and Redis deployed. Fixed some bugs
+df4f5e2 - Sizhuo Long, 9 days ago : Swagger docs added and Redis deployed
+0d2dbb2 - Loong Loong, 9 days ago : Merge pull request #3 from 9900h14atiktokk/SizhuoLong
+9367b78 - YunfanWangkids, 9 days ago : Merge pull request #2 from 9900h14atiktokk/FrontEnd
+edee13d - YBY-44, 9 days ago : Merge pull request #1 from 9900h14atiktokk/Boyang
+a450697 - yby, 9 days ago : initial project
+9877249 - Loong Loong, 9 days ago : FrontEnd Figma
+ccbc9a8 - Loong Loong, 9 days ago : Initial commit

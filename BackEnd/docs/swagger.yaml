@@ -39,6 +39,7 @@ definitions:
         type: string
     required:
     - adminID
+    type: object
   Spot.Basic:
     type: object
   Spots.CreateSpotSimple:
@@ -300,6 +301,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/Manager.loginRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            type: string
+      summary: 管理员登陆
+      tags:
+      - Manager
   /spot/create/{userId}:
     post:
       consumes:
@@ -374,12 +385,6 @@ paths:
       - application/json
       responses:
         "200":
-          description: Login Success
-          schema:
-            type: string
-      summary: 管理员登陆
-      tags:
-      - Manager
           description: 'message: list of spots'
           schema:
             additionalProperties: true
