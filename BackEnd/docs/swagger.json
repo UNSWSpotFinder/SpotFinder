@@ -123,7 +123,7 @@
                 }
             }
         },
-        "/spot/create/{UserID}": {
+        "/spot/create/{userId}": {
             "post": {
                 "description": "create a spot",
                 "consumes": [
@@ -137,6 +137,13 @@
                 ],
                 "summary": "Create a spot",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "spot info",
                         "name": "spot",
@@ -662,8 +669,64 @@
                 }
             }
         },
-
-
+        "Spot.Basic": {
+            "type": "object"
+        },
+        "Spots.CreateSpotSimple": {
+            "type": "object",
+            "required": [
+                "isOccupy",
+                "isVisible",
+                "ownerId",
+                "size",
+                "spotAddr",
+                "spotName",
+                "spotType"
+            ],
+            "properties": {
+                "isOccupy": {
+                    "description": "将字段名更改为驼峰式并匹配JSON键",
+                    "type": "boolean"
+                },
+                "isVisible": {
+                    "description": "同上",
+                    "type": "boolean"
+                },
+                "ownerId": {
+                    "description": "使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键",
+                    "type": "integer"
+                },
+                "pictures": {
+                    "description": "照片应为字符串切片，omitempty表明非必需字段",
+                    "type": "string"
+                },
+                "pricePerDay": {
+                    "type": "number"
+                },
+                "pricePerMonth": {
+                    "type": "number"
+                },
+                "pricePerWeek": {
+                    "type": "number"
+                },
+                "rate": {
+                    "description": "保留float64类型，omitempty表明非必需字段",
+                    "type": "number"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "spotAddr": {
+                    "type": "string"
+                },
+                "spotName": {
+                    "type": "string"
+                },
+                "spotType": {
+                    "type": "string"
+                }
+            }
+        },
         "User.CodeStructData": {
             "type": "object",
             "properties": {

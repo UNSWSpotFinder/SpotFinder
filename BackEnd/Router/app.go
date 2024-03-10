@@ -42,7 +42,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.PUT("/spot/delete/:id", Spots.DeleteSpotController)
 	public.PUT("/spot/update", Spots.UpdateSpotController)
 	public.PUT("/spot/update/spotPrice", Spots.UpdateSpotPriceHandler)
-	public.POST("/spot/create/:ownerId", Spots.CreateSpotController)
+	public.POST("/spot/create/:userId", Spots.CreateSpotController)
 	public.POST("/user/create/verifyEmail", func(c *gin.Context) {
 
 		User.VerifiedCodeHandler(c, redisCli)

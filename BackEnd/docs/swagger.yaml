@@ -20,7 +20,48 @@ definitions:
     - adminID
     - name
     type: object
-
+  Spot.Basic:
+    type: object
+  Spots.CreateSpotSimple:
+    properties:
+      isOccupy:
+        description: 将字段名更改为驼峰式并匹配JSON键
+        type: boolean
+      isVisible:
+        description: 同上
+        type: boolean
+      ownerId:
+        description: 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
+        type: integer
+      pictures:
+        description: 照片应为字符串切片，omitempty表明非必需字段
+        type: string
+      pricePerDay:
+        type: number
+      pricePerMonth:
+        type: number
+      pricePerWeek:
+        type: number
+      rate:
+        description: 保留float64类型，omitempty表明非必需字段
+        type: number
+      size:
+        type: string
+      spotAddr:
+        type: string
+      spotName:
+        type: string
+      spotType:
+        type: string
+    required:
+    - isOccupy
+    - isVisible
+    - ownerId
+    - size
+    - spotAddr
+    - spotName
+    - spotType
+    type: object
   User.CodeStructData:
     properties:
       code:
@@ -181,12 +222,17 @@ paths:
       summary: 创建管理员
       tags:
       - Manager
-  /spot/create/{UserID}:
+  /spot/create/{userId}:
     post:
       consumes:
       - application/json
       description: create a spot
       parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
       - description: spot info
         in: body
         name: spot
