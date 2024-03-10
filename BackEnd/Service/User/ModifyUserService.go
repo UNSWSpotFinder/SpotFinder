@@ -14,7 +14,7 @@ type modifyPasswordData struct {
 	Repasswd string `json:"repassword"`
 }
 
-type modifyUserInfoData struct {
+type ModifyUserInfoData struct {
 	// Email 不能被修改，不能在这里修改，是主键
 	Email     string `json:"email" example:"longsizhuo@gmail.com"`
 	Name      string `json:"name" example:"longsizhuo"`
@@ -91,7 +91,7 @@ func ModifyPasswdHandler(c *gin.Context) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user body modifyUserInfoData true "User"
+// @Param user body ModifyUserInfoData true "User"
 // @Success 200 {string} string "User information updated"
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
@@ -107,7 +107,7 @@ func ModifyUserInfoHandler(c *gin.Context) {
 	role, _ := c.Get("role")
 
 	var user User.Basic
-	var request modifyUserInfoData
+	var request ModifyUserInfoData
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		c.JSON(400, "Data binding error")

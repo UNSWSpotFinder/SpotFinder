@@ -99,3 +99,13 @@ func ModifyUserInfo(db *gorm.DB, user *Basic) error {
 	}
 	return nil
 }
+
+// GetUserByEmail 通过邮箱获取用户
+func GetUserByEmail(db *gorm.DB, email string) (*Basic, error) {
+	var user Basic
+	err := db.Where("email = ?", email).Take(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

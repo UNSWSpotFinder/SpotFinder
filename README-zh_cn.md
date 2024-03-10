@@ -1,6 +1,22 @@
-
+# 第一次运行：
+1. 安装Docker和Docker Compose [Docker](https://docs.docker.com/get-docker/) [Docker Compose](https://docs.docker.com/compose/install/)
+2. 安装Makefile
+   - Windows: [Makefile](http://gnuwin32.sourceforge.net/packages/make.htm)
+   - MacOS: `brew install make`
+   - Linux: `sudo apt-get install make`
+3. 运行 Docker或者dockerDesktop
+4. 运行：
+   ```shell
+   make
+   ```
+# 第二种方法：
+1. 如果Make失败了，可以尝试手动运行：
+   ```shell
+   docker-compose up -d
+   ```
+# 第三种方法：
 1. 安装Go环境：
-   访问Go语言的官方网站下载页面：https://golang.org/dl/。
+   访问Go语言的官方网站下载页面：https://golang.org/dl/
    根据您的操作系统下载相应版本的Go安装包。
    安装Go，并根据安装向导完成安装。
    安装完成后，打开命令行（Windows的CMD或PowerShell，MacOS或Linux的Terminal），输入go version来验证Go是否正确安装。
@@ -15,10 +31,12 @@
    go mod tidy 
    go run main.go
    ```
-   
+
+## 异常处理：
+1. 如果后端运行后显示token已过期或者token不存在：
 在项目目录内，运行go build来编译项目。这将在当前目录下生成一个可执行文件。
 运行编译后的可执行文件。在Linux或Mac上，可以通过./projectname来运行；在Windows上，可以直接运行projectname.exe。
-2. 如果您有Python环境：
+如果您有Python环境：
    ```shell
    cd ./BackEnd/util/
    python3 ./quickstart.py
@@ -30,7 +48,35 @@
    docker run -it --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp python:3 python ./quickstart.py
    ```
    这个代码会找到当前文件夹的credentials.json，登陆后生成一个token.json，然后就可以成功调用了。
-3. 
+2. Docker容器无法启动，`Is the docker daemon running?`:
+   手动启动Docker Desktop
+3. 如果您的Docker容器无法启动，`Error response from daemon: Conflict. The container name "/backend" is already in use by container "xxxxx". You have to remove (or rename) that container to be able to reuse that name.`:
+   ```shell
+   docker-compose down
+   ```
+   然后再重新运行
+   ```shell
+   docker-compose up -d
+   ```
+4. `go: go.mod file indicates go 1.22, but maximum version supported by tidy is 1.20`
+    ```shell
+    go mod edit --go=1.22
+    go mod tidy
+    ```
+   如果报错不允许更改，则需要重新做“第三种方法”重新安装golang[安装](https://go.dev/dl/)，MacOS不需要卸载，直接安装即可
+5. `go: cannot find main module; see 'go help modules'`
+    ```shell
+    go mod init
+    go mod tidy
+    ```
+6. ![img.png](img/img.png)
+    重新update main branch，重新安装golang
+```shell
+    go mod tidy
+    go run main.go
+```
+
+
 
 
 # 变量名字的命名规则

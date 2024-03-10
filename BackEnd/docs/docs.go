@@ -134,6 +134,9 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/login": {
+            "post": {
+                "description": "管理员登陆",
         "/spot/create/{userId}": {
             "post": {
                 "description": "create a spot",
@@ -144,6 +147,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
+                    "Manager"
+                ],
+                "summary": "管理员登陆",
+                "parameters": [
+                    {
+                        "description": "Manager",
+                        "name": "manager",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Manager.loginRequestData"
                     "spots"
                 ],
                 "summary": "Create a spot",
@@ -366,6 +380,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
+                        "description": "Login Success",
                         "description": "message\", \"Update spot successfully\"}",
                         "schema": {
                             "type": "string"
@@ -548,6 +563,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取用户信息。如果未提供email查询参数，则返回当前用户的信息。如果提供了email查询参数，只有管理员可以查询其他用户的信息。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要查询的用户邮箱",
+                        "name": "email",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取管理员信息",
+                        "schema": {
+                            "$ref": "#/definitions/Manager.AdminInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "错误的请求"
+                    },
+                    "401": {
+                        "description": "未授权或无权限"
+                    },
+                    "500": {
+                        "description": "内部服务器错误"
+                    }
+                }
+            }
+        },
         "/user/list": {
             "get": {
                 "description": "do ping",
@@ -635,7 +695,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.modifyUserInfoData"
+                            "$ref": "#/definitions/User.ModifyUserInfoData"
                         }
                     }
                 ],
@@ -651,6 +711,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "Manager.AdminInfo": {
+            "type": "object",
+            "properties": {
+                "adminID": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "Manager.createManagerRequestData": {
             "type": "object",
             "required": [
@@ -680,6 +754,19 @@ const docTemplate = `{
                 }
             }
         },
+        "Manager.loginRequestData": {
+            "type": "object",
+            "required": [
+                "adminID"
+            ],
+            "properties": {
+                "adminID": {
+                    "type": "string",
+                    "example": "longsizhuoIsTheBest"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
         "Spot.Basic": {
             "type": "object"
         },
@@ -783,6 +870,100 @@ const docTemplate = `{
                 }
             }
         },
+        "User.InfoDetail": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "account": {
+                    "type": "number",
+                    "example": 0
+                },
+                "addr": {
+                    "type": "string",
+                    "example": ""
+                },
+                "avatar": {
+                    "type": "string",
+                    "example": "avata"
+                },
+                "carInfo": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "createTime": {
+                    "type": "string",
+                    "example": "2021-07-01 00:00:00"
+                },
+                "dateBirth": {
+                    "type": "string",
+                    "example": "25/02/1999"
+                },
+                "deleteTime": {
+                    "type": "string",
+                    "example": "2021-07-01 00:00:00"
+                },
+                "earning": {
+                    "type": "number",
+                    "example": 0
+                },
+                "email": {
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "leasedSpot": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "ownedSpot": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "topUp": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "User.ModifyUserInfoData": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "address"
+                },
+                "avata": {
+                    "type": "string",
+                    "example": "avata"
+                },
+                "dateBirth": {
+                    "type": "string",
+                    "example": "25/02/1999"
+                },
+                "email": {
+                    "description": "Email 不能被修改，不能在这里修改，是主键",
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
         "User.RequestData": {
             "type": "object",
             "required": [
@@ -821,36 +1002,6 @@ const docTemplate = `{
                 },
                 "repassword": {
                     "type": "string"
-                }
-            }
-        },
-        "User.modifyUserInfoData": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "address"
-                },
-                "avata": {
-                    "type": "string",
-                    "example": "avata"
-                },
-                "dateBirth": {
-                    "type": "string",
-                    "example": "25/02/1999"
-                },
-                "email": {
-                    "description": "Email 不能被修改，不能在这里修改，是主键",
-                    "type": "string",
-                    "example": "longsizhuo@gmail.com"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "longsizhuo"
-                },
-                "phone": {
-                    "type": "string",
-                    "example": "123456"
                 }
             }
         }

@@ -30,3 +30,4 @@ This day was marked by significant updates and enhancements, particularly focusi
 
 March 10, 2024
 成功添加了docker，以后后端就可以在容器中运行了。直接在主界面运行make就可以了
+添加了管理员创建、登陆、查询用户信息、查询管理员信息。封装了代码到Docker，编写了Makefile文件帮助一键运行后端服务。
