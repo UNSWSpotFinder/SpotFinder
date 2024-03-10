@@ -245,11 +245,11 @@ paths:
       description: get list of all spots(PageQuery)
       parameters:
       - description: Page
-        in: query
+        in: path
         name: page
         type: integer
       - description: PageSize
-        in: query
+        in: path
         name: pageSize
         type: integer
       produces:

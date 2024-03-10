@@ -15,8 +15,8 @@ import (
 // @Tags spots
 // @Accept  json
 // @Produce  json
-// @Param page query int false "Page"
-// @Param pageSize query int false "PageSize"
+// @Param page path int false "Page"
+// @Param pageSize path int false "PageSize"
 // @Success 200 {object} map[string]interface{} "message: list of spots"
 // @Failure 500 {object} map[string]interface{} "error: Cannot get spot list"
 // @Router /spot/list/{page}/{pageSize} [get]
