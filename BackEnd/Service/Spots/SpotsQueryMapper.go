@@ -197,6 +197,10 @@ func UpdateSpotPrice(spot *Spot.Basic, user *User.Basic, spotID string, pricePer
 		return errors.New("用户没有这个车位")
 	}
 
+	if pricePerDay < 0 || pricePerWeek < 0 || pricePerMonth < 0 {
+		return errors.New("价格不能为负数")
+	}
+
 	//用户有权限修改价格
 	if pricePerDay != 0 {
 		spot.PricePerDay = float64(pricePerDay)
