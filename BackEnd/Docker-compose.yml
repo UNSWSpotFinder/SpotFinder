@@ -1,0 +1,15 @@
+version: '3.8'  # 使用docker-compose的版本
+
+services:
+  backend:
+    build:
+      context: .  # Dockerfile所在的上下文路径
+      dockerfile: Dockerfile  # 指定Dockerfile的名字，如果是默认的可以不写
+    ports:
+      - "8080:8080"  # 将容器的8080端口映射到主机的8080端口
+    environment:
+      - BASE_PATH=/app  # 设置环境变量，如果你有其他环境变量也可以在这里添加
+    volumes:
+      - .:/app  # 将当前目录映射到容器的/app目录，用于实时更新代码
+      - ./Config:/app/Config  # 特别为配置文件设置的卷
+      - ./util:/app/util  # 特别为util目录设置的卷
