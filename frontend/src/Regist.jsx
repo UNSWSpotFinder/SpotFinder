@@ -13,12 +13,15 @@ import {
   useError,
   callAPIverifyEmailCode,
   callAPIsendEmailCode,
-  callAPIRegistUser
+  callAPIRegistUser,
+  callAPIRegistAdmin
 } from './API';
 // 用户注册页面
 export function UserRegistPage() {
   // 上下文错误
   const { snackbarData, setOpenSnackbar } = useError();
+  //  按钮不可用性
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   //  初始化路由选择器
   let navigate = useNavigate();
   // 两个密码可见性
@@ -85,14 +88,41 @@ export function UserRegistPage() {
   let goeslogin = () => {
     navigate('/userlogin');
   };
+  useEffect(() => {
+    let timeoutId;
+    // 在按钮可点击状态改变后，设置一个定时器来在 30 秒后将其重新设为可点击状态
+    if (isButtonDisabled) {
+        timeoutId = setTimeout(() => {
+            setIsButtonDisabled(false);
+        }, 30000); // 30 秒
+    }
+
+    // 清除定时器以避免内存泄漏
+    return () => clearTimeout(timeoutId);
+    }, [isButtonDisabled]);
   function sendCode() {
+    if (isButtonDisabled) {
+        setOpenSnackbar({
+            severity:'info',
+            message:'Verification codes are sent too frequently',
+            timestamp:new Date().getTime()
+        });
+        return;
+    }
     const data = {
       to: Email,
     };
+    console.log(isButtonDisabled);
     callAPIsendEmailCode('user/create/sendEmail', data)
     .then((response)=>{
-        console.log(response);
         setverifyVisibility(true);
+        setIsButtonDisabled(true);
+        console.log(response);
+        setOpenSnackbar({
+            severity:'warning',
+            message:'Please fill in your mobile phone number.',
+            timestamp:new Date().getTime()
+        });
         // set open snackbar
         setOpenSnackbar({
           severity: 'success',
@@ -110,6 +140,9 @@ export function UserRegistPage() {
         });
     })
   }
+ 
+
+
   function verifyEmail() {
     const data = {
       code: code,
@@ -145,7 +178,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'info',
             message:'Please Verify your Email address first!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -153,7 +186,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Please fill in your mobile phone number.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -161,7 +194,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Please fill in a name so we know how to call you.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -169,7 +202,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'Password must be between 6-16 characters!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
@@ -177,12 +210,12 @@ export function UserRegistPage() {
         setOpenSnackbar({
             severity:'warning',
             message:'The two password inputs are inconsistent!',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
         return;
     }
     console.log(BirthDate);
-    const formattedDate = dayjs(BirthDate).format('YYYY-MM-DD HH:mm:ss');
+    const formattedDate = dayjs(BirthDate).format('MM/DD/YYYY');
     console.log(formattedDate)
     const data={
         avatar: selectedFileName,
@@ -193,25 +226,23 @@ export function UserRegistPage() {
         phone: phone,
         rePassword: Password1
     }
-    if(Password!=Password1){
-
-    }
     callAPIRegistUser('user/create',data)
     .then((response)=>{
         console.log(response);
         setOpenSnackbar({
             severity:'success',
             message:'Welcome join SpotFinder ' + name + '.',
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         })
+        navigate('/userlogin');
     })
     .catch((error)=>{
         setOpenSnackbar({
             severity:'warning',
             message:error,
-            timestamp:new Date().getTime
+            timestamp:new Date().getTime()
         });
-    })
+    });
   }
   return (
     <div className='overall'>
@@ -281,7 +312,7 @@ export function UserRegistPage() {
                   ></input>
                   <button
                     className='sendcode'
-                    disabled={isverifyed}
+                    disabled={isverifyed || isButtonDisabled}
                     type='button'
                     onClick={sendCode}
                   >
@@ -440,18 +471,221 @@ export function UserRegistPage() {
     </div>
   );
 }
+// 管理员注册页面
 export function AdminRegistPage() {
-  let navigate = useNavigate();
-  let backhome = () => {
-    navigate('/');
-  };
-  return (
-    <div className='overall'>
-      <div className='backgrounds'></div>
-      <div className='contentoverall'>
-        <p>AdminRegist</p>
-        <button onClick={backhome}>Back</button>
+    // 上下文错误
+    const { snackbarData, setOpenSnackbar } = useError();
+    //  初始化路由选择器
+    let navigate = useNavigate();
+    // 两个密码可见性
+    const [passwordVisibility1, setPasswordVisibility1] = useState(false);
+    const [passwordVisibility2, setPasswordVisibility2] = useState(false);
+    // 邮箱
+    const [Email, setEmail] = useState('');
+    // 密码
+    const [Password, setPassword] = useState('');
+    const handlePasswordChange = (event) => {
+      setPassword(event.target.value);
+    };
+    // 确认密码
+    const [Password1, setPassword1] = useState('');
+    const handlePassword1Change = (event) => {
+      setPassword1(event.target.value);
+    };
+    // 手机号
+    const [phone, setPhone] = useState('');
+    const handlePhoneChange = (event) => {
+      setPhone(event.target.value);
+    };
+    // 姓名
+    const [name, setName] = useState('');
+    const handleNameChange = (event) => {
+      setName(event.target.value);
+    };
+    const handleEmailChange = (event) => {
+      setEmail(event.target.value);
+    };
+    let backhome = () => {
+      navigate('/');
+    };
+    let goeslogin = () => {
+      navigate('/userlogin');
+    };
+    function Regist() {
+      if (phone==''){
+          setOpenSnackbar({
+              severity:'warning',
+              message:'Please fill in your mobile phone number.',
+              timestamp:new Date().getTime()
+          });
+          return;
+      }
+      if(name==''){
+          setOpenSnackbar({
+              severity:'warning',
+              message:'Please fill in a name so we know how to call you.',
+              timestamp:new Date().getTime()
+          });
+          return;
+      }
+      if(Password.length<6||Password.length>16){
+          setOpenSnackbar({
+              severity:'warning',
+              message:'Password must be between 6-16 characters!',
+              timestamp:new Date().getTime()
+          });
+          return;
+      }
+      if (Password !== Password1) {
+          setOpenSnackbar({
+              severity:'warning',
+              message:'The two password inputs are inconsistent!',
+              timestamp:new Date().getTime()
+          });
+          return;
+      }
+      const data={
+          adminID:Email,
+          name:name,
+          password:Password,
+          phone: phone,
+          rePassword: Password1
+      }
+      callAPIRegistAdmin('manager/create',data)
+      .then((response)=>{
+          setOpenSnackbar({
+              severity:'success',
+              message:'Admin ' + name + ' registed.',
+              timestamp:new Date().getTime()
+          })
+          navigate('/adminlogin');
+      })
+      .catch((error)=>{
+          console.log(error);
+          setOpenSnackbar({
+              severity:'warning',
+              message:error,
+              timestamp:new Date().getTime()
+          });
+      });
+    }
+    return (
+      <div className='overall'>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className='backgrounds'
+        ></motion.div>
+        <motion.div
+          className='contentoverall'
+          initial={{ y: '50%', opacity: 0 }}
+          animate={{ y: '0%', opacity: 1 }}
+          exit={{ y: '50%', opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className='back'>
+            <button onClick={backhome} type='button' className='backbtn'>
+              ×
+            </button>
+          </div>
+          <div className='contentmain'>
+            <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+            <div className='LoginUser-admin'>
+              <p className='welcomemain-admin'>Welcome to Join SpotFinder</p>
+              <form className='w-100'>
+                <div className='formpart-col'>
+                  <label className='form-label title'>
+                    AdminID
+                  </label>
+                  <input
+                    type='email'
+                    className='form-control setmargin'
+                    onChange={handleEmailChange}
+                    value={Email}
+                    autoComplete='username'
+                  ></input>
+                </div>
+                <div className='formpart-col'>
+                  <label className='form-label title'>Phone</label>
+                  <input
+                    className='form-control setmargin'
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    autoComplete='phone'
+                  ></input>
+                </div>
+                <div className='formpart-col'>
+                  <label className='form-label title'>Preferred name</label>
+                  <input
+                    className='form-control setmargin'
+                    value={name}
+                    onChange={handleNameChange}
+                    autoComplete='name'
+                  ></input>
+                </div>
+                <div className='formpart-col'>
+                  <label className='form-label title'>Password</label>
+                  <input
+                    type={passwordVisibility1 ? 'text' : 'password'}
+                    autoComplete='new-password'
+                    className='form-control setmargin'
+                    value={Password}
+                    onChange={handlePasswordChange}
+                  ></input>
+                </div>
+                <div className='formpart-row'>
+                  <div className='seepart'>
+                    <input
+                      type='checkbox'
+                      onChange={() =>
+                        setPasswordVisibility1(!passwordVisibility1)
+                      }
+                      className='checks'
+                    ></input>
+                    <label className='pwdsee' htmlFor='exampleCheck1'>
+                      show password
+                    </label>
+                  </div>
+                </div>
+                <div className='formpart-col'>
+                  <label className='form-label title'>
+                    Password Confirmation
+                  </label>
+                  <input
+                    type={passwordVisibility2 ? 'text' : 'password'}
+                    autoComplete='new-password'
+                    className='form-control setmargin'
+                    value={Password1}
+                    onChange={handlePassword1Change}
+                  ></input>
+                </div>
+                <div className='seepart'>
+                <input
+                    type='checkbox'
+                    onChange={() =>
+                    setPasswordVisibility2(!passwordVisibility2)
+                    }
+                    className='checks'
+                ></input>
+                <label className='pwdsee' htmlFor='exampleCheck1'>
+                    show password
+                </label>
+                </div>
+                <button type='button' className='btn btn-primary logbtn-admin' onClick={Regist}>
+                  SIGN UP
+                </button>
+              </form>
+              <div className='logbottom'>
+                <p className='welcomesub'>Already have an account?</p>
+                <a className='forget' onClick={goeslogin}>
+                  Click here to Sign in
+                </a>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </div>
-  );
-}
+    );
+  }

@@ -15,6 +15,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/authorization": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "pingpong example",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "description": "do ping",
@@ -538,6 +566,11 @@ const docTemplate = `{
         },
         "/user/modifyPasswd": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "修改密码",
                 "consumes": [
                     "application/json"
@@ -572,6 +605,11 @@ const docTemplate = `{
         },
         "/user/modifyUserInfo": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "修改用户信息",
                 "consumes": [
                     "application/json"
@@ -590,7 +628,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.Basic"
+                            "$ref": "#/definitions/User.modifyUserInfoData"
                         }
                     }
                 ],
@@ -635,73 +673,8 @@ const docTemplate = `{
                 }
             }
         },
-        "Spot.Basic": {
-            "type": "object"
-        },
-        "Spots.CreateSpotSimple": {
-            "type": "object",
-            "required": [
-                "isOccupy",
-                "isVisible",
-                "ownerId",
-                "size",
-                "spotAddr",
-                "spotName",
-                "spotType"
-            ],
-            "properties": {
-                "deletedAt": {
-                    "type": "string"
-                },
-                "isOccupy": {
-                    "description": "将字段名更改为驼峰式并匹配JSON键",
-                    "type": "boolean"
-                },
-                "isVisible": {
-                    "description": "同上",
-                    "type": "boolean"
-                },
-                "ownerId": {
-                    "description": "使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键",
-                    "type": "integer"
-                },
-                "pictures": {
-                    "description": "照片应为字符串切片，omitempty表明非必需字段",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "pricePerDay": {
-                    "type": "number"
-                },
-                "pricePerMonth": {
-                    "type": "number"
-                },
-                "pricePerWeek": {
-                    "type": "number"
-                },
-                "rate": {
-                    "description": "保留float64类型，omitempty表明非必需字段",
-                    "type": "number"
-                },
-                "size": {
-                    "type": "string"
-                },
-                "spotAddr": {
-                    "type": "string"
-                },
-                "spotName": {
-                    "type": "string"
-                },
-                "spotType": {
-                    "type": "string"
-                }
-            }
-        },
-        "User.Basic": {
-            "type": "object"
-        },
+
+
         "User.CodeStructData": {
             "type": "object",
             "properties": {
@@ -764,10 +737,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456"
                 }
             }
         },
@@ -785,6 +760,43 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "User.modifyUserInfoData": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "address"
+                },
+                "avata": {
+                    "type": "string",
+                    "example": "avata"
+                },
+                "dateBirth": {
+                    "type": "string",
+                    "example": "25/02/1999"
+                },
+                "email": {
+                    "description": "Email 不能被修改，不能在这里修改，是主键",
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

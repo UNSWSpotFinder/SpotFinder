@@ -20,54 +20,7 @@ definitions:
     - adminID
     - name
     type: object
-  Spot.Basic:
-    type: object
-  Spots.CreateSpotSimple:
-    properties:
-      deletedAt:
-        type: string
-      isOccupy:
-        description: 将字段名更改为驼峰式并匹配JSON键
-        type: boolean
-      isVisible:
-        description: 同上
-        type: boolean
-      ownerId:
-        description: 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
-        type: integer
-      pictures:
-        description: 照片应为字符串切片，omitempty表明非必需字段
-        items:
-          type: string
-        type: array
-      pricePerDay:
-        type: number
-      pricePerMonth:
-        type: number
-      pricePerWeek:
-        type: number
-      rate:
-        description: 保留float64类型，omitempty表明非必需字段
-        type: number
-      size:
-        type: string
-      spotAddr:
-        type: string
-      spotName:
-        type: string
-      spotType:
-        type: string
-    required:
-    - isOccupy
-    - isVisible
-    - ownerId
-    - size
-    - spotAddr
-    - spotName
-    - spotType
-    type: object
-  User.Basic:
-    type: object
+
   User.CodeStructData:
     properties:
       code:
@@ -111,8 +64,10 @@ definitions:
   User.loginRequestData:
     properties:
       email:
+        example: longsizhuo@gmail.com
         type: string
       password:
+        example: "123456"
         type: string
     type: object
   User.modifyPasswordData:
@@ -125,9 +80,48 @@ definitions:
       repassword:
         type: string
     type: object
+  User.modifyUserInfoData:
+    properties:
+      address:
+        example: address
+        type: string
+      avata:
+        example: avata
+        type: string
+      dateBirth:
+        example: 25/02/1999
+        type: string
+      email:
+        description: Email 不能被修改，不能在这里修改，是主键
+        example: longsizhuo@gmail.com
+        type: string
+      name:
+        example: longsizhuo
+        type: string
+      phone:
+        example: "123456"
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /authorization:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: pingpong example
+      tags:
+      - example
   /index:
     get:
       consumes:
@@ -490,6 +484,8 @@ paths:
           description: Password updated
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: 修改密码
       tags:
       - User
@@ -504,7 +500,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/User.Basic'
+          $ref: '#/definitions/User.modifyUserInfoData'
       produces:
       - application/json
       responses:
@@ -512,7 +508,14 @@ paths:
           description: User information updated
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: 修改用户信息
       tags:
       - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
