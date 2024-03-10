@@ -14,11 +14,10 @@ import (
 
 // Ctx 全局变量
 var Ctx = context.Background()
-var RedisClient *redis.Client
 
 // CodeStructData 验证验证码所需要的结构体
 type CodeStructData struct {
-	Email string `json:"to"`
+	Email string `json:"email"`
 	// Code 验证码
 	Code string `json:"code"`
 }
@@ -60,7 +59,8 @@ func SendEmail(srv *gmail.Service, to, subject, body string) error {
 }
 
 // verifyCode 验证码校验处理函数
-func verifyCode(email, code string) bool {
+func verifyCode(email, code string, RedisClient *redis.Client) bool {
+	fmt.Println("Email:", email, "Code", code)
 	theGenerateCode, err := RedisClient.Get(Ctx, email).Result()
 	if err != nil {
 		fmt.Printf("Error getting key: %f\n", err)
@@ -91,21 +91,21 @@ func verifyCode(email, code string) bool {
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			emailconfigs	body	CodeStructData	true	"Recipient emailconfigs address"	Format(emailconfigs)
+//	@Param			json	body	CodeStructData true "email and code"
 //	@Success		200		{object}	RequestData	"OK"
 //
 // @Failure 		400 	{string} 	string "code error"
 // @Failure 		400 	{string} 	string "unmarshal error"
 //
-//	@Router			/verify [post]
-func VerifiedCodeHandler(c *gin.Context) {
+//	@Router			/user/create/verifyEmail [post]
+func VerifiedCodeHandler(c *gin.Context, redisCli *redis.Client) {
 	var codeStructData CodeStructData
 	err := c.ShouldBindJSON(&codeStructData)
 	if err != nil {
 		c.JSON(400, "unmarshal error")
 		return
 	}
-	valid := verifyCode(codeStructData.Email, codeStructData.Code)
+	valid := verifyCode(codeStructData.Email, codeStructData.Code, redisCli)
 	if !valid {
 		c.JSON(400, "code error")
 		return

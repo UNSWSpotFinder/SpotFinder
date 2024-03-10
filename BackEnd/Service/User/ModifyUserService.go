@@ -1,0 +1,86 @@
+package User
+
+import (
+	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Service"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"net/http"
+)
+
+type modifyPasswordData struct {
+	Email    string `json:"email" example:"longsizhuo@gmail.com"`
+	Password string `json:"password"`
+	Repasswd string `json:"repassword"`
+}
+
+// ModifyPasswdHandler 修改密码
+// @Summary 修改密码
+// @Description 修改密码
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param email body modifyPasswordData true "User Email"
+// @Success 200 {string} string "Password updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/modifyPasswd [post]
+func ModifyPasswdHandler(c *gin.Context) {
+	var request modifyPasswordData
+	var newUserData User.Basic
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		c.JSON(400, "Data binding error")
+		return
+	}
+	if request.Password != request.Repasswd {
+		c.JSON(400, "Password not same")
+		return
+	}
+	newUserData.Email = request.Email
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to hash password",
+		})
+		return
+	}
+	newUserData.Password = string(hashedPassword)
+
+	err = User.ModifyPasswd(Service.DB, &newUserData)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+
+	c.JSON(200, "Password updated")
+	return
+
+}
+
+// ModifyUserInfoHandler 修改用户信息
+// @Summary 修改用户信息
+// @Description 修改用户信息
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body User.Basic true "User"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/modifyUserInfo [post]
+func ModifyUserInfoHandler(c *gin.Context) {
+	var newData User.Basic
+	err := c.ShouldBindJSON(&newData)
+	if err != nil {
+		c.JSON(400, "Data binding error")
+		return
+	}
+	err = User.ModifyUserInfo(Service.DB, &newData)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	c.JSON(200, "User information updated")
+	return
+}

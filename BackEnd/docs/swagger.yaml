@@ -1,61 +1,40 @@
 definitions:
-  Spot.Basic:
-    type: object
-  Spots.CreateSpotSimple:
+  Manager.createManagerRequestData:
     properties:
-      deletedAt:
+      adminID:
+        example: "123456"
         type: string
-      isOccupy:
-        description: 将字段名更改为驼峰式并匹配JSON键
-        type: boolean
-      isVisible:
-        description: 同上
-        type: boolean
-      ownerId:
-        description: 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
-        type: integer
-      pictures:
-        description: 照片应为字符串切片，omitempty表明非必需字段
-        items:
-          type: string
-        type: array
-      pricePerDay:
-        type: number
-      pricePerMonth:
-        type: number
-      pricePerWeek:
-        type: number
-      rate:
-        description: 保留float64类型，omitempty表明非必需字段
-        type: number
-      size:
+      name:
+        example: longsizhuo
         type: string
-      spotAddr:
+      password:
+        example: "123456"
         type: string
-      spotName:
+      phone:
+        example: "123456"
         type: string
-      spotType:
+      repassword:
+        example: "123456"
         type: string
     required:
-    - isOccupy
-    - isVisible
-    - ownerId
-    - size
-    - spotAddr
-    - spotName
-    - spotType
+    - adminID
+    - name
+    type: object
+  User.Basic:
     type: object
   User.CodeStructData:
     properties:
       code:
         description: Code 验证码
         type: string
-      to:
+      email:
         type: string
     type: object
   User.CreateUserRequest:
     properties:
       avatar:
+        type: string
+      dateBirth:
         type: string
       email:
         type: string
@@ -83,6 +62,23 @@ definitions:
     required:
     - to
     type: object
+  User.loginRequestData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  User.modifyRequestData:
+    properties:
+      email:
+        example: longsizhuo@gmail.com
+        type: string
+      password:
+        type: string
+      repassword:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -101,195 +97,51 @@ paths:
       summary: ping example
       tags:
       - example
-  /spot/create/{UserID}:
+  /login:
     post:
       consumes:
       - application/json
-      description: create a spot
+      description: 登陆
       parameters:
-      - description: spot info
+      - description: User
         in: body
-        name: spot
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/Spots.CreateSpotSimple'
+          $ref: '#/definitions/User.loginRequestData'
       produces:
       - application/json
       responses:
         "200":
-          description: message", "Add spot successfully"}
+          description: Login Success
           schema:
             type: string
-        "500":
-          description: error", "unable to add spot"}
-          schema:
-            type: string
-      summary: Create a spot
+      summary: 登陆
       tags:
-      - spots
-  /spot/delete/{id}:
-    put:
+      - User
+  /manager/create:
+    post:
       consumes:
       - application/json
-      description: delete a spot by id
+      description: 创建管理员
       parameters:
-      - description: Spot ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: code", "message"}
-          schema:
-            type: string
-        "500":
-          description: code", "message"}
-          schema:
-            type: string
-      summary: Delete a spot(soft delete)
-      tags:
-      - spots
-  /spot/list/{page}/{pageSize}:
-    get:
-      consumes:
-      - application/json
-      description: get list of all spots(PageQuery)
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'message: list of spots'
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: 'error: Cannot get spot list'
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Get the list of spots
-      tags:
-      - spots
-  /spot/ownedCar/choseSize/{plateNumber}:
-    get:
-      consumes:
-      - application/json
-      description: chose size with my car
-      parameters:
-      - description: Plate Number
-        in: path
-        name: plateNumber
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: spots", "list of spots"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to get spot list"}
-          schema:
-            type: string
-      summary: Chose size with user's car plate number,param is plate number
-      tags:
-      - spots
-  /spot/ownedList/{ownerId}:
-    get:
-      consumes:
-      - application/json
-      description: show all owned spots by User
-      parameters:
-      - description: Owner ID
-        in: path
-        name: ownerId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: spots", "list of spots"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to get spot list"}
-          schema:
-            type: string
-      summary: Show all owned spots
-      tags:
-      - spots
-  /spot/update:
-    put:
-      consumes:
-      - application/json
-      description: update a spot
-      parameters:
-      - description: spot info
+      - description: Manager
         in: body
-        name: spot
+        name: manager
         required: true
         schema:
-          $ref: '#/definitions/Spot.Basic'
+          $ref: '#/definitions/Manager.createManagerRequestData'
+
       produces:
       - application/json
       responses:
         "200":
-          description: message", "Update spot successfully"}
+          description: Manager created
           schema:
             type: string
-        "500":
-          description: error", "unable to update spot"}
-          schema:
-            type: string
-      summary: Update a spot
+      summary: 创建管理员
       tags:
-      - spots
-  /spot/update/spotPrice:
-    put:
-      consumes:
-      - application/json
-      description: 'update a spot''s price, got four query parameters by order: spotID,
-        perDay, perNight, perMonth'
-      parameters:
-      - description: Spot ID
-        in: query
-        name: spotID
-        required: true
-        type: string
-      - description: Price per day
-        in: query
-        name: perDay
-        required: true
-        type: string
-      - description: Price per night
-        in: query
-        name: perNight
-        required: true
-        type: string
-      - description: Price per month
-        in: query
-        name: perMonth
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: message", "Update spot price successfully"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to update spot price"}
-          schema:
-            type: string
-      summary: Update a spot's price
-      tags:
-      - spots
+      - Manager
   /user/create:
     post:
       description: do ping
@@ -335,31 +187,15 @@ paths:
       summary: Send code
       tags:
       - User
-  /user/list:
-    get:
-      consumes:
-      - application/json
-      description: do ping
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: code", "message"}
-          schema:
-            type: string
-      summary: 获取用户列表
-      tags:
-      - User
-  /verify:
+  /user/create/verifyEmail:
     post:
       consumes:
       - application/json
       description: Verify the code/
       parameters:
-      - description: Recipient emailconfigs address
-        format: emailconfigs
+      - description: email and code
         in: body
-        name: emailconfigs
+        name: json
         required: true
         schema:
           $ref: '#/definitions/User.CodeStructData'
@@ -375,6 +211,65 @@ paths:
           schema:
             type: string
       summary: Verify code
+      tags:
+      - User
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      summary: 获取用户列表
+      tags:
+      - User
+  /user/modifyPasswd:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码
+      parameters:
+      - description: User Email
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/User.modifyRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated
+          schema:
+            type: string
+      summary: 修改密码
+      tags:
+      - User
+  /user/modifyUserInfo:
+    post:
+      consumes:
+      - application/json
+      description: 修改用户信息
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.Basic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      summary: 修改用户信息
       tags:
       - User
 swagger: "2.0"
