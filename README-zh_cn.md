@@ -14,7 +14,6 @@
    ```shell
    docker-compose up -d
    ```
-   
 # 第三种方法：
 1. 安装Go环境：
    访问Go语言的官方网站下载页面：https://golang.org/dl/
