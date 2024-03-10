@@ -1,2 +1,5 @@
 3.8 添加了manager角色，请注意manager只会存在于app.yml中的mangers.manger中。
 请注意manager的名称将会是主键，后期也可以改成id是主键，即一个用户可以用有多个管理角色。
+
+3.9 添加了修改用户密码、用户信息，注册manager角色的功能。 添加了鉴权的操作，即返回JWT token，密钥为 `› openssl rand -base64 32` 生成的字符串。存储在app.yml中的secrete.key中。
+router中添加了鉴权的中间件，即需要在请求头中添加`Authorization: Bearer`字段，值为JWT token。将router分为了两个部分，一个是需要鉴权的，一个是不需要鉴权的。

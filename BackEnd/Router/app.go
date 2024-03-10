@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"google.golang.org/api/gmail/v1"
@@ -26,22 +27,30 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
-	// swagger init
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/index", Service.GetIndex)
-	r.GET("/user/list", User.GetUserList)
-	r.POST("/user/create", User.CreateUser)
-	r.POST("/user/create/verifyEmail", func(c *gin.Context) {
+	// Public routes
+	public := r.Group("/")
+	public.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	public.GET("/authorization", Service.GetAuthorization)
+	public.GET("/index", Service.GetIndex)
+	public.GET("/user/list", User.GetUserList)
+	public.POST("/user/create", User.CreateUser)
+	public.POST("/user/create/verifyEmail", func(c *gin.Context) {
 		User.VerifiedCodeHandler(c, redisCli)
 	})
-	r.POST("/user/create/sendEmail", func(c *gin.Context) {
+	public.POST("/user/create/sendEmail", func(c *gin.Context) {
 		User.SendCodeHandler(srv, c, redisCli)
 	})
-	r.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
-	r.POST("/login", User.LoginHandler)
-	r.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
-	r.POST("/manager/create", Manager.CreateManagerHandler)
+	public.POST("/login", User.LoginHandler) // Login might typically be public
+
+	// Private (authenticated) routes
+	private := r.Group("/")
+	SecreteKey := viper.GetString("secrete.key")
+	private.Use(Service.AuthMiddleware(SecreteKey)) // Use your actual secret key here, not "BearerAuth"
+	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
+	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
+	private.POST("/manager/create", Manager.CreateManagerHandler)
+
 	return r
 
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type loginRequestData struct {
-	Email  string `json:"email" `
-	Passwd string `json:"password"`
+	Email  string `json:"email" example:"longsizhuo@gmail.com"`
+	Passwd string `json:"password" example:"123456"`
 }
 
 // LoginHandler 登陆
