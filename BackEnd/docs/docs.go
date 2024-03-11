@@ -169,8 +169,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/spot/create/{userId}": {
+        "/spot/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "create a spot",
                 "consumes": [
                     "application/json"
@@ -179,24 +184,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "spots"
+                    "Spots"
                 ],
                 "summary": "Create a spot",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "userId",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "spot info",
                         "name": "spot",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Spots.CreateSpotSimple"
+                            "$ref": "#/definitions/Spots.createSpotRequestData"
                         }
                     }
                 ],
@@ -254,9 +252,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/spot/list/{page}/{pageSize}": {
+        "/spot/list": {
             "get": {
-                "description": "get list of all spots(PageQuery)",
+                "description": "获取车位列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -264,36 +262,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "spots"
+                    "Spots"
                 ],
-                "summary": "Get the list of spots",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page",
-                        "name": "page",
-                        "in": "path"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "PageSize",
-                        "name": "pageSize",
-                        "in": "path"
-                    }
-                ],
+                "summary": "获取车位列表",
                 "responses": {
                     "200": {
-                        "description": "message: list of spots",
+                        "description": "Spot list",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "string"
                         }
                     },
                     "500": {
-                        "description": "error: Cannot get spot list",
+                        "description": "Cannot get spot list",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "string"
                         }
                     }
                 }
@@ -467,6 +449,44 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "error\", \"unable to update spot price\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/{spotId}": {
+            "get": {
+                "description": "获取车位详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Spots"
+                ],
+                "summary": "获取车位详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot details",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot get spot details",
                         "schema": {
                             "type": "string"
                         }
@@ -793,45 +813,43 @@ const docTemplate = `{
         "Spot.Basic": {
             "type": "object"
         },
-        "Spots.CreateSpotSimple": {
+        "Spots.createSpotRequestData": {
             "type": "object",
-            "required": [
-                "isOccupy",
-                "isVisible",
-                "ownerId",
-                "size",
-                "spotAddr",
-                "spotName",
-                "spotType"
-            ],
             "properties": {
-                "isOccupy": {
-                    "description": "将字段名更改为驼峰式并匹配JSON键",
+                "availableTime": {
+                    "type": "string"
+                },
+                "charge": {
+                    "type": "string"
+                },
+                "isDayRent": {
                     "type": "boolean"
                 },
-                "isVisible": {
-                    "description": "同上",
+                "isOurRent": {
                     "type": "boolean"
                 },
-                "ownerId": {
-                    "description": "使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键",
+                "isWeekRent": {
+                    "type": "boolean"
+                },
+                "morePictures": {
+                    "type": "string"
+                },
+                "orderNum": {
                     "type": "integer"
                 },
+                "passWay": {
+                    "type": "string"
+                },
                 "pictures": {
-                    "description": "照片应为字符串切片，omitempty表明非必需字段",
                     "type": "string"
                 },
                 "pricePerDay": {
                     "type": "number"
                 },
-                "pricePerMonth": {
+                "pricePerHour": {
                     "type": "number"
                 },
                 "pricePerWeek": {
-                    "type": "number"
-                },
-                "rate": {
-                    "description": "保留float64类型，omitempty表明非必需字段",
                     "type": "number"
                 },
                 "size": {
@@ -841,9 +859,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "spotName": {
-                    "type": "string"
-                },
-                "spotType": {
                     "type": "string"
                 }
             }

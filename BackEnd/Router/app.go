@@ -33,18 +33,16 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public := r.Group("/")
 	public.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	public.GET("/authorization", Service.GetAuthorization)
-	public.GET("/index", Service.GetIndex)
+	public.GET("/index", Service.GetIndexHandler)
 	public.GET("/user/list", User.GetUserList)
 	public.POST("/user/create", User.CreateUser)
 	public.GET("/spot/ownedList/:ownerId", Spots.ShowAllOwnedSpotHandler)
-	public.GET("/spot/list/:page/:pageSize", Spots.SpotsQueryController)
+	public.GET("/spot/list", Spots.GetSpotListHandler)
 	public.GET("/spot/ownedCar/choseSize/:plateNumber", Spots.ChoseSizeWithMyCarHandler)
 	public.PUT("/spot/delete/:id", Spots.DeleteSpotController)
 	public.PUT("/spot/update", Spots.UpdateSpotController)
 	public.PUT("/spot/update/spotPrice", Spots.UpdateSpotPriceHandler)
-	public.POST("/spot/create/:userId", Spots.CreateSpotController)
 	public.POST("/user/create/verifyEmail", func(c *gin.Context) {
-
 		User.VerifiedCodeHandler(c, redisCli)
 	})
 	public.POST("/user/create/sendEmail", func(c *gin.Context) {
@@ -53,6 +51,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.POST("/login", User.LoginHandler) // Login might typically be public
 	public.POST("/manager/create", Manager.CreateManagerHandler)
 	public.POST("/manager/login", Manager.LoginHandler)
+	public.GET("/spot/:spotId", Spots.GetSpotDetailsHandler)
 	// Private (authenticated) routes
 	private := r.Group("/")
 	SecreteKey := viper.GetString("secrete.key")
@@ -60,7 +59,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
 	private.GET("/user/info", User.GetUserInfoHandler)
-
+	private.POST("/spot/create", Spots.CreateSpotController)
 	return r
 
 }
