@@ -12,12 +12,20 @@ import React, {
 import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link,useParams} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link,useParams, useLocation} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{
   CreateSpace, EditSpace
 } from './CarSpaceOperation';
+import{
+  CarSpaceChoice,
+  CarSpaceAdd,
+  CarSpaceEdit
+} from './CarInfo';
+import {
+  HomeSpecificLarge
+} from './SpecificSpot';
 // 导入Dashboard相关页面组件
 import DashboardTop from './components/DashboardTop';
 import Dashboard from './components/Dashboard';
@@ -46,28 +54,45 @@ function App() {
   if (windowWidth > 800) {
     layoutComponentHost = null;
     LayoutComponentHome = <HomePageLarge/>;
-    LayoutDetail = null;
+    LayoutDetail = <HomeSpecificLarge/>;
   } else {
     layoutComponentHost = null;
     LayoutComponentHome = <HomePageSmall/>;;
-    LayoutDetail = null;
+    LayoutDetail = <HomeSpecificLarge/>;
   }
+  const CatchAllRouteHandler = () => {
+    let location = useLocation();
+    
+    if (location.pathname.endsWith('/userlogin')) {
+      return <UserLoginPage />;
+    }
+    if (location.pathname.endsWith('/userregist')) {
+      return <UserRegistPage />;
+    }
+    // Handle other cases or redirect
+    return null;
+  };
   return(
     <ErrorProvider>
       <GlobalSnackbar/>
         <BrowserRouter>
             <Routes>
-                <Route path="/userlogin"   element={<UserLoginPage/>} />
+                <Route path="*/userlogin"   element={<UserLoginPage/>} />
                 <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-                <Route path="/userregist"  element={<UserRegistPage/>} /> 
-                <Route path="/adminlogin"  element={<AdminLoginPage/>} /> 
+                {/* <Route path="/userregist"  element={<UserRegistPage/>} /> 
+                <Route path="/adminlogin"  element={<AdminLoginPage/>} />  */}
                 <Route path="/adminregist" element={<AdminRegistPage/>} />
-                <Route path='/*' element={<></>}/>
+                <Route path="/:username/choose" element={<CarSpaceChoice/>} />
+                <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
+                <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
+                <Route path='/*' element={<CatchAllRouteHandler/>}/>
             </Routes>
           <Routes>
-            <Route path="/:username" element={LayoutComponentHome} />
-            <Route path="/:username/createspace" element = {<CreateSpace/>} />
-            <Route path="/:username/editspace" element = {<EditSpace/>} />
+            <Route path = "/:username" element={LayoutComponentHome} />
+            <Route path = "/:username/createspace" element = {<CreateSpace/>} />
+            <Route path = "/:username/editspace" element = {<EditSpace/>} />
+            <Route path = '/tourists/*' element={LayoutDetail}/>
+            <Route path = '/:username/*' element={LayoutDetail}/>
             {/* DashboardTop作为父路由 */}
             <Route path="/:username/dashboard" element={<DashboardTop />}>
             <Route index element={<Dashboard />} />

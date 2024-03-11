@@ -32,6 +32,20 @@ export function HomePageLarge() {
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
   console.log(token);
+  // 跳转车位选择页
+  const goesSpecific = (event) => {
+    const target = event.target;
+    localStorage.setItem('spotID',target.id);
+    if (target.id){
+      if(localStorage.getItem('token')){
+        const username = localStorage.getItem('email');
+        navigate('/' + username + '/' + target.id);
+      }
+      else{
+        navigate('/tourists/' + target.id);
+      }
+    }
+  };
   // 调库
   let navigate = useNavigate();
   const location = useLocation(); // 获取当前的location对象
@@ -59,7 +73,7 @@ export function HomePageLarge() {
   };
   let ChooseCar = () => {
     if (token) {
-      console.log(token);
+      navigate( '/' + currentuser + '/choose');
     } else {
       navigate('/userlogin');
     }
@@ -238,7 +252,7 @@ export function HomePageLarge() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='095' onClick={goesSpecific}>Book Now</button>
             </div>
           </div>
         </div>
@@ -265,7 +279,7 @@ export function HomePageLarge() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='096' onClick={goesSpecific}>Book Now</button>
             </div>
           </div>
         </div>
@@ -292,7 +306,7 @@ export function HomePageLarge() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='097' onClick={goesSpecific}>Book Now</button>
             </div>
           </div>
         </div>
@@ -302,11 +316,22 @@ export function HomePageLarge() {
 }
 
 export function HomePageSmall() {
-    const [clickCount, setClickCount] = useState(0);
 
+    const [clickCount, setClickCount] = useState(0);
+    const goesSpecific = (event) => {
+      const target = event.target;
+      if (target.id){
+        if(localStorage.getItem('token')){
+          const username = localStorage.getItem('email');
+          navigate('/' + username + '/' + target.id);
+        }
+        else{
+          navigate('/' + target.id);
+        }
+      }
+    };
     // 设置连续点击的时间限制，例如500毫秒内必须完成三连击
     const clickTimeLimit = 1000;
-  
     let timeoutId = null;
     // 进入Admin登录页面
     const goesLoginAdmin = () => {
@@ -320,7 +345,7 @@ export function HomePageSmall() {
   
       const newCount = clickCount + 1;
       setClickCount(newCount);
-  
+      
       if (newCount === 5) {
         // 如果达到三连击，清除定时器，执行路由跳转，并重置点击计数
         clearTimeout(timeoutId);
@@ -507,7 +532,7 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='095'onClick={goesSpecific} >Book Now</button>
             </div>
           </div>
         </div>
@@ -534,7 +559,7 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='097' onClick={goesSpecific}>Book Now</button>
             </div>
           </div>
         </div>
@@ -561,7 +586,7 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info'>Book Now</button>
+              <button className='specific-info' id='098' onClick={goesSpecific}>Book Now</button>
             </div>
           </div>
         </div>

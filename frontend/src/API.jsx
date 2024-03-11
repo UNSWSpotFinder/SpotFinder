@@ -7,6 +7,11 @@ import React, { useState, useEffect, createContext,useContext } from 'react';
 import { styled } from '@mui/material';
 import './CarSpaceOpearation.css';
 const port = '8080';
+export function removeLastSegment(pathname) {
+  const segments = pathname.split('/');
+  segments.pop(); // Remove the last segment
+  return segments.join('/')+'/'; // Join the remaining segments, ensure at least a root '/' is returned
+}
 export const HoverImage = (src) => {
   console.log(src);
   // State to track whether the image is being hovered

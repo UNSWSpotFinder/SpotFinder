@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import './Login.css';
 import { useState,useEffect } from 'react';
 import { motion,AnimatePresence } from 'framer-motion';
@@ -9,7 +9,8 @@ import {
     callAPIverifyEmailCode,
     callAPIsendEmailCode,
     callAPILoginUser,
-    callAPIResetPwdUser
+    callAPIResetPwdUser,
+    removeLastSegment
   } from './API';
 
   
@@ -17,6 +18,7 @@ import {
 // 用户登录页面
 export function UserLoginPage(){
     const { _ , setOpenSnackbar } = useError();
+    let location = useLocation();
     // 路由控制
     let navigate = useNavigate();
     // 密码可见性
@@ -26,11 +28,13 @@ export function UserLoginPage(){
     const [Password,setPassword]=useState('');
     // 回到主页
     let backhome = ()=>{
-        navigate('/');
+        navigate(-1);
     }
     // 用户注册页
     let goesRegist= ()=>{
-        navigate('/userregist');
+        const temp = removeLastSegment(location.pathname);
+        console.log(temp);
+        navigate(temp+'userregist');
     }
     // 忘记密码页
     let forgetpassword = () => {
@@ -68,7 +72,7 @@ export function UserLoginPage(){
                 });
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('email',Email);
-                navigate(`/${Email}`);
+                navigate(`/${Email}` + '/' + localStorage.getItem('spotID'));
             })
             .catch((error)=>{
                 setOpenSnackbar({
@@ -191,7 +195,7 @@ export function UserLoginPageForgetPassword(){
         setPassword2(event.target.value);
     };
     let backhome = ()=>{
-        navigate('/');
+        navigate(-1);
     }
     let goesRegist= ()=>{
         navigate('/userregist');
@@ -228,7 +232,7 @@ export function UserLoginPageForgetPassword(){
               message: 'Password reset successful',
               timestamp: new Date().getTime()
             });
-            navigate('/userlogin');
+            navigate(-1);
         })
         .catch((error)=>{
             // when meet error
