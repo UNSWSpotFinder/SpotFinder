@@ -26,6 +26,8 @@ import {
 import { UserRegistPage, AdminRegistPage } from './Regist';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useError } from './API';
+import { getUserInfo } from './components/API'
+
 // 未登录状态的用户页面
 export function HomePageLarge() {
   const { _, setOpenSnackbar } = useError();
