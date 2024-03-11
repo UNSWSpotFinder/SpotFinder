@@ -16,6 +16,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/authorization": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "pingpong example",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "description": "do ping",
@@ -100,6 +128,345 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Manager created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/login": {
+            "post": {
+                "description": "管理员登陆",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "管理员登陆",
+                "parameters": [
+                    {
+                        "description": "Manager",
+                        "name": "manager",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Manager.loginRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/create/{userId}": {
+            "post": {
+                "description": "create a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Create a spot",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "spot info",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spots.CreateSpotSimple"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Add spot successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to add spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/delete/{id}": {
+            "put": {
+                "description": "delete a spot by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Delete a spot(soft delete)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/list/{page}/{pageSize}": {
+            "get": {
+                "description": "get list of all spots(PageQuery)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Get the list of spots",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "path"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "PageSize",
+                        "name": "pageSize",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message: list of spots",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "error: Cannot get spot list",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/ownedCar/choseSize/{plateNumber}": {
+            "get": {
+                "description": "chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Chose size with user's car plate number,param is plate number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plate Number",
+                        "name": "plateNumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/ownedList/{ownerId}": {
+            "get": {
+                "description": "show all owned spots by User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Show all owned spots",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Owner ID",
+                        "name": "ownerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "spots\", \"list of spots\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to get spot list\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/update": {
+            "put": {
+                "description": "update a spot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Update a spot",
+                "parameters": [
+                    {
+                        "description": "spot info",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spot.Basic"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Update spot successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to update spot\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/update/spotPrice": {
+            "put": {
+                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spots"
+                ],
+                "summary": "Update a spot's price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per day",
+                        "name": "perDay",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per night",
+                        "name": "perNight",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Price per month",
+                        "name": "perMonth",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\", \"Update spot price successfully\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error\", \"unable to update spot price\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -216,6 +583,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取用户信息。如果未提供email查询参数，则返回当前用户的信息。如果提供了email查询参数，只有管理员可以查询其他用户的信息。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要查询的用户邮箱",
+                        "name": "email",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取管理员信息",
+                        "schema": {
+                            "$ref": "#/definitions/Manager.AdminInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "错误的请求"
+                    },
+                    "401": {
+                        "description": "未授权或无权限"
+                    },
+                    "500": {
+                        "description": "内部服务器错误"
+                    }
+                }
+            }
+        },
         "/user/list": {
             "get": {
                 "description": "do ping",
@@ -241,6 +653,11 @@ const docTemplate = `{
         },
         "/user/modifyPasswd": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "修改密码",
                 "consumes": [
                     "application/json"
@@ -259,7 +676,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.modifyRequestData"
+                            "$ref": "#/definitions/User.modifyPasswordData"
                         }
                     }
                 ],
@@ -275,6 +692,11 @@ const docTemplate = `{
         },
         "/user/modifyUserInfo": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "修改用户信息",
                 "consumes": [
                     "application/json"
@@ -293,7 +715,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.Basic"
+                            "$ref": "#/definitions/User.ModifyUserInfoData"
                         }
                     }
                 ],
@@ -309,6 +731,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "Manager.AdminInfo": {
+            "type": "object",
+            "properties": {
+                "adminID": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "Manager.createManagerRequestData": {
             "type": "object",
             "required": [
@@ -338,8 +774,79 @@ const docTemplate = `{
                 }
             }
         },
-        "User.Basic": {
+        "Manager.loginRequestData": {
+            "type": "object",
+            "required": [
+                "adminID"
+            ],
+            "properties": {
+                "adminID": {
+                    "type": "string",
+                    "example": "longsizhuoIsTheBest"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "Spot.Basic": {
             "type": "object"
+        },
+        "Spots.CreateSpotSimple": {
+            "type": "object",
+            "required": [
+                "isOccupy",
+                "isVisible",
+                "ownerId",
+                "size",
+                "spotAddr",
+                "spotName",
+                "spotType"
+            ],
+            "properties": {
+                "isOccupy": {
+                    "description": "将字段名更改为驼峰式并匹配JSON键",
+                    "type": "boolean"
+                },
+                "isVisible": {
+                    "description": "同上",
+                    "type": "boolean"
+                },
+                "ownerId": {
+                    "description": "使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键",
+                    "type": "integer"
+                },
+                "pictures": {
+                    "description": "照片应为字符串切片，omitempty表明非必需字段",
+                    "type": "string"
+                },
+                "pricePerDay": {
+                    "type": "number"
+                },
+                "pricePerMonth": {
+                    "type": "number"
+                },
+                "pricePerWeek": {
+                    "type": "number"
+                },
+                "rate": {
+                    "description": "保留float64类型，omitempty表明非必需字段",
+                    "type": "number"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "spotAddr": {
+                    "type": "string"
+                },
+                "spotName": {
+                    "type": "string"
+                },
+                "spotType": {
+                    "type": "string"
+                }
+            }
         },
         "User.CodeStructData": {
             "type": "object",
@@ -386,6 +893,100 @@ const docTemplate = `{
                 }
             }
         },
+        "User.InfoDetail": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "account": {
+                    "type": "number",
+                    "example": 0
+                },
+                "addr": {
+                    "type": "string",
+                    "example": ""
+                },
+                "avatar": {
+                    "type": "string",
+                    "example": "avata"
+                },
+                "carInfo": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "createTime": {
+                    "type": "string",
+                    "example": "2021-07-01 00:00:00"
+                },
+                "dateBirth": {
+                    "type": "string",
+                    "example": "25/02/1999"
+                },
+                "deleteTime": {
+                    "type": "string",
+                    "example": "2021-07-01 00:00:00"
+                },
+                "earning": {
+                    "type": "number",
+                    "example": 0
+                },
+                "email": {
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "leasedSpot": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "ownedSpot": {
+                    "type": "string",
+                    "example": "{}"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "topUp": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "User.ModifyUserInfoData": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "address"
+                },
+                "avata": {
+                    "type": "string",
+                    "example": "avata"
+                },
+                "dateBirth": {
+                    "type": "string",
+                    "example": "25/02/1999"
+                },
+                "email": {
+                    "description": "Email 不能被修改，不能在这里修改，是主键",
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "longsizhuo"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
         "User.RequestData": {
             "type": "object",
             "required": [
@@ -403,14 +1004,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "longsizhuo@gmail.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456"
                 }
             }
         },
-        "User.modifyRequestData": {
+        "User.modifyPasswordData": {
             "type": "object",
             "properties": {
                 "email": {
@@ -424,6 +1027,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
