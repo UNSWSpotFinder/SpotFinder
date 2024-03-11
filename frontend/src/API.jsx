@@ -5,7 +5,54 @@ import Stack from '@mui/material/Stack';
 import React, { useState, useEffect, createContext,useContext } from 'react';
 
 import { styled } from '@mui/material';
+import './CarSpaceOpearation.css';
 const port = '8080';
+export const HoverImage = (src) => {
+  console.log(src);
+  // State to track whether the image is being hovered
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Event handler for mouse enter
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  // Event handler for mouse leave
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  return (
+    <img className='CnhQ7Answer'
+      // Use the hovered image source if the mouse is over the component, otherwise use the default source
+      src={isHovered ? '/img/DEL.png' : src.src}
+      alt={src.alt}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    />
+  );
+};
+export const GetDistance = (startDate, endDate) => {
+  // Check if both start and end dates are provided
+  if (startDate && endDate) {
+    // Create new Date objects to ensure consistency
+    const date1 = new Date(String(startDate));
+    const date2 = new Date(String(endDate));
+
+    // Set the time portion of the dates to midnight (UTC)
+    date1.setUTCHours(0, 0, 0, 0);
+    date2.setUTCHours(0, 0, 0, 0);
+    // Calculate the time difference in milliseconds
+    const timeDistance = Math.abs(date2.getTime() - date1.getTime());
+
+    // Calculate the number of days and round up to the nearest whole number
+    const daysDistance = Math.ceil(timeDistance / (1000 * 60 * 60 * 24));
+
+    // Return the calculated number of days
+    return daysDistance;
+  }
+  return 0;
+};
 export const meetErrorLog = (error) => {
     console.log(error);
     let errorText = '';

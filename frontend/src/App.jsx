@@ -16,7 +16,7 @@ import { BrowserRouter, Routes, Route, Link,useParams} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{
-  CreatSpace, EditSpace
+  CreateSpace, EditSpace
 } from './CarSpaceOperation';
 // 导入Dashboard相关页面组件
 import DashboardTop from './components/DashboardTop';
@@ -66,7 +66,7 @@ function App() {
             </Routes>
           <Routes>
             <Route path="/:username" element={LayoutComponentHome} />
-            <Route path="/:username/createspace" element = {<CreatSpace/>} />
+            <Route path="/:username/createspace" element = {<CreateSpace/>} />
             <Route path="/:username/editspace" element = {<EditSpace/>} />
             {/* DashboardTop作为父路由 */}
             <Route path="/:username/dashboard" element={<DashboardTop />}>
