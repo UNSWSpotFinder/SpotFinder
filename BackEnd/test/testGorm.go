@@ -109,6 +109,12 @@ func main() {
 	// 车位类别
 	spotType := []string{"Carport", "Driveway", "Garage", "Parking-lot"}
 	spotSize := []string{"Box", "Sedan", "Hatchback", "4WD/SUV", "Van"}
+	chargeType := []string{
+		"None",
+		"Wall(AU/NZ)",
+		"SAE J-1772",
+		"Type2",
+		"CHAdeMO"}
 	orderStatus := []string{"Pending", "Paid", "Cancelled", "Refund"}
 	for i := 1; i <= userCount; i++ {
 		// Create User
@@ -156,21 +162,24 @@ func main() {
 		}
 
 		// Create Spot
-		var PricePerDay float64 = gofakeit.Float64Range(90, 100)
+		var PricePerDay = gofakeit.Float64Range(90, 100)
 		PricePerWeek := gofakeit.Float64Range(PricePerDay*5, PricePerDay*7)
-		PricePerMonth := gofakeit.Float64Range(PricePerWeek*4, PricePerWeek*5)
+		PricePerHour := gofakeit.Float64Range(PricePerDay/24, PricePerDay/8)
 		var occupiedTime []string
+		var availableTime []string
 		for j := 0; j < rand.Intn(4); j++ {
 			occupiedTime = append(occupiedTime, gofakeit.Date().String())
+			availableTime = append(availableTime, gofakeit.Date().String())
 		}
 		occupiedTimeJSON, err := json.Marshal(occupiedTime)
+		availableTimeJSON, err := json.Marshal(availableTime)
 		if err != nil {
 			println(err)
 			return
 		}
 
-		pictures := []string{}
-		for j := 0; j < rand.Intn(4); j++ {
+		var pictures []string
+		for j := 0; j < gofakeit.Number(1, 4); j++ {
 			avatar, err := randomAvatar()
 			if err != nil {
 				fmt.Printf("Failed to create avatar at user %d: %v\n\n", i, err)
@@ -178,22 +187,29 @@ func main() {
 			}
 			pictures = append(pictures, avatar)
 		}
+		primaryPicture := pictures[0]
 		picturesJSON, err := json.Marshal(pictures)
-
+		chargeType := chargeType[gofakeit.Number(0, 4)]
 		spot := Spot.Basic{
-			SpotName:      gofakeit.Word(),
-			SpotAddr:      gofakeit.Address().Address,
-			SpotType:      spotType[gofakeit.Number(0, 3)],
-			IsOccupy:      false,
-			IsVisible:     true,
-			Rate:          uint(gofakeit.Number(0, 100)),
-			Size:          spotSize[gofakeit.Number(0, 4)],
-			Pictures:      string(picturesJSON),
-			PricePerDay:   PricePerDay,
-			PricePerWeek:  PricePerWeek,
-			PricePerMonth: PricePerMonth,
+			SpotName:     gofakeit.Word(),
+			SpotAddr:     gofakeit.Address().Address,
+			SpotType:     spotType[gofakeit.Number(0, 3)],
+			IsVisible:    true,
+			Rate:         uint(gofakeit.Number(0, 100)),
+			Size:         spotSize[gofakeit.Number(0, 4)],
+			Pictures:     primaryPicture,
+			Charge:       chargeType,
+			MorePictures: string(picturesJSON),
+			IsDayRent:    gofakeit.Bool(),
+			IsWeekRent:   gofakeit.Bool(),
+			IsHourRent:   gofakeit.Bool(),
+			PricePerDay:  PricePerDay,
+			PricePerWeek: PricePerWeek,
+			PricePerHour: PricePerHour,
 
-			OccupiedTime: string(occupiedTimeJSON),
+			AvailableTime: string(availableTimeJSON),
+			OccupiedTime:  string(occupiedTimeJSON),
+			OrderNum:      uint(rand.Intn(10)),
 		}
 
 		order := Order.Basic{
