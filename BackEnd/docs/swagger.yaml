@@ -42,7 +42,7 @@ definitions:
     type: object
   Spot.Basic:
     type: object
-  Spots.createSpotRequestData:
+  Spots.CreateSpotRequestData:
     properties:
       availableTime:
         type: string
@@ -349,7 +349,7 @@ paths:
         name: spot
         required: true
         schema:
-          $ref: '#/definitions/Spots.createSpotRequestData'
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
       produces:
       - application/json
       responses:
@@ -408,6 +408,43 @@ paths:
           schema:
             type: string
       summary: 获取车位列表
+      tags:
+      - Spots
+  /spot/modifySpotInfo/{spotId}:
+    post:
+      consumes:
+      - application/json
+      description: 修改车位信息
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      - description: Spot information
+        in: body
+        name: spot
+        required: true
+        schema:
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot information updated
+          schema:
+            type: string
+        "400":
+          description: Data binding error
+          schema:
+            type: string
+        "500":
+          description: SQL error message
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 修改车位信息
       tags:
       - Spots
   /spot/ownedCar/choseSize/{plateNumber}:
