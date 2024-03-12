@@ -44,6 +44,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/car/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "创建车辆",
+                "parameters": [
+                    {
+                        "description": "车辆信息",
+                        "name": "carInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.AddCreationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "description": "do ping",
@@ -999,6 +1038,35 @@ const docTemplate = `{
                 },
                 "spotType": {
                     "type": "string"
+                }
+            }
+        },
+        "User.AddCreationRequest": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "brand"
+                },
+                "charge": {
+                    "type": "string",
+                    "example": "charge"
+                },
+                "picture": {
+                    "type": "string",
+                    "example": "picture"
+                },
+                "plate": {
+                    "type": "string",
+                    "example": "plate"
+                },
+                "size": {
+                    "type": "string",
+                    "example": "size"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "type"
                 }
             }
         },
