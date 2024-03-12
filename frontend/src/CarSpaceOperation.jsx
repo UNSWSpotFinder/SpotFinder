@@ -453,23 +453,23 @@ export const CreateSpace = () => {
   const CreateNow = () => {
     const data = {
       spotName: String(Title),
-      SpaceType: String(SpaceType),
+      spotType: String(SpaceType),
       size: String(CarType),
       charge: String(charge),
       passWay:String(PassWay),
-      spotAddr: {
+      spotAddr:JSON.stringify({
         Country: Country,
         City: City,
         State:State,
         Postcode: Postcode,
         Street: Street,
-      },
+      }),
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
-      pricePerDay: parseFloat(PriseDay),
-      pricePerHour: parseFloat(PriseHour),
-      pricePerWeek: parseFloat(PriseWeek),
+      pricePerDay: parseFloat(PriseDay)||0,
+      pricePerHour: parseFloat(PriseHour)||0,
+      pricePerWeek: parseFloat(PriseWeek)||0,
       pictures: Thumbil,
       morePictures: AllImaegsString,
       availableTime: timeIntervals,
@@ -482,8 +482,7 @@ export const CreateSpace = () => {
     if (data) {
       // inital the data
       // if the title is empty
-      console.log(data.SpaceType.length);
-      if (data.SpaceType.length === 0) {
+      if (data.spotType.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -634,6 +633,8 @@ export const CreateSpace = () => {
             endDate: FirstEnd,
             distance: GetDistance(FirstStart,FirstEnd),
         });
+        data.availableTime=JSON.stringify(data.availableTime);
+        data.morePictures=JSON.stringify(data.morePictures);
         callAPICreateSpot('spot/create',data,localStorage.getItem('token'))
         .then((response)=>{
             console.log(response);
@@ -645,12 +646,8 @@ export const CreateSpace = () => {
             navigate(-1);
         })
         .catch((error)=>{
-              data.availableTime.shift({
-                id: Date.now(), // unique id
-                startDate: FirstStart,
-                endDate: FirstEnd,
-                distance: GetDistance(FirstStart,FirstEnd),
-            });
+              console.log('np');
+              console.log(data);
             setOpenSnackbar({
                 severity:'warning',
                 message:error,
@@ -658,8 +655,6 @@ export const CreateSpace = () => {
             });
         });
       }
-        console.log('np');
-        console.log(data);
     }
   };
   return (

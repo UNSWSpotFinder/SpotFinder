@@ -34,6 +34,34 @@ import Listings from './components/Listings';
 import Profile from './components/Profile';
 import Messages from './components/Messages';
 import Vehicles from './components/Vehicles';
+import dayjs from 'dayjs';
+// 创建一个 Context 对象
+export const AppContext = React.createContext();
+
+export const AppProvider = ({ children }) => {
+  // 保存信息的状态
+  const [contextState, setContextState] = useState({
+    order_rank_way: true,
+    score_rank_way: true,
+    maxPrise: '',
+    minPrise: '',
+    CarType: '',
+    StartDay: null,
+    EndDay: null,
+  });
+
+  // 更新状态的方法
+  const updateContextState = (newState) => {
+    setContextState((prevState) => ({ ...prevState, ...newState }));
+  };
+
+  return (
+    <AppContext.Provider value={{ contextState, updateContextState }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
 
 function App() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -73,40 +101,42 @@ function App() {
     return null;
   };
   return(
-    <ErrorProvider>
-      <GlobalSnackbar/>
-        <BrowserRouter>
+    <AppProvider>
+      <ErrorProvider>
+        <GlobalSnackbar/>
+          <BrowserRouter>
+              <Routes>
+                  <Route path="*/userlogin"   element={<UserLoginPage/>} />
+                  <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
+                  {/* <Route path="/userregist"  element={<UserRegistPage/>} /> 
+                  <Route path="/adminlogin"  element={<AdminLoginPage/>} />  */}
+                  <Route path="/adminregist" element={<AdminRegistPage/>} />
+                  <Route path="/:username/choose" element={<CarSpaceChoice/>} />
+                  <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
+                  <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
+                  <Route path='/*' element={<CatchAllRouteHandler/>}/>
+              </Routes>
             <Routes>
-                <Route path="*/userlogin"   element={<UserLoginPage/>} />
-                <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-                {/* <Route path="/userregist"  element={<UserRegistPage/>} /> 
-                <Route path="/adminlogin"  element={<AdminLoginPage/>} />  */}
-                <Route path="/adminregist" element={<AdminRegistPage/>} />
-                <Route path="/:username/choose" element={<CarSpaceChoice/>} />
-                <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
-                <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
-                <Route path='/*' element={<CatchAllRouteHandler/>}/>
+              <Route path = "/:username" element={LayoutComponentHome} />
+              <Route path = "/:username/createspace" element = {<CreateSpace/>} />
+              <Route path = "/:username/editspace" element = {<EditSpace/>} />
+              <Route path = '/tourists//detail/*' element={LayoutDetail}/>
+              <Route path = '/:username/detail/*' element={LayoutDetail}/>
+              {/* DashboardTop作为父路由 */}
+              <Route path="/:username/dashboard" element={<DashboardTop />}>
+              <Route index element={<Dashboard />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="listings" element={<Listings />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="vehicles" element={<Vehicles />} />
+              <Route path="messages" element={<Messages />} />
+            </Route>
+              {/* Keep the wildcard route to catch all and render Home */}
+              <Route path="/*" element={LayoutComponentHome} />
             </Routes>
-          <Routes>
-            <Route path = "/:username" element={LayoutComponentHome} />
-            <Route path = "/:username/createspace" element = {<CreateSpace/>} />
-            <Route path = "/:username/editspace" element = {<EditSpace/>} />
-            <Route path = '/tourists/*' element={LayoutDetail}/>
-            <Route path = '/:username/*' element={LayoutDetail}/>
-            {/* DashboardTop作为父路由 */}
-            <Route path="/:username/dashboard" element={<DashboardTop />}>
-            <Route index element={<Dashboard />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="listings" element={<Listings />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="vehicles" element={<Vehicles />} />
-            <Route path="messages" element={<Messages />} />
-          </Route>
-            {/* Keep the wildcard route to catch all and render Home */}
-            <Route path="/*" element={LayoutComponentHome} />
-          </Routes>
-        </BrowserRouter>
-    </ErrorProvider>
+          </BrowserRouter>
+      </ErrorProvider>
+    </AppProvider>
   )
 }
 

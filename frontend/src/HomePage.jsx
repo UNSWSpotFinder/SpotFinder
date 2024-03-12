@@ -3,13 +3,14 @@ import React, {
   ChangeEvent,
   useContext,
   LabelHTMLAttributes,
-  useEffect
+  useEffect,
 } from 'react';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from '@mui/x-date-pickers';
 import './HomePage.css';
 import {
   useNavigate,
@@ -27,28 +28,40 @@ import {
 import { UserRegistPage, AdminRegistPage } from './Regist';
 import { motion, AnimatePresence } from 'framer-motion';
 import { callAPIGetAllSpot, useError } from './API';
+import { AppContext } from './App';
+import { private_createTypography } from '@mui/material';
 // 未登录状态的用户页面
 
 function AllSpoting() {
-  const navigate=useNavigate();
+  const { contextState, updateContextState } = useContext(AppContext);
+  const navigate = useNavigate();
   const goesSpecific = (event) => {
     const target = event.target;
     localStorage.setItem('spotID', target.id);
     if (target.id) {
       if (localStorage.getItem('token')) {
         const username = localStorage.getItem('email');
-        navigate('/' + username + '/' + target.id);
+        navigate('/' + username + '/detail/' + target.id);
       } else {
-        navigate('/tourists/' + target.id);
+        navigate('/tourists/detail/' + target.id);
       }
     }
   };
-  const {_, setOpenSnackbar} = useError();
+  const { _, setOpenSnackbar } = useError();
   let [allSpot, setAllSpot] = useState([]);
+  let [filteredSpot,setfilrerSpot]=useState([]);
   useEffect(() => {
     getNewSpot(); // Call on component mount
   }, []); // Empty dependency array means this effect runs once on mount
+  useEffect(()=>{
+    let filterBookway=allSpot.filter((data)=>{
+      return data;
+    })
+    let filterPrice=allSpot.filter((data)=>{
+      return data;
+    })
 
+  },[contextState]);
   function getNewSpot() {
     callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
       .then((response) => {
@@ -69,13 +82,13 @@ function AllSpoting() {
         <div key={index} className='SpaceOverall'>
           <img
             className='spaceimg'
-            src={'data:image/jpeg;base64,'+spot.Picture||'img/sample.jpeg'}
-            width={'116px'}
-            height={'116px'}
+            src={'data:image/jpeg;base64,' + spot.Picture || 'img/sample.jpeg'}
           ></img>
           <div className='info'>
             <div className='right-top'>
-              <p className='space-title'>{spot.SpotName+' '+spot.SpotType}</p>
+              <p className='space-title'>
+                {spot.SpotName + ' ' + spot.SpotType}
+              </p>
               <div className='rate-part'>
                 <img src='img/star.png' className='rate-img'></img>
                 <p className='rate-txt'>{spot.Rate}</p>
@@ -89,7 +102,11 @@ function AllSpoting() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>{spot.OrderNum}</p>
               </div>
-              <button className='specific-info' id={index} onClick={goesSpecific}>
+              <button
+                className='specific-info'
+                id={index}
+                onClick={goesSpecific}
+              >
                 Book Now
               </button>
             </div>
@@ -101,17 +118,74 @@ function AllSpoting() {
 }
 
 export function HomePageLarge() {
-  const { _, setOpenSnackbar } = useError();
+  const { contextState, updateContextState } = useContext(AppContext);
+  const [orderway,setorderway]=useState('');
+  const [minP, setminP] = useState(contextState.minPrise);
+  const [maxP, setmaxP] = useState(contextState.maxPrise);
+  const [fitsize, setsize] = useState(contextState.CarType);
+  const [R, setR] = useState(contextState.score_rank_way);
+  const [O, setO] = useState(contextState.order_rank_way);
+  const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
+  const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
+  const update = () => {
+    
+  };
+  const handleStartDate=(event)=>{
+    setstartDate(event);
+    updateContextState({
+      StartDay: event
+    });
+  }
+  const handleEndDate=(event)=>{
+    setendDate(event);
+    updateContextState({
+      EndDay: event
+    });
+  }
+  const handlePopChange = (event) => {
+    let res = event.target.value;
+    setR(res === '0');
+    updateContextState({
+      order_rank_way: (res==='0')
+    });
+    console.log(contextState);
+  };
+  const handleOrdChange = (event) => {
+    let res = event.target.value;
+    setO(res === '0');
+    updateContextState({
+      score_rank_way: (res==='0')
+    });
+    console.log(contextState);
+  };
+  const handleOrdwayChange = (event) => {
+    let res = event.target.value;
+    setorderway(res);
+    update();
+    console.log(contextState);
+  };
+  const handleminpriceChange=(event)=>{
+    setminP(event.target.value);
+    updateContextState({
+      minPrise: event.target.value
+    });
+  }
+  const handlemaxpriceChange=(event)=>{
+    setmaxP(event.target.value);
+    updateContextState({
+      maxPrise: event.target.value
+    });
+  }
+  const { _ , setOpenSnackbar } = useError();
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
-  console.log(token);
-  // 跳转车位选择页
   // 调库
   let navigate = useNavigate();
   const location = useLocation(); // 获取当前的location对象
   // 进入用户登录页面
   let goesLoginUser = () => {
     navigate('/userlogin');
+
   };
   // 进入用户注册页面
   let goesRegistUser = () => {
@@ -242,6 +316,7 @@ export function HomePageLarge() {
           defaultValue={'0'}
           className='form-select mglr'
           aria-label='Default select example'
+          onChange={handlePopChange}
         >
           <option value='0'>Highest sales</option>
           <option value='1'>Lowest sales</option>
@@ -250,6 +325,7 @@ export function HomePageLarge() {
           defaultValue={'0'}
           className='form-select mglr'
           aria-label='Default select example'
+          onChange={handleOrdChange}
         >
           <option value='0'>Highest rates</option>
           <option value='1'>Lowest rates</option>
@@ -258,30 +334,52 @@ export function HomePageLarge() {
           defaultValue={'0'}
           className='form-select mglr-r'
           aria-label='Default select example'
+          onChange={handleOrdwayChange}
         >
-          <option value='0'>Weekly</option>
+          <option value='0'>Hourly</option>
           <option value='1'>Daily</option>
-          <option value='2'>Hourly</option>
+          <option value='2'>Weekly</option>
         </select>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker
+        {orderway==='0'?(
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              className='timechoice'
+              label='Parking time'
+              value={startDate}
+              onChange={handleStartDate}
+            />
+            <DateTimePicker
+              className='timechoice'
+              label='Leaving time'
+              value={endDate}
+              onChange={handleEndDate}
+            />
+          </LocalizationProvider>
+        ):
+        (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
             className='timechoice'
             label='Parking time'
-            value={dayjs(new Date())}
+            value={startDate}
+            onChange={handleStartDate}
           />
-          <DateTimePicker
+          <DatePicker
             className='timechoice'
             label='Leaving time'
-            value={dayjs(new Date())}
+            value={endDate}
+            onChange={handleEndDate}
           />
         </LocalizationProvider>
+        )
+        }
         <div className='pricerange'>
           <label className='pricerange'>MIN$</label>
-          <input className='pricerange'></input>
+          <input className='pricerange' value={minP} onChange={handleminpriceChange}></input>
         </div>
         <div className='pricerange'>
           <label className='pricerange'>MAX$</label>
-          <input className='pricerange'></input>
+          <input className='pricerange' value={maxP} onChange={handlemaxpriceChange}></input>
         </div>
         <button className='selectcar' onClick={ChooseCar}>
           SELECT YOUR CAR
@@ -289,7 +387,7 @@ export function HomePageLarge() {
       </div>
       {/* 所有车位列表 */}
       <div className='ListingPart'>
-        <AllSpoting/>
+        <AllSpoting />
       </div>
     </div>
   );
