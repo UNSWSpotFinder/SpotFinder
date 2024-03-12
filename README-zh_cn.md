@@ -159,7 +159,7 @@
    type OrderBasic struct {
        gorm.Model
        id uint `gorm:"primaryKey; autoIncrement"`
-       // 一个订单只能属于一个用户
+       // 一个订单只能属于一个用户 wwww
        OwnerID uint `gorm:"type:int;not null"`
        // 一个订单只能属于一个车位
        SpotID uint `gorm:"type:int;not null"`

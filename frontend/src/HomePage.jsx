@@ -27,6 +27,7 @@ import {
 } from './Login';
 import { UserRegistPage, AdminRegistPage } from './Regist';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getUserInfo } from './components/API'
 import { callAPIGetAllSpot, useError } from './API';
 import { AppContext } from './App';
 import { private_createTypography } from '@mui/material';
