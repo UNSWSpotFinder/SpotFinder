@@ -74,6 +74,8 @@ definitions:
         type: string
       spotName:
         type: string
+      spotType:
+        type: string
     type: object
   User.CodeStructData:
     properties:
@@ -678,6 +680,29 @@ paths:
       security:
       - BearerAuth: []
       summary: 修改用户信息
+      tags:
+      - User
+  /user/topUp:
+    post:
+      consumes:
+      - application/json
+      description: 充值
+      parameters:
+      - description: 充值金额
+        in: path
+        name: amount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 充值
       tags:
       - User
 securityDefinitions:
