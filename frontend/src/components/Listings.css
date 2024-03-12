@@ -1,0 +1,193 @@
+h3 {
+    border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  /* 最上方title部分 */
+  .button-part {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .listing-title {
+    background-color: #fff;
+    color: #e11e2c;
+    border: 2px solid #e11e2c;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .listing-title:hover {
+    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+
+  }
+
+  .add-a-spot-btn {
+    background-color: #e11e2c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .add-a-spot-btn:hover {
+    background-color: #f66;
+  }
+
+
+  /* Listings部分 */
+  .listing-info {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px; /* rounded corners */
+    overflow: hidden; 
+  }
+
+  .Picture {
+    background-color: #d3d3d3; /* Placeholder color for the thumbnail */
+    width: 120px;
+    height: 120px;
+    border-radius: 5px;
+  }
+
+  .list-part {
+    padding: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    padding: 20px;
+    margin:20px 20px;
+  }
+
+  .space-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .spot-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .location {
+    color: black;
+    font-size: 11px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+  }
+
+  .spot-type, .way-to-access {
+    color: black;
+    font-size: 11px;
+    padding-top: 2px;
+  }
+
+  .manipulation-link {
+    display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+    
+  }
+
+  .manipulation-link a {
+    color: #e11e2c;
+  }
+
+  .manipulation-link a:hover {
+    color: #f66;
+    text-decoration: underline; /* 添加下划线 */
+  }
+
+  .first-line-link {
+    margin-top: -30px;
+    margin-bottom: 20px;
+  }
+
+  .edit-link {
+    margin-right: 15px;
+  }
+
+
+
+  /* .first-line-btn button, .second-line-btn button {
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  } */
+
+  /* .edit-btn {
+    background-color: #e11e2c; 
+    color: white;
+  }
+
+  .edit-btn:hover {
+    background-color: #f66;
+  } */
+
+  /* .delete-btn {
+    color: darkgray;
+  }
+
+  .delete-btn:hover {
+    background-color:darkgray;
+    color: black;
+  } */
+
+  /* .second-line-btn button {
+    width: 160px;
+    background-color: #fff; 
+    color: #e11e2c;
+    border: 2px solid #e11e2c;
+  }
+  
+  .second-line-btn button:hover {
+    background-color: #e11e2c; 
+    color: white;
+  } */
+
+  .price {
+    font-size: 22px;
+    color: #333; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    border-left: 1px solid #d3d3d3;
+    background-color: #fff;
+    padding: 0 15px;
+  }
+
+  .price-item {
+    border-bottom: 1px solid #d3d3d3;
+    padding: 10px; /* spacing inside each price item */
+    text-align: left; /* align text to the right */
+  }
+
+  .price-item:last-child {
+    border-bottom: none;
+  }
+
+  .hint-msg {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .link-to-add a {
+    color: #e11e2c;
+  }
+
+  .link-to-add a:hover {
+    color: #f66;
+  }

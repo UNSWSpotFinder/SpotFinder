@@ -139,6 +139,14 @@ h3 {
   text-align: left;
 }
 
+.booking-number, .listing-number{
+  font-size: 22px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: bolder;
+  color: black;
+  padding-top:20px ;
+}
+
 
 /* 中部和底部Bookings区域的通用样式 */
 .second-bookings, .third-listings {

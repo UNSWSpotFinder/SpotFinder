@@ -71,14 +71,14 @@ const Dashboard = () => {
         {/* 第二列显示当前预定数量 */}
         <div className='second-column-booking'>
           <h5>My Bookings</h5>
-          <div>$[amount]</div>
+          <div className='booking-number'>1</div>
           <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
         </div>
 
         {/* 第三列显示当前用户的车位数量 */}
         <div className='second-column-booking'>
           <h5>My Listings</h5>
-          <div>$[amount]</div>
+          <div className='listing-number'>1</div>
           {/* TODO:这里需要之后修改链接路由 */}
           <Link to="/home">Lease my spot</Link>
         </div>
@@ -98,7 +98,7 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* 底部Bookings区域 */}
+      {/* 底部Listingss区域 */}
       <div className="third-listings">
         <h3>Listings</h3>
         {/* 如果没有lisings就新建一个 */}
