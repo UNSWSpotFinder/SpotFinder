@@ -14,7 +14,7 @@ const Listings = () => {
       <div className="list-part">
         <h3>Listings</h3>
         <div className='listing-info'>
-          <div className='Picture'>Thumbnail</div>
+          <div className='picture'>Thumbnail</div>
           <div className='space-information'>
             <div className='spot-title'>Good spot in North</div>
             <div className='location'>2 Fig Tree La, North Sydney NSW 2060 Australia</div>
