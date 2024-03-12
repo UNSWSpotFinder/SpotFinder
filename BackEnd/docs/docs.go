@@ -194,7 +194,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/Spots.createSpotRequestData"
+                            "$ref": "#/definitions/Spots.CreateSpotRequestData"
                         }
                     }
                 ],
@@ -274,6 +274,64 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Cannot get spot list",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spot/modifySpotInfo/{spotId}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "修改车位信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Spots"
+                ],
+                "summary": "修改车位信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Spot information",
+                        "name": "spot",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Spots.CreateSpotRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot information updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Data binding error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "SQL error message",
                         "schema": {
                             "type": "string"
                         }
@@ -891,7 +949,7 @@ const docTemplate = `{
         "Spot.Basic": {
             "type": "object"
         },
-        "Spots.createSpotRequestData": {
+        "Spots.CreateSpotRequestData": {
             "type": "object",
             "properties": {
                 "availableTime": {
