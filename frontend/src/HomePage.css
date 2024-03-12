@@ -55,13 +55,13 @@ input.Searchbar{
 input.Searchbar::placeholder{
     color: rgb(200, 200, 200);
 }
-img.searchbtn{
+img.searchbtn-home{
     border-radius: 20px;
     width: 20px;
     height: 20px;
     margin: 0px 0px 0px 10px;
     padding: 5px;
-    right: 475px;
+    right: 480px;
     position: absolute;
     z-index: 1;
     background-color: rgb(210, 0, 0);

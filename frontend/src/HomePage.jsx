@@ -266,7 +266,7 @@ export function HomePageLarge() {
         {/* 搜索区域 */}
         <div className='SearchPart'>
           {/* 搜索图标 */}
-          <img className='searchbtn' src='/img/search.png'></img>
+          <img className='searchbtn-home' src='/img/search.png'></img>
           {/* 搜索输入框 */}
           <input className='Searchbar' placeholder='Search by location'></input>
         </div>
