@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -73,6 +74,8 @@ func Login(db *gorm.DB, user *Basic) (string, error) {
 	if err != nil {
 		return "", errors.New("password mismatch")
 	}
+	user.ID = GetUserByEmail(db, user.Email).ID
+	fmt.Println(user.ID) // 打印出来是1021
 	// 登录成功，返回JWT
 	return GenerateToken(user.ID, user.Email, "user")
 }
@@ -81,7 +84,7 @@ func Login(db *gorm.DB, user *Basic) (string, error) {
 func GenerateToken(userID uint, userEmail string, userRole string) (string, error) {
 	// 创建一个新的令牌对象，指定签名方法和令牌中的数据
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": userID,
+		"userID": strconv.Itoa(int(userID)),
 		"email":  userEmail,
 		"exp":    time.Now().Add(time.Hour * 72).Unix(),
 		"role":   userRole,
@@ -89,7 +92,7 @@ func GenerateToken(userID uint, userEmail string, userRole string) (string, erro
 
 	// 使用密钥签名令牌
 	tokenString, err := token.SignedString([]byte(viper.GetString("secrete.key")))
-	println(viper.GetString("secrete.key"))
+	//println(viper.GetString("secrete.key"))
 	return tokenString, err
 }
 
@@ -102,11 +105,11 @@ func ModifyUserInfo(db *gorm.DB, user *Basic) error {
 }
 
 // GetUserByEmail 通过邮箱获取用户
-func GetUserByEmail(db *gorm.DB, email string) (*Basic, error) {
+func GetUserByEmail(db *gorm.DB, email string) *Basic {
 	var user Basic
 	err := db.Where("email = ?", email).Take(&user).Error
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	return &user, nil
+	return &user
 }

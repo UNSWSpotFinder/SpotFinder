@@ -37,7 +37,7 @@ func DeleteSpotController(c *gin.Context) {
 	return
 }
 
-type createSpotRequestData struct {
+type CreateSpotRequestData struct {
 	SpotName      string  `json:"spotName"`
 	SpotAddr      string  `json:"spotAddr"`
 	PassWay       string  `json:"passWay"`
@@ -62,14 +62,14 @@ type createSpotRequestData struct {
 // @Tags Spots
 // @Accept  json
 // @Produce  json
-// @Param   spot  body createSpotRequestData true "spot info"
+// @Param   spot  body CreateSpotRequestData true "spot info"
 // @Success 200 {string} json{"message", "Add spot successfully"}
 // @Failure 500 {string} json{"error", "unable to add spot"}
 // @Router /spot/create [post]
 // @Security BearerAuth
 func CreateSpotController(c *gin.Context) {
 	var spot *Spot.Basic
-	var request createSpotRequestData
+	var request CreateSpotRequestData
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Cannot bind spot",
@@ -78,13 +78,7 @@ func CreateSpotController(c *gin.Context) {
 	}
 	// 从请求中获取用户的ID
 	userEmail := c.GetString("email")
-	user, err := User.GetUserByEmail(Service.DB, userEmail)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "失败",
-		})
-		return
-	}
+	user := User.GetUserByEmail(Service.DB, userEmail)
 	// 将请求数据转换为模型
 	spot = &Spot.Basic{
 		OwnerID:       user.ID,
@@ -105,7 +99,7 @@ func CreateSpotController(c *gin.Context) {
 		AvailableTime: request.AvailableTime,
 		OrderNum:      0,
 	}
-	err = controller.CreateSpot(spot, userEmail, Service.DB)
+	err := controller.CreateSpot(spot, userEmail, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "失败" + err.Error(),

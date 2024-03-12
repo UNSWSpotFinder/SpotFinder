@@ -42,7 +42,7 @@ definitions:
     type: object
   Spot.Basic:
     type: object
-  Spots.createSpotRequestData:
+  Spots.CreateSpotRequestData:
     properties:
       availableTime:
         type: string
@@ -185,6 +185,13 @@ definitions:
         type: string
     required:
     - to
+    type: object
+  User.TopUpRequest:
+    properties:
+      amount:
+        type: number
+    required:
+    - amount
     type: object
   User.loginRequestData:
     properties:
@@ -342,7 +349,7 @@ paths:
         name: spot
         required: true
         schema:
-          $ref: '#/definitions/Spots.createSpotRequestData'
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
       produces:
       - application/json
       responses:
@@ -401,6 +408,43 @@ paths:
           schema:
             type: string
       summary: 获取车位列表
+      tags:
+      - Spots
+  /spot/modifySpotInfo/{spotId}:
+    post:
+      consumes:
+      - application/json
+      description: 修改车位信息
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      - description: Spot information
+        in: body
+        name: spot
+        required: true
+        schema:
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot information updated
+          schema:
+            type: string
+        "400":
+          description: Data binding error
+          schema:
+            type: string
+        "500":
+          description: SQL error message
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 修改车位信息
       tags:
       - Spots
   /spot/ownedCar/choseSize/{plateNumber}:
@@ -689,10 +733,11 @@ paths:
       description: 充值
       parameters:
       - description: 充值金额
-        in: path
-        name: amount
+        in: body
+        name: user
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/User.TopUpRequest'
       produces:
       - application/json
       responses:
@@ -703,6 +748,30 @@ paths:
       security:
       - BearerAuth: []
       summary: 充值
+      tags:
+      - User
+  /user/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: 提现
+      parameters:
+      - description: 提现金额
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.TopUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 提现
       tags:
       - User
 securityDefinitions:
