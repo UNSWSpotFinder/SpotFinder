@@ -2,6 +2,21 @@ package Spot
 
 import "gorm.io/gorm"
 
+//	Basic @example{
+//		"CreatedAt": "2024-02-28T03:42:59.802+11:00",
+//		"UpdatedAt": "2024-02-28T03:44:30.653+11:00",
+//		"DeletedAt": null,
+//		"ID": 12,
+//		"OwnerID": 17,
+//		"SpotName": "unless",
+//		"SpotAddr": "31667 Valleysfurt, El Paso, Washington 82897",
+//		"SpotType": "Parking-lot",
+//		"IsOccupy": true,
+//		"IsVisible": true,
+//		"Rate": 53,
+//		"Size": "4WD/SUV",
+//		"Pictures": "null"
+//	}
 type Basic struct {
 	gorm.Model
 	ID uint `gorm:"primaryKey; autoIncrement"`

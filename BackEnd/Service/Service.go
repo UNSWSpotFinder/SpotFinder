@@ -22,3 +22,19 @@ func GetIndex(c *gin.Context) {
 		"message": "pong",
 	})
 }
+
+// GetAuthorization
+// @Summary pingpong example
+// @Schemes
+// @Description do ping
+// @Tags example
+// @Accept json
+// @Produce json
+// @Success 200 {string} Hello world
+// @Router /authorization [get]
+// @Security BearerAuth
+func GetAuthorization(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "pong",
+	})
+}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
@@ -86,7 +87,8 @@ func GenerateToken(userEmail string, userRole string) (string, error) {
 	})
 
 	// 使用密钥签名令牌
-	tokenString, err := token.SignedString([]byte("your_secret_key"))
+	tokenString, err := token.SignedString([]byte(viper.GetString("secrete.key")))
+	println(viper.GetString("secrete.key"))
 	return tokenString, err
 }
 
@@ -96,4 +98,14 @@ func ModifyUserInfo(db *gorm.DB, user *Basic) error {
 		return err
 	}
 	return nil
+}
+
+// GetUserByEmail 通过邮箱获取用户
+func GetUserByEmail(db *gorm.DB, email string) (*Basic, error) {
+	var user Basic
+	err := db.Where("email = ?", email).Take(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
