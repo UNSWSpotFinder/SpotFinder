@@ -21,7 +21,7 @@ import {
   Link,
   useLocation,
 } from 'react-router-dom';
-import { useError, GetDistance,HoverImage } from './API';
+import { useError, GetDistance,HoverImage,callAPICreateSpot } from './API';
 
 // CreatHostingPage
 export const CreateSpace = () => {
@@ -452,27 +452,27 @@ export const CreateSpace = () => {
   // creat a new hosting
   const CreateNow = () => {
     const data = {
-      title: String(Title),
+      spotName: String(Title),
       SpaceType: String(SpaceType),
-      CarType: String(CarType),
+      size: String(CarType),
       charge: String(charge),
-      PassWay:String(PassWay),
-      address: {
+      passWay:String(PassWay),
+      spotAddr: {
         Country: Country,
         City: City,
         State:State,
         Postcode: Postcode,
         Street: Street,
       },
-      isDay: isDay,
-      isHour: isHour,
-      isWeek: isWeek,
-      PriseDay: PriseDay,
-      PriseHour: PriseHour,
-      PriseWeek: PriseWeek,
-      thumbnail: Thumbil,
-      images: AllImaegsString,
-      available: timeIntervals,
+      isDayRent: isDay,
+      isOurRent: isHour,
+      isWeekRent: isWeek,
+      pricePerDay: parseFloat(PriseDay),
+      pricePerHour: parseFloat(PriseHour),
+      pricePerWeek: parseFloat(PriseWeek),
+      pictures: Thumbil,
+      morePictures: AllImaegsString,
+      availableTime: timeIntervals,
     };
     // the price pattern
     const pricePattern = /^[1-9]\d{0,4}$/;
@@ -491,7 +491,7 @@ export const CreateSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
-      if (Confirmflag && data.CarType.length === 0) {
+      if (Confirmflag && data.size.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -500,7 +500,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ2);
       }
       // if the address is not empty
-      if (Confirmflag && data.address) {
+      if (Confirmflag && data.spotAddr) {
         setAllfalse();
         const letterPattern = /[a-zA-Z]+/;
         const numericPattern = /^[0-9]+$/;
@@ -538,7 +538,7 @@ export const CreateSpace = () => {
         }
       }
       // if the title is empty
-      if (Confirmflag && data.PassWay.length === 0) {
+      if (Confirmflag && data.passWay.length === 0) {
         console.log('no Passway');
         setAllfalse();
         setErrorContent('You must set a Passway for your hosting');
@@ -555,7 +555,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
       }
       // if the title is empty
-      if (Confirmflag && data.title.length === 0) {
+      if (Confirmflag && data.spotName.length === 0) {
         console.log('no title');
         setAllfalse();
         setErrorContent('You must set a title for your hosting');
@@ -572,7 +572,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
-      if (Confirmflag && isDay && !pricePattern.test(data.PriseDay)) {
+      if (Confirmflag && isDay && !pricePattern.test(PriseDay)) {
         console.log('No price');
         setAllfalse();
         setErrorContent('Your price must between 1 to 99999');
@@ -580,7 +580,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
-      if (Confirmflag && isHour && !pricePattern.test(data.PriseHour)) {
+      if (Confirmflag && isHour && !pricePattern.test(PriseHour)) {
         console.log('No price');
         setAllfalse();
         setErrorContent('Your price must between 1 to 99999');
@@ -588,7 +588,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
-      if (Confirmflag && isWeek && !pricePattern.test(data.PriseWeek)) {
+      if (Confirmflag && isWeek && !pricePattern.test(PriseWeek)) {
         console.log('No price');
         setAllfalse();
         setErrorContent('Your price must between 1 to 99999');
@@ -606,7 +606,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ8);
       }
       if (Confirmflag) {
-        const res = data.available.filter((value) => {
+        const res = data.availableTime.filter((value) => {
             return value.startDate === null || value.endDate === null;
           });
         if(res.length!=0){
@@ -628,15 +628,38 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ9);
       }
       if(Confirmflag){
-        data.available.unshift({
+        data.availableTime.unshift({
             id: Date.now(), // unique id
             startDate: FirstStart,
             endDate: FirstEnd,
             distance: GetDistance(FirstStart,FirstEnd),
         });
+        callAPICreateSpot('spot/create',data,localStorage.getItem('token'))
+        .then((response)=>{
+            console.log(response);
+            setOpenSnackbar({
+                severity:'success',
+                message:'Create Spot Successful!',
+                timestamp:new Date().getTime()
+            })
+            navigate(-1);
+        })
+        .catch((error)=>{
+              data.availableTime.shift({
+                id: Date.now(), // unique id
+                startDate: FirstStart,
+                endDate: FirstEnd,
+                distance: GetDistance(FirstStart,FirstEnd),
+            });
+            setOpenSnackbar({
+                severity:'warning',
+                message:error,
+                timestamp:new Date().getTime()
+            });
+        });
+      }
         console.log('np');
         console.log(data);
-      }
     }
   };
   return (

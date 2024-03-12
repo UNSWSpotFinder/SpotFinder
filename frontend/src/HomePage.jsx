@@ -3,6 +3,7 @@ import React, {
   ChangeEvent,
   useContext,
   LabelHTMLAttributes,
+  useEffect
 } from 'react';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -25,27 +26,86 @@ import {
 } from './Login';
 import { UserRegistPage, AdminRegistPage } from './Regist';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useError } from './API';
+import { callAPIGetAllSpot, useError } from './API';
 // 未登录状态的用户页面
+
+function AllSpoting() {
+  const navigate=useNavigate();
+  const goesSpecific = (event) => {
+    const target = event.target;
+    localStorage.setItem('spotID', target.id);
+    if (target.id) {
+      if (localStorage.getItem('token')) {
+        const username = localStorage.getItem('email');
+        navigate('/' + username + '/' + target.id);
+      } else {
+        navigate('/tourists/' + target.id);
+      }
+    }
+  };
+  const {_, setOpenSnackbar} = useError();
+  let [allSpot, setAllSpot] = useState([]);
+  useEffect(() => {
+    getNewSpot(); // Call on component mount
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  function getNewSpot() {
+    callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
+      .then((response) => {
+        console.log(response);
+        setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
+      })
+      .catch((error) => {
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+      });
+  }
+  return (
+    <div className='container-all'>
+      {allSpot.map((spot, index) => (
+        <div key={index} className='SpaceOverall'>
+          <img
+            className='spaceimg'
+            src={'data:image/jpeg;base64,'+spot.Picture||'img/sample.jpeg'}
+            width={'116px'}
+            height={'116px'}
+          ></img>
+          <div className='info'>
+            <div className='right-top'>
+              <p className='space-title'>{spot.SpotName+' '+spot.SpotType}</p>
+              <div className='rate-part'>
+                <img src='img/star.png' className='rate-img'></img>
+                <p className='rate-txt'>{spot.Rate}</p>
+              </div>
+            </div>
+            <p className='space-price'>$38.00/day</p>
+            <p className='space-location'>{spot.SpotAddr}</p>
+            <p className='space-type'>Fits a {spot.SpotType}</p>
+            <div className='right-bottom'>
+              <div className='order-part'>
+                <img src='img/booking.png' className='order-times'></img>
+                <p className='times'>{spot.OrderNum}</p>
+              </div>
+              <button className='specific-info' id={index} onClick={goesSpecific}>
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function HomePageLarge() {
   const { _, setOpenSnackbar } = useError();
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
   console.log(token);
   // 跳转车位选择页
-  const goesSpecific = (event) => {
-    const target = event.target;
-    localStorage.setItem('spotID',target.id);
-    if (target.id){
-      if(localStorage.getItem('token')){
-        const username = localStorage.getItem('email');
-        navigate('/' + username + '/' + target.id);
-      }
-      else{
-        navigate('/tourists/' + target.id);
-      }
-    }
-  };
   // 调库
   let navigate = useNavigate();
   const location = useLocation(); // 获取当前的location对象
@@ -62,18 +122,18 @@ export function HomePageLarge() {
     navigate('/adminregist');
   };
   let goesDashboard = () => {
-    navigate('/'+currentuser+'/dashboard');
+    navigate('/' + currentuser + '/dashboard');
   };
   let CreatSpace = () => {
     if (token) {
-        navigate('/'+currentuser+'/createspace');
+      navigate('/' + currentuser + '/createspace');
     } else {
-        navigate('/userlogin');
+      navigate('/userlogin');
     }
   };
   let ChooseCar = () => {
     if (token) {
-      navigate( '/' + currentuser + '/choose');
+      navigate('/' + currentuser + '/choose');
     } else {
       navigate('/userlogin');
     }
@@ -229,130 +289,48 @@ export function HomePageLarge() {
       </div>
       {/* 所有车位列表 */}
       <div className='ListingPart'>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='095' onClick={goesSpecific}>Book Now</button>
-            </div>
-          </div>
-        </div>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='096' onClick={goesSpecific}>Book Now</button>
-            </div>
-          </div>
-        </div>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='097' onClick={goesSpecific}>Book Now</button>
-            </div>
-          </div>
-        </div>
+        <AllSpoting/>
       </div>
     </div>
   );
 }
 
 export function HomePageSmall() {
-
-    const [clickCount, setClickCount] = useState(0);
-    const goesSpecific = (event) => {
-      const target = event.target;
-      if (target.id){
-        if(localStorage.getItem('token')){
-          const username = localStorage.getItem('email');
-          navigate('/' + username + '/' + target.id);
-        }
-        else{
-          navigate('/' + target.id);
-        }
+  const [clickCount, setClickCount] = useState(0);
+  const goesSpecific = (event) => {
+    const target = event.target;
+    if (target.id) {
+      if (localStorage.getItem('token')) {
+        const username = localStorage.getItem('email');
+        navigate('/' + username + '/' + target.id);
+      } else {
+        navigate('/' + target.id);
       }
-    };
-    // 设置连续点击的时间限制，例如500毫秒内必须完成三连击
-    const clickTimeLimit = 1000;
-    let timeoutId = null;
-    // 进入Admin登录页面
-    const goesLoginAdmin = () => {
-      if (clickCount === 0) {
-        // 首次点击时，设置一个定时器
-        // 如果用户在指定时间内没有完成三连击，将重置点击计数
-        timeoutId = setTimeout(() => {
-          setClickCount(0);
-        }, clickTimeLimit);
-      }
-  
-      const newCount = clickCount + 1;
-      setClickCount(newCount);
-      
-      if (newCount === 5) {
-        // 如果达到三连击，清除定时器，执行路由跳转，并重置点击计数
-        clearTimeout(timeoutId);
-        navigate('/adminlogin');
+    }
+  };
+  // 设置连续点击的时间限制，例如500毫秒内必须完成三连击
+  const clickTimeLimit = 1000;
+  let timeoutId = null;
+  // 进入Admin登录页面
+  const goesLoginAdmin = () => {
+    if (clickCount === 0) {
+      // 首次点击时，设置一个定时器
+      // 如果用户在指定时间内没有完成三连击，将重置点击计数
+      timeoutId = setTimeout(() => {
         setClickCount(0);
-      }
-    };
+      }, clickTimeLimit);
+    }
+
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (newCount === 5) {
+      // 如果达到三连击，清除定时器，执行路由跳转，并重置点击计数
+      clearTimeout(timeoutId);
+      navigate('/adminlogin');
+      setClickCount(0);
+    }
+  };
   const { _, setOpenSnackbar } = useError();
   let token = localStorage.getItem('token');
   console.log(token);
@@ -398,7 +376,11 @@ export function HomePageSmall() {
       {/* 导航栏 */}
       <div className='Navbar'>
         {/* Logo图像 */}
-        <img src='/img/LOGO.svg' className='Applogo' onClick={goesLoginAdmin}></img>
+        <img
+          src='/img/LOGO.svg'
+          className='Applogo'
+          onClick={goesLoginAdmin}
+        ></img>
         {/* 搜索区域 */}
         <div className='SearchPartsmall'>
           {/* 搜索图标 */}
@@ -464,13 +446,21 @@ export function HomePageSmall() {
               <option value='1'>Lowest rates</option>
             </select>
           </div>
-          <div className="input-group width-20">
-            <span className="input-group-text">MIN$</span>
-            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)"></input>
+          <div className='input-group width-20'>
+            <span className='input-group-text'>MIN$</span>
+            <input
+              type='text'
+              className='form-control'
+              aria-label='Dollar amount (with dot and two decimal places)'
+            ></input>
           </div>
-          <div className="input-group width-20">
-            <span className="input-group-text">MAX$</span>
-            <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)"></input>
+          <div className='input-group width-20'>
+            <span className='input-group-text'>MAX$</span>
+            <input
+              type='text'
+              className='form-control'
+              aria-label='Dollar amount (with dot and two decimal places)'
+            ></input>
           </div>
           {/* <div className='hflex'>
             <label className='pricerange-s'>MAX$</label>
@@ -532,7 +522,9 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info' id='095'onClick={goesSpecific} >Book Now</button>
+              <button className='specific-info' id='095' onClick={goesSpecific}>
+                Book Now
+              </button>
             </div>
           </div>
         </div>
@@ -559,7 +551,9 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info' id='097' onClick={goesSpecific}>Book Now</button>
+              <button className='specific-info' id='097' onClick={goesSpecific}>
+                Book Now
+              </button>
             </div>
           </div>
         </div>
@@ -586,7 +580,9 @@ export function HomePageSmall() {
                 <img src='img/booking.png' className='order-times'></img>
                 <p className='times'>1000</p>
               </div>
-              <button className='specific-info' id='098' onClick={goesSpecific}>Book Now</button>
+              <button className='specific-info' id='098' onClick={goesSpecific}>
+                Book Now
+              </button>
             </div>
           </div>
         </div>

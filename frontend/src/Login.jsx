@@ -72,7 +72,13 @@ export function UserLoginPage(){
                 });
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('email',Email);
-                navigate(`/${Email}` + '/' + localStorage.getItem('spotID'));
+                if(localStorage.getItem('spotID')){
+                    navigate(`/${Email}` + '/' + localStorage.getItem('spotID'));
+                }
+                else{
+                    navigate(`/${Email}`);
+                }
+                
             })
             .catch((error)=>{
                 setOpenSnackbar({

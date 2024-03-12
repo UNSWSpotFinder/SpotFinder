@@ -367,6 +367,9 @@ div.marginLR{
 }
 div.ListingPart{
     width: 100%;
+}
+div.container-all{
+    width: 100%;
     margin-top: 15px;
     margin-bottom: 15px;
     padding: 0px 0px 0px 10px;

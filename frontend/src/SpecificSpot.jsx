@@ -45,7 +45,7 @@ import React, {
       navigate(location.pathname+'/userregist');
     };
     let goesBack = () => {
-        localStorage.removeItem('sppotID');
+        localStorage.removeItem('spotID');
         if(localStorage.getItem('token')){
             navigate('/'+localStorage.getItem('email'));
         }
