@@ -9,10 +9,13 @@ import (
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/util"
 	"github.com/pkg/browser"
+	"golang.org/x/exp/rand"
 	"log"
+	"time"
 )
 
 func main() {
+	rand.Seed(uint64(time.Now().UnixNano()))
 	srv := util.InitConfig()
 	db := util.InitMySQL()
 	redisCli := util.InitRedis()

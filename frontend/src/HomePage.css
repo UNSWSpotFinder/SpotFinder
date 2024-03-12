@@ -367,6 +367,9 @@ div.marginLR{
 }
 div.ListingPart{
     width: 100%;
+}
+div.container-all{
+    width: 100%;
     margin-top: 15px;
     margin-bottom: 15px;
     padding: 0px 0px 0px 10px;
@@ -374,12 +377,12 @@ div.ListingPart{
     flex-wrap: wrap;
 }
 div.SpaceOverall{
-    height: 135px;
+    height: 160px;
     box-shadow: 0px 0px 10px 0px rgba(164, 164, 164, 0.5);
     border-radius: 10px;
     display: flex;
     align-items: center;
-    padding: 0px 7px;
+    padding: 5px 7px;
     margin: 0px 10px 10px 0px;
 }
 
@@ -406,6 +409,7 @@ div.SpaceOverall{
 img.spaceimg{
     border-radius: 12px;
     object-fit: cover;
+    height: 90%;
 }
 div.info{
     height:90%;
@@ -428,6 +432,7 @@ p.space-price{
 p.space-location{
     padding: 0px;
     margin: 0px;
+    height: 35px;
     font-size: 12px;
     margin-top: 2px;
     color: #7F7F7F;

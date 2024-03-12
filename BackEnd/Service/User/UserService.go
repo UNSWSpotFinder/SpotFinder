@@ -60,11 +60,6 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-//type CreationRequest struct {
-//	User.Basic
-//	RePassword string `json:"rePassword"`
-//}
-
 // CreateUserRequest 从前端传回来的数据存储到这个结构体中
 type CreateUserRequest struct {
 	Name       string `json:"name" binding:"required"`
@@ -74,6 +69,10 @@ type CreateUserRequest struct {
 	Email      string `json:"email" binding:"required"`
 	Avatar     string `json:"avatar"`
 	DateBirth  string `json:"dateBirth"`
+}
+
+type TopUpRequest struct {
+	Amount float64 `json:"amount" binding:"required"`
 }
 
 // CreateUser
@@ -252,12 +251,7 @@ func GetUserInfoHandler(c *gin.Context) {
 		return
 	} else {
 		// 使用确定的邮箱来查询用户信息
-		user, err := User.GetUserByEmail(Service.DB, targetEmail)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user information"})
-			return
-		}
-
+		user := User.GetUserByEmail(Service.DB, targetEmail)
 		// 填充InfoDetail实例
 		infoDetail := InfoDetail{
 			Name:       user.Name,
@@ -279,4 +273,73 @@ func GetUserInfoHandler(c *gin.Context) {
 		// 返回用户信息
 		c.JSON(http.StatusOK, gin.H{"message": infoDetail})
 	}
+}
+
+// TopUpHandler 充值
+//
+// @Summary 充值
+// @Description 充值
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body TopUpRequest true "充值金额"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/topUp [post]
+// @Security BearerAuth
+func TopUpHandler(c *gin.Context) {
+	// 从JWT中获取的email和role
+	userID := c.GetString("userID")
+
+	var req TopUpRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 更新用户信息
+	err := controller.TopUp(Service.DB, userID, req.Amount)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, "User information updated")
+}
+
+// WithdrawHandler 提现
+//
+// @Summary 提现
+// @Description 提现
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body TopUpRequest true "提现金额"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/withdraw [post]
+// @Security BearerAuth
+func WithdrawHandler(c *gin.Context) {
+	// 从JWT中获取的email和role
+	userID := c.GetString("userID")
+
+	var req TopUpRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.Amount > 0 {
+		req.Amount = -req.Amount
+	}
+
+	// 更新用户信息
+	err := controller.Withdraw(Service.DB, userID, req.Amount)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, "User information updated")
 }
