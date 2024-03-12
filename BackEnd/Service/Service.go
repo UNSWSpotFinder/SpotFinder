@@ -8,7 +8,7 @@ import (
 // DB 全局数据库链接
 var DB *gorm.DB
 
-// GetIndex PingExample godoc
+// GetIndexHandler PingExample godoc
 // @Summary ping example
 // @Schemes
 // @Description do ping
@@ -17,7 +17,7 @@ var DB *gorm.DB
 // @Produce json
 // @Success 200 {string} Hello world
 // @Router /index [get]
-func GetIndex(c *gin.Context) {
+func GetIndexHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})

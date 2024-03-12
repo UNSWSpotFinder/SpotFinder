@@ -10,7 +10,7 @@ import (
 
 // AuthMiddleware 是用于JWT验证的中间件
 func AuthMiddleware(secretKey string) gin.HandlerFunc {
-	println("123:", secretKey)
+	//println("123:", secretKey)
 	return func(c *gin.Context) {
 		// 从请求头中获取token（通常在"Authorization"头中）
 		authHeader := c.GetHeader("Authorization")
@@ -46,6 +46,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			// 将用户信息设置到Gin的Context中
+			c.Set("userID", claims["userID"])
 			c.Set("email", claims["email"])
 			c.Set("exp", claims["exp"])
 			c.Set("role", claims["role"])

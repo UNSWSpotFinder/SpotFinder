@@ -42,28 +42,31 @@ definitions:
     type: object
   Spot.Basic:
     type: object
-  Spots.CreateSpotSimple:
+  Spots.CreateSpotRequestData:
     properties:
-      isOccupy:
-        description: 将字段名更改为驼峰式并匹配JSON键
+      availableTime:
+        type: string
+      charge:
+        type: string
+      isDayRent:
         type: boolean
-      isVisible:
-        description: 同上
+      isOurRent:
         type: boolean
-      ownerId:
-        description: 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
+      isWeekRent:
+        type: boolean
+      morePictures:
+        type: string
+      orderNum:
         type: integer
+      passWay:
+        type: string
       pictures:
-        description: 照片应为字符串切片，omitempty表明非必需字段
         type: string
       pricePerDay:
         type: number
-      pricePerMonth:
+      pricePerHour:
         type: number
       pricePerWeek:
-        type: number
-      rate:
-        description: 保留float64类型，omitempty表明非必需字段
         type: number
       size:
         type: string
@@ -73,14 +76,6 @@ definitions:
         type: string
       spotType:
         type: string
-    required:
-    - isOccupy
-    - isVisible
-    - ownerId
-    - size
-    - spotAddr
-    - spotName
-    - spotType
     type: object
   User.CodeStructData:
     properties:
@@ -190,6 +185,13 @@ definitions:
         type: string
     required:
     - to
+    type: object
+  User.TopUpRequest:
+    properties:
+      amount:
+        type: number
+    required:
+    - amount
     type: object
   User.loginRequestData:
     properties:
@@ -311,23 +313,43 @@ paths:
       summary: 管理员登陆
       tags:
       - Manager
-  /spot/create/{userId}:
+  /spot/{spotId}:
+    get:
+      consumes:
+      - application/json
+      description: 获取车位详情
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot details
+          schema:
+            type: string
+        "500":
+          description: Cannot get spot details
+          schema:
+            type: string
+      summary: 获取车位详情
+      tags:
+      - Spots
+  /spot/create:
     post:
       consumes:
       - application/json
       description: create a spot
       parameters:
-      - description: User ID
-        in: path
-        name: userId
-        required: true
-        type: integer
       - description: spot info
         in: body
         name: spot
         required: true
         schema:
-          $ref: '#/definitions/Spots.CreateSpotSimple'
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
       produces:
       - application/json
       responses:
@@ -339,9 +361,11 @@ paths:
           description: error", "unable to add spot"}
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a spot
       tags:
-      - spots
+      - Spots
   /spot/delete/{id}:
     put:
       consumes:
@@ -367,36 +391,62 @@ paths:
       summary: Delete a spot(soft delete)
       tags:
       - spots
-  /spot/list/{page}/{pageSize}:
+  /spot/list:
     get:
       consumes:
       - application/json
-      description: get list of all spots(PageQuery)
-      parameters:
-      - description: Page
-        in: path
-        name: page
-        type: integer
-      - description: PageSize
-        in: path
-        name: pageSize
-        type: integer
+      description: 获取车位列表
       produces:
       - application/json
       responses:
         "200":
-          description: 'message: list of spots'
+          description: Spot list
           schema:
-            additionalProperties: true
-            type: object
+            type: string
         "500":
-          description: 'error: Cannot get spot list'
+          description: Cannot get spot list
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get the list of spots
+            type: string
+      summary: 获取车位列表
       tags:
-      - spots
+      - Spots
+  /spot/modifySpotInfo/{spotId}:
+    post:
+      consumes:
+      - application/json
+      description: 修改车位信息
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      - description: Spot information
+        in: body
+        name: spot
+        required: true
+        schema:
+          $ref: '#/definitions/Spots.CreateSpotRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot information updated
+          schema:
+            type: string
+        "400":
+          description: Data binding error
+          schema:
+            type: string
+        "500":
+          description: SQL error message
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 修改车位信息
+      tags:
+      - Spots
   /spot/ownedCar/choseSize/{plateNumber}:
     get:
       consumes:
@@ -674,6 +724,54 @@ paths:
       security:
       - BearerAuth: []
       summary: 修改用户信息
+      tags:
+      - User
+  /user/topUp:
+    post:
+      consumes:
+      - application/json
+      description: 充值
+      parameters:
+      - description: 充值金额
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.TopUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 充值
+      tags:
+      - User
+  /user/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: 提现
+      parameters:
+      - description: 提现金额
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.TopUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 提现
       tags:
       - User
 securityDefinitions:

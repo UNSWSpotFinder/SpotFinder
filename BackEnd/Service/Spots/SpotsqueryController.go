@@ -4,56 +4,11 @@ import (
 	"capstone-project-9900h14atiktokk/Models/Spot"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"capstone-project-9900h14atiktokk/Service"
+	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
-
-// SpotsQueryController
-// @Summary Get the list of spots
-// @Description get list of all spots(PageQuery)
-// @Tags spots
-// @Accept  json
-// @Produce  json
-// @Param page path int false "Page"
-// @Param pageSize path int false "PageSize"
-// @Success 200 {object} map[string]interface{} "message: list of spots"
-// @Failure 500 {object} map[string]interface{} "error: Cannot get spot list"
-// @Router /spot/list/{page}/{pageSize} [get]
-func SpotsQueryController(c *gin.Context) {
-	//example :当你请求第1页（page=1）且指定size=4时，API会返回给你第1到第4个车位。
-	//然后，当你请求第2页（page=2）且同样指定size=4时，API将返回给你紧接着第1页之后的第5到第8个车位。
-
-	// 获取参数
-	page := c.Param("page")
-	pageSize := c.Param("pageSize")
-
-	// 将参数转换为整型
-	pageInt, errPage := strconv.Atoi(page)
-	pageSizeInt, errPageSize := strconv.Atoi(pageSize)
-
-	// 参数验证和修正
-	if errPage != nil || pageInt < 1 {
-		pageInt = 1
-	}
-	if errPageSize != nil || pageSizeInt <= 0 {
-		pageSizeInt = 10 // 默认10个
-	} else if pageSizeInt > 100 {
-		pageSizeInt = 100 // 最大100个
-	}
-
-	// 获取车位列表
-	Spots, err := GetSpotList(Service.DB, pageInt, pageSizeInt)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "Cannot get spot list",
-		})
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"spots": Spots, // 为了一致性和清晰性，建议使用 "spots" 而不是 "message"
-	})
-}
 
 // DeleteSpotController
 // @Summary Delete a spot(soft delete)
@@ -69,7 +24,7 @@ func DeleteSpotController(c *gin.Context) {
 	// 获取参数(可改query参数了）
 	id := c.Param("id")
 	SpotsId, _ := strconv.Atoi(id)
-	err := deleteSpot(SpotsId, Service.DB)
+	err := controller.DeleteSpot(SpotsId, Service.DB)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Cannot delete spot",
@@ -82,56 +37,76 @@ func DeleteSpotController(c *gin.Context) {
 	return
 }
 
-type CreateSpotSimple struct {
-	OwnerId       uint64  `json:"ownerId" binding:"required"` // 使用uint64匹配原始JSON中的bigint，并修改字段名以匹配JSON键
-	SpotName      string  `json:"spotName" binding:"required"`
-	SpotAddr      string  `json:"spotAddr" binding:"required"`
-	SpotType      string  `json:"spotType" binding:"required"`
-	IsOccupied    bool    `json:"isOccupy" binding:"required"`  // 将字段名更改为驼峰式并匹配JSON键
-	IsVisible     bool    `json:"isVisible" binding:"required"` // 同上
-	Rate          float64 `json:"rate" binding:"omitempty"`     // 保留float64类型，omitempty表明非必需字段
-	Size          string  `json:"size" binding:"required"`
-	Pictures      string  `json:"pictures" binding:"omitempty"` // 照片应为字符串切片，omitempty表明非必需字段
-	PricePerDay   float64 `json:"pricePerDay" binding:"omitempty"`
-	PricePerWeek  float64 `json:"pricePerWeek" binding:"omitempty"`
-	PricePerMonth float64 `json:"pricePerMonth" binding:"omitempty"`
+type CreateSpotRequestData struct {
+	SpotName      string  `json:"spotName"`
+	SpotAddr      string  `json:"spotAddr"`
+	PassWay       string  `json:"passWay"`
+	SpotType      string  `json:"spotType"`
+	Size          string  `json:"size"`
+	Charge        string  `json:"charge"`
+	Pictures      string  `json:"pictures"`
+	MorePictures  string  `json:"morePictures"`
+	IsHourRent    bool    `json:"isOurRent"`
+	IsDayRent     bool    `json:"isDayRent"`
+	IsWeekRent    bool    `json:"isWeekRent"`
+	PricePerHour  float64 `json:"pricePerHour"`
+	PricePerDay   float64 `json:"pricePerDay"`
+	PricePerWeek  float64 `json:"pricePerWeek"`
+	AvailableTime string  `json:"availableTime"`
+	OrderNum      uint    `json:"orderNum"`
 }
 
 // CreateSpotController
 // @Summary Create a spot
 // @Description create a spot
-// @Tags spots
+// @Tags Spots
 // @Accept  json
 // @Produce  json
-// @Param   userId path int true "User ID"
-// @Param   spot  body CreateSpotSimple true "spot info"
+// @Param   spot  body CreateSpotRequestData true "spot info"
 // @Success 200 {string} json{"message", "Add spot successfully"}
 // @Failure 500 {string} json{"error", "unable to add spot"}
-// @Router /spot/create/{userId} [post]
+// @Router /spot/create [post]
+// @Security BearerAuth
 func CreateSpotController(c *gin.Context) {
 	var spot *Spot.Basic
-
-	var user *User.Basic
-
-	// 从请求中获取用户的ID
-	userID := c.Param("userId")
-	userIDInt, _ := strconv.Atoi(userID)
-
-	// 从数据库中获取用户
-	if err := c.ShouldBindJSON(&spot); err != nil {
+	var request CreateSpotRequestData
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Cannot bind spot",
 		})
 		return
 	}
-	err := CreateSpot(spot, user, userIDInt, Service.DB)
+	// 从请求中获取用户的ID
+	userEmail := c.GetString("email")
+	user := User.GetUserByEmail(Service.DB, userEmail)
+	// 将请求数据转换为模型
+	spot = &Spot.Basic{
+		OwnerID:       user.ID,
+		SpotName:      request.SpotName,
+		SpotAddr:      request.SpotAddr,
+		PassWay:       request.PassWay,
+		SpotType:      request.SpotType,
+		Size:          request.Size,
+		Charge:        request.Charge,
+		Pictures:      request.Pictures,
+		MorePictures:  request.MorePictures,
+		IsHourRent:    request.IsHourRent,
+		IsDayRent:     request.IsDayRent,
+		IsWeekRent:    request.IsWeekRent,
+		PricePerHour:  request.PricePerHour,
+		PricePerDay:   request.PricePerDay,
+		PricePerWeek:  request.PricePerWeek,
+		AvailableTime: request.AvailableTime,
+		OrderNum:      0,
+	}
+	err := controller.CreateSpot(spot, userEmail, Service.DB)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "失败{}",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "失败" + err.Error(),
 		})
 		return
 	}
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"message": "Add spot successfully",
 	})
 
@@ -154,7 +129,7 @@ func ShowAllOwnedSpotHandler(c *gin.Context) { //根据用户id获取车位列�
 	userID := c.Param("ownerId")
 
 	var user *User.Basic
-	spots, err := showAllOwnedSpot(user, userID, Service.DB)
+	spots, err := controller.ShowAllOwnedSpot(user, userID, Service.DB)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "失败",
@@ -187,7 +162,7 @@ func UpdateSpotController(c *gin.Context) {
 		})
 		return
 	}
-	err := UpdateSpot(spot, Service.DB)
+	err := controller.UpdateSpot(spot, Service.DB)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "失败",
@@ -219,7 +194,7 @@ func ChoseSizeWithMyCarHandler(c *gin.Context) { //根据用户自己设置的�
 	//根据车牌号来查询车位大小
 	plateNumber := c.Param("plateNumber")
 
-	spots, err := ChoseSizeWithMyCar(user, plateNumber, Service.DB)
+	spots, err := controller.ChoseSizeWithMyCar(user, plateNumber, Service.DB)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -266,7 +241,12 @@ func UpdateSpotPriceHandler(c *gin.Context) {
 	perDayInt, _ := strconv.Atoi(perDay)
 	perNightInt, _ := strconv.Atoi(perNight)
 
-	err := UpdateSpotPrice(spot, user, spotID, float32(perDayInt), float32(perNightInt), float32(perMonthInt), Service.DB)
+	err := controller.UpdateSpotPrice(
+		spot, user, spotID,
+		float32(perDayInt),
+		float32(perNightInt),
+		float32(perMonthInt),
+		Service.DB)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "失败",
