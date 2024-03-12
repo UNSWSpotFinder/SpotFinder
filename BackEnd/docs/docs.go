@@ -748,6 +748,43 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/topUp": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "充值",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "充值",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "充值金额",
+                        "name": "amount",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User information updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -859,6 +896,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "spotName": {
+                    "type": "string"
+                },
+                "spotType": {
                     "type": "string"
                 }
             }

@@ -63,7 +63,7 @@ func Login(db *gorm.DB, admin *Manager.Basic) (string, error) {
 		return "", errors.New("password mismatch")
 	}
 	// 生成JWT
-	return User.GenerateToken(tempAdmin.AdminID, "admin")
+	return User.GenerateToken(tempAdmin.ID, tempAdmin.AdminID, "admin")
 }
 
 // GetManagerByAdminID 通过邮箱获取管理员

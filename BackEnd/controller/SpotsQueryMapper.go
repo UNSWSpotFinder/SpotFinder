@@ -26,6 +26,7 @@ type tempSpotBasic struct {
 	SpotAddr     string
 	SpotType     string
 	Rate         float64
+	Size         string
 	IsDayRent    bool
 	IsWeekRent   bool
 	IsHourRent   bool
@@ -92,6 +93,7 @@ func GetSpotList(db *gorm.DB) ([]*tempSpotBasic, error) {
 			SpotAddr:     spot.SpotAddr,
 			SpotType:     spot.SpotType,
 			Rate:         float64(spot.Rate),
+			Size:         spot.Size,
 			IsDayRent:    spot.IsDayRent,
 			IsWeekRent:   spot.IsWeekRent,
 			IsHourRent:   spot.IsHourRent,
