@@ -78,13 +78,7 @@ func CreateSpotController(c *gin.Context) {
 	}
 	// 从请求中获取用户的ID
 	userEmail := c.GetString("email")
-	user, err := User.GetUserByEmail(Service.DB, userEmail)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "失败",
-		})
-		return
-	}
+	user := User.GetUserByEmail(Service.DB, userEmail)
 	// 将请求数据转换为模型
 	spot = &Spot.Basic{
 		OwnerID:       user.ID,
@@ -105,7 +99,7 @@ func CreateSpotController(c *gin.Context) {
 		AvailableTime: request.AvailableTime,
 		OrderNum:      0,
 	}
-	err = controller.CreateSpot(spot, userEmail, Service.DB)
+	err := controller.CreateSpot(spot, userEmail, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "失败" + err.Error(),

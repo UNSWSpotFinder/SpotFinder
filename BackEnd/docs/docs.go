@@ -769,11 +769,52 @@ const docTemplate = `{
                 "summary": "充值",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "充值金额",
-                        "name": "amount",
-                        "in": "path",
-                        "required": true
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.TopUpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User information updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/withdraw": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "提现",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "提现",
+                "parameters": [
+                    {
+                        "description": "提现金额",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.TopUpRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -1052,6 +1093,17 @@ const docTemplate = `{
                     "type": "string",
                     "format": "emailconfigs",
                     "example": "longsizhuo@gmail.com"
+                }
+            }
+        },
+        "User.TopUpRequest": {
+            "type": "object",
+            "required": [
+                "amount"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
                 }
             }
         },

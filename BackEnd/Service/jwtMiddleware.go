@@ -46,6 +46,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			// 将用户信息设置到Gin的Context中
+			c.Set("userID", claims["userID"])
 			c.Set("email", claims["email"])
 			c.Set("exp", claims["exp"])
 			c.Set("role", claims["role"])

@@ -61,6 +61,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.GET("/user/info", User.GetUserInfoHandler)
 	private.POST("/spot/create", Spots.CreateSpotController)
 	private.POST("/user/topUp", User.TopUpHandler)
+	private.POST("/user/withdraw", User.WithdrawHandler)
 	return r
 
 }
