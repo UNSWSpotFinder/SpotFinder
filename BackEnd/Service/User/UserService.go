@@ -95,8 +95,8 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	var user User.Basic
-	fmt.Printf("Headers: %+v\n", c.Request.Header)
-	fmt.Printf("Form data: %+v\n", c.Request.PostForm)
+	//fmt.Printf("Headers: %+v\n", c.Request.Header)
+	//fmt.Printf("Form data: %+v\n", c.Request.PostForm)
 	user.Phone = request.Phone
 	user.Email = request.Email
 	user.Name = request.Name
