@@ -14,8 +14,62 @@
   
   .personal-info, .avatar-section {
     width: 48%; 
+    
+  }
+
+  /* 信息部分 */
+  .input-box {
+    color: slategray;
+    border: 1px solid slategray;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+
+  /* 头像部分 */
+  .avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    margin-top: 60px ;
+    align-items: center;
+  }
+
+  .avatar-container {
+    width: 100%; /* 使容器宽度填满其父元素 */
+    display: flex;
+    flex-direction: column; /* 子元素垂直排列 */
+    align-items: center; /* 子元素在容器中水平居中 */
+    justify-content: center; /* 在主轴方向居中对齐子元素 */
+  }
+
+  #file-upload {
+    display: none;
+  }
+
+  .custom-file-upload {
+    margin-right: 10px;
+    background-color: #fff;
+    width: 140px;
+    height: 40px;
+    color: #e11e2c;
+    font-weight: bold;
+    border: 1px solid #e11e2c;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 10px;
   }
   
+  
+  .custom-file-upload:hover {
+      box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+  }
+
+
   .action-buttons-container {
     display: flex;
     justify-content: flex-end;
@@ -103,21 +157,3 @@
 
 
 
-  
-  /* 响应式 */
-  @media (max-width: 600px) {
-    .info-avatar-container {
-      flex-direction: column;
-    }
-  
-    .personal-info, .avatar-section {
-      width: 100%;
-    }
-  
-    .action-buttons-container {
-      justify-content: center;
-    }
-  }
-  
- 
-  
