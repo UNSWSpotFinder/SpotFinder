@@ -12,6 +12,7 @@ import (
 	"google.golang.org/api/gmail/v1"
 	_ "gorm.io/gorm"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -279,4 +280,33 @@ func GetUserInfoHandler(c *gin.Context) {
 		// 返回用户信息
 		c.JSON(http.StatusOK, gin.H{"message": infoDetail})
 	}
+}
+
+// TopUpHandler 充值
+//
+// @Summary 充值
+// @Description 充值
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param amount path string true "充值金额"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/topUp [post]
+// @Security BearerAuth
+func TopUpHandler(c *gin.Context) {
+	// 从JWT中获取的email和role
+	userID := c.GetUint("userID")
+	amount := c.Param("amount")
+	// 转换为float64
+	amountFloat, err := strconv.ParseFloat(amount, 64)
+	// 更新用户信息
+	err = controller.TopUp(Service.DB, userID, amountFloat)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, "User information updated")
+	return
 }

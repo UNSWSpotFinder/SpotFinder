@@ -41,6 +41,7 @@ type createSpotRequestData struct {
 	SpotName      string  `json:"spotName"`
 	SpotAddr      string  `json:"spotAddr"`
 	PassWay       string  `json:"passWay"`
+	SpotType      string  `json:"spotType"`
 	Size          string  `json:"size"`
 	Charge        string  `json:"charge"`
 	Pictures      string  `json:"pictures"`
@@ -90,6 +91,7 @@ func CreateSpotController(c *gin.Context) {
 		SpotName:      request.SpotName,
 		SpotAddr:      request.SpotAddr,
 		PassWay:       request.PassWay,
+		SpotType:      request.SpotType,
 		Size:          request.Size,
 		Charge:        request.Charge,
 		Pictures:      request.Pictures,
