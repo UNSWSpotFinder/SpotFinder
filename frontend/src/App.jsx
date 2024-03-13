@@ -34,6 +34,7 @@ import Listings from './components/Listings';
 import Profile from './components/Profile';
 import Messages from './components/Messages';
 import Vehicles from './components/Vehicles';
+import AdminDashboard from './components/AdminDashboard';
 import dayjs from 'dayjs';
 // 创建一个 Context 对象
 export const AppContext = React.createContext();
@@ -108,16 +109,19 @@ function App() {
       <ErrorProvider>
         <GlobalSnackbar/>
           <BrowserRouter>
-              <Routes>
-                  <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-                  <Route path="/adminlogin"  element={<AdminLoginPage/>} />
-                  <Route path="/adminregist" element={<AdminRegistPage/>} />
-                  <Route path="/:username/choose" element={<CarSpaceChoice/>} />
-                  <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
-                  <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
-                  <Route path='/*' element={<CatchAllRouteHandler/>}/>
-              </Routes>
             <Routes>
+                <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
+                <Route path="/adminlogin"  element={<AdminLoginPage/>} />
+                <Route path="/adminregist" element={<AdminRegistPage/>} />
+                
+                
+                <Route path="/:username/choose" element={<CarSpaceChoice/>} />
+                <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
+                <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
+                <Route path='/*' element={<CatchAllRouteHandler/>}/>
+            </Routes>
+            <Routes>
+            <Route path="/admindashboard/adminid" element={<AdminDashboard/>} />
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace/:id" element = {<EditSpace/>} />

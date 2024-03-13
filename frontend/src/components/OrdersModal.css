@@ -80,15 +80,3 @@
     margin-right: 10px;
   }
   
-  /* 以下是按钮的基本样式，你需要根据自己的设计来调整 */
-  button {
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #f7f7f7;
-  }
-  
