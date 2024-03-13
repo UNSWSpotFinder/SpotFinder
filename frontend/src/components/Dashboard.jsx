@@ -13,7 +13,11 @@ const Dashboard = () => {
     });
 
     const navigate = useNavigate(); // 使用useNavigate钩子
-  
+    const goesCreateSpot = (event)=>{
+      event.preventDefault(); // 阻止链接的默认行为
+      const user = localStorage.getItem('email');
+      navigate('/'+user+'/createspace');
+    }
 
   // 进入 Dashboard 组件时获取用户信息
   useEffect(() => {
@@ -91,7 +95,7 @@ const Dashboard = () => {
           <h5>My Listings</h5>
           <div className='listing-number'>1</div>
           {/* TODO:这里需要之后修改链接路由 */}
-          <Link to="/home">Lease my spot</Link>
+          <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
         </div>
       </div>
 
@@ -117,7 +121,7 @@ const Dashboard = () => {
           <div className='first-sentence'>Haven't tried to lease your spots? </div>
           {/* TODO:这里需要之后修改链接路由*/}
           <div className='second-sentence'>
-            <Link to="/home">Click here</Link> <span>to lease your first spot!</span>
+            <Link to='' onClick={goesCreateSpot}>Click here</Link> <span>to lease your first spot!</span>
           </div>  
         </div>
       </div>
