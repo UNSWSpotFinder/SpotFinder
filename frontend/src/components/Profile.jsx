@@ -27,6 +27,7 @@ const Profile = () => {
       console.log('User info:', data);
       // 填充用户信息
       const userInfo = data.message;
+
       setName(userInfo.name);
       setEmail(userInfo.email);
       setPhone(userInfo.phone);
@@ -51,12 +52,18 @@ const Profile = () => {
         }
       }
       // 将获取到的头像（base64）变为可显示的URL
-      if (userInfo.avatar && userInfo.avatar.startsWith("data:")) {
-        setAvatar(userInfo.avatar.startsWith("data:") ? userInfo.avatar : '/img/ProfilePhoto.svg');
-        setIsLoading(false); // 数据处理完成后设置头像加载状态为false
+      const avatarData = userInfo.avatar;
+      if (avatarData) {
+        // 检查 avatar data 是否 starts with 'data:image/jpeg;base64,'
+        const base64Prefix = 'data:image/jpeg;base64,';
+        const updatedAvatar = avatarData.startsWith(base64Prefix) ? avatarData : base64Prefix + avatarData;
+        setAvatar(updatedAvatar);
       }
-    }).catch(error => {
-      console.log('Error fetching user info:', error);
+      setIsLoading(false); // Set loading to false after data is processed
+    })
+        .catch(error => {
+      console.error('Error fetching user info:', error);
+      setIsLoading(false); // Ensure loading is set to false even on error
     });
   }, []);
 

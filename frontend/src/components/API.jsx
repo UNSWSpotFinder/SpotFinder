@@ -32,7 +32,7 @@ export const getUserInfo = () => {
     });
   };
 
-// 修改用户信息（put）
+// 修改用户信息（post）
 export const updateUserInfo = (userInfo) => {
     const endpoint = `${baseUrl}/user/modifyUserInfo`;
     const token = localStorage.getItem('token');
@@ -119,5 +119,57 @@ export const getAllSpots = () => {
       console.log(error);
       reject(new Error('Network error! Please try again.'));
     });
+  });
+};
+
+
+// 用户充值（post）
+export const topUpAccount = (amount) => {
+  const endpoint = `${baseUrl}/user/topUp`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount }),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+
+// 用户提现（post）
+export const withdrawAccount = (amount) => {
+  const endpoint = `${baseUrl}/user/withdraw`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount }),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
   });
 };
