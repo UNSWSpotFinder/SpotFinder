@@ -129,6 +129,10 @@
   margin-bottom: 20px;
 }
 
+.current-state-title {
+  
+}
+
 h3, h5 {
   border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
   padding-bottom: 10px;

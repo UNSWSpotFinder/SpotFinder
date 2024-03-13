@@ -1,4 +1,4 @@
-h3 {
+.listings-title {
     border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
     padding-bottom: 10px;
     margin-bottom: 20px;
@@ -55,7 +55,7 @@ h3 {
     overflow: hidden; 
   }
 
-  .Picture {
+  .picture {
     background-color: #d3d3d3; /* Placeholder color for the thumbnail */
     width: 120px;
     height: 120px;
@@ -63,6 +63,10 @@ h3 {
   }
 
   .list-part {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
     padding: 20px;
     border: 1px solid #d3d3d3;
     border-radius: 10px;
@@ -121,34 +125,34 @@ h3 {
 
 
 
-  /* .first-line-btn button, .second-line-btn button {
+  .first-line-btn button, .second-line-btn button {
     margin-right: 5px;
     border: none;
     padding: 5px 20px;
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 5px;
-  } */
+  }
 
-  /* .edit-btn {
+  .edit-btn {
     background-color: #e11e2c; 
     color: white;
   }
 
   .edit-btn:hover {
     background-color: #f66;
-  } */
+  }
 
-  /* .delete-btn {
+  .delete-btn {
     color: darkgray;
   }
 
   .delete-btn:hover {
     background-color:darkgray;
     color: black;
-  } */
+  }
 
-  /* .second-line-btn button {
+  .second-line-btn button {
     width: 160px;
     background-color: #fff; 
     color: #e11e2c;
@@ -158,7 +162,7 @@ h3 {
   .second-line-btn button:hover {
     background-color: #e11e2c; 
     color: white;
-  } */
+  }
 
   .price {
     font-size: 22px;
@@ -169,13 +173,21 @@ h3 {
     padding: 0 15px;
   }
 
-  .price-item {
+  .price-item1, .price-item2, .price-item3{
     border-bottom: 1px solid #d3d3d3;
     padding: 10px; /* spacing inside each price item */
     text-align: left; /* align text to the right */
   }
 
-  .price-item:last-child {
+  .price-item1:last-child {
+    border-bottom: none;
+  }
+
+  .price-item2:last-child {
+    border-bottom: none;
+  }
+
+  .price-item3:last-child {
     border-bottom: none;
   }
 
@@ -190,4 +202,38 @@ h3 {
 
   .link-to-add a:hover {
     color: #f66;
+  }
+
+
+  /* 删除弹窗 */
+  .delete-confirm-btn {
+    width: 200px;
+    color: darkgray;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .delete-confirm-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+  .delete-cancel-btn{
+    background-color: #e11e2c; 
+    width: 200px;
+    color: white;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .delete-cancel-btn:hover {
+    background-color: #f66;
   }
