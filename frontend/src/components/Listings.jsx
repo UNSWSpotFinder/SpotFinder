@@ -53,7 +53,7 @@ const Listings = () => {
   // TODO:删除列表项
   const handleDelete = () => {
     console.log("Listing deleted");
-    // 可以在这里关闭确认弹窗
+    // 在这里关闭确认弹窗
     closeDeleteConfirm();
   
     // 显示一个删除成功的提示
@@ -82,11 +82,16 @@ const Listings = () => {
     }
     return spotsInfo.map((spot, index) => {
       if (spot.message) {
+        // 检查图片 URL 是否以特定字符串开头
+        const base64Prefix = "data:image/jpeg;base64,";
+        let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
+                     ? spot.message.Pictures 
+                     : base64Prefix + spot.message.Pictures;
+
         return (
           <div className='listing-info' key={index}>
-            <div className='picture'>
-              {/* 假设 Pictures 字段包含图片 URL */}
-              <img src={spot.message.Pictures} alt="Thumbnail" />
+            <div className='picture'>      
+              <img src={imageUrl} alt="Thumbnail" />
             </div>
             <div className='space-information'>
               <div className='spot-title'>{spot.message.SpotName}</div>
