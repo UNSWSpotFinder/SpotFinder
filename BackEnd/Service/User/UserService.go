@@ -37,6 +37,10 @@ type InfoDetail struct {
 	TopUp      float64    `json:"topUp" example:"0.0"`
 	OwnedSpot  string     `json:"ownedSpot" example:"{}"`
 }
+type SimpleProfileRequest struct {
+	Avatar string `json:"avatar"`
+	Name   string `json:"name"`
+}
 
 // GetUserList
 // @Summary 获取用户列表
@@ -342,4 +346,31 @@ func WithdrawHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "User information updated")
+}
+
+// GetSimpleUserInfoHandler 获取用户简单信息
+//
+// @Summary 获取用户简单信息
+// @Description 获取用户简单信息
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "用户ID"
+// @Success 200 {string} string "User information updated"
+// @Error 400 {string} string "Data binding error"
+// @Error 500 {string} string "SQL error message"
+// @Router /user/simpleInfo/{id} [get]
+func GetSimpleUserInfoHandler(c *gin.Context) {
+	userID := c.Param("id")
+	var user SimpleProfileRequest
+	queryUser := User.GetUserByID(Service.DB, userID)
+	if queryUser == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+	user.Avatar = queryUser.Avatar
+	user.Name = queryUser.Name
+	c.JSON(http.StatusOK, gin.H{
+		"message": user,
+	})
 }
