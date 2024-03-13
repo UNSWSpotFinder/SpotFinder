@@ -46,8 +46,10 @@ export const AppProvider = ({ children }) => {
     maxPrise: '',
     minPrise: '',
     CarType: '',
+    BookWay:'H',
     StartDay: null,
     EndDay: null,
+    Carlocation:''
   });
 
   // 更新状态的方法
@@ -97,6 +99,7 @@ function App() {
     if (location.pathname.endsWith('/userregist')) {
       return <UserRegistPage />;
     }
+
     // Handle other cases or redirect
     return null;
   };
@@ -106,10 +109,8 @@ function App() {
         <GlobalSnackbar/>
           <BrowserRouter>
               <Routes>
-                  <Route path="*/userlogin"   element={<UserLoginPage/>} />
                   <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
-                  {/* <Route path="/userregist"  element={<UserRegistPage/>} /> 
-                  <Route path="/adminlogin"  element={<AdminLoginPage/>} />  */}
+                  <Route path="/adminlogin"  element={<AdminLoginPage/>} />
                   <Route path="/adminregist" element={<AdminRegistPage/>} />
                   <Route path="/:username/choose" element={<CarSpaceChoice/>} />
                   <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
@@ -120,7 +121,7 @@ function App() {
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace" element = {<EditSpace/>} />
-              <Route path = '/tourists//detail/*' element={LayoutDetail}/>
+              <Route path = '/tourists/detail/*' element={LayoutDetail}/>
               <Route path = '/:username/detail/*' element={LayoutDetail}/>
               {/* DashboardTop作为父路由 */}
               <Route path="/:username/dashboard" element={<DashboardTop />}>

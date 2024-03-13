@@ -55,14 +55,90 @@ function AllSpoting() {
     getNewSpot(); // Call on component mount
   }, []); // Empty dependency array means this effect runs once on mount
   useEffect(()=>{
-    let filterBookway=allSpot.filter((data)=>{
-      return data;
-    })
-    let filterPrice=allSpot.filter((data)=>{
-      return data;
-    })
-
-  },[contextState]);
+    // 删选预订方式
+    let filter = allSpot.filter((data)=>{
+      if(contextState.BookWay=='H'){
+          return data.IsHourRent;
+      }
+      else if(contextState.BookWay=='D'){
+          return data.IsDayRent;
+      }
+      else{
+          return data.isWeekRent;
+      }
+    });
+    // 筛选价格
+    let min_p=contextState.minPrise;
+    let max_p=contextState.maxPrise;
+    if(min_p===''){min_p='0'}
+    if(max_p===''){max_p='99999'}
+    filter = filter.filter((data)=>{
+      if(data.IsHourRent && contextState.BookWay=='H'){
+        return (parseFloat(min_p) <= data.PricePerHour && data.PricePerDay <= parseFloat(max_p));
+      }
+      else if(data.IsDayRent && contextState.BookWay=='D'){
+        return parseFloat(min_p) <= data.PricePerDay && data.PricePerDay <= parseFloat(max_p);
+      }
+      else if(data.isWeekRent && contextState.BookWay=='W')  {
+        return parseFloat(min_p) <= data.PricePerWeek && data.PricePerDay <= parseFloat(max_p);
+      }
+      return false;
+    });
+    console.log('minP'+min_p+'maxP'+max_p);
+    // 筛选位置
+    if(contextState.Carlocation!==''){
+      filter=filter.filter((data)=>{
+        return data.SpotAddr.includes(contextState.Carlocation);
+      })
+    }
+    // 删选车位类型
+    if(contextState.CarType!==''){
+      filter=filter.filter((data)=>{
+        return data.size===contextState.CarType;
+      })
+    }
+    if(contextState.order_rank_way===true && contextState.score_rank_way==true){
+      filter.sort((a, b) => {
+        // 首先根据rate字段排序
+        if (a.Rate !== b.Rate) {
+          return b.Rate - a.Rate; // 降序排序，对于降序排序使用 b.rate - a.rate
+        }
+        return b.OrderNum - a.OrderNum; // 同样，这里是降序排序
+      });
+    }
+    else if(contextState.order_rank_way===true && contextState.score_rank_way==false){
+      filter.sort((a, b) => {
+        // 首先根据rate字段排序
+        if (a.Rate !== b.Rate) {
+          return a.Rate - b.Rate; // 升序排序，对于降序排序使用 b.rate - a.rate
+        }
+        // 如果rate相同，根据number字段排序
+        return b.OrderNum - a.OrderNum; // 这里是降序排序
+      });
+    }else if(contextState.order_rank_way===false && contextState.score_rank_way==true){
+      filter.sort((a, b) => {
+        // 首先根据rate字段排序
+        if (a.Rate !== b.Rate) {
+          return b.Rate - a.Rate; // 降序排序，对于降序排序使用 b.rate - a.rate
+        }
+        // 如果rate相同，根据number字段排序
+        return a.OrderNum - b.OrderNum; // 这里是升序排序
+      });
+    }
+    else if(contextState.order_rank_way===false && contextState.score_rank_way==false){
+      filter.sort((a, b) => {
+        // 首先根据rate字段排序
+        if (a.Rate !== b.Rate) {
+          return a.Rate - b.Rate; // 升序排序，对于降序排序使用 b.rate - a.rate
+        }
+        // 如果rate相同，根据number字段排序
+        return a.OrderNum - b.OrderNum; // 同样，这里是升序排序
+      });
+    }
+    console.log('order amount ' + contextState.order_rank_way + ' rate amount ' + contextState.score_rank_way);
+    console.log(filter);
+    setfilrerSpot(filter);
+  },[contextState,allSpot]);
   function getNewSpot() {
     callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
       .then((response) => {
@@ -79,7 +155,7 @@ function AllSpoting() {
   }
   return (
     <div className='container-all'>
-      {allSpot.map((spot, index) => (
+      {filteredSpot.map((spot, index) => (
         <div key={index} className='SpaceOverall'>
           <img
             className='spaceimg'
@@ -105,7 +181,7 @@ function AllSpoting() {
               </div>
               <button
                 className='specific-info'
-                id={index}
+                id={spot.ID}
                 onClick={goesSpecific}
               >
                 Book Now
@@ -120,7 +196,7 @@ function AllSpoting() {
 
 export function HomePageLarge() {
   const { contextState, updateContextState } = useContext(AppContext);
-  const [orderway,setorderway]=useState('');
+  const [orderway,setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
   const [maxP, setmaxP] = useState(contextState.maxPrise);
   const [fitsize, setsize] = useState(contextState.CarType);
@@ -128,9 +204,6 @@ export function HomePageLarge() {
   const [O, setO] = useState(contextState.order_rank_way);
   const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
   const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
-  const update = () => {
-    
-  };
   const handleStartDate=(event)=>{
     setstartDate(event);
     updateContextState({
@@ -151,6 +224,12 @@ export function HomePageLarge() {
     });
     console.log(contextState);
   };
+  const handleLocation = (event) => {
+    setmaxP(event.target.value);
+    updateContextState({
+      Carlocation: event.target.value
+    });
+  }
   const handleOrdChange = (event) => {
     let res = event.target.value;
     setO(res === '0');
@@ -160,9 +239,9 @@ export function HomePageLarge() {
     console.log(contextState);
   };
   const handleOrdwayChange = (event) => {
-    let res = event.target.value;
-    setorderway(res);
-    update();
+    updateContextState({
+      BookWay: event.target.value
+    });
     console.log(contextState);
   };
   const handleminpriceChange=(event)=>{
@@ -268,7 +347,7 @@ export function HomePageLarge() {
           {/* 搜索图标 */}
           <img className='searchbtn-home' src='/img/search.png'></img>
           {/* 搜索输入框 */}
-          <input className='Searchbar' placeholder='Search by location'></input>
+          <input className='Searchbar' placeholder='Search by location' value={contextState.Carlocation} onChange={handleLocation}></input>
         </div>
         {/* 新建车位按钮 */}
         <button className='newspace' onClick={CreatSpace}>
@@ -300,10 +379,10 @@ export function HomePageLarge() {
       {/* 欢迎部分 */}
       <div>
         <img src='/img/car.png' width={'100%'}></img>
-        <p className='image-container-title'>
+        <p className = 'image-container-title'>
           Find Closer, Cheaper Parking Anywhere in Australia
         </p>
-        <p className='image-container-sub'>
+        <p className = 'image-container-sub'>
           SpotFinder makes it easy to browse, book, and enjoy the parking spaces
           that work best for you wherever you are.
         </p>
@@ -314,7 +393,7 @@ export function HomePageLarge() {
       {/* 过滤器部分 */}
       <div className='FilterPart'>
         <select
-          defaultValue={'0'}
+          defaultValue={contextState.order_rank_way}
           className='form-select mglr'
           aria-label='Default select example'
           onChange={handlePopChange}
@@ -323,7 +402,7 @@ export function HomePageLarge() {
           <option value='1'>Lowest sales</option>
         </select>
         <select
-          defaultValue={'0'}
+          defaultValue={contextState.score_rank_way}
           className='form-select mglr'
           aria-label='Default select example'
           onChange={handleOrdChange}
@@ -332,16 +411,16 @@ export function HomePageLarge() {
           <option value='1'>Lowest rates</option>
         </select>
         <select
-          defaultValue={'0'}
+          defaultValue={contextState.BookWay}
           className='form-select mglr-r'
           aria-label='Default select example'
           onChange={handleOrdwayChange}
         >
-          <option value='0'>Hourly</option>
-          <option value='1'>Daily</option>
-          <option value='2'>Weekly</option>
+          <option value='H'>Hourly</option>
+          <option value='D'>Daily</option>
+          <option value='W'>Weekly</option>
         </select>
-        {orderway==='0'?(
+        {orderway==='H'?(
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               className='timechoice'
@@ -395,6 +474,68 @@ export function HomePageLarge() {
 }
 
 export function HomePageSmall() {
+  let currentuser = localStorage.getItem('email') || null;
+  const { contextState, updateContextState } = useContext(AppContext);
+  const [orderway,setorderway] = useState('');
+  const [minP, setminP] = useState(contextState.minPrise);
+  const [maxP, setmaxP] = useState(contextState.maxPrise);
+  const [fitsize, setsize] = useState(contextState.CarType);
+  const [R, setR] = useState(contextState.score_rank_way);
+  const [O, setO] = useState(contextState.order_rank_way);
+  const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
+  const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
+  const handleStartDate=(event)=>{
+    setstartDate(event);
+    updateContextState({
+      StartDay: event
+    });
+  }
+  const handleEndDate=(event)=>{
+    setendDate(event);
+    updateContextState({
+      EndDay: event
+    });
+  }
+  const handlePopChange = (event) => {
+    let res = event.target.value;
+    setR(res === '0');
+    updateContextState({
+      order_rank_way: (res==='0')
+    });
+    console.log(contextState);
+  };
+  const handleLocation = (event) => {
+    setmaxP(event.target.value);
+    updateContextState({
+      Carlocation: event.target.value
+    });
+  }
+  const handleOrdChange = (event) => {
+    let res = event.target.value;
+    setO(res === '0');
+    updateContextState({
+      score_rank_way: (res==='0')
+    });
+    console.log(contextState);
+  };
+  const handleOrdwayChange = (event) => {
+    updateContextState({
+      BookWay: event.target.value
+    });
+    console.log(contextState);
+  };
+  const handleminpriceChange=(event)=>{
+    setminP(event.target.value);
+    updateContextState({
+      minPrise: event.target.value
+    });
+  }
+  const handlemaxpriceChange=(event)=>{
+    setmaxP(event.target.value);
+    updateContextState({
+      maxPrise: event.target.value
+    });
+  }
   const [clickCount, setClickCount] = useState(0);
   const goesSpecific = (event) => {
     const target = event.target;
@@ -428,6 +569,13 @@ export function HomePageSmall() {
       clearTimeout(timeoutId);
       navigate('/adminlogin');
       setClickCount(0);
+    }
+  };
+  let ChooseCar = () => {
+    if (token) {
+      navigate('/' + currentuser + '/choose');
+    } else {
+      navigate('/userlogin');
     }
   };
   const { _, setOpenSnackbar } = useError();
@@ -485,7 +633,7 @@ export function HomePageSmall() {
           {/* 搜索图标 */}
           <img className='searchbtnsmall' src='/img/search.png'></img>
           {/* 搜索输入框 */}
-          <input className='Searchbar' placeholder='Search by location'></input>
+          <input className='Searchbar' placeholder='Search by location' value={contextState.Carlocation} onChange={handleLocation}></input>
         </div>
         {/* 登录注册按钮组 */}
         {token ? (
@@ -529,17 +677,19 @@ export function HomePageSmall() {
         <div className='filter-top'>
           <div className='inner-left'>
             <select
-              defaultValue={'0'}
+              defaultValue={contextState.order_rank_way}
               className='form-select mglr-s'
               aria-label='Default select example'
+              onChange={handleOrdChange}
             >
               <option value='0'>Highest sales</option>
               <option value='1'>Lowest sales</option>
             </select>
             <select
-              defaultValue={'0'}
+              defaultValue={contextState.score_rank_way}
               className='form-select mglr-s'
               aria-label='Default select example'
+              onChange={handlePopChange}
             >
               <option value='0'>Highest rates</option>
               <option value='1'>Lowest rates</option>
@@ -551,6 +701,7 @@ export function HomePageSmall() {
               type='text'
               className='form-control'
               aria-label='Dollar amount (with dot and two decimal places)'
+              value={contextState.minPrise} onChange={handleminpriceChange}
             ></input>
           </div>
           <div className='input-group width-20'>
@@ -559,6 +710,7 @@ export function HomePageSmall() {
               type='text'
               className='form-control'
               aria-label='Dollar amount (with dot and two decimal places)'
+              value={contextState.maxPrise} onChange={handlemaxpriceChange}
             ></input>
           </div>
           {/* <div className='hflex'>
@@ -566,126 +718,56 @@ export function HomePageSmall() {
             <input className='pricerange-s'></input>
           </div> */}
 
-          <button className='selectcar'>SELECT YOUR CAR</button>
+          <button className='selectcar' onClick={ChooseCar}>SELECT YOUR CAR</button>
         </div>
         <div className='filter-bottom'>
           <select
-            defaultValue={'0'}
+            defaultValue={contextState.BookWay}
             className='form-select mglr-s-r'
             aria-label='Default select example'
+            onChange={handleOrdwayChange}
           >
-            <option value='0'>Weekly</option>
-            <option value='1'>Daily</option>
-            <option value='2'>Hourly</option>
+            <option value='H'>Hourly</option>
+            <option value='D'>Daily</option>
+            <option value='W'>Weekly</option>
           </select>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {contextState.BookWay==='H'?(
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               className='timechoice-s'
               label='Parking time'
-              value={parkingTime}
-              onChange={handleParkingTimeChange}
+              value={startDate}
+              onChange={handleStartDate}
             />
-            <p> </p>
             <DateTimePicker
               className='timechoice-s'
               label='Leaving time'
-              value={leavingTime}
-              onChange={handleLeavingTimeChange}
+              value={endDate}
+              onChange={handleEndDate}
             />
           </LocalizationProvider>
+        ):
+        (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            className='timechoice-s'
+            label='Parking time'
+            value={startDate}
+            onChange={handleStartDate}
+          />
+          <DatePicker
+            className='timechoice-s'
+            label='Leaving time'
+            value={endDate}
+            onChange={handleEndDate}
+          />
+        </LocalizationProvider>
+        )
+        }
         </div>
       </div>
       {/* 所有车位列表 */}
-      {/* 所有车位列表 */}
-      <div className='ListingPart'>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='095' onClick={goesSpecific}>
-                Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='097' onClick={goesSpecific}>
-                Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className='SpaceOverall'>
-          <img
-            className='spaceimg'
-            src='img/sample.jpeg'
-            width={'116px'}
-            height={'116px'}
-          ></img>
-          <div className='info'>
-            <div className='right-top'>
-              <p className='space-title'>UNSW Parking Space</p>
-              <div className='rate-part'>
-                <img src='img/star.png' className='rate-img'></img>
-                <p className='rate-txt'>5.0</p>
-              </div>
-            </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>66 Kingsford, Sydney, NSW, 2018</p>
-            <p className='space-type'>Fits a 4WD/SUV</p>
-            <div className='right-bottom'>
-              <div className='order-part'>
-                <img src='img/booking.png' className='order-times'></img>
-                <p className='times'>1000</p>
-              </div>
-              <button className='specific-info' id='098' onClick={goesSpecific}>
-                Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AllSpoting/>
     </div>
   );
 }

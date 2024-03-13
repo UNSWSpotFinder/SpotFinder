@@ -136,7 +136,7 @@ button.logbtn-admin{
     font-size: 12px;
     width: 100%;
 }
-button.logbtn:hover{
+button.logbtn:hover, button.logbtn-admin:hover{
     background-color:#9e0005 ;
 }
 button.logbtn:active{
