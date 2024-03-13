@@ -1,0 +1,252 @@
+ 
+ .vehicle-part {
+    padding: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    padding: 20px;
+    margin:20px 20px;
+ }
+ 
+ /* 最上方title button部分 */
+  .button-part {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .vehicle-title {
+    background-color: #fff;
+    color: #e11e2c;
+    border: 2px solid #e11e2c;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .vehicle-title:hover {
+    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+
+  }
+
+  .add-a-car-btn {
+    background-color: #e11e2c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .add-a-car-btn:hover {
+    background-color: #f66;
+  }
+
+  /* 下方listing区域 */
+  .specific-vehicle {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .left-picture {
+    background-color: #d3d3d3; /* Placeholder color for the thumbnail */
+    width: 120px;
+    height: 120px;
+    border-radius: 5px;
+  }
+
+  .middle-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .middle-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  
+  .vehicle-row {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 20px; 
+  }
+
+  .vehicle-brand, .vehicle-plate {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 20px;
+    color: black;
+    font-weight: bold
+  }
+
+  .vehicle-type, .vehicle-size {
+    font-size: 17px;
+    color: black;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  }
+  
+
+
+  .right-btn-part {
+    display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+  }
+
+
+  .edit-btn {
+    background-color: #e11e2c; 
+    width: 86px;
+    color: white;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .edit-btn:hover {
+    background-color: #f66;
+  }
+
+  .delete-btn {
+    width: 86px;
+    color: darkgray;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .delete-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+  /* 弹窗遮罩效果 */
+  .modal-overlay {
+    position: fixed; /* 固定定位 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明的遮罩层 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 450px;
+  }
+  
+  
+  .edit-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-form label {
+    margin-bottom: 10px;
+  }
+  
+  .edit-form input {
+    margin-bottom: 5px;
+    line-height: 1.5;
+  }
+  
+  .edit-form button {
+    margin-top: 10px;
+  }
+
+  
+
+
+  .form-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px; 
+  }
+  
+
+  .submit-btn {
+    background-color: #e11e2c; 
+    width: 200px;
+    color: white;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .submit-btn:hover {
+    background-color: #f66;
+  }
+
+
+  .cancel-btn {
+    width: 200px;
+    color: darkgray;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .cancel-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+  .delete-confirm-btn {
+    width: 200px;
+    color: darkgray;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .delete-confirm-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+  .delete-cancel-btn {
+    background-color: #e11e2c; 
+    width: 200px;
+    color: white;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+    .delete-cancel-btn:hover {
+        background-color: #f66;
+    }
