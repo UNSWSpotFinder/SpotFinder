@@ -117,7 +117,7 @@ const Listings = () => {
         <button className='add-a-spot-btn'>Lease a new spot</button>
       </div>     
       <div className="list-part">
-        <h3 classname='listings-title'>Listings</h3>
+        <h3 className='listings-title'>Listings</h3>
         {renderListings()}
 
 
