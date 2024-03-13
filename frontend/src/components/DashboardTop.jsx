@@ -13,6 +13,10 @@ const DashboardTop = () => {
   let goesHome=()=>{
     navigate('/'+currentuser);
   }
+  let goesCreateSpot = ()=>{
+    const user=localStorage.getItem('email');
+    navigate('/'+user+'/createspace');
+  }
   let logout=()=>{
     localStorage.removeItem('token');
     localStorage.removeItem('email');
@@ -34,7 +38,7 @@ const DashboardTop = () => {
           <input className='Searchbar' placeholder='Search by location'></input>
         </div>
         {/* 搜索车位/出租车位 */}
-        <button className='top-button' >Lease my spots</button>
+        <button className='top-button' onClick={goesCreateSpot} >Lease my spots</button>
         <button className='top-button' onClick={goesHome}>Find a spot</button>
         {/* 用户信息 */}
         <span> Hi,</span>

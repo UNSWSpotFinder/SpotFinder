@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OrdersModal from './OrdersModal'; 
 import { getUserInfo, getSpotDetails } from './API';
 import './Listings.css';
+import {CreateSpace,EditSpace} from '../CarSpaceOperation';
 
 const Listings = () => {
+  const navigate=useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
 
@@ -69,10 +71,15 @@ const Listings = () => {
     setShowOrdersModal(false);
   };
 
-
-
+  const goesCreate=()=>{
+    navigate('/'+localStorage.getItem('email')+'/createspace');
+  }
    // 根据spotID动态生成列表信息的函数
    const renderListings = () => {
+    const goesEdit=(event)=>{
+      navigate('/'+localStorage.getItem('email')+'/editspace/'+event.target.id);
+  
+    }
     return spotsInfo.map((spot, index) => {
       if (spot.message) {
         return (
@@ -89,7 +96,7 @@ const Listings = () => {
             </div>
             <div className='manipulation-link'>
               <div className='first-line-link'>
-                <button className='edit-btn'>Edit</button>
+                <button className='edit-btn' id={spot.message.ID} onClick={goesEdit}>Edit</button>
                 <button className='delete-btn' onClick={openDeleteConfirm}>Delete</button>
               </div>
               <div className='second-line-btn'>
@@ -114,10 +121,10 @@ const Listings = () => {
     <div className='dashboard-listings'>    
       <div className="button-part">
         <button className='listing-title'>Current Listings: 1</button>
-        <button className='add-a-spot-btn'>Lease a new spot</button>
+        <button className='add-a-spot-btn' onClick={goesCreate}>Lease a new spot</button>
       </div>     
       <div className="list-part">
-        <h3 classname='listings-title'>Listings</h3>
+        <h3 className='listings-title'>Listings</h3>
         {renderListings()}
 
 
