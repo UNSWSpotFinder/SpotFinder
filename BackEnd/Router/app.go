@@ -52,6 +52,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.POST("/manager/create", Manager.CreateManagerHandler)
 	public.POST("/manager/login", Manager.LoginHandler)
 	public.GET("/spot/:spotId", Spots.GetSpotDetailsHandler)
+	public.GET("/user/simpleInfo/:id", User.GetSimpleUserInfoHandler)
 	// Private (authenticated) routes
 	private := r.Group("/")
 	SecreteKey := viper.GetString("secrete.key")

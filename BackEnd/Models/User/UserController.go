@@ -113,3 +113,13 @@ func GetUserByEmail(db *gorm.DB, email string) *Basic {
 	}
 	return &user
 }
+
+// GetUserByID 通过ID获取用户
+func GetUserByID(db *gorm.DB, id string) *Basic {
+	var user Basic
+	err := db.Where("id = ?", id).Take(&user).Error
+	if err != nil {
+		return nil
+	}
+	return &user
+}
