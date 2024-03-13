@@ -35,27 +35,11 @@ type ModifyUserInfoData struct {
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
 // @Router /user/modifyPasswd [post]
-// @Security BearerAuth
 func ModifyPasswdHandler(c *gin.Context) {
-	// 从JWT中获取的email和role
-	emailFromToken, exists := c.Get("email")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	role, _ := c.Get("role")
-
 	var request modifyPasswordData
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data binding error"})
-		return
-	}
-
-	// 如果用户不是管理员，并且请求的邮箱与令牌的邮箱不匹配，则拒绝请求
-	if role != "admin" && emailFromToken != request.Email {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden to change other user's password"})
 		return
 	}
 
