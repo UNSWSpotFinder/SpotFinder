@@ -1,0 +1,175 @@
+/* 整个容器 */
+.dashboard {
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+.top-info-part {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.first-column-account, .second-column-booking {
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+  padding: 20px;
+  margin-right: 10px;
+  
+  align-items: center;
+}
+
+.first-column-account {
+  flex: 3;
+}
+
+.second-column-booking {
+  flex: 1;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.second-column-booking a {
+  color: #e11e2c;
+  margin-top: 100px; 
+  display: block;
+}
+
+/* 链接的悬停效果 */
+.second-column-booking a:hover {
+  color: #f66;
+}
+
+
+.avatar-plus-account-info {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  margin-top: 10px;
+  gap: 15px; /* 根据需要调整间距 */
+}
+
+/* 左侧头像 */
+.left-avatar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+}
+
+.left-avatar-container img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; 
+  object-fit: cover;
+}
+
+/* 右侧账户余额信息 */
+.right-account-container {
+  margin-left: 20px;
+}
+
+.title {
+  font-size: 15px;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.number {
+  text-align: right; /* 文本靠右 */
+  /* 如果.right-account-container是flex容器，则以下样式会使.number垂直居中 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 靠右对齐 */
+  font-size: 22px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: bolder;
+  color: black;
+}
+
+.top-up-btn, .withdraw-btn {
+  display: block;
+  width: 100%;
+  height: 30px;
+  padding: 10px;
+  font-weight: bold;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.top-up-btn {
+  background-color: #e11e2c;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.withdraw-btn {
+  color: #e11e2c;
+  background-color: #fff;
+  border: 1px solid #e11e2c;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+
+.top-up-btn:hover, .withdraw-btn:hover {
+  box-shadow: 0 0 10px #f66;
+}
+
+.second-bookings, .third-listings {
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.current-state-title {
+  
+}
+
+h3, h5 {
+  border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  text-align: left;
+}
+
+.booking-number, .listing-number{
+  font-size: 22px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: bolder;
+  color: black;
+  padding-top:20px ;
+}
+
+
+/* 中部和底部Bookings区域的通用样式 */
+.second-bookings, .third-listings {
+  text-align: center; 
+  padding: 20px;
+}
+
+/* 提示消息的样式 */
+.hint-msg .first-sentence,
+.hint-msg .second-sentence {
+  margin: 10px 0;
+}
+
+/* 链接的样式 */
+.hint-msg .second-sentence a {
+  color: #e11e2c;
+}
+
+/* 链接鼠标悬停的样式 */
+.hint-msg .second-sentence a:hover {
+  color: #f66; 
+}

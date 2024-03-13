@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 import './Regist.css';
 import { motion } from 'framer-motion';
@@ -14,11 +14,13 @@ import {
   callAPIverifyEmailCode,
   callAPIsendEmailCode,
   callAPIRegistUser,
-  callAPIRegistAdmin
+  callAPIRegistAdmin,
+  removeLastSegment
 } from './API';
 // 用户注册页面
 export function UserRegistPage() {
   // 上下文错误
+  const location = useLocation();
   const { snackbarData, setOpenSnackbar } = useError();
   //  按钮不可用性
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -83,10 +85,12 @@ export function UserRegistPage() {
     setEmail(event.target.value);
   };
   let backhome = () => {
-    navigate('/');
+    navigate(-1);
   };
   let goeslogin = () => {
-    navigate('/userlogin');
+    const temp = removeLastSegment(location.pathname);
+    console.log(temp);
+    navigate(temp+'userlogin');
   };
   useEffect(() => {
     let timeoutId;
@@ -140,9 +144,6 @@ export function UserRegistPage() {
         });
     })
   }
- 
-
-
   function verifyEmail() {
     const data = {
       code: code,
@@ -234,7 +235,9 @@ export function UserRegistPage() {
             message:'Welcome join SpotFinder ' + name + '.',
             timestamp:new Date().getTime()
         })
-        navigate('/userlogin');
+        const temp = removeLastSegment(location.pathname);
+        console.log(temp);
+        navigate(temp+'userlogin');
     })
     .catch((error)=>{
         setOpenSnackbar({
@@ -509,7 +512,7 @@ export function AdminRegistPage() {
       navigate('/');
     };
     let goeslogin = () => {
-      navigate('/userlogin');
+      navigate('/adminlogin');
     };
     function Regist() {
       if (phone==''){
