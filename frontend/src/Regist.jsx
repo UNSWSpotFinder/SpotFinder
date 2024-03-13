@@ -512,7 +512,7 @@ export function AdminRegistPage() {
       navigate('/');
     };
     let goeslogin = () => {
-      navigate('/userlogin');
+      navigate('/adminlogin');
     };
     function Regist() {
       if (phone==''){

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
-	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -134,54 +133,39 @@ func DeleteSpot(id int, db *gorm.DB) error {
 }
 
 func CreateSpot(spot *Spot.Basic, userEmail string, db *gorm.DB) error {
-	var user *User.Basic
+	var user User.Basic
 
-	//创建一个用于存放用户自己的车位ID的数组
+	// 先创建一个车位
 	if err := db.Create(&spot).Error; err != nil {
 		return err
-	} //先创建一个车位
+	}
 
-	//更新用户的车位列表
-	//先解析用户的车位列表
-
-	if err := db.Find(&user, "email = ?", userEmail).Error; err != nil { //先找到用户
+	// 先找到用户
+	if err := db.Where("email = ?", userEmail).First(&user).Error; err != nil {
 		return err
 	}
 
 	var spotList struct {
 		SpotList []int `json:"OwnedSpot"`
 	}
-	//解析用户的车位列表,如果没有就不解析,创建一个新的车位列表
+	// 解析用户的车位列表, 如果没有就创建一个新的车位列表
 	if user.OwnedSpot == "" {
-		spotList.SpotList = append(spotList.SpotList, int(spot.ID))
-		// 更新用户的车位列表
-		spotListJson, err := json.Marshal(spotList)
-		if err != nil {
-			return err
-		}
-		err = db.Model(&user).Update("OwnedSpot", string(spotListJson)).Error
-		if err != nil {
-			return err // 处理更新错误
-		}
-
-		return nil
-
+		spotList.SpotList = []int{int(spot.ID)}
 	} else {
-		err := json.Unmarshal([]byte(user.OwnedSpot), &spotList) //解析用户的车位列表
-		if err != nil {
+		if err := json.Unmarshal([]byte(user.OwnedSpot), &spotList); err != nil {
 			return err
 		}
-		spotList.SpotList = append(spotList.SpotList, int(spot.ID)) //加入新的车位
-		//更新用户的车位列表
-		spotListJson, err := json.Marshal(spotList)
-		if err != nil {
-			return err
+		spotList.SpotList = append(spotList.SpotList, int(spot.ID)) // 加入新的车位
+	}
 
-		}
-		err = db.Model(&user).Update("OwnedSpot", string(spotListJson)).Error
-		if err != nil {
-			log.Fatal("更新数据库时出错: ", err)
-		}
+	// 更新用户的车位列表
+	spotListJson, err := json.Marshal(spotList)
+	if err != nil {
+		return err
+	}
+	err = db.Model(&user).Update("OwnedSpot", string(spotListJson)).Error
+	if err != nil {
+		return err // 处理更新错误
 	}
 
 	return nil

@@ -1,0 +1,462 @@
+div.imgPart {
+  width: 100%;
+  margin: 0px;
+}
+img.thumbial {
+  width: 100%;
+  object-fit: cover;
+  height: 300px;
+}
+div.Info-Part {
+  width: 100%;
+  display: flex;
+  padding: 20px 30px 10px 30px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+div.Info-Left {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+div.NamePart {
+  display: flex;
+  margin: 0px;
+  padding: 0px;
+}
+p.titleName {
+  font-size: 30px;
+  color: black;
+  font-family: Arial;
+  font-weight: 500;
+  margin: 0px;
+  padding: 0px;
+}
+div.ChargePart {
+  display: flex;
+  align-items: center;
+}
+p.label-title {
+  font-size: 18px;
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+  font-weight: 700;
+}
+p.label-value {
+  font-size: 18px;
+  margin: 0px;
+  padding: 0px;
+  color: rgb(0, 0, 0);
+}
+div.Address-Part {
+  display: flex;
+  margin: 0px 0px 0px 0px;
+  font-size: 18px;
+}
+p.label-title-ad {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+  font-weight: 700;
+  color: black;
+}
+p.label-value-ad {
+  color: rgb(88, 88, 88);
+  margin: 0px;
+  padding: 0px;
+  margin-right: 20px;
+}
+p.size {
+  margin: 0px;
+  padding: 0px;
+  font-size: 18px;
+  margin-right: 8px;
+}
+p.size-v {
+  margin: 0px;
+  padding: 0px;
+  font-size: 18px;
+  font-weight: 800;
+  margin-right: 8px;
+}
+div.size-part {
+  display: flex;
+  align-items: center;
+}
+div.Price {
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  width: 220px;
+}
+div.p-part-now {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin: 0px;
+}
+p.price-per {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0px;
+  padding: 0px;
+  margin-right: 4px;
+}
+p.way {
+  font-size: 16px;
+  margin: 0px;
+  padding: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+div.relevent-part {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0px;
+  padding: 10px;
+  height: 200px;
+  background-color: rgb(255, 255, 255);
+  width: 95%;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 1px rgba(170, 170, 170, 0.5);
+}
+div.relevent-left {
+  display: flex;
+  justify-content: center;
+  width: 33%;
+  align-items: center;
+  padding-right: 5%;
+  height: 80%;
+  border-right: 2px solid rgb(147, 147, 147);
+}
+div.re-le-le {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-right: 20px;
+}
+img.profile {
+  height: 60%;
+  border-radius: 90px;
+  border: 1px solid rgb(192, 192, 192);
+}
+p.user_name {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0px;
+  padding: 0px;
+  color: rgb(85, 85, 85);
+}
+p.provided {
+  margin: 0px;
+  padding: 0px;
+  font-weight: 500;
+  font-size: 20px;
+  color: rgb(85, 85, 85);
+}
+div.relevent-center {
+  width: 30%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid rgb(147, 147, 147);
+}
+p.Review {
+  font-size: 20px;
+  font-weight: 500;
+}
+.black-star {
+  color: black;
+  margin-top: 7px;
+  margin-right: 7px;
+}
+div.relevent-right {
+  width: 30%;
+  height: 80%;
+  display: flex;
+  padding-left: 5%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+div.ReviewNum {
+  display: flex;
+  justify-content: center;
+}
+p.revtit {
+  font-weight: 400;
+  font-size: 18px;
+  color: black;
+}
+p.revnum {
+  font-size: 18px;
+  font-weight: 800;
+  margin-right: 10px;
+}
+div.Available-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0px;
+  padding: 20px 0px;
+  background-color: rgb(255, 255, 255);
+  width: 95%;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 1px rgba(170, 170, 170, 0.5);
+}
+div.time-range {
+  display: flex;
+  width: 90%;
+  justify-content: space-around;
+  align-items: center;
+  margin: 5px 0px;
+}
+p.daterangetxt {
+  font-size: 22px;
+  color: black;
+  margin: 0px;
+  padding: 0px;
+  font-weight: 800;
+}
+p.timetitle {
+  font-size: 22px;
+  color: black;
+  margin: 0px;
+  padding: 0px;
+}
+div.Order-part {
+  display: flex;
+  height: 350px;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0px;
+  padding: 20px 0px;
+  background-color: rgb(255, 255, 255);
+  width: 95%;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px 1px rgba(170, 170, 170, 0.5);
+}
+button.choose-car {
+  height: 30px;
+  background-color: black;
+  color: white;
+  border: 0px;
+  border-radius: 5px;
+  width: 90%;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0px;
+}
+button.choose-car:hover {
+  background-color: rgb(57, 57, 57);
+}
+div.car-select {
+  display: flex;
+  align-items: center;
+  width: 200px;
+}
+div.car-select-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+}
+img.carprofile {
+  width: 90%;
+  margin: 10px 0px;
+  padding: 0px;
+  border-radius: 5px;
+}
+p.car-title {
+  font-size: 14px;
+  margin: 0px 0px 2px 0px;
+  padding: 0px;
+  width: 100%;
+}
+input.car-content {
+  margin: 0px 10px 0px 0px;
+}
+div.TimeInterval-book {
+  margin: 10px 0px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+}
+button.AddInterval-book {
+  background-color: white;
+  color: black;
+  margin: 0px 20px 0px 0px;
+  border: 1px solid black;
+  height: 40px;
+  width: 180px;
+  border-radius: 5px;
+}
+div.IntervalHeader-book {
+  margin: 0px 0px 0px 0px;
+  padding: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+div.order-time {
+  height: 100%;
+  width: 100%;
+}
+div.PublishInfo-park {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 10px 20px;
+  height: 70%;
+  margin: 0px 15px;
+  width: 95%;
+  border-radius: 10px;
+  overflow-y: scroll;
+  border: 1px solid rgb(192, 192, 192);
+}
+div.IntervalContent-top {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding-right: 87px;
+}
+button.ClearInterval-book {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 0px 10px;
+  padding: 0px 10px;
+  height: 40px;
+}
+button.ClearInterval-book:hover {
+  background-color: rgb(212, 212, 212);
+}
+div.confirm-part {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  width: 95%;
+  margin: 20px;
+}
+div.PriceTotal {
+  display: flex;
+  margin: 5px;
+}
+p.Pricetxt {
+  margin: 0px;
+  padding: 0px 5px 0px 0px;
+  font-size: 20px;
+}
+p.PriceValue {
+  margin: 0px;
+  padding: 0px;
+  font-size: 20px;
+  font-weight: 600;
+}
+button.confirm-btn {
+  background-color: rgb(197, 0, 0);
+  color: white;
+  border: 0px;
+  font-size: 16px;
+  border-radius: 5px;
+  height: 40px;
+}
+button.confirm-btn:hover {
+  background-color: rgb(136, 32, 32);
+}
+div.Review-part {
+  width: 90%;
+}
+div.Review-row {
+  width: 100%;
+  display: flex;
+  border-radius: 5px;
+  padding: 10px 10px;
+  background-color: rgb(255, 255, 255);
+  align-items: center;
+}
+div.Review-row-odd {
+  width: 100%;
+  display: flex;
+  padding: 10px 10px;
+  background-color: rgb(245, 245, 245);
+  align-items: center;
+  border-radius: 5px;
+}
+p.r-name {
+  font-size: 18px;
+  font-weight: 500;
+  margin-right: 10px;
+  margin: 10px 10px 0px 0px;
+  padding: 0px;
+}
+img.Review-left-img {
+  height: 50px;
+  margin-right: 10px;
+}
+div.Review-right {
+  display: flex;
+  flex-direction: column;
+}
+div.Review-top {
+  display: flex;
+  height: 50%;
+  align-items: center;
+}
+p.Review-bottom {
+  font-size: 14px;
+  color: black;
+}
+p.ReviewTitle {
+  font-weight: 700;
+  margin: 10px 0px 10px 0px;
+  padding: 0px;
+  font-size: 30px;
+}
+div.headerimg {
+  width: 100%;
+  height: 400px;
+}
+img.speimg {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+div.w100 {
+  width: 100vw;
+}
+div.display-flex{
+  display: flex;
+  align-items: center;
+}
+p.bkt{
+
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+}
+div.CfmAll{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div.CfmBack{
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.3;
+}

@@ -10,7 +10,8 @@ import {
     callAPIsendEmailCode,
     callAPILoginUser,
     callAPIResetPwdUser,
-    removeLastSegment
+    removeLastSegment,
+    callAPILoginAdmin
   } from './API';
 
   
@@ -73,7 +74,7 @@ export function UserLoginPage(){
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('email',Email);
                 if(localStorage.getItem('spotID')){
-                    navigate(`/${Email}` + '/' + localStorage.getItem('spotID'));
+                    navigate(`/${Email}` + '/detail/' + localStorage.getItem('spotID'));
                 }
                 else{
                     navigate(`/${Email}`);
@@ -410,11 +411,7 @@ export function AdminLoginPage(){
     let backhome = ()=>{
         navigate('/');
     }
-    // 用户注册页
-    let goesRegist= ()=>{
-        navigate('/userregist');
-    }
-    // 忘记密码页
+    // 管理员注册页
     let goesRegistAdmin = () => {
         navigate('/adminregist');
     }
@@ -437,19 +434,19 @@ export function AdminLoginPage(){
         }
         else{
             const data={
-                email: Email,
+                adminID: Email,
                 password: Password
             }
-            callAPILoginUser('login',data)
+            callAPILoginAdmin('manager/login',data)
             .then((response)=>{
                 console.log(response);
                 setOpenSnackbar({
                     severity:'success',
-                    message:'Welcome back SpotFinder ' + Email + '.',
+                    message:'Welcome to start your work for SpotFinder ' + Email + '.',
                     timestamp:new Date().getTime()
                 });
                 localStorage.setItem('token',response.token);
-                navigate(`/${Email}`);
+                navigate(`/admin/${Email}`);
             })
             .catch((error)=>{
                 setOpenSnackbar({

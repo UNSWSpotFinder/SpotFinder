@@ -77,6 +77,27 @@ definitions:
       spotType:
         type: string
     type: object
+  User.AddCreationRequest:
+    properties:
+      brand:
+        example: brand
+        type: string
+      charge:
+        example: charge
+        type: string
+      picture:
+        example: picture
+        type: string
+      plate:
+        example: plate
+        type: string
+      size:
+        example: size
+        type: string
+      type:
+        example: type
+        type: string
+    type: object
   User.CodeStructData:
     properties:
       code:
@@ -232,6 +253,30 @@ paths:
       summary: pingpong example
       tags:
       - example
+  /car/create:
+    post:
+      consumes:
+      - application/json
+      description: do ping
+      parameters:
+      - description: 车辆信息
+        in: body
+        name: carInfo
+        required: true
+        schema:
+          $ref: '#/definitions/User.AddCreationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 创建车辆
+      tags:
+      - Cars
   /index:
     get:
       consumes:
@@ -724,6 +769,27 @@ paths:
       security:
       - BearerAuth: []
       summary: 修改用户信息
+      tags:
+      - User
+  /user/simpleInfo/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户简单信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information updated
+          schema:
+            type: string
+      summary: 获取用户简单信息
       tags:
       - User
   /user/topUp:

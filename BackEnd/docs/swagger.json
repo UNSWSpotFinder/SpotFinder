@@ -32,6 +32,45 @@
                 }
             }
         },
+        "/car/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "do ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "创建车辆",
+                "parameters": [
+                    {
+                        "description": "车辆信息",
+                        "name": "carInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.AddCreationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "description": "do ping",
@@ -795,6 +834,38 @@
                 }
             }
         },
+        "/user/simpleInfo/{id}": {
+            "get": {
+                "description": "获取用户简单信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "获取用户简单信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User information updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/topUp": {
             "post": {
                 "security": [
@@ -987,6 +1058,35 @@
                 },
                 "spotType": {
                     "type": "string"
+                }
+            }
+        },
+        "User.AddCreationRequest": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "brand"
+                },
+                "charge": {
+                    "type": "string",
+                    "example": "charge"
+                },
+                "picture": {
+                    "type": "string",
+                    "example": "picture"
+                },
+                "plate": {
+                    "type": "string",
+                    "example": "plate"
+                },
+                "size": {
+                    "type": "string",
+                    "example": "size"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "type"
                 }
             }
         },
