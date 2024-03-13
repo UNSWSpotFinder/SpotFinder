@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Snackbar, IconButton } from '@mui/material';
+import { Snackbar } from '@mui/material';
+import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
 
@@ -44,11 +45,11 @@ const Vehicles = () => {
     setVehicleType(event.target.value);
   };
 
-  const handSizeChange = (event) => {
+  const handleSizeChange = (event) => {
     setVehicleSize(event.target.value);
   }
 
-  const handChargeChange = (event) => {
+  const handleChargeChange = (event) => {
     setVehicleCharge(event.target.value);
   }
 
@@ -184,7 +185,7 @@ const Vehicles = () => {
               </div>
               <div className="form-group">              
               <label htmlFor="type">Size of your vehicle</label>
-                <select value={vehicleSize} onChange={handSizeChange}>
+                <select value={vehicleSize} onChange={handleSizeChange}>
                   <option value="">Select</option>
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
@@ -193,7 +194,7 @@ const Vehicles = () => {
               </div>
               <div div className="form-group">
               <label htmlFor="charge">Does your vehicle need charging?</label>
-                <select value={vehicleCharge} onChange={handChargeChange}>
+                <select value={vehicleCharge} onChange={handleChargeChange}>
                   <option value="">Select</option>
                   <option value="yes">Yes</option>
                   <option value="no">No</option>

@@ -20,15 +20,26 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        // 假设data对象中包含用户信息，你需要调整data的结构以匹配实际返回的结构
+        console.log('data:', data);
+
+        // 解析 ownedSpot JSON 字符串
+        let parsedOwnedSpot = [];
+        if (data.message.ownedSpot) {
+          const ownedSpotObject = JSON.parse(data.message.ownedSpot);
+          if (ownedSpotObject.OwnedSpot) {
+            parsedOwnedSpot = ownedSpotObject.OwnedSpot;
+            console.log('parsedOwnedSpot:', parsedOwnedSpot);
+          }
+        }
+
+        // data对象中包含用户信息
         setUserInfo({
           name: data.message.name,
-          account: data.message.account, // 这里假设account信息在balance属性中
+          account: data.message.account,
           earning: data.message.earning,
-          avatar: data.message.avatar // 假设这是一个有效的图片URL或base64编码的图片数据
+          avatar: data.message.avatar,
+          ownedSpot: parsedOwnedSpot
         });
-        
-        
       } catch (error) {
         console.error('Error fetching user info:', error);
       }

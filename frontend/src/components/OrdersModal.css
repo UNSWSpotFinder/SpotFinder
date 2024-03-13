@@ -1,0 +1,94 @@
+.orders-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .orders-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 800px;
+    overflow: auto; /* 内容太多，需要滚动 */
+  }
+  
+  .orders-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #d3d3d3;
+    position: relative;
+  }
+
+  .current-state-title {
+    font-size: 23px;
+    font-weight: bold;
+  }
+
+ 
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+  }
+  
+  .spot-info {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  /* 具体的轮播图样式 */
+  .carousel-container {
+    margin: 20px 0;
+  }
+  
+  .order-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px 0; 
+    background: #fff; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .renter-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  .rental-details {
+    flex-grow: 1;
+    padding: 0 20px;
+  }
+  
+  .button-part button {
+    margin-right: 10px;
+  }
+  
+  /* 以下是按钮的基本样式，你需要根据自己的设计来调整 */
+  button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #f7f7f7;
+  }
+  
