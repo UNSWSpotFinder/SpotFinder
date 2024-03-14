@@ -46,7 +46,7 @@
   /* Listings部分 */
   .listing-info {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: 150px auto auto auto;
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
@@ -55,10 +55,10 @@
     overflow: hidden; 
   }
 
-  .picture {
+  .picture img {
     background-color: #d3d3d3; /* Placeholder color for the thumbnail */
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 5px;
   }
 

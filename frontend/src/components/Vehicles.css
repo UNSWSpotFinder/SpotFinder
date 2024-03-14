@@ -89,7 +89,7 @@
     font-weight: bold
   }
 
-  .vehicle-type, .vehicle-size {
+  .vehicle-type, .vehicle-size, .vehicle-charge {
     font-size: 17px;
     color: black;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
