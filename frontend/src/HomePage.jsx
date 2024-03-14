@@ -27,7 +27,7 @@ import {
 } from './Login';
 import { UserRegistPage, AdminRegistPage } from './Regist';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getUserInfo } from './components/API'
+import { getUserInfo } from './components/API';
 import { callAPIGetAllSpot, useError } from './API';
 import { AppContext } from './App';
 import { private_createTypography } from '@mui/material';
@@ -50,54 +50,66 @@ function AllSpoting() {
   };
   const { _, setOpenSnackbar } = useError();
   let [allSpot, setAllSpot] = useState([]);
-  let [filteredSpot,setfilrerSpot]=useState([]);
+  let [filteredSpot, setfilrerSpot] = useState([]);
   useEffect(() => {
     getNewSpot(); // Call on component mount
   }, []); // Empty dependency array means this effect runs once on mount
-  useEffect(()=>{
+  useEffect(() => {
     // 删选预订方式
-    let filter = allSpot.filter((data)=>{
-      if(contextState.BookWay=='H'){
-          return data.IsHourRent;
-      }
-      else if(contextState.BookWay=='D'){
-          return data.IsDayRent;
-      }
-      else{
-          return data.isWeekRent;
+    let filter = allSpot.filter((data) => {
+      if (contextState.BookWay == 'H') {
+        return data.IsHourRent;
+      } else if (contextState.BookWay == 'D') {
+        return data.IsDayRent;
+      } else {
+        return data.isWeekRent;
       }
     });
     // 筛选价格
-    let min_p=contextState.minPrise;
-    let max_p=contextState.maxPrise;
-    if(min_p===''){min_p='0'}
-    if(max_p===''){max_p='99999'}
-    filter = filter.filter((data)=>{
-      if(data.IsHourRent && contextState.BookWay=='H'){
-        return (parseFloat(min_p) <= data.PricePerHour && data.PricePerDay <= parseFloat(max_p));
-      }
-      else if(data.IsDayRent && contextState.BookWay=='D'){
-        return parseFloat(min_p) <= data.PricePerDay && data.PricePerDay <= parseFloat(max_p);
-      }
-      else if(data.isWeekRent && contextState.BookWay=='W')  {
-        return parseFloat(min_p) <= data.PricePerWeek && data.PricePerDay <= parseFloat(max_p);
+    let min_p = contextState.minPrise;
+    let max_p = contextState.maxPrise;
+    if (min_p === '') {
+      min_p = '0';
+    }
+    if (max_p === '') {
+      max_p = '99999';
+    }
+    filter = filter.filter((data) => {
+      if (data.IsHourRent && contextState.BookWay == 'H') {
+        return (
+          parseFloat(min_p) <= data.PricePerHour &&
+          data.PricePerDay <= parseFloat(max_p)
+        );
+      } else if (data.IsDayRent && contextState.BookWay == 'D') {
+        return (
+          parseFloat(min_p) <= data.PricePerDay &&
+          data.PricePerDay <= parseFloat(max_p)
+        );
+      } else if (data.isWeekRent && contextState.BookWay == 'W') {
+        return (
+          parseFloat(min_p) <= data.PricePerWeek &&
+          data.PricePerDay <= parseFloat(max_p)
+        );
       }
       return false;
     });
-    console.log('minP'+min_p+'maxP'+max_p);
+    console.log('minP' + min_p + 'maxP' + max_p);
     // 筛选位置
-    if(contextState.Carlocation!==''){
-      filter=filter.filter((data)=>{
+    if (contextState.Carlocation !== '') {
+      filter = filter.filter((data) => {
         return data.SpotAddr.includes(contextState.Carlocation);
-      })
+      });
     }
     // 删选车位类型
-    if(contextState.CarType!==''){
-      filter=filter.filter((data)=>{
-        return data.size===contextState.CarType;
-      })
+    if (contextState.CarType !== '') {
+      filter = filter.filter((data) => {
+        return data.size === contextState.CarType;
+      });
     }
-    if(contextState.order_rank_way===true && contextState.score_rank_way==true){
+    if (
+      contextState.order_rank_way === true &&
+      contextState.score_rank_way == true
+    ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
         if (a.Rate !== b.Rate) {
@@ -105,8 +117,10 @@ function AllSpoting() {
         }
         return b.OrderNum - a.OrderNum; // 同样，这里是降序排序
       });
-    }
-    else if(contextState.order_rank_way===true && contextState.score_rank_way==false){
+    } else if (
+      contextState.order_rank_way === true &&
+      contextState.score_rank_way == false
+    ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
         if (a.Rate !== b.Rate) {
@@ -115,7 +129,10 @@ function AllSpoting() {
         // 如果rate相同，根据number字段排序
         return b.OrderNum - a.OrderNum; // 这里是降序排序
       });
-    }else if(contextState.order_rank_way===false && contextState.score_rank_way==true){
+    } else if (
+      contextState.order_rank_way === false &&
+      contextState.score_rank_way == true
+    ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
         if (a.Rate !== b.Rate) {
@@ -124,8 +141,10 @@ function AllSpoting() {
         // 如果rate相同，根据number字段排序
         return a.OrderNum - b.OrderNum; // 这里是升序排序
       });
-    }
-    else if(contextState.order_rank_way===false && contextState.score_rank_way==false){
+    } else if (
+      contextState.order_rank_way === false &&
+      contextState.score_rank_way == false
+    ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
         if (a.Rate !== b.Rate) {
@@ -135,10 +154,15 @@ function AllSpoting() {
         return a.OrderNum - b.OrderNum; // 同样，这里是升序排序
       });
     }
-    console.log('order amount ' + contextState.order_rank_way + ' rate amount ' + contextState.score_rank_way);
+    console.log(
+      'order amount ' +
+        contextState.order_rank_way +
+        ' rate amount ' +
+        contextState.score_rank_way
+    );
     console.log(filter);
     setfilrerSpot(filter);
-  },[contextState,allSpot]);
+  }, [contextState, allSpot]);
   function getNewSpot() {
     callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
       .then((response) => {
@@ -196,7 +220,7 @@ function AllSpoting() {
 
 export function HomePageLarge() {
   const { contextState, updateContextState } = useContext(AppContext);
-  const [orderway,setorderway] = useState('');
+  const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
   const [maxP, setmaxP] = useState(contextState.maxPrise);
   const [fitsize, setsize] = useState(contextState.CarType);
@@ -204,59 +228,59 @@ export function HomePageLarge() {
   const [O, setO] = useState(contextState.order_rank_way);
   const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
   const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
-  const handleStartDate=(event)=>{
+  const handleStartDate = (event) => {
     setstartDate(event);
     updateContextState({
-      StartDay: event
+      StartDay: event,
     });
-  }
-  const handleEndDate=(event)=>{
+  };
+  const handleEndDate = (event) => {
     setendDate(event);
     updateContextState({
-      EndDay: event
+      EndDay: event,
     });
-  }
+  };
   const handlePopChange = (event) => {
     let res = event.target.value;
     setR(res === '0');
     updateContextState({
-      order_rank_way: (res==='0')
+      order_rank_way: res === '0',
     });
     console.log(contextState);
   };
   const handleLocation = (event) => {
     setmaxP(event.target.value);
     updateContextState({
-      Carlocation: event.target.value
+      Carlocation: event.target.value,
     });
-  }
+  };
   const handleOrdChange = (event) => {
     let res = event.target.value;
     setO(res === '0');
     updateContextState({
-      score_rank_way: (res==='0')
+      score_rank_way: res === '0',
     });
     console.log(contextState);
   };
   const handleOrdwayChange = (event) => {
     updateContextState({
-      BookWay: event.target.value
+      BookWay: event.target.value,
     });
     console.log(contextState);
   };
-  const handleminpriceChange=(event)=>{
+  const handleminpriceChange = (event) => {
     setminP(event.target.value);
     updateContextState({
-      minPrise: event.target.value
+      minPrise: event.target.value,
     });
-  }
-  const handlemaxpriceChange=(event)=>{
+  };
+  const handlemaxpriceChange = (event) => {
     setmaxP(event.target.value);
     updateContextState({
-      maxPrise: event.target.value
+      maxPrise: event.target.value,
     });
-  }
-  const { _ , setOpenSnackbar } = useError();
+  };
+  const { _, setOpenSnackbar } = useError();
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
   // 调库
@@ -265,7 +289,6 @@ export function HomePageLarge() {
   // 进入用户登录页面
   let goesLoginUser = () => {
     navigate('/userlogin');
-
   };
   // 进入用户注册页面
   let goesRegistUser = () => {
@@ -347,7 +370,12 @@ export function HomePageLarge() {
           {/* 搜索图标 */}
           <img className='searchbtn-home' src='/img/search.png'></img>
           {/* 搜索输入框 */}
-          <input className='Searchbar' placeholder='Search by location' value={contextState.Carlocation} onChange={handleLocation}></input>
+          <input
+            className='Searchbar'
+            placeholder='Search by location'
+            value={contextState.Carlocation}
+            onChange={handleLocation}
+          ></input>
         </div>
         {/* 新建车位按钮 */}
         <button className='newspace' onClick={CreatSpace}>
@@ -379,10 +407,10 @@ export function HomePageLarge() {
       {/* 欢迎部分 */}
       <div>
         <img src='/img/car.png' width={'100%'}></img>
-        <p className = 'image-container-title'>
+        <p className='image-container-title'>
           Find Closer, Cheaper Parking Anywhere in Australia
         </p>
-        <p className = 'image-container-sub'>
+        <p className='image-container-sub'>
           SpotFinder makes it easy to browse, book, and enjoy the parking spaces
           that work best for you wherever you are.
         </p>
@@ -420,8 +448,8 @@ export function HomePageLarge() {
           <option value='D'>Daily</option>
           <option value='W'>Weekly</option>
         </select>
-        {orderway==='H'?(
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+        {contextState.BookWay === 'H' ? (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               className='timechoice'
               label='Parking time'
@@ -435,31 +463,37 @@ export function HomePageLarge() {
               onChange={handleEndDate}
             />
           </LocalizationProvider>
-        ):
-        (
+        ) : (
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            className='timechoice'
-            label='Parking time'
-            value={startDate}
-            onChange={handleStartDate}
-          />
-          <DatePicker
-            className='timechoice'
-            label='Leaving time'
-            value={endDate}
-            onChange={handleEndDate}
-          />
-        </LocalizationProvider>
-        )
-        }
+            <DatePicker
+              className='timechoice'
+              label='Parking time'
+              value={startDate}
+              onChange={handleStartDate}
+            />
+            <DatePicker
+              className='timechoice'
+              label='Leaving time'
+              value={endDate}
+              onChange={handleEndDate}
+            />
+          </LocalizationProvider>
+        )}
         <div className='pricerange'>
           <label className='pricerange'>MIN$</label>
-          <input className='pricerange' value={minP} onChange={handleminpriceChange}></input>
+          <input
+            className='pricerange'
+            value={minP}
+            onChange={handleminpriceChange}
+          ></input>
         </div>
         <div className='pricerange'>
           <label className='pricerange'>MAX$</label>
-          <input className='pricerange' value={maxP} onChange={handlemaxpriceChange}></input>
+          <input
+            className='pricerange'
+            value={maxP}
+            onChange={handlemaxpriceChange}
+          ></input>
         </div>
         <button className='selectcar' onClick={ChooseCar}>
           SELECT YOUR CAR
@@ -476,7 +510,7 @@ export function HomePageLarge() {
 export function HomePageSmall() {
   let currentuser = localStorage.getItem('email') || null;
   const { contextState, updateContextState } = useContext(AppContext);
-  const [orderway,setorderway] = useState('');
+  const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
   const [maxP, setmaxP] = useState(contextState.maxPrise);
   const [fitsize, setsize] = useState(contextState.CarType);
@@ -484,58 +518,58 @@ export function HomePageSmall() {
   const [O, setO] = useState(contextState.order_rank_way);
   const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
   const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
-  const handleStartDate=(event)=>{
+  const handleStartDate = (event) => {
     setstartDate(event);
     updateContextState({
-      StartDay: event
+      StartDay: event,
     });
-  }
-  const handleEndDate=(event)=>{
+  };
+  const handleEndDate = (event) => {
     setendDate(event);
     updateContextState({
-      EndDay: event
+      EndDay: event,
     });
-  }
+  };
   const handlePopChange = (event) => {
     let res = event.target.value;
     setR(res === '0');
     updateContextState({
-      order_rank_way: (res==='0')
+      order_rank_way: res === '0',
     });
     console.log(contextState);
   };
   const handleLocation = (event) => {
     setmaxP(event.target.value);
     updateContextState({
-      Carlocation: event.target.value
+      Carlocation: event.target.value,
     });
-  }
+  };
   const handleOrdChange = (event) => {
     let res = event.target.value;
     setO(res === '0');
     updateContextState({
-      score_rank_way: (res==='0')
+      score_rank_way: res === '0',
     });
     console.log(contextState);
   };
   const handleOrdwayChange = (event) => {
     updateContextState({
-      BookWay: event.target.value
+      BookWay: event.target.value,
     });
     console.log(contextState);
   };
-  const handleminpriceChange=(event)=>{
+  const handleminpriceChange = (event) => {
     setminP(event.target.value);
     updateContextState({
-      minPrise: event.target.value
+      minPrise: event.target.value,
     });
-  }
-  const handlemaxpriceChange=(event)=>{
+  };
+  const handlemaxpriceChange = (event) => {
     setmaxP(event.target.value);
     updateContextState({
-      maxPrise: event.target.value
+      maxPrise: event.target.value,
     });
-  }
+  };
   const [clickCount, setClickCount] = useState(0);
   const goesSpecific = (event) => {
     const target = event.target;
@@ -633,7 +667,12 @@ export function HomePageSmall() {
           {/* 搜索图标 */}
           <img className='searchbtnsmall' src='/img/search.png'></img>
           {/* 搜索输入框 */}
-          <input className='Searchbar' placeholder='Search by location' value={contextState.Carlocation} onChange={handleLocation}></input>
+          <input
+            className='Searchbar'
+            placeholder='Search by location'
+            value={contextState.Carlocation}
+            onChange={handleLocation}
+          ></input>
         </div>
         {/* 登录注册按钮组 */}
         {token ? (
@@ -701,7 +740,8 @@ export function HomePageSmall() {
               type='text'
               className='form-control'
               aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.minPrise} onChange={handleminpriceChange}
+              value={contextState.minPrise}
+              onChange={handleminpriceChange}
             ></input>
           </div>
           <div className='input-group width-20'>
@@ -710,7 +750,8 @@ export function HomePageSmall() {
               type='text'
               className='form-control'
               aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.maxPrise} onChange={handlemaxpriceChange}
+              value={contextState.maxPrise}
+              onChange={handlemaxpriceChange}
             ></input>
           </div>
           {/* <div className='hflex'>
@@ -718,7 +759,9 @@ export function HomePageSmall() {
             <input className='pricerange-s'></input>
           </div> */}
 
-          <button className='selectcar' onClick={ChooseCar}>SELECT YOUR CAR</button>
+          <button className='selectcar' onClick={ChooseCar}>
+            SELECT YOUR CAR
+          </button>
         </div>
         <div className='filter-bottom'>
           <select
@@ -731,43 +774,42 @@ export function HomePageSmall() {
             <option value='D'>Daily</option>
             <option value='W'>Weekly</option>
           </select>
-          {contextState.BookWay==='H'?(
+          {contextState.BookWay === 'H' ? (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              className='timechoice-s'
-              label='Parking time'
-              value={startDate}
-              onChange={handleStartDate}
-            />
-            <DateTimePicker
-              className='timechoice-s'
-              label='Leaving time'
-              value={endDate}
-              onChange={handleEndDate}
-            />
-          </LocalizationProvider>
-        ):
-        (
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            className='timechoice-s'
-            label='Parking time'
-            value={startDate}
-            onChange={handleStartDate}
-          />
-          <DatePicker
-            className='timechoice-s'
-            label='Leaving time'
-            value={endDate}
-            onChange={handleEndDate}
-          />
-        </LocalizationProvider>
-        )
-        }
+              <DemoContainer components={['DateTimePicker','DateTimePicker']}>
+                <DateTimePicker
+                  label='Parking time'
+                  value={startDate}
+                  onChange={handleStartDate}
+                />
+                <DateTimePicker
+                  className='timechoice-s'
+                  label='Leaving time'
+                  value={endDate}
+                  onChange={handleEndDate}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+          ) : (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                className='timechoice-s'
+                label='Parking time'
+                value={startDate}
+                onChange={handleStartDate}
+              />
+              <DatePicker
+                className='timechoice-s'
+                label='Leaving time'
+                value={endDate}
+                onChange={handleEndDate}
+              />
+            </LocalizationProvider>
+          )}
         </div>
       </div>
       {/* 所有车位列表 */}
-      <AllSpoting/>
+      <AllSpoting />
     </div>
   );
 }

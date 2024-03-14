@@ -23,7 +23,7 @@ import {
   Route,
   Link,
   useLocation,
-  useParams
+  useParams,
 } from 'react-router-dom';
 import {
   AdminLoginPage,
@@ -218,7 +218,7 @@ const ReserveConfirm = styled('button')({
     cursor: 'not-allowed',
   },
 });
-export const ConfirmBook = ( data, isOpen, close ) => {
+export const ConfirmBook = ({ data, isOpen, close }) => {
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
   // use the navigate to go to the user page
@@ -235,140 +235,100 @@ export const ConfirmBook = ( data, isOpen, close ) => {
     close();
   };
   // get the set open snackbar function
-  const {_, setOpenSnackbar } = useError();
+  const { _, setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const ReverseBook = () => {
-    // if both date is not null
-    if (data.CheckinDate && data.CheckoutDate) {
-      // get the distance between two date
-      const distance = GetDistance(data.CheckinDate, data.CheckoutDate);
-      // get the token from the local storage
-      const token = localStorage.getItem('token') || '';
-      // call the api to create the booking
-    }
-    // initial the conponment
-    let conponment = <div></div>;
-    if (isOpen) {
-      // initial the address
-      const address =
-        data.address.Street +
-        ', ' +
-        data.address.City +
-        ', ' +
-        data.address.State +
-        ', ' +
-        data.address.Country +
-        ', ' +
-        data.address.Postcode;
-      // initial all facilities
-      // filter all true facilities
-      const trueKeys = ''
-      // if the facilities is empty then do it
-      if (trueKeys.length === 0) {
-        trueKeys.push('No additional Facilities');
-      }
-      // change the conponment
-      conponment = (
-        <div className='CfmAll'>
-          <div className='CfmBack'></div>
-          <CfmContent>
-            <CfmHeight>
-              <CfmClose onClick={back}>
-                {ConfirmState ? 'Back' : 'Cancel'}
-              </CfmClose>
-              <CfmHead>Hosting Paying</CfmHead>
-            </CfmHeight>
-            <CfmCenterContent>
-              <CfmRow>
-                <CfmBigtxt>{data.metadata.type}</CfmBigtxt>
-                <CfmRightttxt>{'Hosted by ' + data.owner}</CfmRightttxt>
-              </CfmRow>
-              <CfmRowCol>
-                <CfmLefttxt>Hosting Address</CfmLefttxt>
-                <CfmRightttxt>{address}</CfmRightttxt>
-              </CfmRowCol>
-              <CfmRowCol>
-                <CfmLefttxt>Facilities</CfmLefttxt>
-                <CfmGuest>
-                  <CfmGuestBlock>
-                    <LogoPath src='/img/Guest.png'></LogoPath>
-                    <CfmValuettxt>{}</CfmValuettxt>
-                  </CfmGuestBlock>
-                  <CfmGuestBlock>
-                    <LogoPath src='/img/bath.png'></LogoPath>
-                    <CfmValuettxt>
-                      {}
-                    </CfmValuettxt>
-                  </CfmGuestBlock>
-                  <CfmGuestBlock>
-                    <LogoPath src='/img/bedroom.png'></LogoPath>
-                    <CfmValuettxt>
-                      {data.metadata.bedInfo.Bedrooms}
-                    </CfmValuettxt>
-                  </CfmGuestBlock>
-                  <CfmGuestBlock>
-                    <LogoPath src='/img/bed.png'></LogoPath>
-                    <CfmValuettxt>{data.metadata.bedInfo.Beds}</CfmValuettxt>
-                  </CfmGuestBlock>
-                </CfmGuest>
-                <CfmFac>
-                  {trueKeys.map((key) => (
-                    <CfmValuettxt key={key}>{key}</CfmValuettxt>
-                  ))}
-                </CfmFac>
-              </CfmRowCol>
-              <CfmRowCol>
-                <CfmLefttxt>Hosting Date</CfmLefttxt>
-                <CfmRow2>
-                  <CfmRightttxt2>
-                    {dayjs(data.CheckinDate).format('MM/DD/YYYY') +
-                      ' - ' +
-                      dayjs(data.CheckoutDate).format('MM/DD/YYYY')}
-                  </CfmRightttxt2>
-                  <CfmRightttxt2>
-                    {GetDistance(data.CheckinDate, data.CheckoutDate) +
-                      ' night'}
-                  </CfmRightttxt2>
-                </CfmRow2>
-              </CfmRowCol>
-              <CfmRowP>
-                <CfmLefttxt>Total Price</CfmLefttxt>
-                <CfmRightttxt>
-                  ${String(data.TotalPrice.toFixed(2))}
-                </CfmRightttxt>
-              </CfmRowP>
-            </CfmCenterContent>
-            <CfmBottom>
-              <ReserveConfirm
-                onClick={() => {
-                  if (ConfirmState) {
-                    goesMain();
-                  } else {
-                    ReverseBook();
-                  }
-                }}
-              >
-                {ConfirmState
-                  ? 'Goes to HomePage'
-                  : 'Pay for $' + String(data.TotalPrice.toFixed(2)) + ' AUD'}
-              </ReserveConfirm>
-            </CfmBottom>
-          </CfmContent>
-        </div>
-      );
-      console.log(data);
-    }
-    return isOpen ? conponment : null;
+    // change the conponment
+    console.log(data);
   };
+  let conponment = (
+    <div className='CfmAll'>
+      <div className='CfmBack'></div>
+      <CfmContent>
+        <CfmHeight>
+          <CfmClose onClick={back}>
+            {ConfirmState ? 'Back' : 'Cancel'}
+          </CfmClose>
+          <CfmHead>Hosting Paying</CfmHead>
+        </CfmHeight>
+        <CfmCenterContent>
+          <CfmRow>
+            <CfmBigtxt>{data.metadata}</CfmBigtxt>
+            <CfmRightttxt>{'Hosted by ' + data.owner}</CfmRightttxt>
+          </CfmRow>
+          <CfmRowCol>
+            <CfmLefttxt>Hosting Address</CfmLefttxt>
+            <CfmRightttxt>{'1111111'}</CfmRightttxt>
+          </CfmRowCol>
+          <CfmRowCol>
+            <CfmLefttxt>Facilities</CfmLefttxt>
+            <CfmGuest>
+              <CfmGuestBlock>
+                <LogoPath src='/img/Guest.png'></LogoPath>
+                <CfmValuettxt>{}</CfmValuettxt>
+              </CfmGuestBlock>
+              <CfmGuestBlock>
+                <LogoPath src='/img/bath.png'></LogoPath>
+                <CfmValuettxt>{}</CfmValuettxt>
+              </CfmGuestBlock>
+              <CfmGuestBlock>
+                <LogoPath src='/img/bedroom.png'></LogoPath>
+                <CfmValuettxt>{data.metadata}</CfmValuettxt>
+              </CfmGuestBlock>
+              <CfmGuestBlock>
+                <LogoPath src='/img/bed.png'></LogoPath>
+                <CfmValuettxt>{data.metadata}</CfmValuettxt>
+              </CfmGuestBlock>
+            </CfmGuest>
+            <CfmFac>
+            </CfmFac>
+          </CfmRowCol>
+          <CfmRowCol>
+            <CfmLefttxt>Spoting Date</CfmLefttxt>
+            <CfmRow2>
+              <CfmRightttxt2>
+                {dayjs(data.CheckinDate).format('MM/DD/YYYY') +
+                  ' - ' +
+                  dayjs(data.CheckoutDate).format('MM/DD/YYYY')}
+              </CfmRightttxt2>
+              <CfmRightttxt2>
+                {GetDistance(data.CheckinDate, data.CheckoutDate) + ' night'}
+              </CfmRightttxt2>
+            </CfmRow2>
+          </CfmRowCol>
+          <CfmRowP>
+            <CfmLefttxt>Total Price</CfmLefttxt>
+            <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
+          </CfmRowP>
+        </CfmCenterContent>
+        <CfmBottom>
+          <ReserveConfirm
+            onClick={() => {
+              if (ConfirmState) {
+                goesMain();
+              } else {
+                ReverseBook();
+              }
+            }}
+          >
+            {ConfirmState
+              ? 'Goes to HomePage'
+              : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
+          </ReserveConfirm>
+        </CfmBottom>
+      </CfmContent>
+    </div>
+  );
+  return isOpen ? conponment : null;
 };
 export function HomeSpecificLarge() {
-  const [isbook,setIsbook] = useState(false);
+  const [isbook, setIsbook] = useState(false);
   const closebook = () => {
     setIsbook(false);
   };
   const Confirm = () => {
     setIsbook(true);
-  }
+  };
   const { contextState, updateContextState } = useContext(AppContext);
   const [bookway, setbookway] = useState(contextState.BookWay);
   const handlebookway = (event) => {
@@ -407,7 +367,8 @@ export function HomeSpecificLarge() {
   });
   useEffect(() => {
     getDetail();
-  },[]);
+    console.log(isbook);
+  }, [isbook]);
   console.log(token);
   // 跳转车位选择页
   // 调库
@@ -546,9 +507,7 @@ export function HomeSpecificLarge() {
   return (
     // 主页背景框
     <div className='HomeOverall'>
-      <div>
-        <ConfirmBook data={info} isOpen={isbook} close={closebook} />
-      </div>
+      <ConfirmBook data={info} isOpen={isbook} close={closebook} />
       {/* 根据路由返回不同的model */}
       {/* 导航栏 */}
       <div className='Navbar'>
@@ -717,31 +676,59 @@ export function HomeSpecificLarge() {
             <div className='TimeInterval-book'>
               <div className='IntervalContent-top'>
                 <div className='TimeBlock'>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DatePicker', 'DatePicker']}>
-                      <DateTimePicker
-                        label='Start Date'
-                        value={FirstStart}
-                        onChange={(date) => {
-                          if (date) FirstStartChange(date);
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  {bookway == 'H' ? (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DateTimePicker']}>
+                        <DateTimePicker
+                          label='Start Date'
+                          value={FirstStart}
+                          onChange={(date) => {
+                            if (date) FirstStartChange(date);
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  ) : (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DatePicker']}>
+                        <DatePicker
+                          label='Start Date'
+                          value={FirstStart}
+                          onChange={(date) => {
+                            if (date) FirstStartChange(date);
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  )}
                 </div>
                 <p className='TO'> - </p>
                 <div className='TimeBlock'>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DatePicker', 'DatePicker']}>
-                      <DateTimePicker
-                        label='End Date'
-                        value={FirstEnd}
-                        onChange={(date) => {
-                          if (date) FirstEndChange(date);
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  {bookway == 'H' ? (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DateTimePicker']}>
+                        <DateTimePicker
+                          label='End Date'
+                          value={FirstEnd}
+                          onChange={(date) => {
+                            if (date) FirstEndChange(date);
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  ) : (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DatePicker']}>
+                        <DatePicker
+                          label='End Date'
+                          value={FirstEnd}
+                          onChange={(date) => {
+                            if (date) FirstEndChange(date);
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  )}
                 </div>
               </div>
             </div>
@@ -749,31 +736,59 @@ export function HomeSpecificLarge() {
               <div className='TimeInterval-book' key={interval.id}>
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
-                        <DateTimePicker
-                          label='Start Date'
-                          value={interval.startDate}
-                          onChange={(date) => {
-                            if (date) handleStartDateChange(index, date);
-                          }}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                    {bookway == 'H' ? (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DateTimePicker']}>
+                          <DateTimePicker
+                            label='Start Date'
+                            value={interval.startDate}
+                            onChange={(date) => {
+                              if (date) handleStartDateChange(index, date);
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    ) : (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DatePicker']}>
+                          <DatePicker
+                            label='Start Date'
+                            value={interval.startDate}
+                            onChange={(date) => {
+                              if (date) handleStartDateChange(index, date);
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    )}
                   </div>
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
-                        <DateTimePicker
-                          label='End Date'
-                          value={interval.startDate}
-                          onChange={(date) => {
-                            if (date) handleEndDateChange(index, date);
-                          }}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                    {bookway == 'H' ? (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DateTimePicker']}>
+                          <DateTimePicker
+                            label='End Date'
+                            value={interval.startDate}
+                            onChange={(date) => {
+                              if (date) handleEndDateChange(index, date);
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    ) : (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DatePicker']}>
+                          <DatePicker
+                            label='End Date'
+                            value={interval.startDate}
+                            onChange={(date) => {
+                              if (date) handleEndDateChange(index, date);
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    )}
                   </div>
                   <button
                     className='ClearInterval-book'
@@ -793,7 +808,9 @@ export function HomeSpecificLarge() {
               <p className='Pricetxt'>Total Price</p>
               <p className='PriceValue'>$0</p>
             </div>
-            <button className='confirm-btn' onClick={Confirm}>Appointment</button>
+            <button className='confirm-btn' onClick={Confirm}>
+              Appointment
+            </button>
           </div>
         </div>
         <div className='car-select'>
