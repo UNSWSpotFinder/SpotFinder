@@ -23,9 +23,8 @@ func GetUserIDBySpotID(spotID uint, db *gorm.DB) uint {
 }
 
 func ModifySpotDetails(spot *Spot.Basic, db *gorm.DB) error {
-	//fmt.Println("\n\n", spot)
 	//更新数据库中的所有字段
-	if err := db.Model(&spot).Where("id=?", spot.ID).Updates(spot).Error; err != nil {
+	if err := db.Model(&Spot.Basic{}).Where("id=?", spot.ID).Updates(spot).Error; err != nil {
 		return err
 	}
 	return nil
