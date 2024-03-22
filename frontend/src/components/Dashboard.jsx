@@ -169,9 +169,9 @@ const Dashboard = () => {
             </div>
             <div className='right-account-container'>
               <div className='title'>Total account balance: </div>
-              <div className='number'>${userInfo.account}</div>
+              <div className='number'>${userInfo.account.toFixed(2)}</div>
               <div className='title'>So far, you've earned: </div>
-              <div className='number'>${userInfo.earning}</div>
+              <div className='number'>${userInfo.earning.toFixed(2)}</div>
               <button className='top-up-btn' onClick={showTopUpModal}>Top up</button>
               <button className='withdraw-btn' onClick={showWithdrawModal}>Withdraw</button>
             </div>

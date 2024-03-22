@@ -121,7 +121,7 @@ function App() {
                 <Route path='/*' element={<CatchAllRouteHandler/>}/>
             </Routes>
             <Routes>
-            <Route path="/admindashboard/adminid" element={<AdminDashboard/>} />
+              <Route path="/admin/:adminid" element={<AdminDashboard/>} />
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace/:Spotid" element = {<EditSpace/>} />

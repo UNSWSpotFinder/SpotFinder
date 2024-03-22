@@ -66,7 +66,7 @@ const AdminDashboard = () => {
                     {spot.SpotName + ' ' + spot.SpotType}
                   </p>
                   <div className='rate-part'>
-                    <img src='img/star.png' className='rate-img' alt="Rate"></img>
+                    <img src='/img/star.png' className='rate-img' alt="Rate"></img>
                     <p className='rate-txt'>{spot.Rate}</p>
                   </div>
                 </div>
@@ -75,7 +75,7 @@ const AdminDashboard = () => {
                 <p className='space-type'>Fits a {spot.SpotType}</p>
                 <div className='right-bottom'>
                   <div className='order-part'>
-                    <img src='img/booking.png' className='order-times' alt="Orders"></img>
+                    <img src='/img/booking.png' className='order-times' alt="Orders"></img>
                     <p className='times'>{spot.OrderNum}</p>
                   </div>
                   <button
