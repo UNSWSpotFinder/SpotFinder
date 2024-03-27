@@ -113,8 +113,6 @@ function App() {
                 <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
                 <Route path="/adminlogin"  element={<AdminLoginPage/>} />
                 <Route path="/adminregist" element={<AdminRegistPage/>} />
-                
-                
                 <Route path="/:username/choose" element={<CarSpaceChoice/>} />
                 <Route path="/:username/editcar/*" element={<CarSpaceEdit/>} />
                 <Route path="/:username/addcar" element={<CarSpaceAdd/>} />
@@ -122,6 +120,7 @@ function App() {
             </Routes>
             <Routes>
               <Route path="/admin/:adminid" element={<AdminDashboard/>} />
+              <Route path = "/:username/:adminid/:Spotid" element = {<div>111</div>} />
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace/:Spotid" element = {<EditSpace/>} />

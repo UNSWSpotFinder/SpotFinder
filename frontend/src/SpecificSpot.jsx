@@ -5,12 +5,14 @@ import React, {
   LabelHTMLAttributes,
   useEffect,
 } from 'react';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { styled } from '@mui/material';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import dayjs from 'dayjs';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DatePicker, dayCalendarSkeletonClasses } from '@mui/x-date-pickers';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -31,14 +33,23 @@ import {
   UserLoginPageForgetPassword,
 } from './Login';
 import { UserRegistPage, AdminRegistPage } from './Regist';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useError, callAPIGetSpecSpot, GetDistance } from './API';
+import { motion, AnimatePresence, distance } from 'framer-motion';
+import {
+  useError,
+  callAPIGetSpecSpot,
+  GetDistance,
+  callAPIGetSpecUserInfo,
+  GetDistanceAll,
+  CalculateAllTime,
+} from './API';
 import './SpecificSpot.css';
 import { indigo } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { AppContext } from './App';
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 // this function is the confirmation of the confirm booking.
 const CfmContent = styled('div')({
   position: 'absolute',
@@ -227,7 +238,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   const { HostingId } = useParams();
   // go to the user page
   const goesMain = () => {
-    navigate('/user/' + data.Booker);
+    navigate('/user/' + localStorage.getItem('email'));
   };
   // go back to detail page
   const back = () => {
@@ -246,55 +257,61 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       <div className='CfmBack'></div>
       <CfmContent>
         <CfmHeight>
-          <CfmClose onClick={back}>
-            {ConfirmState ? 'Back' : 'Cancel'}
-          </CfmClose>
-          <CfmHead>Hosting Paying</CfmHead>
+          <CfmClose onClick={back}>{ConfirmState ? 'Back' : 'Cancel'}</CfmClose>
+          <CfmHead>Spot Paying</CfmHead>
         </CfmHeight>
         <CfmCenterContent>
           <CfmRow>
-            <CfmBigtxt>{data.metadata}</CfmBigtxt>
-            <CfmRightttxt>{'Hosted by ' + data.owner}</CfmRightttxt>
+            <CfmBigtxt>{data.SpotName + ' ' + data.SpotType}</CfmBigtxt>
+            <CfmRightttxt>{'Hosted by ' + data.Owner}</CfmRightttxt>
           </CfmRow>
           <CfmRowCol>
             <CfmLefttxt>Hosting Address</CfmLefttxt>
-            <CfmRightttxt>{'1111111'}</CfmRightttxt>
+            <CfmRightttxt>
+              {data.Street +
+                ', ' +
+                data.City +
+                ', ' +
+                data.State +
+                ', ' +
+                data.Country +
+                ', ' +
+                data.Postcode}
+            </CfmRightttxt>
+          </CfmRowCol>
+          <CfmRowCol>
+            <CfmLefttxt>Access Way</CfmLefttxt>
+            <CfmRightttxt>
+              {data.Passway}
+            </CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Facilities</CfmLefttxt>
-            <CfmGuest>
-              <CfmGuestBlock>
-                <LogoPath src='/img/Guest.png'></LogoPath>
-                <CfmValuettxt>{}</CfmValuettxt>
-              </CfmGuestBlock>
-              <CfmGuestBlock>
-                <LogoPath src='/img/bath.png'></LogoPath>
-                <CfmValuettxt>{}</CfmValuettxt>
-              </CfmGuestBlock>
-              <CfmGuestBlock>
-                <LogoPath src='/img/bedroom.png'></LogoPath>
-                <CfmValuettxt>{data.metadata}</CfmValuettxt>
-              </CfmGuestBlock>
-              <CfmGuestBlock>
-                <LogoPath src='/img/bed.png'></LogoPath>
-                <CfmValuettxt>{data.metadata}</CfmValuettxt>
-              </CfmGuestBlock>
-            </CfmGuest>
-            <CfmFac>
-            </CfmFac>
+            <CfmRightttxt>
+              {'Fits a ' +
+                data.Size +
+                ' with ' +
+                data.Charge +
+                ' charging post'}
+            </CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
-            <CfmLefttxt>Spoting Date</CfmLefttxt>
-            <CfmRow2>
-              <CfmRightttxt2>
-                {dayjs(data.CheckinDate).format('MM/DD/YYYY') +
-                  ' - ' +
-                  dayjs(data.CheckoutDate).format('MM/DD/YYYY')}
-              </CfmRightttxt2>
-              <CfmRightttxt2>
-                {GetDistance(data.CheckinDate, data.CheckoutDate) + ' night'}
-              </CfmRightttxt2>
-            </CfmRow2>
+            <CfmLefttxt>Booking Time</CfmLefttxt>
+            {data.BookingDuration.map((date, index) => (
+              <CfmRow2 key={date.id}>
+                <CfmRightttxt2>
+                  {'From ' +
+                    dayjs(date.startDate).format('YYYY-MM-DD') +
+                    ' to ' +
+                    dayjs(date.endDate).format('YYYY-MM-DD')}
+                </CfmRightttxt2>
+                <CfmRightttxt2>
+                  {data.BookWay === 'H' && date.distance + ' hours'}
+                  {data.BookWay === 'D' && date.distance + ' days'}
+                  {data.BookWay === 'W' && date.distance + ' weeks'}
+                </CfmRightttxt2>
+              </CfmRow2>
+            ))}
           </CfmRowCol>
           <CfmRowP>
             <CfmLefttxt>Total Price</CfmLefttxt>
@@ -322,15 +339,52 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 export function HomeSpecificLarge() {
+  const { _ , setOpenSnackbar } = useError();
+  const { contextState, updateContextState } = useContext(AppContext);
+  const [bookway, setbookway] = useState(contextState.BookWay);
   const [isbook, setIsbook] = useState(false);
+  const [TotalPrice, setTotalPrice] = useState(0);
   const closebook = () => {
     setIsbook(false);
   };
   const Confirm = () => {
-    setIsbook(true);
+    let temp = {
+      id: Date.now(), // unique id
+      startDate: FirstStart,
+      endDate: FirstEnd,
+      distance: Firstdistance,
+    };
+    if(FirstStart===null || FirstEnd===null){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'You must set All booking duration correctly!',
+        timestamp: new Date().getTime()
+      });
+      return;
+    }
+    let check_null = timeIntervals.find((item)=>(item.startDate===null || item.endDate===null));
+    if (check_null){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'You must set All booking duration correctly!',
+        timestamp: new Date().getTime()
+      });
+      return;
+    }
+    setdata((prevData) => ({
+      ...prevData,
+      BookingDuration: [temp, ...timeIntervals],
+      BookWay: bookway,
+      TotalPrice: TotalPrice,
+    }));
+    console.log(timeIntervals);
+    
+    setTimeout(() => {
+      setIsbook(true);
+      console.log(data);
+    }, 300);
   };
-  const { contextState, updateContextState } = useContext(AppContext);
-  const [bookway, setbookway] = useState(contextState.BookWay);
+
   const handlebookway = (event) => {
     setbookway(event.target.value);
   };
@@ -341,7 +395,7 @@ export function HomeSpecificLarge() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const { _, setOpenSnackbar } = useError();
+
   const [allpic, setallpic] = useState([]);
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
@@ -359,17 +413,36 @@ export function HomeSpecificLarge() {
     IsHourRent: false,
     IsWeekRent: true,
     Rate: 0,
-    Size: 0,
+    Size: '',
     SpotName: '',
     SpotAddr: '',
     SpotType: '',
     AvailableTime: '',
   });
+  const [data, setdata] = useState({
+    Street: '',
+    City: '',
+    Country: '',
+    State: '',
+    Postcode: '',
+    AvailableTime: [],
+    PassWay: '',
+    Charge: 'None',
+    SpotName: '',
+    SpotType: '',
+    Size: 0,
+    BookingDuration: [],
+    CarNum: '',
+    Profile: '',
+    Owner: '',
+    TotalPrice: 0,
+    BookWay: '',
+  });
+
   useEffect(() => {
     getDetail();
     console.log(isbook);
   }, [isbook]);
-  console.log(token);
   // 跳转车位选择页
   // 调库
   let navigate = useNavigate();
@@ -390,6 +463,18 @@ export function HomeSpecificLarge() {
       navigate('/');
     }
   };
+  const calculateTotalPrice = (distance) => {
+    switch (bookway) {
+      case 'H':
+        return distance * info.PricePerHour;
+      case 'D':
+        return distance * info.PricePerDay;
+      case 'W':
+        return distance * info.PricePerWeek;
+      default:
+        return 0; // Handle unexpected bookway values gracefully
+    }
+  };
   let getDetail = () => {
     const carId = localStorage.getItem('spotID');
     callAPIGetSpecSpot('spot/' + carId)
@@ -397,9 +482,56 @@ export function HomeSpecificLarge() {
         console.log(response);
         setInfo(response.message);
         const res = JSON.parse(response.message.MorePictures);
+        const avtime = JSON.parse(response.message.AvailableTime);
+        setdata((prevData) => ({
+          ...prevData,
+          AvailableTime: avtime,
+          Charge: response.message.Charge,
+          Passway: response.message.PassWay,
+          SpotName: response.message.SpotName,
+          SpotType: response.message.SpotType,
+          Size: response.message.Size,
+          BookWay: bookway,
+        }));
+        if (res.length === 0) {
+          res.unshift(response.message.Pictures);
+        }
         res.unshift(response.message.Pictures);
-        console.log(res);
+        try {
+          const ads = JSON.parse(response.message.SpotAddr);
+          console.log(ads);
+          setdata((prevData) => ({
+            ...prevData,
+            Street: ads.Street,
+            City: ads.City,
+            Country: ads.Country,
+            State: ads.State,
+            Postcode: ads.Postcode,
+          }));
+        } catch (e) {
+          const ads = response.message.SpotAddr.split(',');
+          console.log(ads);
+          setdata((prevData) => ({
+            ...prevData,
+            Street: ads.Street,
+            City: ads.City,
+            Country: ads.Country,
+            State: ads.State,
+            Postcode: ads.Postcode,
+          }));
+        }
         setallpic(res);
+        callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
+          .then((response) => {
+            setdata((prevData) => ({
+              ...prevData,
+              Profile: response.message.avatar,
+              Owner: response.message.name,
+            }));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch((error) => {
         setOpenSnackbar({
@@ -420,7 +552,6 @@ export function HomeSpecificLarge() {
       } else {
         navigate('/');
       }
-
       setOpenSnackbar({
         severity: 'success',
         message: 'Logout successful',
@@ -428,21 +559,34 @@ export function HomeSpecificLarge() {
       });
     }
   };
-  const [errorContent, setErrorContent] = useState('');
-  const [ErrorText8, setErrorText8] = useState(false);
   const [timeIntervals, setTimeIntervals] = useState([]);
   const [FirstStart, setFirstStart] = useState(null);
   const [FirstEnd, setFirstEnd] = useState(null);
   const [Firstdistance, setDistance] = useState(0);
+  useEffect(() => {
+    let res = CalculateAllTime(
+      [
+        {
+          id: Date.now(), // unique id
+          startDate: FirstStart,
+          endDate: FirstEnd,
+          distance: 0,
+        },
+        ...timeIntervals,
+      ],
+      bookway
+    );
+    console.log(res);
+    setDistance(res);
+    setTotalPrice(calculateTotalPrice(res));
+  }, [timeIntervals, FirstStart, FirstEnd, bookway]);
   // change the first available date
   const FirstStartChange = (date) => {
     setFirstStart(date);
-    setDistance(GetDistance(date, FirstEnd));
   };
   // change the first available date
   const FirstEndChange = (date) => {
     setFirstEnd(date);
-    setDistance(GetDistance(FirstStart, date));
   };
   // add an element to the interval
   const addTimeInterval = () => {
@@ -469,7 +613,7 @@ export function HomeSpecificLarge() {
           id: already.id,
           startDate: date,
           endDate: already.endDate,
-          distance: GetDistance(date, already.endDate),
+          distance: GetDistanceAll(date, bookway, already.endDate),
         };
       }
       // return the new interval or not
@@ -489,7 +633,7 @@ export function HomeSpecificLarge() {
           id: already.id,
           startDate: already.startDate,
           endDate: date,
-          distance: GetDistance(already.startDate, date),
+          distance: GetDistanceAll(already.startDate, bookway, date),
         };
       }
       // return the new interval or not
@@ -503,11 +647,51 @@ export function HomeSpecificLarge() {
       prevIntervals.filter((interval) => interval.id !== id)
     );
   };
+
+  // 检查日期是否在任一可用时间段内
+  const isInAvailableRange = (date) => {
+    const dateJS = dayjs(date);
+    return data.AvailableTime.some((item) => {
+      const start = dayjs(item.startDate).subtract(1, 'day');
+      const end = dayjs(item.endDate).subtract(1, 'day');
+      return dateJS.isSameOrAfter(start) && dateJS.isSameOrBefore(end);
+    });
+  };
+  // 开始日期的 shouldDisableDate 函数
+  const DisabledStartDate = (date) => {
+    return !isInAvailableRange(date);
+  };
+
+  // 结束日期的 shouldDisableDate 函数，依赖于已选择的开始日期
+  const DisabledEndDate = (date, FirstStart) => {
+    if (!FirstStart) return true;
+
+    const selectedStartRange = data.AvailableTime.find(
+      (item) =>
+        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+        FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+    );
+    data.AvailableTime.map((item) => {
+      console.log(
+        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+          FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+      );
+    });
+    console.log(selectedStartRange);
+    if (!selectedStartRange) return true;
+    return (
+      !dayjs(date).isSameOrAfter(FirstStart) ||
+      !dayjs(date).isSameOrBefore(
+        dayjs(selectedStartRange.endDate).subtract(1, 'day')
+      )
+    );
+  };
+
   // 主页内容
   return (
     // 主页背景框
     <div className='HomeOverall'>
-      <ConfirmBook data={info} isOpen={isbook} close={closebook} />
+      <ConfirmBook data={data} isOpen={isbook} close={closebook} />
       {/* 根据路由返回不同的model */}
       {/* 导航栏 */}
       <div className='Navbar'>
@@ -546,7 +730,11 @@ export function HomeSpecificLarge() {
             <div key={index} className='headerimg'>
               <img
                 className='speimg'
-                src={'data:image/jpeg;base64,' + image}
+                src={
+                  image.includes('base64,')
+                    ? image
+                    : 'data:image/jpeg;base64,' + image
+                }
                 alt={`Slide ${index}`}
               />
             </div>
@@ -563,7 +751,17 @@ export function HomeSpecificLarge() {
             <p className='titleName'>{info.SpotName + ' ' + info.SpotType}</p>
           </div>
           <div className='Address-Part'>
-            <p className='label-value-ad'>{info.SpotAddr}</p>
+            <p className='label-value-ad'>
+              {data.Street +
+                ', ' +
+                data.City +
+                ', ' +
+                data.State +
+                ', ' +
+                data.Country +
+                ', ' +
+                data.Postcode}
+            </p>
           </div>
           <div className='ChargePart'>
             <p className='size'>Fits to</p>
@@ -603,8 +801,15 @@ export function HomeSpecificLarge() {
       <div className='relevent-part'>
         <div className='relevent-left'>
           <div className='re-le-le'>
-            <img src='/img/LOGO.svg' className='profile'></img>
-            <p className='user_name'>{info.OwnerID}</p>
+            <img
+              src={
+                data.Profile.includes('data:image/jpeg;base64,')
+                  ? data.Profile
+                  : 'data:image/jpeg;base64,' + data.Profile || '/img/LOGO.svg'
+              }
+              className='profile'
+            ></img>
+            <p className='user_name'>{data.Owner}</p>
           </div>
           <p className='provided'>Provided this car space</p>
         </div>
@@ -629,27 +834,15 @@ export function HomeSpecificLarge() {
         </div>
       </div>
       <div className='Available-time'>
-        <div className='time-range'>
-          <p className='timetitle'>Available time 1</p>
-          <p className='timetitle'>from</p>
-          <p className='daterangetxt'>02/05/2022</p>
-          <p className='timetitle'>to</p>
-          <p className='daterangetxt'>02/04/2023</p>
-        </div>
-        <div className='time-range'>
-          <p className='timetitle'>Available time 2</p>
-          <p className='timetitle'>from</p>
-          <p className='daterangetxt'>02/05/2024</p>
-          <p className='timetitle'>to</p>
-          <p className='daterangetxt'>02/04/2026</p>
-        </div>
-        <div className='time-range'>
-          <p className='timetitle'>Available time 2</p>
-          <p className='timetitle'>from</p>
-          <p className='daterangetxt'>02/05/2028</p>
-          <p className='timetitle'>to</p>
-          <p className='daterangetxt'>02/04/2030</p>
-        </div>
+        {data.AvailableTime.map((item, index) => (
+          <div key={index} className='time-range'>
+            <p className='timetitle'>Available time {index + 1}</p>
+            <p className='timetitle'>from</p>
+            <p className='daterangetxt'>{item.startDate.slice(0, 10)}</p>
+            <p className='timetitle'>to</p>
+            <p className='daterangetxt'>{item.endDate.slice(0, 10)}</p>
+          </div>
+        ))}
       </div>
       <div className='Order-part'>
         <div className='order-time'>
@@ -659,7 +852,7 @@ export function HomeSpecificLarge() {
               <div className='display-flex'>
                 <p className='bkt'>BookType</p>
                 <select
-                  defaultValue={bookway}
+                  value={bookway}
                   className='form-select mglr-r'
                   aria-label='Default select example'
                   onChange={handlebookway}
@@ -680,6 +873,8 @@ export function HomeSpecificLarge() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={['DateTimePicker']}>
                         <DateTimePicker
+                          minDate={dayjs(new Date())}
+                          shouldDisableDate={DisabledStartDate}
                           label='Start Date'
                           value={FirstStart}
                           onChange={(date) => {
@@ -692,8 +887,10 @@ export function HomeSpecificLarge() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={['DatePicker']}>
                         <DatePicker
+                          minDate={dayjs(new Date())}
                           label='Start Date'
                           value={FirstStart}
+                          shouldDisableDate={DisabledStartDate}
                           onChange={(date) => {
                             if (date) FirstStartChange(date);
                           }}
@@ -708,8 +905,12 @@ export function HomeSpecificLarge() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={['DateTimePicker']}>
                         <DateTimePicker
+                          minDate={dayjs(new Date())}
                           label='End Date'
                           value={FirstEnd}
+                          shouldDisableDate={(date) => {
+                           return DisabledEndDate(date, FirstStart);
+                          }}
                           onChange={(date) => {
                             if (date) FirstEndChange(date);
                           }}
@@ -722,6 +923,10 @@ export function HomeSpecificLarge() {
                         <DatePicker
                           label='End Date'
                           value={FirstEnd}
+                          shouldDisableDate={(date) => {
+                           return DisabledEndDate(date, FirstStart);
+                          }}
+                          minDate={dayjs(new Date())}
                           onChange={(date) => {
                             if (date) FirstEndChange(date);
                           }}
@@ -740,6 +945,8 @@ export function HomeSpecificLarge() {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DateTimePicker']}>
                           <DateTimePicker
+                            minDate={dayjs(new Date())}
+                            shouldDisableDate={DisabledStartDate}
                             label='Start Date'
                             value={interval.startDate}
                             onChange={(date) => {
@@ -752,8 +959,10 @@ export function HomeSpecificLarge() {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DatePicker']}>
                           <DatePicker
+                            minDate={dayjs(new Date())}
                             label='Start Date'
                             value={interval.startDate}
+                            shouldDisableDate={DisabledStartDate}
                             onChange={(date) => {
                               if (date) handleStartDateChange(index, date);
                             }}
@@ -769,6 +978,10 @@ export function HomeSpecificLarge() {
                         <DemoContainer components={['DateTimePicker']}>
                           <DateTimePicker
                             label='End Date'
+                            minDate={dayjs(new Date())}
+                            shouldDisableDate={(date) => {
+                             return DisabledEndDate(date, interval.startDate);
+                            }}
                             value={interval.startDate}
                             onChange={(date) => {
                               if (date) handleEndDateChange(index, date);
@@ -781,6 +994,10 @@ export function HomeSpecificLarge() {
                         <DemoContainer components={['DatePicker']}>
                           <DatePicker
                             label='End Date'
+                            minDate={dayjs(new Date())}
+                            shouldDisableDate={(date) => {
+                             return DisabledEndDate(date, interval.startDate);
+                            }}
                             value={interval.startDate}
                             onChange={(date) => {
                               if (date) handleEndDateChange(index, date);
@@ -802,11 +1019,10 @@ export function HomeSpecificLarge() {
               </div>
             ))}
           </div>
-          {ErrorText8 && <p className='CreateError'>{errorContent}</p>}
           <div className='confirm-part'>
             <div className='PriceTotal'>
               <p className='Pricetxt'>Total Price</p>
-              <p className='PriceValue'>$0</p>
+              <p className='PriceValue'>${TotalPrice}</p>
             </div>
             <button className='confirm-btn' onClick={Confirm}>
               Appointment

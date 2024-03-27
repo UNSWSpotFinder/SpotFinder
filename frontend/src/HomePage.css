@@ -331,14 +331,30 @@ input.pricerange-s{
     margin: 0px 5px 0px 0px;
     padding: 0px 5px;
 }
-.timechoice{
-    width: 20%;
+div.timechoice {
+    display: flex;
+    justify-content: center;
+    width:100% ;
+    min-width: 100px;
     margin: 0px 5px 0px 0px;
 }
-.timechoice-s{
-    margin: 0px 10px;
+div.fx-100-x-l{
     width: 40%;
+    min-width: 220px;
+    display: flex;
+    margin: 0px;
 }
+div.fx-100-x{
+    width: 100%;
+    display: flex;
+}
+div.timechoice-s {
+    display: flex;
+    width: 50%;
+    justify-content: center;
+    min-width: 200px;
+    margin: 0px 10px;
+  }
 div.hflex{
     display: flex;
     height: 100%;
@@ -409,7 +425,10 @@ div.SpaceOverall{
 img.spaceimg{
     border-radius: 12px;
     object-fit: cover;
-    height: 90%;
+    min-height: 140px;
+    min-width: 140px;
+    max-height: 140px;
+    max-width: 140px;
 }
 div.info{
     height:90%;
