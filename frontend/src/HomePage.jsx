@@ -40,6 +40,7 @@ function AllSpoting() {
     const target = event.target;
     localStorage.setItem('spotID', target.id);
     if (target.id) {
+      window.scrollTo(0, 0);
       if (localStorage.getItem('token')) {
         const username = localStorage.getItem('email');
         navigate('/' + username + '/detail/' + target.id);
@@ -57,12 +58,14 @@ function AllSpoting() {
   useEffect(() => {
     // 删选预订方式
     let filter = allSpot.filter((data) => {
-      if (contextState.BookWay == 'H') {
-        return data.IsHourRent;
-      } else if (contextState.BookWay == 'D') {
+      if (contextState.BookWay === "H") {
+        return data.IsWeekRent;
+      } else if (contextState.BookWay === 'D') {
         return data.IsDayRent;
+      } else if (contextState.BookWay === "W") {
+        return true;
       } else {
-        return data.isWeekRent;
+        return true;
       }
     });
     // 筛选价格
@@ -85,7 +88,7 @@ function AllSpoting() {
           parseFloat(min_p) <= data.PricePerDay &&
           data.PricePerDay <= parseFloat(max_p)
         );
-      } else if (data.isWeekRent && contextState.BookWay == 'W') {
+      } else if (data.IsWeekRent && contextState.BookWay == 'W') {
         return (
           parseFloat(min_p) <= data.PricePerWeek &&
           data.PricePerDay <= parseFloat(max_p)
@@ -93,7 +96,7 @@ function AllSpoting() {
       }
       return false;
     });
-    console.log('minP' + min_p + 'maxP' + max_p);
+    // console.log('minP' + min_p + 'maxP' + max_p);
     // 筛选位置
     if (contextState.Carlocation !== '') {
       filter = filter.filter((data) => {
@@ -154,13 +157,13 @@ function AllSpoting() {
         return a.OrderNum - b.OrderNum; // 同样，这里是升序排序
       });
     }
-    console.log(
-      'order amount ' +
-        contextState.order_rank_way +
-        ' rate amount ' +
-        contextState.score_rank_way
-    );
-    console.log(filter);
+    // console.log(
+    //   'order amount ' +
+    //     contextState.order_rank_way +
+    //     ' rate amount ' +
+    //     contextState.score_rank_way
+    // );
+    // console.log(filter);
     setfilrerSpot(filter);
   }, [contextState, allSpot]);
   function getNewSpot() {
@@ -183,7 +186,7 @@ function AllSpoting() {
         <div key={index} className='SpaceOverall'>
           <img
             className='spaceimg'
-            src={'data:image/jpeg;base64,' + spot.Picture || 'img/sample.jpeg'}
+            src={( spot.Picture.includes('data:image/jpeg;base64,')?spot.Picture: 'data:image/jpeg;base64,' + spot.Picture )|| 'img/sample.jpeg'}
           ></img>
           <div className='info'>
             <div className='right-top'>
@@ -195,8 +198,24 @@ function AllSpoting() {
                 <p className='rate-txt'>{spot.Rate}</p>
               </div>
             </div>
-            <p className='space-price'>$38.00/day</p>
-            <p className='space-location'>{spot.SpotAddr}</p>
+            {contextState.BookWay=="H" && <p className='space-price'>${spot.PricePerHour.toFixed(2)}/hour</p>}
+            {contextState.BookWay=="D" && <p className='space-price'>${spot.PricePerDay.toFixed(2)}/day</p>}
+            {contextState.BookWay=="W" && <p className='space-price'>${spot.PricePerWeek.toFixed(2)}/week</p>}
+            <p className='space-location'>
+               {
+                (() => {
+                  try {
+                    // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
+                    // For example, if it's an object like { "address": "123 Main St." }
+                    // you could return the address like so:
+                    const add = JSON.parse(spot.SpotAddr);
+                    return add.Street+', '+add.City+', '+add.State+', '+add.Country+', '+add.Postcode; // replace 'address' with the actual property name you want to display
+                  } catch (e) {
+                    return spot.SpotAddr; // or return some default message or component
+                  }
+                })()
+              }
+            </p>
             <p className='space-type'>Fits a {spot.SpotType}</p>
             <div className='right-bottom'>
               <div className='order-part'>
@@ -226,8 +245,8 @@ export function HomePageLarge() {
   const [fitsize, setsize] = useState(contextState.CarType);
   const [R, setR] = useState(contextState.score_rank_way);
   const [O, setO] = useState(contextState.order_rank_way);
-  const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
-  const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
+  const [startDate, setstartDate] = useState(contextState.StartDay);
+  const [endDate, setendDate] = useState(contextState.EndDay);
   const handleStartDate = (event) => {
     setstartDate(event);
     updateContextState({
@@ -249,7 +268,6 @@ export function HomePageLarge() {
     console.log(contextState);
   };
   const handleLocation = (event) => {
-    setmaxP(event.target.value);
     updateContextState({
       Carlocation: event.target.value,
     });
@@ -449,35 +467,47 @@ export function HomePageLarge() {
           <option value='W'>Weekly</option>
         </select>
         {contextState.BookWay === 'H' ? (
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              className='timechoice'
-              label='Parking time'
-              value={startDate}
-              onChange={handleStartDate}
-            />
-            <DateTimePicker
-              className='timechoice'
-              label='Leaving time'
-              value={endDate}
-              onChange={handleEndDate}
-            />
-          </LocalizationProvider>
+          <div className='fx-100-x-l'>
+            <div className='timechoice'>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label='Parking'
+                  value={startDate}
+                  onChange={handleStartDate}
+                />
+              </LocalizationProvider>
+            </div>
+            <div className='timechoice'>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label='Leaving'
+                  value={endDate}
+                  onChange={handleEndDate}
+                />
+              </LocalizationProvider>
+            </div>
+          </div>
         ) : (
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              className='timechoice'
-              label='Parking time'
-              value={startDate}
-              onChange={handleStartDate}
-            />
-            <DatePicker
-              className='timechoice'
-              label='Leaving time'
-              value={endDate}
-              onChange={handleEndDate}
-            />
-          </LocalizationProvider>
+          <div className='fx-100-x-l'>
+          <div className='timechoice'>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label='Parking'
+                value={startDate}
+                onChange={handleStartDate}
+              />
+            </LocalizationProvider>
+          </div>
+          <div className='timechoice'>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label='Leaving'
+                value={endDate}
+                onChange={handleEndDate}
+              />
+            </LocalizationProvider>
+          </div>
+        </div>
         )}
         <div className='pricerange'>
           <label className='pricerange'>MIN$</label>
@@ -510,14 +540,13 @@ export function HomePageLarge() {
 export function HomePageSmall() {
   let currentuser = localStorage.getItem('email') || null;
   const { contextState, updateContextState } = useContext(AppContext);
-  const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
   const [maxP, setmaxP] = useState(contextState.maxPrise);
   const [fitsize, setsize] = useState(contextState.CarType);
   const [R, setR] = useState(contextState.score_rank_way);
   const [O, setO] = useState(contextState.order_rank_way);
-  const [startDate, setstartDate] = useState(dayjs(contextState.StartDay));
-  const [endDate, setendDate] = useState(dayjs(contextState.EndDay));
+  const [startDate, setstartDate] = useState(contextState.StartDay);
+  const [endDate, setendDate] = useState(contextState.EndDay);
   const handleStartDate = (event) => {
     setstartDate(event);
     updateContextState({
@@ -539,7 +568,6 @@ export function HomePageSmall() {
     console.log(contextState);
   };
   const handleLocation = (event) => {
-    setmaxP(event.target.value);
     updateContextState({
       Carlocation: event.target.value,
     });
@@ -550,13 +578,12 @@ export function HomePageSmall() {
     updateContextState({
       score_rank_way: res === '0',
     });
-    console.log(contextState);
   };
   const handleOrdwayChange = (event) => {
+    console.log(event.target.value);
     updateContextState({
       BookWay: event.target.value,
     });
-    console.log(contextState);
   };
   const handleminpriceChange = (event) => {
     setminP(event.target.value);
@@ -614,7 +641,6 @@ export function HomePageSmall() {
   };
   const { _, setOpenSnackbar } = useError();
   let token = localStorage.getItem('token');
-  console.log(token);
   // 调库
   let navigate = useNavigate();
   const location = useLocation(); // 获取当前的location对象
@@ -639,6 +665,7 @@ export function HomePageSmall() {
   let logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.removeItem('token');
+      localStorage.removeItem('email');
       navigate('/');
       setOpenSnackbar({
         severity: 'success',
@@ -775,36 +802,47 @@ export function HomePageSmall() {
             <option value='W'>Weekly</option>
           </select>
           {contextState.BookWay === 'H' ? (
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DateTimePicker','DateTimePicker']}>
-                <DateTimePicker
-                  label='Parking time'
-                  value={startDate}
-                  onChange={handleStartDate}
-                />
-                <DateTimePicker
-                  className='timechoice-s'
-                  label='Leaving time'
-                  value={endDate}
-                  onChange={handleEndDate}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
+            <div className='fx-100-x'>
+              <div className='timechoice-s'>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label='Parking time'
+                    value={startDate}
+                    onChange={handleStartDate}
+                  />
+                </LocalizationProvider>
+              </div>
+              <div className='timechoice-s'>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label='Leaving time'
+                    value={endDate}
+                    onChange={handleEndDate}
+                  />
+                </LocalizationProvider>
+              </div>
+            </div>
           ) : (
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                className='timechoice-s'
-                label='Parking time'
-                value={startDate}
-                onChange={handleStartDate}
-              />
-              <DatePicker
-                className='timechoice-s'
-                label='Leaving time'
-                value={endDate}
-                onChange={handleEndDate}
-              />
-            </LocalizationProvider>
+            <div className='fx-100-x'>
+              <div className='timechoice-s'>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label='Parking time'
+                    value={startDate}
+                    onChange={handleStartDate}
+                  />
+                </LocalizationProvider>
+              </div>
+              <div className='timechoice-s'>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label='Leaving time'
+                    value={endDate}
+                    onChange={handleEndDate}
+                  />
+                </LocalizationProvider>
+              </div>
+            </div>
           )}
         </div>
       </div>

@@ -130,10 +130,7 @@ export function CarSpaceAdd() {
       setOpenSnackbar({
         severity: 'error',
         message: 'Your image is not follow 64base encode !',
-      });
-      setOpenSnackbar({
-        severity: 'error',
-        message: '',
+        timestamp: new Date().getTime()
       });
       console.log(error);
       return false; // Invalid base64 or unable to decode
@@ -301,10 +298,7 @@ export function CarSpaceEdit() {
         setOpenSnackbar({
           severity: 'error',
           message: 'Your image is not follow 64base encode !',
-        });
-        setOpenSnackbar({
-          severity: 'error',
-          message: '',
+          timestamp: new Date().getTime()
         });
         console.log(error);
         return false; // Invalid base64 or unable to decode

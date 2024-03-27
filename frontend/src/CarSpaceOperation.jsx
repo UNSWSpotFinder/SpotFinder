@@ -1365,6 +1365,23 @@ export const EditSpace = () => {
         const res = JSON.parse(response.message.MorePictures);
         setSelectedImageString(res);
         console.log(res);
+        try {
+            const ads=JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+        } catch (e) {
+            const ads=response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+        }
         const ads=JSON.parse(response.message.SpotAddr);
         console.log(ads);
         setState(ads.State);

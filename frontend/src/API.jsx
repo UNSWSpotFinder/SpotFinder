@@ -12,8 +12,31 @@ export function removeLastSegment(pathname) {
   segments.pop(); // Remove the last segment
   return segments.join('/')+'/'; // Join the remaining segments, ensure at least a root '/' is returned
 }
+export const CalculateAllTime = (Alltime,bookway) => {
+  // First, sort the intervals based on their start time
+  const sortedIntervals = Alltime.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  // Initialize an array to hold the merged intervals
+  const mergedIntervals = [];
+
+  // Iterate through the sorted intervals
+  for (const interval of sortedIntervals) {
+    // If mergedIntervals is empty or current interval does not overlap
+    if (mergedIntervals.length===0 || new Date(interval.startDate) > new Date(mergedIntervals[mergedIntervals.length - 1].endDate)) {
+      mergedIntervals.push({ ...interval }); // Add a copy of the interval to mergedIntervals
+    } else {
+      // There's an overlap, so merge the current interval with the last interval in mergedIntervals
+      mergedIntervals[mergedIntervals.length - 1].endDate = new Date(Math.max(new Date(mergedIntervals[mergedIntervals.length - 1].endDate), new Date(interval.endDate)));
+    }
+  }
+  let TotalDistance = mergedIntervals.reduce((total, item) => {
+    // Assuming GetDistanceAll returns a numeric value representing the distance
+    return total + GetDistanceAll(item.startDate, bookway, item.endDate);
+  }, 0); // Initialize the total with 0
+  return TotalDistance;
+};
+
 export const HoverImage = (src) => {
-  console.log(src);
   // State to track whether the image is being hovered
   const [isHovered, setIsHovered] = useState(false);
 
@@ -58,8 +81,30 @@ export const GetDistance = (startDate, endDate) => {
   }
   return 0;
 };
+export const GetDistanceAll = (startDate,bookway, endDate) => {
+  // Check if both start and end dates are provided
+  if (startDate && endDate) {
+    // Create new Date objects to ensure consistency
+    const date1 = new Date(String(startDate));
+    const date2 = new Date(String(endDate));
+    // Calculate the time difference in milliseconds
+    const timeDistance = Math.abs(date2.getTime() - date1.getTime());
+    // Calculate the number of days and round up to the nearest whole number
+    if(bookway==='H'){
+      return Math.ceil(timeDistance / (1000 * 60 * 60));
+    }
+    else if (bookway==='D'){
+      return Math.ceil(timeDistance / (1000 * 60 * 60 * 24));
+    }
+    else if (bookway=='W'){
+      return Math.ceil(timeDistance / (1000 * 60 * 60 * 24 * 7));
+    }
+    // Return the calculated number of days
+    return NaN;
+  }
+  return 0;
+};
 export const meetErrorLog = (error) => {
-    console.log(error);
     let errorText = '';
     // switch case to show the error
     switch (error) {
@@ -101,8 +146,6 @@ const { snackbarData, setOpenSnackbar } = useError();
 // State to manage the visibility of the Snackbar
 const [open, setOpen] = useState(false);
   useEffect(() => {
-    console.log('Alert severity:', snackbarData.severity);
-    console.log('Alert :', snackbarData.message);
     if (snackbarData.message) {
       setOpen(true);
     }
@@ -133,7 +176,6 @@ export const callAPIsendEmailCode = (path,input)=>{
         })
         .then((response)=>{
             if(response.ok){
-                console.log('success');
                 console.log(response);
                 return resolve(response);
             }
@@ -154,7 +196,6 @@ export const callAPIsendEmailCode = (path,input)=>{
 }
 export const callAPIverifyEmailCode = (path,input)=>{
     return new Promise((resolve, reject) =>{
-        console.log(input);
         console.log('http://localhost:'+String(port)+'/'+String(path));
         fetch('http://localhost:'+String(port)+'/'+String(path),{
         method:'POST',
@@ -459,6 +500,40 @@ export const callAPIGetSpecSpot=(path)=>{
      console.log('http://localhost:'+String(port)+'/'+String(path));
      fetch('http://localhost:'+String(port)+'/'+String(path),{
      method:'GET',
+     headers: {}
+     })
+     .then((response)=>{
+      if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          return response.json().then(data => resolve(data));
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response.json().then(data => {
+            console.log(data.error);
+            let errorReason = 'An unknown error occurred.';
+            if(data.error=='invalid manager'){
+              errorReason = '';
+            }
+            else if(data.error){
+              errorReason = '';
+            }
+            reject(errorReason);
+          })
+          .catch(() => { reject(new Error('Error parsing response JSON.'));});
+        }
+     })
+     .catch((error)=>{
+         console.log(error);
+     })
+ })
+}
+
+export const callAPIGetSpecUserInfo=(path)=>{
+  return new Promise((resolve, reject) =>{
+     console.log('http://localhost:'+String(port)+'/'+String(path));
+     fetch('http://localhost:'+String(port)+'/'+String(path),{
+     method:'GET',
      headers: { 
     }
      })
@@ -472,7 +547,7 @@ export const callAPIGetSpecSpot=(path)=>{
           response.json().then(data => {
             console.log(data.error);
             let errorReason = 'An unknown error occurred.';
-            if(data.error=='invalid manager'){
+            if(data.error==''){
               errorReason = '';
             }
             else if(data.error){
