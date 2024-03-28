@@ -456,7 +456,7 @@ export const CreateSpace = () => {
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
-      size: String(CarType),
+      Size: String(CarType),
       charge: String(charge),
       passWay:String(PassWay),
       spotAddr:JSON.stringify({
@@ -492,7 +492,7 @@ export const CreateSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
-      if (Confirmflag && data.size.length === 0) {
+      if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -812,7 +812,7 @@ export const CreateSpace = () => {
           />
           <label
             className={
-              CarType === 'Parking-lot'
+              CarType === '4WD/SUV'
                 ? 'QfourShowSelected'
                 : 'QfourShowSelect'
             }
@@ -1841,7 +1841,7 @@ export const EditSpace = () => {
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
-      size: String(CarType),
+      Size: String(CarType),
       charge: String(charge),
       passWay:String(PassWay),
       spotAddr:JSON.stringify({
@@ -1877,7 +1877,7 @@ export const EditSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
-      if (Confirmflag && data.size.length === 0) {
+      if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -2197,7 +2197,7 @@ export const EditSpace = () => {
           />
           <label
             className={
-              CarType === 'Parking-lot'
+              CarType === '4WD/SUV'
                 ? 'QfourShowSelected'
                 : 'QfourShowSelect'
             }

@@ -44,6 +44,19 @@
 
 
   /* Listings部分 */
+  .list-part {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    padding: 20px;
+    margin:20px 20px;
+  }
+
+  
   .listing-info {
     display: grid;
     grid-template-columns: 150px auto auto auto;
@@ -62,17 +75,7 @@
     border-radius: 5px;
   }
 
-  .list-part {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 20px;
-    border: 1px solid #d3d3d3;
-    border-radius: 10px;
-    padding: 20px;
-    margin:20px 20px;
-  }
+
 
   .space-information {
     display: flex;

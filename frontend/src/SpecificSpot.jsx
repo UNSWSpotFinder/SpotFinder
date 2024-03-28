@@ -513,11 +513,11 @@ export function HomeSpecificLarge() {
           console.log(ads);
           setdata((prevData) => ({
             ...prevData,
-            Street: ads.Street,
-            City: ads.City,
-            Country: ads.Country,
-            State: ads.State,
-            Postcode: ads.Postcode,
+            Street: ads[0],
+            City: ads[1],
+            Country: ads[0],
+            State: ads[1],
+            Postcode: ads[0]
           }));
         }
         setallpic(res);
@@ -546,7 +546,7 @@ export function HomeSpecificLarge() {
   };
   let logout = () => {
     if (localStorage.getItem('token')) {
-      localStorage.removeItem('token');
+      localStorage.clear()
       if (localStorage.getItem('spotID')) {
         navigate('/tourists/detail/' + localStorage.getItem('spotID'));
       } else {
@@ -739,10 +739,6 @@ export function HomeSpecificLarge() {
               />
             </div>
           ))}
-          {/* <img
-            className='thumbial'
-            src={'data:image/jpeg;base64,' + info.Pictures}
-          ></img> */}
         </Slider>
       </div>
       <div className='Info-Part'>
