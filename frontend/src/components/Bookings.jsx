@@ -33,14 +33,14 @@ const Bookings = () => {
 
 
     // 打开订单详情弹窗
-  // const openOrdersModal = () => {
-  //   setShowOrdersModal(true);
-  // };
+  const openBookingDetailModal = () => {
+    setShowBookingDetailModal(true);
+  };
   
   // 关闭订单详情弹窗
-  // const closeOrdersModal = () => {
-  //   setShowOrdersModal(false);
-  // };
+  const closeBookingDetailModal = () => {
+    setShowBookingDetailModal(false);
+  };
 
 
   return (
@@ -59,21 +59,16 @@ const Bookings = () => {
             <div className='picture'><img  alt="Thumbnail" /> </div>
 
             <div className='space-information'>
-              <div className='space-info-first-line'>
-                <div className='space-title'>UNSW parking space</div>
-                <div className='space-rate'>96</div>
-              </div>
+              <div className='space-title'>UNSW parking space</div>
+              <div className='space-rate'>96</div>
               <div className='space-park-time'>26/2/2024 - 28/2/2024</div>
               <div className='total-cost'>Total cost:$114</div>
               <div className='space-address'>66 Kingsford, Sydney, NSW, 2018</div>
-              <div className='space-info-last-line'>
-                <div className='space-type'>Indoor lot</div>
-                <div className='way-to-access'>Pass Way</div>
-              </div>
-
+              <div className='space-type'>Indoor lot</div>
+              <div className='way-to-access'>Pass Way</div>
             </div>
             <div className='right-btn-part'>
-              <button className='booking-detail-btn'>Details</button>
+              <button className='booking-detail-btn' onClick={openBookingDetailModal}>Details</button>
               <button className='booking-cancel-btn' onClick={openCancelModal}>Cancel</button>
             </div>
           </div>
@@ -88,11 +83,13 @@ const Bookings = () => {
             <button onClick={closeCancelConfirm} className='cancel-cancel-btn'>No</button>
           </div>
         </div>
-        {/* 显示booking details 弹窗 */}
-
-      
       </div>
 )}
+
+      {/* 显示booking details 弹窗 */}
+      {showBookingDetailModal && (
+        <BookingDetailModal closeBookingDetailModal={closeBookingDetailModal} />
+      )}
     </div>
   );
 }

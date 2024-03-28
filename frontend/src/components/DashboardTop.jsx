@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink, Outlet,useNavigate } from 'react-router-dom';
 import './DashboardTop.css';
-
 import {
   useError
 } from '../API';
+
 const DashboardTop = () => {
   let { _ , setOpenSnackbar }=useError();
   let navigate=useNavigate();
@@ -26,11 +26,14 @@ const DashboardTop = () => {
       timestamp: new Date().getTime()
     });
   }
+
+
+
   return (
     <div className="dashboard-top">
       <div className="Navbar">
         {/* Logo图像 */}
-        <img src='/img/LOGO.svg' alt='logo' className='Applogo'></img>
+        <img src='/img/LOGO.svg' alt='logo' className='Applogo' onClick={goesHome}></img>
         {/* 搜索区域 */}
         <div className='SearchPart'>
           <img className='searchbtn' alt='search btn' src='/img/search.png'></img>

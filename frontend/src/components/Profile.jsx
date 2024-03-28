@@ -55,9 +55,10 @@ const Profile = () => {
       const avatarData = userInfo.avatar;
       if (avatarData) {
         // 检查 avatar data 是否 starts with 'data:image/jpeg;base64,'
-        const base64Prefix = 'data:image/jpeg;base64,';
-        const updatedAvatar = avatarData.startsWith(base64Prefix) ? avatarData : base64Prefix + avatarData;
-        setAvatar(updatedAvatar);
+        // const base64Prefix = 'data:image/jpeg;base64,';
+        // const updatedAvatar = avatarData.startsWith(base64Prefix) ? avatarData : base64Prefix + avatarData;
+        // setAvatar(updatedAvatar);
+        setAvatar(avatarData);
       }
       setIsLoading(false); // Set loading to false after data is processed
     })

@@ -76,11 +76,11 @@
     justify-content: space-around;
   }
 
-  .space-info-first-line, .space-info-last-line {
+  /* .space-info-first-line {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+  } */
 
   .right-btn-part {
     display: flex;
@@ -95,15 +95,12 @@
     margin-left: 20px;
   }
 
-  .space-park-time, .total-cost {
-    /* font-weight: bold; */
-  }
-
   .space-address {
     color: black;
     font-size: 11px;
     padding-top: 10px;
     padding-bottom: 15px;
+    margin-top: 10px;
   }
 
   .space-type, .way-to-access {

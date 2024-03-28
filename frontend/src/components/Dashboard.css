@@ -122,16 +122,13 @@
   box-shadow: 0 0 10px #f66;
 }
 
-.second-bookings, .third-listings {
+.second-vouchers {
   border: 1px solid #d3d3d3;
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 20px;
 }
 
-.current-state-title {
-  
-}
 
 h3, h5 {
   border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */

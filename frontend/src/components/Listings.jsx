@@ -86,23 +86,26 @@ const Listings = () => {
     return spotsInfo.map((spot, index) => {
       if (spot.message) {
         // 检查图片 URL 是否以特定字符串开头
-        const base64Prefix = "data:image/jpeg;base64,";
-        let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
-                     ? spot.message.Pictures 
-                     : base64Prefix + spot.message.Pictures;
-        // TODO:检查地址格式是否正确
-        // const addr = JSON.parse(spot.message.SpotAddr);
-        // console.log(addr);
+        // const base64Prefix = "data:image/jpeg;base64,";
+        // let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
+        //              ? spot.message.Pictures 
+        //              : base64Prefix + spot.message.Pictures;
+        
+        // 重设地址格式
+        const addr = JSON.parse(spot.message.SpotAddr);
+        console.log(addr);
+        const formattedAddr = `${addr.Street}, ${addr.City}, ${addr.State}, ${addr.Postcode}, ${addr.Country}`;
+
 
 
         return (
           <div className='listing-info' key={index}>
             <div className='picture'>      
-              <img src={imageUrl} alt="Thumbnail" />
+              <img src={spot.message.Pictures} alt="Thumbnail" />
             </div>
             <div className='space-information'>
               <div className='spot-title'>{spot.message.SpotName}</div>
-              <div className='location'>{spot.message.SpotAddr}</div>
+              <div className='location'>{formattedAddr}</div>
               <div className='spot-type'>{spot.message.SpotType}</div>
               <div className='way-to-access'>{spot.message.PassWay}</div>
             </div>
