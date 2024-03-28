@@ -143,7 +143,7 @@ const Vehicles = () => {
               <div className='vehicle-type'>4WD/SUV</div>
               <div className='vehicle-size'>Small</div>
             </div>
-            <div className='vehicle-charge'>charge</div>
+            <div className='vehicle-charge'>Charge</div>
           </div>
           <div className='right-btn-part'>
             <button className='edit-btn' onClick={openEditModal}>Edit</button>

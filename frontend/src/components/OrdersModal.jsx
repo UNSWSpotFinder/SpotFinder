@@ -1,5 +1,6 @@
 import React from 'react';
 import './OrdersModal.css';
+import './Listings.css';
 
 const OrdersModal = ({ closeOrdersModal }) => {
   return (
@@ -7,7 +8,7 @@ const OrdersModal = ({ closeOrdersModal }) => {
       <div className="orders-modal-content">
         {/* 标题区域 */}
         <div className="orders-modal-header">
-          <div className='current-state-title'>Current State</div>
+          <div className='current-state-title'>Current Orders</div>
           <button onClick={closeOrdersModal} className="close-btn">✖</button>
         </div>
 
@@ -15,15 +16,15 @@ const OrdersModal = ({ closeOrdersModal }) => {
         <div className="spot-info">
           {/* 左侧的名称、地址和大小信息 */}
           <div className="spot-details">
-            <div>North Sydney spot</div>
-            <p>111 Fig Tree La, North Sydney, NSW, 2018, Australia</p>
-            <p>Fit to SUV / 4WD</p>
+            <div className='spot-title'>North Sydney spot</div>
+            <div className='location'>111 Fig Tree La, North Sydney, NSW, 2018, Australia</div>
+            <div className='spot-type'>Fit to SUV / 4WD</div>
           </div>
           
           {/* 右侧的通行方式和电费信息 */}
           <div className="spot-access">
-            <p>Indoor lot</p>
-            <p>Keys</p>
+            <div className='way-to-access'>Indoor lot</div>
+            <div className='way-to-access'>Keys</div>
           </div>
         </div>
 
@@ -33,37 +34,37 @@ const OrdersModal = ({ closeOrdersModal }) => {
 
         {/* 已租出的订单信息 */}
         <div className="order-info">
-          <div className="renter-info">
-            <img src="path-to-renter-avatar.jpg" alt="Renter Avatar" />
-            <p>Jack Sparrow</p>
-            <p>Has already rented this spot</p>
+          <div className="custome-info">
+            <img src="path-to-custome-avatar.jpg" alt="Custome Avatar" className='order-car-img'/>
+            <div>Jack Sparrow</div>
+            <div className='order-hint-msg'>Has already rented this spot</div>
           </div>
-          <div className="rental-details">
-            <p>Time: 26/2/2024 - 28/2/2024</p>
-            <p>Total earning: $45.00</p>
-            <p>Vehicle: Benz E300</p>
+          <div className="custome-details">
+            <div className='order-info-spec'>Time: 26/2/2024 - 28/2/2024</div>
+            <div className='order-info-spec'>Total earning: $45.00</div>
+            <div className='order-info-spec'>Vehicle: Benz E300</div>
           </div>
-          <div className="button-part">
-            <button>Leave a message</button>
-            <button>Cancel this booking</button>
+          <div className="modal-button-part">
+            <button className='send-msg-btn'>Send a msg</button>
+            <button className='order-cancel-btn'>Cancel</button>
           </div>
         </div>
 
         {/* 未租出的订单信息 */}
         <div className="order-info">
-          <div className="renter-info">
-            <img src="path-to-renter-avatar.jpg" alt="Renter Avatar" />
-            <p>Barbossa</p>
-            <p>Would like to rent this spot</p>
+          <div className="custome-info">
+            <img src="path-to-custome-avatar.jpg" alt="Custome Avatar" />
+            <div>Barbossa</div>
+            <div className='order-hint-msg'>Would like to rent this spot</div>
           </div>
-          <div className="rental-details">
-            <p>Time: 1/3/2024 - 7/3/2024</p>
-            <p>Total earning: $80.00</p>
-            <p>Vehicle: Toyota Yaris</p>
+          <div className="custome-details">
+            <div className='order-info-spec'>Time: 1/3/2024 - 7/3/2024</div>
+            <div className='order-info-spec'>Total earning: $80.00</div>
+            <div className='order-info-spec'>Vehicle: Toyota Yaris</div>
           </div>
-          <div className="button-part">
-            <button>Accept</button>
-            <button>Decline</button>
+          <div className="modal-button-part">
+            <button className='accept-btn'>Accept</button>
+            <button className='order-cancel-btn'>Decline</button>
           </div>
         </div>
 
