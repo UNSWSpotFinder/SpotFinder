@@ -37,7 +37,7 @@ const Listings = () => {
       }
     };
     fetchData();
-  }, []); // 依赖数组为空表示这个效果只在组件挂载时执行一次
+  }, []);
   
 
   // 打开删除确认框
@@ -71,9 +71,12 @@ const Listings = () => {
     setShowOrdersModal(false);
   };
 
+
   const goesCreate=()=>{
     navigate('/'+localStorage.getItem('email')+'/createspace');
   }
+
+
    // 根据spotID动态生成列表信息的函数
    const renderListings = () => {
     const goesEdit=(event)=>{
@@ -87,6 +90,10 @@ const Listings = () => {
         let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
                      ? spot.message.Pictures 
                      : base64Prefix + spot.message.Pictures;
+        // TODO:检查地址格式是否正确
+        // const addr = JSON.parse(spot.message.SpotAddr);
+        // console.log(addr);
+
 
         return (
           <div className='listing-info' key={index}>
@@ -128,6 +135,7 @@ const Listings = () => {
         <button className='listing-title'>Current Listings: 1</button>
         <button className='add-a-spot-btn' onClick={goesCreate}>Lease a new spot</button>
       </div>     
+
       <div className="list-part">
         <h3 className='listings-title'>Listings</h3>
         {renderListings()}
@@ -136,9 +144,9 @@ const Listings = () => {
         {/* link to add */}
         <div className='hint-msg'>
           {/* TODO:这里需要之后修改链接路由*/}
-          <div className='link-to-add'>
+          {/* <div className='link-to-add'>
             <Link to="/home">Lease a new spot</Link>
-          </div>  
+          </div>   */}
         </div>
       </div>
 
