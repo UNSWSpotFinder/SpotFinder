@@ -194,8 +194,10 @@ function AllSpoting() {
     callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
       .then((response) => {
         console.log(response);
-        setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
-        setIsLoading(false); // 完成加载后设置为 false
+        if(response && response.message){
+          setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
+          setIsLoading(false); // 完成加载后设置为 false
+        }
       })
       .catch((error) => {
         setOpenSnackbar({
