@@ -4,6 +4,8 @@ import React, {
   useContext,
   LabelHTMLAttributes,
   useEffect,
+  useRef,
+  contentRef
 } from 'react';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -52,9 +54,26 @@ function AllSpoting() {
   const { _, setOpenSnackbar } = useError();
   let [allSpot, setAllSpot] = useState([]);
   let [filteredSpot, setfilrerSpot] = useState([]);
+  const contentRef = useRef(null);
+  const [isLoading,setIsLoading]=useState(false);
   useEffect(() => {
-    getNewSpot(); // Call on component mount
-  }, []); // Empty dependency array means this effect runs once on mount
+    getNewSpot();
+    const scListener = () => {
+      const sc = contentRef.current;
+      if (!isLoading && sc.scrollHeight - sc.scrollTop <= sc.clientHeight) {
+        setIsLoading(true);
+        console.log("Reached the bottom");
+        getNewSpot();
+      }
+    };
+    const element = contentRef.current;
+    console.log(element);
+    element.addEventListener('scroll', scListener);
+
+    return () => {
+      element.removeEventListener('scroll', scListener);
+    };
+  }, []); 
   useEffect(() => {
     // 删选预订方式
     let filter = allSpot.filter((data) => {
@@ -81,7 +100,7 @@ function AllSpoting() {
       if (data.IsHourRent && contextState.BookWay == 'H') {
         return (
           parseFloat(min_p) <= data.PricePerHour &&
-          data.PricePerDay <= parseFloat(max_p)
+          data.PricePerHour <= parseFloat(max_p)
         );
       } else if (data.IsDayRent && contextState.BookWay == 'D') {
         return (
@@ -91,7 +110,7 @@ function AllSpoting() {
       } else if (data.IsWeekRent && contextState.BookWay == 'W') {
         return (
           parseFloat(min_p) <= data.PricePerWeek &&
-          data.PricePerDay <= parseFloat(max_p)
+          data.PricePerWeek <= parseFloat(max_p)
         );
       }
       return false;
@@ -100,7 +119,18 @@ function AllSpoting() {
     // 筛选位置
     if (contextState.Carlocation !== '') {
       filter = filter.filter((data) => {
-        return data.SpotAddr.includes(contextState.Carlocation);
+        console.log(data);
+        let res='';
+        try {
+          // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
+          // For example, if it's an object like { "address": "123 Main St." }
+          // you could return the address like so:
+          const add = JSON.parse(data.SpotAddr);
+          res = add.Street+', '+add.City+', '+add.State+', '+add.Country+', '+add.Postcode; // replace 'address' with the actual property name you want to display
+        } catch (e) {
+          res= data.SpotAddr; // or return some default message or component
+        }
+        return res.includes(contextState.Carlocation);
       });
     }
     // 删选车位类型
@@ -109,6 +139,7 @@ function AllSpoting() {
         return data.size === contextState.CarType;
       });
     }
+    console.log(contextState.CarType);
     if (
       contextState.order_rank_way === true &&
       contextState.score_rank_way == true
@@ -157,13 +188,6 @@ function AllSpoting() {
         return a.OrderNum - b.OrderNum; // 同样，这里是升序排序
       });
     }
-    // console.log(
-    //   'order amount ' +
-    //     contextState.order_rank_way +
-    //     ' rate amount ' +
-    //     contextState.score_rank_way
-    // );
-    // console.log(filter);
     setfilrerSpot(filter);
   }, [contextState, allSpot]);
   function getNewSpot() {
@@ -171,6 +195,7 @@ function AllSpoting() {
       .then((response) => {
         console.log(response);
         setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
+        setIsLoading(false); // 完成加载后设置为 false
       })
       .catch((error) => {
         setOpenSnackbar({
@@ -181,7 +206,7 @@ function AllSpoting() {
       });
   }
   return (
-    <div className='container-all'>
+    <div className='container-all' ref={contentRef}>
       {filteredSpot.map((spot, index) => (
         <div key={index} className='SpaceOverall'>
           <img
@@ -216,7 +241,7 @@ function AllSpoting() {
                 })()
               }
             </p>
-            <p className='space-type'>Fits a {spot.SpotType}</p>
+            <p className='space-type'>Fits a {spot.Size}</p>
             <div className='right-bottom'>
               <div className='order-part'>
                 <img src='img/booking.png' className='order-times'></img>
@@ -298,12 +323,11 @@ export function HomePageLarge() {
       maxPrise: event.target.value,
     });
   };
-  const { _, setOpenSnackbar } = useError();
+  const { _ , setOpenSnackbar } = useError();
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
   // 调库
   let navigate = useNavigate();
-  const location = useLocation(); // 获取当前的location对象
   // 进入用户登录页面
   let goesLoginUser = () => {
     navigate('/userlogin');
@@ -311,10 +335,6 @@ export function HomePageLarge() {
   // 进入用户注册页面
   let goesRegistUser = () => {
     navigate('/userregist');
-  };
-  // 进入Admin注册页面
-  let goesRegistAdmin = () => {
-    navigate('/adminregist');
   };
   let goesDashboard = () => {
     navigate('/' + currentuser + '/dashboard');
@@ -335,7 +355,7 @@ export function HomePageLarge() {
   };
   let logout = () => {
     if (localStorage.getItem('token')) {
-      localStorage.removeItem('token');
+      localStorage.clear();
       navigate('/');
       setOpenSnackbar({
         severity: 'success',
@@ -563,7 +583,7 @@ export function HomePageSmall() {
     let res = event.target.value;
     setR(res === '0');
     updateContextState({
-      order_rank_way: res === '0',
+      score_rank_way: res === '0',
     });
     console.log(contextState);
   };
@@ -576,7 +596,7 @@ export function HomePageSmall() {
     let res = event.target.value;
     setO(res === '0');
     updateContextState({
-      score_rank_way: res === '0',
+      order_rank_way: res === '0',
     });
   };
   const handleOrdwayChange = (event) => {
@@ -664,8 +684,7 @@ export function HomePageSmall() {
   };
   let logout = () => {
     if (localStorage.getItem('token')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
+      localStorage.clear();
       navigate('/');
       setOpenSnackbar({
         severity: 'success',
@@ -848,23 +867,6 @@ export function HomePageSmall() {
       </div>
       {/* 所有车位列表 */}
       <AllSpoting />
-    </div>
-  );
-}
-
-export function HomePageAdminLarge() {
-  return (
-    <div>
-      <div>Hello, World!</div>
-      <p>This is my new function component.</p>
-    </div>
-  );
-}
-export function HomePageAdminSmall() {
-  return (
-    <div>
-      <div>Hello, World!</div>
-      <p>This is my new function component.</p>
     </div>
   );
 }

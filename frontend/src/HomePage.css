@@ -40,6 +40,17 @@ div.SearchPartsmall{
     align-content: center;
     flex-direction: row;
 }
+div.SearchPartsmall-m{
+    width: calc(100% - 140px);
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+}
 input.Searchbar{
     width: 100%;
     border-radius: 25px;
@@ -86,6 +97,21 @@ img.searchbtn:hover + .Searchbar {
     box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
 }
 img.searchbtnsmall:hover + .Searchbar {
+    box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
+}
+img.searchbtnsmall-m{
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 0px;
+    padding: 5px;
+    right: 70px;
+    position: absolute;
+    z-index: 1;
+    background-color: rgb(210, 0, 0);
+    cursor: pointer;
+}
+img.searchbtnsmall-m:hover + .Searchbar {
     box-shadow: 0px 1px 10px 1px rgba(164, 164, 164, 0.5);
 }
 button.newspace{
@@ -352,7 +378,7 @@ div.timechoice-s {
     display: flex;
     width: 50%;
     justify-content: center;
-    min-width: 200px;
+    min-width: 100px;
     margin: 0px 10px;
   }
 div.hflex{
@@ -385,20 +411,35 @@ div.ListingPart{
     width: 100%;
 }
 div.container-all{
+    overflow-y: scroll;
     width: 100%;
+    height: 580px;
+    margin-top: 15px;
+    padding: 10px 0px 0px 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+p.border-given{
+    border-top:1px solid rgb(229, 229, 229);
+}
+div.container-half{
+    width: 100%;
+    max-height: 400px;
+    overflow-y: scroll;
     margin-top: 15px;
     margin-bottom: 15px;
-    padding: 0px 0px 0px 10px;
+    padding: 10px 0px 10px 10px;
     display: flex;
     flex-wrap: wrap;
 }
 div.SpaceOverall{
+    background-color: white;
     height: 160px;
     box-shadow: 0px 0px 10px 0px rgba(164, 164, 164, 0.5);
     border-radius: 10px;
     display: flex;
     align-items: center;
-    padding: 5px 7px;
+    padding: 5px 7px 0px 7px;
     margin: 0px 10px 10px 0px;
 }
 
@@ -431,15 +472,22 @@ img.spaceimg{
     max-width: 140px;
 }
 div.info{
-    height:90%;
-    margin-left:10px ;
-    width: 100%;
+    height:91%;
+    margin-left:10px;
+    max-width: calc(100% - 150px);
+    min-width: calc(100% - 150px);
+    overflow-x: hidden;
+    overflow-y:auto;
 }
 p.space-title{
     padding: 0px;
     margin: 0px;
     font-size: 16px;
     color: #555555;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
 }
 p.space-price{
     padding: 0px;
@@ -453,6 +501,7 @@ p.space-location{
     margin: 0px;
     height: 35px;
     font-size: 12px;
+    max-width: 90%;
     margin-top: 2px;
     color: #7F7F7F;
 }
@@ -482,7 +531,7 @@ div.right-top{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 100%;
+    max-width: 100%;
 }
 div.right-bottom{
     display: flex;
@@ -495,6 +544,8 @@ div.right-bottom{
 div.rate-part{
     display: flex;
     justify-content: center;
+    margin: 0px;
+    padding: 0px;
 }
 img.rate-img{
     width: 20px;
@@ -533,4 +584,10 @@ div.width-20{
     margin: 0px;
     padding: 0px;
     margin-right: 10px;
+}
+p.title-for-spot{
+    margin: 10px 0px 10px 0px;
+    padding: 10px 0px 0px 15px;
+    font-size: 20px;
+    font-weight: 500;
 }

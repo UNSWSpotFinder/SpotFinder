@@ -216,7 +216,7 @@ export function UserRegistPage() {
         return;
     }
     console.log(BirthDate);
-    const formattedDate = dayjs(BirthDate).format('MM/DD/YYYY');
+    const formattedDate = dayjs(BirthDate).format('DD/MM/YYYY');
     console.log(formattedDate)
     const data={
         avatar: selectedFileName,
@@ -240,6 +240,7 @@ export function UserRegistPage() {
         navigate(temp+'userlogin');
     })
     .catch((error)=>{
+        console.log(error);
         setOpenSnackbar({
             severity:'warning',
             message:error,

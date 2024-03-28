@@ -420,7 +420,44 @@ button.CreatButton:hover {
   background-color:#be1318 ;
   color: white;
 }
+button.CreatButton-b {
+  margin: 20px 10px 30px 10px;
+  background-color:#E22229 ;
+  font-size: 17px;
+  width: 40%;
+  letter-spacing: 0.5px;
+  min-height: 40px;
+  height: 40px;
+  border: 0px;
+  border-radius: 5px;
+  color: white;
+}
+button{
+  transition: 0.3s;
+}
+button.black{
+  color: white;
+  background-color: black;
+  transition: 0.3s;
+}
 
+button.CreatButton-b:hover {
+  background-color:#be1318 ;
+  color: white;
+}
+button.black:hover{
+  color: rgb(161, 161, 161);
+  background-color: black;
+}
+button.white{
+  color: rgb(0, 0, 0);
+  background-color: rgb(244, 244, 244);
+  transition: 0.3s;
+}
+button.white:hover{
+  color: rgb(0, 0, 0);
+  background-color: rgb(200, 200, 200);
+}
 div.PublishInfo {
   width: 100%;
   display: flex;

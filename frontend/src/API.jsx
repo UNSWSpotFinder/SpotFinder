@@ -265,24 +265,30 @@ export const callAPIRegistUser=(path,input)=>{
         body:JSON.stringify(input),
         })
         .then((response)=>{
-            if(response.ok){
-                console.log('success');
-                return resolve(response.json());
-            }
-            else if (response.status===417){
-                const errorReason = 'This email has been registed!';
+          if (response.status === 200) {
+              console.log('success');
+              return response.json().then(data => resolve(data));
+            } else {
+              // 如果状态码不是200，我们要解析JSON来找出错误原因
+              response.json().then(data => {
+                console.log(data.error);
+                let errorReason = 'An unknown error occurred.';
+                if(data.error=='Date format error'){
+                  errorReason = 'Please choose a valid birthday.';
+                }
+                else if(data.error){
+                  errorReason = 'User has been registered!';
+                }
                 return reject(errorReason);
+              })
+              .catch(() => { reject(new Error('Error parsing response JSON.'));});
             }
-            else{
-                const errorReason = 'There is a problem with the network connection!';
-                return reject(errorReason);
-            }
-        })
-        .catch((error)=>{
-            console.log(error);
-        })
-    })
-}
+         })
+         .catch((error)=>{
+             console.log(error);
+         })
+     })
+  }
 // 管理员注册
 export const callAPIRegistAdmin=(path,input)=>{
     return new Promise((resolve, reject) =>{
@@ -307,7 +313,7 @@ export const callAPIRegistAdmin=(path,input)=>{
               else if(data.error){
                 errorReason = 'User has been registered!';
               }
-              reject(errorReason);
+              return reject(errorReason);
             })
             .catch(() => { reject(new Error('Error parsing response JSON.'));});
           }
@@ -481,7 +487,7 @@ export const callAPIGetAllSpot=(path,token)=>{
               errorReason = 'It looks like you are not an employee of our company.';
             }
             else if(data.error){
-              errorReason = 'User has been registered!';
+              errorReason = 'Some error occurred,try again!';
             }
             reject(errorReason);
           })
