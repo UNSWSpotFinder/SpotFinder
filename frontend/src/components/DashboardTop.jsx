@@ -18,8 +18,7 @@ const DashboardTop = () => {
     navigate('/'+user+'/createspace');
   }
   let logout=()=>{
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
+    localStorage.clear();
     navigate('/');
     setOpenSnackbar({
       severity: 'success',
