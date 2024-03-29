@@ -456,7 +456,7 @@ export const CreateSpace = () => {
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
-      size: String(CarType),
+      Size: String(CarType),
       charge: String(charge),
       passWay:String(PassWay),
       spotAddr:JSON.stringify({
@@ -492,7 +492,7 @@ export const CreateSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
-      if (Confirmflag && data.size.length === 0) {
+      if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -812,7 +812,7 @@ export const CreateSpace = () => {
           />
           <label
             className={
-              CarType === 'Parking-lot'
+              CarType === '4WD/SUV'
                 ? 'QfourShowSelected'
                 : 'QfourShowSelect'
             }
@@ -1344,30 +1344,9 @@ export const CreateSpace = () => {
 
 // EditHostingPage
 export const EditSpace = () => {
-  const { email, id } = useParams();
-  const [info, setInfo] = useState({
-    Pictures: '',
-    Charge: 'None',
-    MorePictures: [],
-    OrderNumber: '',
-    OwnerID: null,
-    PassWay: '',
-    PricePerDay: 0,
-    PricePerHour: 0,
-    PricePerWeek: 0,
-    IsDayRent: false,
-    IsHourRent: false,
-    IsWeekRent: true,
-    Rate: 0,
-    Size: 0,
-    SpotName: '',
-    SpotAddr: {},
-    SpotType: '',
-    AvailableTime: [],
-  });
-  const [allpic, setallpic] = useState([]);
-  let getDetail = (id) => {
-    callAPIGetSpecSpot('spot/'+id)
+  const { email, Spotid } = useParams();
+  let getDetail = (Spotid) => {
+    callAPIGetSpecSpot('spot/'+Spotid)
       .then((response) => {
         console.log(response);
         setCarType(response.message.Size);
@@ -1379,11 +1358,48 @@ export const EditSpace = () => {
         setPriceDay(response.message.PricePerDay);
         setisHour(response.message.IsHourRent);
         setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.PricePerWeek);
+        setWeek(response.message.IsWeekRent);
         setPriceWeek(response.message.PricePerWeek);
+        setThumbil(response.message.Pictures);
+
         const res = JSON.parse(response.message.MorePictures);
+        setSelectedImageString(res);
         console.log(res);
-        setallpic(res);
+        try {
+            const ads=JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+        } catch (e) {
+            const ads=response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+        }
+        const ads=JSON.parse(response.message.SpotAddr);
+        console.log(ads);
+        setState(ads.State);
+        setStreet(ads.Street);
+        setCity(ads.City);
+        setCountry(ads.Country);
+        setPostcode(ads.Postcode);
+        let all_time = JSON.parse(response.message.AvailableTime);
+        all_time = all_time.map(item => ({
+          ...item,
+          startDate: dayjs(item.startDate),
+          endDate: dayjs(item.endDate),
+        }));
+        console.log(all_time);
+        setFirstStart(all_time[0].endDate);
+        setFirstEnd(all_time[0].startDate);
+        setDistance(all_time[0].distance);
+        setTimeIntervals(timeIntervals => [...all_time.slice(1)]);
       })
       .catch((error) => {
         setOpenSnackbar({
@@ -1394,7 +1410,7 @@ export const EditSpace = () => {
       });
   };
   useEffect(() => {
-    getDetail(id);
+    getDetail(Spotid);
   },[]);
   const { _, setOpenSnackbar } = useError();
   // link the ref for thumb and other img
@@ -1821,11 +1837,11 @@ export const EditSpace = () => {
     );
   };
   // creat a new hosting
-  const CreateNow = () => {
+  const EditNow = (id) => {
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
-      size: String(CarType),
+      Size: String(CarType),
       charge: String(charge),
       passWay:String(PassWay),
       spotAddr:JSON.stringify({
@@ -1861,7 +1877,7 @@ export const EditSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
-      if (Confirmflag && data.size.length === 0) {
+      if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
         setAllfalse();
@@ -2006,12 +2022,12 @@ export const EditSpace = () => {
         });
         data.availableTime=JSON.stringify(data.availableTime);
         data.morePictures=JSON.stringify(data.morePictures);
-        callAPIEditSpot('spot/create',data,localStorage.getItem('token'))
+        callAPIEditSpot('spot/modifySpotInfo/'+id,data,localStorage.getItem('token'))
         .then((response)=>{
             console.log(response);
             setOpenSnackbar({
                 severity:'success',
-                message:'Create Spot Successful!',
+                message:'Edit Spot Successful!',
                 timestamp:new Date().getTime()
             })
             navigate(-1);
@@ -2181,7 +2197,7 @@ export const EditSpace = () => {
           />
           <label
             className={
-              CarType === 'Parking-lot'
+              CarType === '4WD/SUV'
                 ? 'QfourShowSelected'
                 : 'QfourShowSelect'
             }
@@ -2703,8 +2719,8 @@ export const EditSpace = () => {
         ))}
       </div>
       <div className='QButton'>
-        <button className='CreatButton' onClick={CreateNow} type='button'>
-          Create your hosting
+        <button className='CreatButton' onClick={()=>EditNow(Spotid)} type='button'>
+          Edit your hosting
         </button>
       </div>
     </div>

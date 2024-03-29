@@ -44,24 +44,6 @@
 
 
   /* Listings部分 */
-  .listing-info {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #d3d3d3;
-    border-radius: 10px; /* rounded corners */
-    overflow: hidden; 
-  }
-
-  .picture {
-    background-color: #d3d3d3; /* Placeholder color for the thumbnail */
-    width: 120px;
-    height: 120px;
-    border-radius: 5px;
-  }
-
   .list-part {
     display: flex;
     flex-direction: column;
@@ -73,6 +55,27 @@
     padding: 20px;
     margin:20px 20px;
   }
+
+  
+  .listing-info {
+    display: grid;
+    grid-template-columns: 150px auto auto auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px; /* rounded corners */
+    overflow: hidden; 
+  }
+
+  .picture img {
+    background-color: #d3d3d3; /* Placeholder color for the thumbnail */
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;
+  }
+
+
 
   .space-information {
     display: flex;
