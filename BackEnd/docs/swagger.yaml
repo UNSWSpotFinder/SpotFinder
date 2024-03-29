@@ -441,6 +441,11 @@ paths:
       consumes:
       - application/json
       description: 获取车位列表
+      parameters:
+      - description: is it isVisible
+        in: query
+        name: isVisible
+        type: boolean
       produces:
       - application/json
       responses:
@@ -742,8 +747,6 @@ paths:
           description: Password updated
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: 修改密码
       tags:
       - User
