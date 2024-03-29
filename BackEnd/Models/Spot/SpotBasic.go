@@ -13,6 +13,7 @@ type Basic struct {
 	//IsOccupy  bool   `gorm:"type:boolean;not null"`
 	// 先是 true
 	IsVisible bool `gorm:"type:boolean;not null"`
+	IsBlocked bool `gorm:"type:boolean;default:false"`
 	// TODO: 改成float
 	Rate uint `gorm:"type:int"`
 	//How to get here

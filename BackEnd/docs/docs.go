@@ -304,6 +304,14 @@ const docTemplate = `{
                     "Spots"
                 ],
                 "summary": "获取车位列表",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "is it isVisible",
+                        "name": "isVisible",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Spot list",
@@ -770,11 +778,6 @@ const docTemplate = `{
         },
         "/user/modifyPasswd": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "修改密码",
                 "consumes": [
                     "application/json"

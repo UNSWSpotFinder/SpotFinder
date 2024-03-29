@@ -196,31 +196,14 @@ const Dashboard = () => {
       </div>
 
 
-      {/* 中部Bookings区域 */}
-      <div className="second-bookings">
-        <h3>Bookings</h3>
-        {/* 如果没有bookings就新建一个 */}
-        <div className='hint-msg'>
-          <div className='first-sentence'>Haven't booked any spots yet? </div>
-          {/* 点击跳转页面*/}
-          <div className='second-sentence'>
-            <Link to="#" onClick={ClickToFindSpot}>Click here</Link> <span>to find a spot!</span>
-          </div>  
-        </div>
+      {/* 底部Voucher区域 */}
+      <div className="second-vouchers">
+        <h3>Vouchers</h3>
+        <div>You have no vouchers.</div>
+
       </div>
       
-      {/* 底部Listingss区域 */}
-      <div className="third-listings">
-        <h3>Listings</h3>
-        {/* 如果没有lisings就新建一个 */}
-        <div className='hint-msg'>
-          <div className='first-sentence'>Haven't tried to lease your spots? </div>
-          {/* TODO:这里需要之后修改链接路由*/}
-          <div className='second-sentence'>
-            <Link to='' onClick={goesCreateSpot}>Click here</Link> <span>to lease your first spot!</span>
-          </div>  
-        </div>
-      </div>
+
       {/* 充值弹窗 */}
       {isTopUpModalVisible && (
       <div className="modal">

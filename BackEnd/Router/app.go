@@ -37,7 +37,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.GET("/user/list", User.GetUserList)
 	public.POST("/user/create", User.CreateUser)
 	public.GET("/spot/ownedList/:ownerId", Spots.ShowAllOwnedSpotHandler)
-	public.GET("/spot/list", Spots.GetSpotListHandler)
+	public.GET("/spot/list/", Spots.GetSpotListHandler)
 	public.GET("/spot/ownedCar/choseSize/:plateNumber", Spots.ChoseSizeWithMyCarHandler)
 	public.PUT("/spot/delete/:id", Spots.DeleteSpotController)
 	public.PUT("/spot/update", Spots.UpdateSpotController)

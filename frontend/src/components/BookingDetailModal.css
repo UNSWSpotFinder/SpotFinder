@@ -1,0 +1,48 @@
+.orders-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  
+  .orders-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 800px;
+    overflow: auto; /* 内容太多，需要滚动 */
+  }
+  
+  .orders-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #d3d3d3;
+    position: relative;
+  }
+
+  .current-state-title {
+    font-size: 23px;
+    font-weight: bold;
+  }
+
+  .spot-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .booking-period, .booking-vehicle {
+    display: flex;
+  }
+
+ 

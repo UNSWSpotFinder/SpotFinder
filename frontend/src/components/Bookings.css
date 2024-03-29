@@ -1,0 +1,172 @@
+  /* 最上方title部分 */
+  .button-part {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .booking-title {
+    background-color: #fff;
+    color: #e11e2c;
+    border: 2px solid #e11e2c;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .booking-title:hover {
+    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+  }
+
+  .add-a-new-booking-btn {
+    background-color: #e11e2c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .add-a-new-booking-btn:hover {
+    background-color: #f66;
+  }
+
+  /* Booking部分 */
+  .booking-part {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    padding: 20px;
+    margin:20px 20px;
+  }
+
+
+  .single-booking-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .picture, .right-btn-part {
+    flex: 0 0 20%; /* 基础宽度是父容器宽度的20% */
+  }
+
+  .space-information {
+    flex: 0 0 60%; /* 基础宽度是父容器宽度的60% */
+  }
+
+
+  .picture img {
+    background-color: #d3d3d3; 
+    width: 150px;
+    height: 150px;
+    /* border-radius: 5px; */
+  }
+
+  .space-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  /* .space-info-first-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  } */
+
+  .right-btn-part {
+    display: flex;
+  }
+
+  .space-title {
+    font-size: 25px;
+    font-weight: bold;
+  }
+
+  .space-rate{
+    margin-left: 20px;
+  }
+
+  .space-address {
+    color: black;
+    font-size: 11px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+    margin-top: 10px;
+  }
+
+  .space-type, .way-to-access {
+    color: black;
+    font-size: 11px;
+    padding-top: 2px;
+  }
+
+  .booking-detail-btn, .booking-cancel-btn {
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .booking-detail-btn {
+    background-color: #e11e2c; 
+    color: white;
+  }
+
+  .booking-detail-btn:hover {
+    background-color: #f66;
+  }
+
+  .booking-cancel-btn {
+    color: darkgray;
+  }
+
+  .booking-cancel-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+
+
+   /* 取消booking弹窗 */
+   .cancel-confirm-btn {
+    width: 200px;
+    color: darkgray;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .cancel-confirm-btn:hover {
+    background-color:darkgray;
+    color: black;
+  }
+
+  .cancel-cancel-btn{
+    background-color: #e11e2c; 
+    width: 200px;
+    color: white;
+    margin-right: 5px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .cancel-cancel-btn:hover {
+    background-color: #f66;
+  }
