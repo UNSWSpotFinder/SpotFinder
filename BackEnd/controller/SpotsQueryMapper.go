@@ -34,6 +34,7 @@ type tempSpotBasic struct {
 	PricePerHour float64
 	OrderNum     uint
 	Picture      string
+	IsBlocked    bool
 }
 
 // 初始化spotIDList
@@ -48,7 +49,7 @@ func initSpotIDList(db *gorm.DB) error {
 }
 
 // GetSpotList 从数据库中获取所有车位数据
-func GetSpotList(db *gorm.DB) ([]*tempSpotBasic, error) {
+func GetSpotList(db *gorm.DB, isVisible bool) ([]*tempSpotBasic, error) {
 	if db == nil {
 		return nil, errors.New("db is nil")
 	}
@@ -75,11 +76,15 @@ func GetSpotList(db *gorm.DB) ([]*tempSpotBasic, error) {
 	}
 
 	var allSpots []*Spot.Basic // 注意这里的变量声明变化
-	if err := db.Where("id IN ?", selectedIDs).Select(
-		"id, spot_name, spot_addr, spot_type, rate, " +
+	query := db.Where("id IN ?", selectedIDs)
+	if isVisible {
+		query = query.Where("is_visible = ?", true)
+	}
+	if err := query.Select(
+		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
-							"price_per_hour, order_num, pictures").
-		Find(&allSpots).Error; err != nil { // 确保这里使用&allSpots，不是&allSpot
+			"price_per_hour, order_num, pictures").
+		Find(&allSpots).Error; err != nil {
 		return nil, err
 	}
 
@@ -93,6 +98,7 @@ func GetSpotList(db *gorm.DB) ([]*tempSpotBasic, error) {
 			SpotType:     spot.SpotType,
 			Rate:         float64(spot.Rate),
 			Size:         spot.Size,
+			IsBlocked:    spot.IsBlocked,
 			IsDayRent:    spot.IsDayRent,
 			IsWeekRent:   spot.IsWeekRent,
 			IsHourRent:   spot.IsHourRent,
