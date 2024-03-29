@@ -281,9 +281,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Access Way</CfmLefttxt>
-            <CfmRightttxt>
-              {data.Passway}
-            </CfmRightttxt>
+            <CfmRightttxt>{data.Passway}</CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Facilities</CfmLefttxt>
@@ -296,14 +294,30 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             </CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
+            <CfmLefttxt>Parking Car Infomation</CfmLefttxt>
+            <CfmRow2>
+              <CfmRightttxt2>Brand of motor vehicle</CfmRightttxt2>
+              <CfmRightttxt2>nu</CfmRightttxt2>
+            </CfmRow2>
+            <CfmRow2>
+              <CfmRightttxt2>Vehicle registration number</CfmRightttxt2>
+              <CfmRightttxt2>nu</CfmRightttxt2>
+            </CfmRow2>
+          </CfmRowCol>
+          <CfmRowCol>
             <CfmLefttxt>Booking Time</CfmLefttxt>
             {data.BookingDuration.map((date, index) => (
               <CfmRow2 key={date.id}>
                 <CfmRightttxt2>
-                  {'From ' +
-                    dayjs(date.startDate).format('YYYY-MM-DD') +
-                    ' to ' +
-                    dayjs(date.endDate).format('YYYY-MM-DD')}
+                  {data.BookWay === 'H'
+                    ? 'From ' +
+                      dayjs(date.startDate).format('YYYY-MM-DD HH:mm') +
+                      '  to  ' +
+                      dayjs(date.endDate).format('YYYY-MM-DD HH:mm')
+                    : 'From ' +
+                      dayjs(date.startDate).format('YYYY-MM-DD') +
+                      ' to ' +
+                      dayjs(date.endDate).format('YYYY-MM-DD')}
                 </CfmRightttxt2>
                 <CfmRightttxt2>
                   {data.BookWay === 'H' && date.distance + ' hours'}
@@ -339,7 +353,8 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 export function HomeSpecificLarge() {
-  const { _ , setOpenSnackbar } = useError();
+  const { _, setOpenSnackbar } = useError();
+  const {username, Spotid}=useParams();
   const { contextState, updateContextState } = useContext(AppContext);
   const [bookway, setbookway] = useState(contextState.BookWay);
   const [isbook, setIsbook] = useState(false);
@@ -354,20 +369,30 @@ export function HomeSpecificLarge() {
       endDate: FirstEnd,
       distance: Firstdistance,
     };
-    if(FirstStart===null || FirstEnd===null){
+    if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
         severity: 'warning',
-        message: 'You must set All booking duration correctly!',
-        timestamp: new Date().getTime()
+        message: 'Please check your parking time, the park-in time and drive-out time of each time slot cannot be empty.',
+        timestamp: new Date().getTime(),
       });
       return;
     }
-    let check_null = timeIntervals.find((item)=>(item.startDate===null || item.endDate===null));
-    if (check_null){
+    if (contextState.CarPlate===''){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please select the vehicle you want to park.',
+        timestamp: new Date().getTime(),
+      });
+
+    }
+    let check_null = timeIntervals.find(
+      (item) => item.startDate === null || item.endDate === null
+    );
+    if (check_null) {
       setOpenSnackbar({
         severity: 'warning',
         message: 'You must set All booking duration correctly!',
-        timestamp: new Date().getTime()
+        timestamp: new Date().getTime(),
       });
       return;
     }
@@ -378,7 +403,7 @@ export function HomeSpecificLarge() {
       TotalPrice: TotalPrice,
     }));
     console.log(timeIntervals);
-    
+
     setTimeout(() => {
       setIsbook(true);
       console.log(data);
@@ -438,7 +463,17 @@ export function HomeSpecificLarge() {
     TotalPrice: 0,
     BookWay: '',
   });
-
+  const CarSelect=()=>{
+    if(localStorage.token){
+      window.scrollTo(0, 0);
+      let spotid=localStorage.getItem('spotID');
+      navigate('/'+username+'/detail/'+spotid+'/choose');
+    }
+    else{
+      window.scrollTo(0, 0);
+      goesLoginUser();
+    }
+  }
   useEffect(() => {
     getDetail();
     console.log(isbook);
@@ -517,7 +552,7 @@ export function HomeSpecificLarge() {
             City: ads[1],
             Country: ads[0],
             State: ads[1],
-            Postcode: ads[0]
+            Postcode: ads[0],
           }));
         }
         setallpic(res);
@@ -546,7 +581,7 @@ export function HomeSpecificLarge() {
   };
   let logout = () => {
     if (localStorage.getItem('token')) {
-      localStorage.clear()
+      localStorage.clear();
       if (localStorage.getItem('spotID')) {
         navigate('/tourists/detail/' + localStorage.getItem('spotID'));
       } else {
@@ -866,69 +901,69 @@ export function HomeSpecificLarge() {
               <div className='IntervalContent-top'>
                 <div className='TimeBlock'>
                   {bookway == 'H' ? (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DateTimePicker']}>
+                    <div className='timechoice-s-spec'>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                           minDate={dayjs(new Date())}
                           shouldDisableDate={DisabledStartDate}
-                          label='Start Date'
+                          label='Park-in time'
                           value={FirstStart}
                           onChange={(date) => {
                             if (date) FirstStartChange(date);
                           }}
                         />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                      </LocalizationProvider>
+                    </div>
                   ) : (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker']}>
+                    <div className='timechoice-s-spec'>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                           minDate={dayjs(new Date())}
-                          label='Start Date'
+                          label='Park-in time'
                           value={FirstStart}
                           shouldDisableDate={DisabledStartDate}
                           onChange={(date) => {
                             if (date) FirstStartChange(date);
                           }}
                         />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                      </LocalizationProvider>
+                    </div>
                   )}
                 </div>
                 <p className='TO'> - </p>
                 <div className='TimeBlock'>
                   {bookway == 'H' ? (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DateTimePicker']}>
+                    <div className='timechoice-s-spec'>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                           minDate={dayjs(new Date())}
-                          label='End Date'
+                          label='Drive-out time'
                           value={FirstEnd}
                           shouldDisableDate={(date) => {
-                           return DisabledEndDate(date, FirstStart);
+                            return DisabledEndDate(date, FirstStart);
                           }}
                           onChange={(date) => {
                             if (date) FirstEndChange(date);
                           }}
                         />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                      </LocalizationProvider>
+                    </div>
                   ) : (
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker']}>
+                    <div className='timechoice-s-spec'>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
-                          label='End Date'
+                          label='Drive-out time'
                           value={FirstEnd}
                           shouldDisableDate={(date) => {
-                           return DisabledEndDate(date, FirstStart);
+                            return DisabledEndDate(date, FirstStart);
                           }}
                           minDate={dayjs(new Date())}
                           onChange={(date) => {
                             if (date) FirstEndChange(date);
                           }}
                         />
-                      </DemoContainer>
-                    </LocalizationProvider>
+                      </LocalizationProvider>
+                    </div>
                   )}
                 </div>
               </div>
@@ -938,69 +973,69 @@ export function HomeSpecificLarge() {
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
                     {bookway == 'H' ? (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DateTimePicker']}>
+                      <div className='timechoice-s-spec'>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
                             minDate={dayjs(new Date())}
                             shouldDisableDate={DisabledStartDate}
-                            label='Start Date'
+                            label='Park-in time'
                             value={interval.startDate}
                             onChange={(date) => {
                               if (date) handleStartDateChange(index, date);
                             }}
                           />
-                        </DemoContainer>
-                      </LocalizationProvider>
+                        </LocalizationProvider>
+                      </div>
                     ) : (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DatePicker']}>
+                      <div className='timechoice-s-spec'>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
                             minDate={dayjs(new Date())}
-                            label='Start Date'
+                            label='Park-in time'
                             value={interval.startDate}
                             shouldDisableDate={DisabledStartDate}
                             onChange={(date) => {
                               if (date) handleStartDateChange(index, date);
                             }}
                           />
-                        </DemoContainer>
-                      </LocalizationProvider>
+                        </LocalizationProvider>
+                      </div>
                     )}
                   </div>
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
                     {bookway == 'H' ? (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DateTimePicker']}>
+                      <div className='timechoice-s-spec'>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
-                            label='End Date'
+                            label='Drive-out time'
                             minDate={dayjs(new Date())}
                             shouldDisableDate={(date) => {
-                             return DisabledEndDate(date, interval.startDate);
+                              return DisabledEndDate(date, interval.startDate);
                             }}
                             value={interval.startDate}
                             onChange={(date) => {
                               if (date) handleEndDateChange(index, date);
                             }}
                           />
-                        </DemoContainer>
-                      </LocalizationProvider>
+                        </LocalizationProvider>
+                      </div>
                     ) : (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DatePicker']}>
+                      <div className='timechoice-s-spec'>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
-                            label='End Date'
+                            label='Drive-out time'
                             minDate={dayjs(new Date())}
                             shouldDisableDate={(date) => {
-                             return DisabledEndDate(date, interval.startDate);
+                              return DisabledEndDate(date, interval.startDate);
                             }}
                             value={interval.startDate}
                             onChange={(date) => {
                               if (date) handleEndDateChange(index, date);
                             }}
                           />
-                        </DemoContainer>
-                      </LocalizationProvider>
+                        </LocalizationProvider>
+                      </div>
                     )}
                   </div>
                   <button
@@ -1027,17 +1062,17 @@ export function HomeSpecificLarge() {
         </div>
         <div className='car-select'>
           <div className='car-select-left'>
-            <p className='car-title'>Brand of motor vehicle</p>
-            <input className='car-content' disabled={true}></input>
+            <p className='car-title'>Charge of motor vehicle</p>
+            <input className='car-content' disabled={true} value={contextState.CarCharge}></input>
 
             <p className='car-title'>Type of montor vecicle</p>
-            <input className='car-content' disabled={true}></input>
+            <input className='car-content' disabled={true} value={contextState.CarType}></input>
 
             <p className='car-title'>Vehicle registration number</p>
-            <input className='car-content' disabled={true}></input>
+            <input className='car-content' disabled={true} value={contextState.CarPlate}></input>
 
             <img src='/img/car.jpeg' className='carprofile'></img>
-            <button className='choose-car'>Select Your Car</button>
+            <button className='choose-car'onClick={CarSelect}>Select Your Car</button>
           </div>
         </div>
       </div>

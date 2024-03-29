@@ -380,7 +380,14 @@ div.timechoice-s {
     justify-content: center;
     min-width: 100px;
     margin: 0px 10px;
-  }
+}
+div.timechoice-s-spec {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    min-width: 100px;
+    margin: 0px 10px;
+}
 div.hflex{
     display: flex;
     height: 100%;

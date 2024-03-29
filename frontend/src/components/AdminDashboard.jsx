@@ -83,7 +83,9 @@ const AdminDashboard = () => {
   const goToDetails = (spotId) => {
     navigate(`/admin/${localStorage.getItem('email')}/${spotId}`);
   };
-
+  const goToApprove = (spotId) => {
+    navigate(`/admin/${localStorage.getItem('email')}/Approve/${spotId}`);
+  }
   return (
     <div className='admin-dashboard'>
       {/* 顶部区域 */}
@@ -184,9 +186,9 @@ const AdminDashboard = () => {
                 </div>
                 <button
                   className='specific-info'
-                  onClick={() => goToDetails(spot.ID)}
+                  onClick={() => goToApprove(spot.ID)}
                 >
-                  Check Details
+                  Process Approve
                 </button>
               </div>
             </div>
@@ -250,7 +252,7 @@ const AdminDashboard = () => {
                   }
                 })()}
               </p>
-              <p className='space-type'>Fits a {spot.SpotType}</p>
+              <p className='space-type'>Fits a {spot.Size}</p>
               <div className='right-bottom'>
                 <div className='order-part'>
                   <img

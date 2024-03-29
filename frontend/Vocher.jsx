@@ -7,7 +7,7 @@ import { useError } from './API';
 import { AppContext } from './App';
 import './CarInfo.css';
 // 车位选择页面
-export function CarSpaceChoice() {
+export function VocherChoice() {
   const { contextState, updateContextState } = useContext(AppContext);
   const {username, Spotid} = useParams(); 
   const { _, setOpenSnackbar } = useError();
@@ -31,7 +31,6 @@ export function CarSpaceChoice() {
     localStorage.setItem('CarType',CarType);
     localStorage.setItem('CarCharge',CarCharge)
   };
-  const [car,setThisCar]=useState(false);
   let choose = () => {
       let carType = '4WD/SUV';
       let carPlate='WDS234';

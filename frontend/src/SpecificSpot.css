@@ -262,6 +262,7 @@ div.car-select {
   display: flex;
   align-items: center;
   width: 200px;
+  margin: 0px 7px 0px 0px;
 }
 div.car-select-left {
   display: flex;
@@ -277,13 +278,16 @@ img.carprofile {
   border-radius: 5px;
 }
 p.car-title {
-  font-size: 14px;
-  margin: 0px 0px 2px 0px;
+  font-size: 13px;
+  margin: 0px 10px 2px 0px;
   padding: 0px;
   width: 100%;
 }
 input.car-content {
+  max-height: 34px;
+  font-size: 14px;
   margin: 0px 10px 0px 0px;
+  padding: 5px;
 }
 div.TimeInterval-book {
   margin: 10px 0px 0px 0px;
