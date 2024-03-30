@@ -420,7 +420,7 @@ div.ListingPart{
 div.container-all{
     overflow-y: scroll;
     width: 100%;
-    height: 580px;
+    max-height: 580px;
     margin-top: 15px;
     padding: 10px 0px 0px 10px;
     display: flex;
@@ -446,10 +446,12 @@ div.SpaceOverall{
     border-radius: 10px;
     display: flex;
     align-items: center;
-    padding: 5px 7px 0px 7px;
+    padding: 0px 7px 0px 7px;
     margin: 0px 10px 10px 0px;
 }
-
+div.manager{
+    height: 170px;
+}
 @media (max-width: 800px) {
     div.SpaceOverall{
         width: calc(100vw - 15px);
@@ -479,8 +481,7 @@ img.spaceimg{
     max-width: 140px;
 }
 div.info{
-    height:91%;
-    margin-left:10px;
+    margin: 0px 10px;
     max-width: calc(100% - 150px);
     min-width: calc(100% - 150px);
     overflow-x: hidden;
@@ -502,6 +503,9 @@ p.space-price{
     font-size: 12px;
     margin-top: 4px;
     color: #7F7F7F;
+}
+p.no-mg{
+    margin: 0px;
 }
 p.space-location{
     padding: 0px;

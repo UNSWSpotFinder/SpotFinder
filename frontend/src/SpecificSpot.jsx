@@ -383,7 +383,7 @@ export function HomeSpecificLarge() {
         message: 'Please select the vehicle you want to park.',
         timestamp: new Date().getTime(),
       });
-
+      return;
     }
     let check_null = timeIntervals.find(
       (item) => item.startDate === null || item.endDate === null

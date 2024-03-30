@@ -468,9 +468,10 @@ export const callAPIGetAllSpot=(path,token)=>{
   return new Promise((resolve, reject) =>{
      console.log('token: '+token);
      console.log('http://localhost:'+String(port)+'/'+String(path));
-     fetch('http://localhost:'+String(port)+'/'+String(path),{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true',{
      method:'GET',
      headers: { 
+      'Content-Type': 'application/json'
     }
      })
      .then((response)=>{

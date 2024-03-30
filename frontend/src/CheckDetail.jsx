@@ -175,7 +175,71 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Change Response</CfmHead>
+          <CfmHead>Spot Approve Response</CfmHead>
+        </CfmHeight>
+        <CfmRowCol>
+          <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
+          <textarea defaultValue={'No change, Default Approval.'} className='Feedback'></textarea>
+        </CfmRowCol>
+        <ReserveConfirm
+          onClick={() => {
+            EditInfo(Spotid);
+          }}
+        >
+          Send Feedback & Edit & Approve
+        </ReserveConfirm>
+      </CfmContent>
+    </div>
+  );
+  return isOpen ? conponment : null;
+};
+export const EditCheck = ({ data, isOpen, close }) => {
+  const { adminid, Spotid } = useParams();
+  // use the navigate to go to the user page
+  const navigate = useNavigate();
+  // get the hosting id from the url
+  // go to the user page
+  // go back to detail page
+  const back = () => {
+    close();
+  };
+  // get the set open snackbar function
+  const { _, setOpenSnackbar } = useError();
+  // this function used when the user click the confirm button
+  const EditInfo = (id) => {
+    callAPIEditSpot(
+      'spot/modifySpotInfo/' + id,
+      data,
+      localStorage.getItem('token')
+    )
+      .then((response) => {
+        console.log(response);
+        setOpenSnackbar({
+          severity: 'success',
+          message: 'Edit Spot Successful!',
+          timestamp: new Date().getTime(),
+        });
+        navigate('/admin/' + adminid);
+      })
+      .catch((error) => {
+        console.log('np');
+        console.log(data);
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+      });
+    // change the conponment
+    console.log(data);
+  };
+  let conponment = (
+    <div className='CfmAll'>
+      <div className='CfmBack'></div>
+      <CfmContent>
+        <CfmHeight>
+          <CfmClose onClick={back}>{'Back'}</CfmClose>
+          <CfmHead>Spot Edit Response</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
@@ -217,7 +281,7 @@ export const DeleteCheck = ({ isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Delete Response</CfmHead>
+          <CfmHead>Spot Delete/Reject Response</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
@@ -228,7 +292,7 @@ export const DeleteCheck = ({ isOpen, close }) => {
             DeleteInfo(Spotid);
           }}
         >
-          Send Feedback & Delete
+          {'Send Feedback  &  (Delete/Reject)'}
         </ReserveConfirmblack>
       </CfmContent>
     </div>
@@ -921,7 +985,7 @@ export const ManagerEditSpace = () => {
   };
   return (
     <div className='CreatChannelOverall'>
-      <ApproveCheck
+      <EditCheck
         data={SpotData}
         isOpen={isOpenApprove}
         close={() => {
