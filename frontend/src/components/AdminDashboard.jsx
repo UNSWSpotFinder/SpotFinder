@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useContext,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
-import { getAllSpots } from './API';
+import { getAllSpots,getAllNotApprovedSpots } from './API';
 import '../HomePage.css';
 import { useError } from '../API';
 import { AppContext } from '../App';
@@ -15,17 +15,15 @@ const AdminDashboard = () => {
     });
   }
   const [spots, setSpots] = useState([]);
-  let [filteredSpot, setfilrerSpot] = useState([]);
+  const [AppSpots,setAppSpots]=useState([]);
+  const [filteredSpot, setfilrerSpot] = useState([]);
+  const [filteredSpotApp, setfilrerSpotApp] = useState([]);
   const navigate = useNavigate();
   const { _, setOpenSnackbar } = useError();
   const [isLoading,setIsLoading] = useState(false);
+  const [isLoadingApp,setIsLoadingApp]=useState(false);
   const ApproveRef = useRef(null);
   const PublishRef = useRef(null);
-  // 新增goesSpecific函数
-  const goesSpecific = (spotId) => {
-    // 将用户导航到spot详情页面的逻辑
-    // navigate(`/spot/${spotId}`);
-  };
   let logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.clear();
@@ -39,17 +37,31 @@ const AdminDashboard = () => {
   };
   useEffect(()=>{
     let datas=spots;
+    let datasApp=AppSpots;
     if (contextState.Carlocation !== '') {
       datas = datas.filter((data) => {
         return data.SpotName.includes(contextState.Carlocation);
       });
+      datasApp = datasApp.filter((data) => {
+        return data.SpotName.includes(contextState.Carlocation);
+      });
     }
     setfilrerSpot(datas);
-  },[contextState.Carlocation, spots])
+    setfilrerSpotApp(datasApp);
+  },[contextState.Carlocation, spots,AppSpots])
   useEffect(()=>{
+    getNewApprove();
     getNewSpot();
   },[]);
   useEffect(() => {
+    const apListener = () => {
+      const ap = ApproveRef.current;
+      if (!isLoadingApp && ap.scrollHeight - ap.scrollTop <= ap.clientHeight) {
+        setIsLoadingApp(true);
+        console.log("Reached the bottom");
+        getNewApprove();
+      }
+    };
     const scListener = () => {
       const sc = PublishRef.current;
       if (!isLoading && sc.scrollHeight - sc.scrollTop <= sc.clientHeight) {
@@ -59,17 +71,23 @@ const AdminDashboard = () => {
       }
     };
     const element = PublishRef.current;
+    const element2= ApproveRef.current;
     console.log(element);
     element.addEventListener('scroll', scListener);
+    element2.addEventListener('scroll',apListener);
 
     return () => {
       element.removeEventListener('scroll', scListener);
+      element2.removeEventListener('scroll',apListener);
     };
   }, []); 
   const getNewSpot=() =>{
+    console.log('ty');
     getAllSpots()
     .then((data) => {
-      const datanow=data.message;
+      console.log('o');
+      console.log(data);
+      const datanow = data.message;
       setSpots((prevSpots) => [...prevSpots, ...datanow]); 
       setIsLoading(false);
       // console.log('Spots:', data.message);
@@ -80,10 +98,25 @@ const AdminDashboard = () => {
       console.error('Failed to fetch spots:', error);
     });
   }
+  const getNewApprove=()=>{
+    getAllNotApprovedSpots()
+    .then((data) => {
+      console.log('n');
+      console.log(data);
+      const datanow2=data.message;
+      setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
+      setIsLoadingApp(false);
+    })
+    .catch((error) => {
+      console.error('Failed to fetch spots:', error);
+    });
+  }
   const goToDetails = (spotId) => {
     navigate(`/admin/${localStorage.getItem('email')}/${spotId}`);
   };
-
+  const goToApprove = (spotId) => {
+    navigate(`/admin/${localStorage.getItem('email')}/Approve/${spotId}`);
+  }
   return (
     <div className='admin-dashboard'>
       {/* 顶部区域 */}
@@ -116,9 +149,9 @@ const AdminDashboard = () => {
       </div>
       {/* 车位列表区域 */}
       <p className='title-for-spot'>Spot to Approve</p>
-      <div className='container-half'>
-        {filteredSpot.map((spot, index) => (
-          <div key={index} className='SpaceOverall'>
+      <div className='container-half' ref={ApproveRef}>
+        {filteredSpotApp.map((spot, index) => (
+          <div key={index} className='SpaceOverall manager'>
             <img
               className='spaceimg'
               src={
@@ -143,11 +176,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <p className='space-price'>
-                {'$' +
-                  spot.PricePerHour.toFixed(2) +
-                  '/Hour,  ' +
-                  ('$' + spot.PricePerDay.toFixed(2) + '/Day,  ') +
-                  ('$' + spot.PricePerWeek.toFixed(2) + '/Week')}
+                {'$' + spot.PricePerHour.toFixed(2) +'/Hour, '+'$' + spot.PricePerDay.toFixed(2) + '/Day'}
+              </p>
+              <p className='space-price no-mg'>
+              {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
               </p>
               <p className='space-location'>
                 {(() => {
@@ -172,7 +204,7 @@ const AdminDashboard = () => {
                   }
                 })()}
               </p>
-              <p className='space-type'>Fits a {spot.SpotType}</p>
+              <p className='space-type'>Fits a {spot.Size}</p>
               <div className='right-bottom'>
                 <div className='order-part'>
                   <img
@@ -184,19 +216,20 @@ const AdminDashboard = () => {
                 </div>
                 <button
                   className='specific-info'
-                  onClick={() => goToDetails(spot.ID)}
+                  onClick={() => goToApprove(spot.ID)}
                 >
-                  Check Details
+                  Process Approve
                 </button>
               </div>
             </div>
           </div>
         ))}
+        {filteredSpotApp.length===0 && (<p className='Appnull'>There aren't any such spots that need to be APPROVED at the moment.</p>)}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
         {filteredSpot.map((spot, index) => (
-          <div key={index} className='SpaceOverall'>
+          <div key={index} className='SpaceOverall manager'>
             <img
               className='spaceimg'
               src={
@@ -221,11 +254,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <p className='space-price'>
-                {'$' +
-                  spot.PricePerHour.toFixed(2) +
-                  '/Hour,  ' +
-                  ('$' + spot.PricePerDay.toFixed(2) + '/Day,  ') +
-                  ('$' + spot.PricePerWeek.toFixed(2) + '/Week')}
+                {'$' + spot.PricePerHour.toFixed(2) +'/Hour, '+'$' + spot.PricePerDay.toFixed(2) + '/Day'}
+              </p>
+              <p className='space-price no-mg'>
+              {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
               </p>
               <p className='space-location'>
                 {(() => {
@@ -250,7 +282,7 @@ const AdminDashboard = () => {
                   }
                 })()}
               </p>
-              <p className='space-type'>Fits a {spot.SpotType}</p>
+              <p className='space-type'>Fits a {spot.Size}</p>
               <div className='right-bottom'>
                 <div className='order-part'>
                   <img
@@ -270,6 +302,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
+        {filteredSpot.length===0 && (<p className='Appnull'>Sorry, There aren't any such spots.</p>)}
       </div>
     </div>
   );

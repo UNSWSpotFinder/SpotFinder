@@ -78,11 +78,11 @@ function AllSpoting() {
     // 删选预订方式
     let filter = allSpot.filter((data) => {
       if (contextState.BookWay === "H") {
-        return data.IsWeekRent;
+        return data.IsHourRent;
       } else if (contextState.BookWay === 'D') {
         return data.IsDayRent;
       } else if (contextState.BookWay === "W") {
-        return true;
+        return data.IsWeekRent;
       } else {
         return true;
       }
@@ -136,7 +136,7 @@ function AllSpoting() {
     // 删选车位类型
     if (contextState.CarType !== '') {
       filter = filter.filter((data) => {
-        return data.size === contextState.CarType;
+        return data.Size === contextState.CarType;
       });
     }
     console.log(contextState.CarType);
@@ -188,6 +188,7 @@ function AllSpoting() {
         return a.OrderNum - b.OrderNum; // 同样，这里是升序排序
       });
     }
+    console.log(filter);
     setfilrerSpot(filter);
   }, [contextState, allSpot]);
   function getNewSpot() {

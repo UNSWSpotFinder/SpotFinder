@@ -36,7 +36,7 @@ import Messages from './components/Messages';
 import Vehicles from './components/Vehicles';
 import AdminDashboard from './components/AdminDashboard';
 import dayjs from 'dayjs';
-import {ManagerEditSpace} from './CheckDetail';
+import {ManagerEditSpace,ManagerApproveEditSpace} from './CheckDetail';
 // 创建一个 Context 对象
 export const AppContext = React.createContext();
 
@@ -48,6 +48,9 @@ export const AppProvider = ({ children }) => {
     maxPrise: '',
     minPrise: '',
     CarType: '',
+    CarPlate: '',
+    CarCharge: '',
+    CarPicture:'',
     BookWay:'H',
     StartDay: null,
     EndDay: null,
@@ -115,6 +118,7 @@ function App() {
                 <Route path="/adminlogin"  element={<AdminLoginPage/>} />
                 <Route path="/adminregist" element={<AdminRegistPage/>} />
                 <Route path="/:username/choose" element={<CarSpaceChoice/>} />
+                <Route path="/:username/detail/:Spotid/choose" element={<CarSpaceChoice/>} />
                 <Route path="/:username/editcar/*" element={null} />
                 <Route path="/:username/addcar" element={null} />
                 <Route path='/*' element={<CatchAllRouteHandler/>}/>
@@ -122,6 +126,7 @@ function App() {
             <Routes>
               <Route path="/admin/:adminid" element={<AdminDashboard/>} />
               <Route path = "/:username/:adminid/:Spotid" element = {<ManagerEditSpace/>} />
+              <Route path = "/:username/:adminid/Approve/:Spotid" element = {<ManagerApproveEditSpace/>} />
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace/:Spotid" element = {<EditSpace/>} />

@@ -116,6 +116,7 @@ export function UserRegistPage() {
     const data = {
       to: Email,
     };
+    setIsButtonDisabled(true);
     console.log(isButtonDisabled);
     callAPIsendEmailCode('user/create/sendEmail', data)
     .then((response)=>{
@@ -137,6 +138,7 @@ export function UserRegistPage() {
     .catch((error)=>{
         // when meet error
         console.log(error);
+        setIsButtonDisabled(false);
         setOpenSnackbar({
             severity: 'error',
             message: error,
