@@ -1396,8 +1396,8 @@ export const EditSpace = () => {
           endDate: dayjs(item.endDate),
         }));
         console.log(all_time);
-        setFirstStart(all_time[0].endDate);
-        setFirstEnd(all_time[0].startDate);
+        setFirstStart(all_time[0].startDate);
+        setFirstEnd(all_time[0].endDate);
         setDistance(all_time[0].distance);
         setTimeIntervals(timeIntervals => [...all_time.slice(1)]);
       })
@@ -2584,6 +2584,7 @@ export const EditSpace = () => {
                       <DatePicker
                         label='Start Date'
                         value={FirstStart}
+                        minDate={dayjs(new Date())}
                         onChange={(date) => {
                           if (date) FirstStartChange(date);
                         }}
@@ -2598,6 +2599,7 @@ export const EditSpace = () => {
                       <DatePicker
                         label='End Date'
                         value={FirstEnd}
+                        minDate={dayjs(FirstStart)}
                         onChange={(date) => {
                           if (date) FirstEndChange(date);
                         }}
@@ -2630,6 +2632,7 @@ export const EditSpace = () => {
                         <DatePicker
                           label='Start Date'
                           value={interval.startDate}
+                          minDate={dayjs(new Date())}
                           onChange={(date) => {
                             if (date) handleStartDateChange(index, date);
                           }}
@@ -2643,7 +2646,8 @@ export const EditSpace = () => {
                       <DemoContainer components={['DatePicker', 'DatePicker']}>
                         <DatePicker
                           label='End Date'
-                          value={interval.startDate}
+                          minDate={dayjs(interval.startDate)}
+                          value={interval.endDate}
                           onChange={(date) => {
                             if (date) handleEndDateChange(index, date);
                           }}

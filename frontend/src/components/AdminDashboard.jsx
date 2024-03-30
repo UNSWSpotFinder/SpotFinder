@@ -87,7 +87,7 @@ const AdminDashboard = () => {
     .then((data) => {
       console.log('o');
       console.log(data);
-      const datanow = data.message;
+      const datanow = data.message || [];
       setSpots((prevSpots) => [...prevSpots, ...datanow]); 
       setIsLoading(false);
       // console.log('Spots:', data.message);
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
     .then((data) => {
       console.log('n');
       console.log(data);
-      const datanow2=data.message;
+      const datanow2 = data.message || [];
       setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
       setIsLoadingApp(false);
     })

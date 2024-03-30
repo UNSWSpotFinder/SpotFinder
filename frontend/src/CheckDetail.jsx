@@ -32,6 +32,7 @@ import {
   callAPICreateSpot,
   callAPIGetSpecSpot,
   callAPIEditSpot,
+  callAPIApproveSpot,
 } from './API';
 const CfmContent = styled('div')({
   position: 'absolute',
@@ -130,6 +131,8 @@ const ReserveConfirmblack = styled('button')({
 });
 // 修改
 export const ApproveCheck = ({ data, isOpen, close }) => {
+  // get the set open snackbar function
+  const { _ , setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -139,25 +142,26 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
   const back = () => {
     close();
   };
-  // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
-  const EditInfo = (id) => {
-    callAPIEditSpot(
-      'spot/modifySpotInfo/' + id,
-      data,
-      localStorage.getItem('token')
+  const SendFeedback = () => {
+    setOpenSnackbar({
+      severity: 'success',
+      message: 'Spot successfully approved!',
+      timestamp: new Date().getTime(),
+    });
+    navigate('/admin/' + adminid);
+  };
+  const Approve = (id) => {
+    callAPIApproveSpot(
+      'manager/approve',
+      id,
+      localStorage.getItem('token'),
     )
-      .then((response) => {
+    .then((response) => {
         console.log(response);
-        setOpenSnackbar({
-          severity: 'success',
-          message: 'Edit Spot Successful!',
-          timestamp: new Date().getTime(),
-        });
-        navigate('/admin/' + adminid);
-      })
-      .catch((error) => {
+        SendFeedback();
+    })
+    .catch((error) => {
         console.log('np');
         console.log(data);
         setOpenSnackbar({
@@ -165,7 +169,27 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
           message: error,
           timestamp: new Date().getTime(),
         });
-      });
+    });
+  };
+  const EditInfo = (id) => {
+    callAPIEditSpot(
+      'spot/modifySpotInfo/' + id,
+      data,
+      localStorage.getItem('token')
+    )
+    .then((response) => {
+        console.log(response);
+        Approve(id);
+    })
+    .catch((error) => {
+        console.log('np');
+        console.log(data);
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+    });
     // change the conponment
     console.log(data);
   };
@@ -356,8 +380,8 @@ export const ManagerEditSpace = () => {
           endDate: dayjs(item.endDate),
         }));
         console.log(all_time);
-        setFirstStart(all_time[0].endDate);
-        setFirstEnd(all_time[0].startDate);
+        setFirstStart(all_time[0].startDate);
+        setFirstEnd(all_time[0].endDate);
         setDistance(all_time[0].distance);
         setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
       })
@@ -1536,6 +1560,7 @@ export const ManagerEditSpace = () => {
                       <DatePicker
                         label='Start Date'
                         value={FirstStart}
+                        minDate={dayjs(new Date())}
                         onChange={(date) => {
                           if (date) FirstStartChange(date);
                         }}
@@ -1550,6 +1575,7 @@ export const ManagerEditSpace = () => {
                       <DatePicker
                         label='End Date'
                         value={FirstEnd}
+                        minDate={dayjs(FirstStart)}
                         onChange={(date) => {
                           if (date) FirstEndChange(date);
                         }}
@@ -1582,6 +1608,7 @@ export const ManagerEditSpace = () => {
                         <DatePicker
                           label='Start Date'
                           value={interval.startDate}
+                          minDate={dayjs(new Date())}
                           onChange={(date) => {
                             if (date) handleStartDateChange(index, date);
                           }}
@@ -1592,10 +1619,11 @@ export const ManagerEditSpace = () => {
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='End Date'
-                          value={interval.startDate}
+                          value={interval.endDate}
+                          minDate={dayjs(interval.startDate)}
                           onChange={(date) => {
                             if (date) handleEndDateChange(index, date);
                           }}
@@ -1761,8 +1789,8 @@ export const ManagerApproveEditSpace = () => {
           endDate: dayjs(item.endDate),
         }));
         console.log(all_time);
-        setFirstStart(all_time[0].endDate);
-        setFirstEnd(all_time[0].startDate);
+        setFirstStart(all_time[0].startDate);
+        setFirstEnd(all_time[0].endDate);
         setDistance(all_time[0].distance);
         setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
       })
@@ -2940,6 +2968,7 @@ export const ManagerApproveEditSpace = () => {
                       <DatePicker
                         label='Start Date'
                         value={FirstStart}
+                        minDate={dayjs(new Date())}
                         onChange={(date) => {
                           if (date) FirstStartChange(date);
                         }}
@@ -2954,6 +2983,7 @@ export const ManagerApproveEditSpace = () => {
                       <DatePicker
                         label='End Date'
                         value={FirstEnd}
+                        minDate={dayjs(FirstStart)}
                         onChange={(date) => {
                           if (date) FirstEndChange(date);
                         }}
@@ -2982,7 +3012,7 @@ export const ManagerApproveEditSpace = () => {
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='Start Date'
                           value={interval.startDate}
@@ -2996,10 +3026,11 @@ export const ManagerApproveEditSpace = () => {
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='End Date'
-                          value={interval.startDate}
+                          value={interval.endDate}
+                          minDate={dayjs(interval.FirstStart)}
                           onChange={(date) => {
                             if (date) handleEndDateChange(index, date);
                           }}
