@@ -77,9 +77,7 @@ func GetSpotList(db *gorm.DB, isVisible bool) ([]*tempSpotBasic, error) {
 
 	var allSpots []*Spot.Basic // 注意这里的变量声明变化
 	query := db.Where("id IN ?", selectedIDs)
-	if isVisible {
-		query = query.Where("is_visible = ?", true)
-	}
+	query = query.Where("is_visible = ?", isVisible)
 	if err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +

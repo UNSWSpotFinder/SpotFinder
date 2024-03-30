@@ -65,6 +65,9 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("/user/withdraw", User.WithdrawHandler)
 	private.POST("spot/modifySpotInfo/:spotId", Spots.ModifySpotInfoHandler)
 	private.POST("car/create", User.AddCarHandler)
+	manager := r.Group("/")
+	manager.Use(Service.AuthMiddleware(SecreteKey))
+	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)
 	return r
 
 }
