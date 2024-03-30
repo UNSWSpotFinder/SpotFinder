@@ -9,7 +9,7 @@ import (
 
 // ApproveSpotHandler 审核车位
 // @Summary 审核车位
-// @Description 审核车位
+// @Description 审核车位，用的是URL参数，一次只能查询一辆哦
 // @Tags Manager
 // @Accept json
 // @Produce json

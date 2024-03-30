@@ -147,7 +147,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "审核车位",
+                "description": "审核车位，用的是URL参数，一次只能查询一辆哦",
                 "consumes": [
                     "application/json"
                 ],
