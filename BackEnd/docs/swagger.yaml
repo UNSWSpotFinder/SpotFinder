@@ -314,6 +314,33 @@ paths:
       summary: 登陆
       tags:
       - User
+  /manager/approve/{spotId}:
+    post:
+      consumes:
+      - application/json
+      description: 审核车位，用的是URL参数，一次只能查询一辆哦
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot approved
+          schema:
+            type: string
+        "500":
+          description: Cannot approve spot
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 审核车位
+      tags:
+      - Manager
   /manager/create:
     post:
       consumes:
