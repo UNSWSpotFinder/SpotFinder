@@ -128,6 +128,49 @@
                 }
             }
         },
+        "/manager/approve/{spotId}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "审核车位",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "审核车位",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot approved",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot approve spot",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/create": {
             "post": {
                 "description": "创建管理员",
