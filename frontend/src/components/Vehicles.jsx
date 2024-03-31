@@ -3,15 +3,18 @@ import { Snackbar } from '@mui/material';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
+import { createCarInfo } from './API';
 
 const Vehicles = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [vehicleBrand, setVehicleBrand] = useState('');
+  const [vehiclePlate, setVehiclePlate] = useState('');
   const [vehicleType, setVehicleType] = useState('');
   const [vehicleSize, setVehicleSize] = useState('');
   const [vehicleCharge, setVehicleCharge] = useState('');
+  const [avatar, setAvatar] = useState('');
 
   const [modalMode, setModalMode] = useState(''); // 'add' 或 'edit'
 
@@ -74,10 +77,26 @@ const Vehicles = () => {
   };
 
   // TODO:处理表单提交
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    const vehicleInfo = {
+      brand: vehicleBrand,
+      charge: vehicleCharge,
+      picture: avatar, // 使用DataURL作为图片
+      plate: vehiclePlate,
+      size: vehicleSize,
+      type: vehicleType
+    };
+    console.log('Vehicle info:', vehicleInfo);
     if(modalMode === 'add') {
-      // 处理添加新车辆逻辑
+      try {
+        await createCarInfo(vehicleInfo);
+        setSnackbarMessage('Vehicle added successfully!');
+      } catch (error) {
+        console.error('Failed to add vehicle:', error);
+        setSnackbarMessage('Failed to add vehicle.');
+      }
+      
     } else if (modalMode === 'edit') {
       // 处理编辑车辆信息逻辑
     }
@@ -104,10 +123,18 @@ const Vehicles = () => {
   
 
 
-  // 点击add按钮，设置model为add模式
+  // 点击add按钮，设置model为add模式 打开模态框时，重置所有表单字段
   const openAddModal = () => {
     setModalMode('add');
     setIsModalOpen(true);
+    // 重置表单字段
+    setVehicleBrand('');
+    setVehiclePlate('');
+    setVehicleType('');
+    setVehicleSize('');
+    setVehicleCharge('');
+    setAvatar(''); 
+
   };
 
   // 点击edit按钮，设置model为edit模式
@@ -115,9 +142,18 @@ const Vehicles = () => {
     setModalMode('edit');
     setIsModalOpen(true);
   };
+
+    // 添加处理表单字段变化的函数
+    const handleBrandChange = (event) => {
+      setVehicleBrand(event.target.value);
+    };
   
+    const handlePlateChange = (event) => {
+      setVehiclePlate(event.target.value);
+    };
 
-
+    
+  
 
   return (
     <div className='dashboard-vehicles'>
@@ -161,15 +197,15 @@ const Vehicles = () => {
           <div className='modal-content'>
           <h3>{modalMode === 'add' ? 'Add a New Vehicle' : 'Edit Your Vehicle Information'}</h3>
 
-            <form className='edit-form'>
+            <form className='edit-form' onSubmit={handleSubmit}> 
               {/* 表单内容 */}
               <div className="form-group">
                 <label htmlFor="brand">Brand of your vehicle</label>
-                <input type="brand" id="brand" name="brand" className="input-box"  placeholder='e.g.Toyota'  />
+                <input type="text" id="brand" name="brand" className="input-box"  placeholder='e.g.Toyota' value={vehicleBrand}  onChange={handleBrandChange}/>
               </div>
               <div className="form-group">
                 <label htmlFor="plate">Plate of your vehicle</label>
-                <input type="plate" id="plate" name="plate" className="input-box"  placeholder='e.g.NSW123456'  />
+                <input type="text" id="plate" name="plate" className="input-box"  placeholder='e.g.NSW123456'  value={vehiclePlate} onChange={handlePlateChange}/>
               </div>
               <div className="form-group">              
               <label htmlFor="type">Type of your vehicle</label>
@@ -178,7 +214,7 @@ const Vehicles = () => {
                   <option value="bike">Bike</option>
                   <option value="hatchback">Hatchback</option>
                   <option value="sedan">Sedan</option>
-                  <option value="suv">4DW/SUV</option>
+                  <option value="suv">4WD/SUV</option>
                   <option value="truck">Van</option>
                   
                 </select>
@@ -217,7 +253,7 @@ const Vehicles = () => {
                 {avatar && <img src={avatar} alt="Avatar Preview" style={{ width: '100px', height: '100px' }} />}
               </div>
               <div className="form-buttons">
-                <button type='submit' className='submit-btn' onClick={handleSubmit}>Submit</button>
+                <button type='submit' className='submit-btn'>Submit</button>
                 <button type='button' onClick={closeModal} className='cancel-btn'>Cancel</button>
               </div>
             </form>

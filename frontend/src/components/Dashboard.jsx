@@ -151,11 +151,6 @@ const Dashboard = () => {
     setIsWithdrawModalVisible(true);
   };
 
-
-
-
-
-
   return (
     <div className="dashboard">
       {/* 顶部区域 */}

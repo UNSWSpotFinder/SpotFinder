@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet,useNavigate } from 'react-router-dom';
+import { getUserInfo } from './API';
 import './DashboardTop.css';
 import {
   useError
@@ -27,7 +28,25 @@ const DashboardTop = () => {
     });
   }
 
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+  });
 
+    // 进入 Dashboard 组件时获取用户信息
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const data = await getUserInfo();  
+          // data对象中包含用户信息
+          setUserInfo({
+            name: data.message.name,
+          });
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+        }
+      };
+      fetchData();
+    }, []);
 
   return (
     <div className="dashboard-top">
@@ -44,7 +63,7 @@ const DashboardTop = () => {
         <button className='top-button' onClick={goesHome}>Find a spot</button>
         {/* 用户信息 */}
         <span> Hi,</span>
-        <span>{currentuser}</span>
+        <span>{userInfo.name}</span>
         {/* 登出按钮 */}
         <button className="button-with-image">
           <img src='/img/SignOut.svg' alt='Sign Out' className='sign-out-img' onClick={logout}/>

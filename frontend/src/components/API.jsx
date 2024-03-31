@@ -173,3 +173,27 @@ export const withdrawAccount = (amount) => {
     throw error;
   });
 };
+
+// 用户创建车辆
+export const createCarInfo = (carInfo) => {
+  const endpoint = `${baseUrl}/car/create`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(carInfo),
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => { throw err; });
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('Error during fetch operation:', error);
+  });
+};

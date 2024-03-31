@@ -33,7 +33,7 @@ const Profile = () => {
       setPhone(userInfo.phone);
       // 格式化日期
       const dateParts = userInfo.dateBirth.split('/');
-      const convertedDate = `${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`;
+      const convertedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       setDateOfBirth(convertedDate);
     // 解析地址信息
       if (userInfo.addr) {
@@ -71,7 +71,7 @@ const Profile = () => {
   // 处理日期变更，转换成后端能识别的格式
   const convertDateToBackendFormat = (date) => {
     const [year, month, day] = date.split('-');
-    return `${month}/${day}/${year}`;
+    return `${day}/${month}/${year}`;
   };
 
   // 将用户新上传的图片变为Base64格式

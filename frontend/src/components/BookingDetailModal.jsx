@@ -7,7 +7,7 @@ const BookingDetailModal = ({ closeBookingDetailModal }) => {
       <div className="orders-modal-content">
         {/* 标题区域 */}
         <div className="orders-modal-header">
-          <div className='current-state-title'>Bookings</div>
+          <div className='booking-detail-title'>Booking Details</div>
           <button onClick={closeBookingDetailModal} className="close-btn">✖</button>
         </div>
 
