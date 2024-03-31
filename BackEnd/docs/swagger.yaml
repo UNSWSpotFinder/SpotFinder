@@ -40,8 +40,6 @@ definitions:
     required:
     - adminID
     type: object
-  Spot.Basic:
-    type: object
   Spots.CreateSpotRequestData:
     properties:
       availableTime:
@@ -215,22 +213,23 @@ definitions:
   controller.CreateCarRequestData:
     properties:
       brand:
-        example: brand
+        example: Toyota
         type: string
       charge:
-        example: charge
+        example: "No"
         type: string
       picture:
-        example: picture
+        example: Please use https://tool.jisuapi.com/pic2base64.html to convert the
+          picture to base64 and then paste it here
         type: string
       plate:
-        example: plate
+        example: NSW123456
         type: string
       size:
-        example: size
+        example: medium
         type: string
       type:
-        example: type
+        example: Bike
         type: string
     type: object
 info:
@@ -292,6 +291,38 @@ paths:
       security:
       - BearerAuth: []
       summary: 获取用户的车辆
+      tags:
+      - Cars
+  /car/modifyCarInfo/{carID}:
+    post:
+      consumes:
+      - application/json
+      description: 修改车辆信息
+      parameters:
+      - description: 车辆信息
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateCarRequestData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle information updated
+          schema:
+            type: string
+        "400":
+          description: Data binding error
+          schema:
+            type: string
+        "500":
+          description: SQL error message
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 修改车辆信息
       tags:
       - Cars
   /index:
@@ -455,31 +486,6 @@ paths:
       summary: Create a spot
       tags:
       - Spots
-  /spot/delete/{id}:
-    put:
-      consumes:
-      - application/json
-      description: delete a spot by id
-      parameters:
-      - description: Spot ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: code", "message"}
-          schema:
-            type: string
-        "500":
-          description: code", "message"}
-          schema:
-            type: string
-      summary: Delete a spot(soft delete)
-      tags:
-      - spots
   /spot/list:
     get:
       consumes:
@@ -541,123 +547,6 @@ paths:
       summary: 修改车位信息
       tags:
       - Spots
-  /spot/ownedCar/choseSize/{plateNumber}:
-    get:
-      consumes:
-      - application/json
-      description: chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试
-      parameters:
-      - description: Plate Number
-        in: path
-        name: plateNumber
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: spots", "list of spots"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to get spot list"}
-          schema:
-            type: string
-      summary: Chose size with user's car plate number,param is plate number
-      tags:
-      - spots
-  /spot/ownedList/{ownerId}:
-    get:
-      consumes:
-      - application/json
-      description: show all owned spots by User
-      parameters:
-      - description: Owner ID
-        in: path
-        name: ownerId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: spots", "list of spots"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to get spot list"}
-          schema:
-            type: string
-      summary: Show all owned spots
-      tags:
-      - spots
-  /spot/update:
-    put:
-      consumes:
-      - application/json
-      description: update a spot
-      parameters:
-      - description: spot info
-        in: body
-        name: spot
-        required: true
-        schema:
-          $ref: '#/definitions/Spot.Basic'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: message", "Update spot successfully"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to update spot"}
-          schema:
-            type: string
-      summary: Update a spot
-      tags:
-      - spots
-  /spot/update/spotPrice:
-    put:
-      consumes:
-      - application/json
-      description: 'update a spot''s price, got four query parameters by order: spotID,
-        perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试'
-      parameters:
-      - description: Spot ID
-        in: query
-        name: spotID
-        required: true
-        type: string
-      - description: Price per day
-        in: query
-        name: perDay
-        required: true
-        type: string
-      - description: Price per night
-        in: query
-        name: perNight
-        required: true
-        type: string
-      - description: Price per month
-        in: query
-        name: perMonth
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: message", "Update spot price successfully"}
-          schema:
-            type: string
-        "500":
-          description: error", "unable to update spot price"}
-          schema:
-            type: string
-      summary: Update a spot's price
-      tags:
-      - spots
   /user/create:
     post:
       description: do ping

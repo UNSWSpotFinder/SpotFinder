@@ -1,4 +1,4 @@
-package Car
+package Vehicle
 
 import (
 	"gorm.io/gorm"

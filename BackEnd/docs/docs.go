@@ -111,6 +111,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/car/modifyCarInfo/{carID}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "修改车辆信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "修改车辆信息",
+                "parameters": [
+                    {
+                        "description": "车辆信息",
+                        "name": "car",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateCarRequestData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vehicle information updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Data binding error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "SQL error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/index": {
             "get": {
                 "description": "do ping",
@@ -324,44 +375,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/spot/delete/{id}": {
-            "put": {
-                "description": "delete a spot by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Delete a spot(soft delete)",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Spot ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "code\", \"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "code\", \"message\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/spot/list": {
             "get": {
                 "description": "获取车位列表",
@@ -450,181 +463,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "SQL error message",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/spot/ownedCar/choseSize/{plateNumber}": {
-            "get": {
-                "description": "chose size with my car, 默认用的是longsizhuo数据库的第18号用户的ID做测试",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Chose size with user's car plate number,param is plate number",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Plate Number",
-                        "name": "plateNumber",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "spots\", \"list of spots\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "error\", \"unable to get spot list\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/spot/ownedList/{ownerId}": {
-            "get": {
-                "description": "show all owned spots by User",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Show all owned spots",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Owner ID",
-                        "name": "ownerId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "spots\", \"list of spots\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "error\", \"unable to get spot list\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/spot/update": {
-            "put": {
-                "description": "update a spot",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Update a spot",
-                "parameters": [
-                    {
-                        "description": "spot info",
-                        "name": "spot",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/Spot.Basic"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message\", \"Update spot successfully\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "error\", \"unable to update spot\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/spot/update/spotPrice": {
-            "put": {
-                "description": "update a spot's price, got four query parameters by order: spotID, perDay, perNight, perMonth 。默认用的是longsizhuo数据库的第18号用户的ID做测试",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "spots"
-                ],
-                "summary": "Update a spot's price",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Spot ID",
-                        "name": "spotID",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Price per day",
-                        "name": "perDay",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Price per night",
-                        "name": "perNight",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Price per month",
-                        "name": "perMonth",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message\", \"Update spot price successfully\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "error\", \"unable to update spot price\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1091,9 +929,6 @@ const docTemplate = `{
                 }
             }
         },
-        "Spot.Basic": {
-            "type": "object"
-        },
         "Spots.CreateSpotRequestData": {
             "type": "object",
             "properties": {
@@ -1343,27 +1178,27 @@ const docTemplate = `{
             "properties": {
                 "brand": {
                     "type": "string",
-                    "example": "brand"
+                    "example": "Toyota"
                 },
                 "charge": {
                     "type": "string",
-                    "example": "charge"
+                    "example": "No"
                 },
                 "picture": {
                     "type": "string",
-                    "example": "picture"
+                    "example": "Please use https://tool.jisuapi.com/pic2base64.html to convert the picture to base64 and then paste it here"
                 },
                 "plate": {
                     "type": "string",
-                    "example": "plate"
+                    "example": "NSW123456"
                 },
                 "size": {
                     "type": "string",
-                    "example": "size"
+                    "example": "medium"
                 },
                 "type": {
                     "type": "string",
-                    "example": "type"
+                    "example": "Bike"
                 }
             }
         }

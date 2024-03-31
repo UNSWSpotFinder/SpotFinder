@@ -2,10 +2,10 @@ package Router
 
 import (
 	"capstone-project-9900h14atiktokk/Service"
-	"capstone-project-9900h14atiktokk/Service/Car"
 	"capstone-project-9900h14atiktokk/Service/Manager"
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
+	"capstone-project-9900h14atiktokk/Service/Vehicle"
 	"capstone-project-9900h14atiktokk/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -37,12 +37,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.GET("/index", Service.GetIndexHandler)
 	public.GET("/user/list", User.GetUserList)
 	public.POST("/user/create", User.CreateUser)
-	public.GET("/spot/ownedList/:ownerId", Spots.ShowAllOwnedSpotHandler)
 	public.GET("/spot/list/", Spots.GetSpotListHandler)
-	public.GET("/spot/ownedCar/choseSize/:plateNumber", Spots.ChoseSizeWithMyCarHandler)
-	public.PUT("/spot/delete/:id", Spots.DeleteSpotController)
-	public.PUT("/spot/update", Spots.UpdateSpotController)
-	public.PUT("/spot/update/spotPrice", Spots.UpdateSpotPriceHandler)
 	public.POST("/user/create/verifyEmail", func(c *gin.Context) {
 		User.VerifiedCodeHandler(c, redisCli)
 	})
@@ -65,8 +60,9 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("/user/topUp", User.TopUpHandler)
 	private.POST("/user/withdraw", User.WithdrawHandler)
 	private.POST("spot/modifySpotInfo/:spotId", Spots.ModifySpotInfoHandler)
-	private.POST("car/create", Car.AddCarHandler)
-	private.GET("car/getMyCar", Car.GetCarOfUserHandler)
+	private.POST("car/create", Vehicle.AddVehicleHandler)
+	private.GET("car/getMyCar", Vehicle.GetVehicleOfUserHandler)
+	private.POST("car/modifyCarInfo/:carID", Vehicle.ModifyVehicleInfoHandler)
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)

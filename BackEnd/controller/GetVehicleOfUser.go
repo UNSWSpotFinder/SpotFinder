@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Car"
+	"capstone-project-9900h14atiktokk/Models/Vehicle"
 	"gorm.io/gorm"
 )
 
-func GetCarOfUser(userID string, db *gorm.DB) (cars []Car.Basic, err error) {
+func GetVehicleOfUser(userID string, db *gorm.DB) (cars []Vehicle.Basic, err error) {
 	if result := db.Where("owner_id = ?", userID).Find(&cars); result.Error != nil {
 		return nil, result.Error
 	}
