@@ -77,27 +77,6 @@ definitions:
       spotType:
         type: string
     type: object
-  User.AddCreationRequest:
-    properties:
-      brand:
-        example: brand
-        type: string
-      charge:
-        example: charge
-        type: string
-      picture:
-        example: picture
-        type: string
-      plate:
-        example: plate
-        type: string
-      size:
-        example: size
-        type: string
-      type:
-        example: type
-        type: string
-    type: object
   User.CodeStructData:
     properties:
       code:
@@ -233,6 +212,27 @@ definitions:
       repassword:
         type: string
     type: object
+  controller.CreateCarRequestData:
+    properties:
+      brand:
+        example: brand
+        type: string
+      charge:
+        example: charge
+        type: string
+      picture:
+        example: picture
+        type: string
+      plate:
+        example: plate
+        type: string
+      size:
+        example: size
+        type: string
+      type:
+        example: type
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -264,7 +264,7 @@ paths:
         name: carInfo
         required: true
         schema:
-          $ref: '#/definitions/User.AddCreationRequest'
+          $ref: '#/definitions/controller.CreateCarRequestData'
       produces:
       - application/json
       responses:
@@ -275,6 +275,23 @@ paths:
       security:
       - BearerAuth: []
       summary: 创建车辆
+      tags:
+      - Cars
+  /car/getMyCar:
+    get:
+      consumes:
+      - application/json
+      description: 从car的表中获取用户的车辆，而不是从user的表中获取
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cars", "cars"}
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 获取用户的车辆
       tags:
       - Cars
   /index:
