@@ -1,0 +1,12 @@
+p.Appnull{
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+    background-color: rgb(245, 245, 245);
+    height: 50px;
+    color: black;
+    align-content:center;
+    margin: 0px 20px;
+    padding: 10px;
+    border-radius: 10px;
+}

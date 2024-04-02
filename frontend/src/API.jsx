@@ -164,7 +164,7 @@ return (
         <Alert onClose={handleClose} severity={snackbarData.severity}>
         {snackbarData.message}
         </Alert>
-  </Snackbar>
+    </Snackbar>
 );
 };
 export const callAPIsendEmailCode = (path,input)=>{
@@ -468,9 +468,10 @@ export const callAPIGetAllSpot=(path,token)=>{
   return new Promise((resolve, reject) =>{
      console.log('token: '+token);
      console.log('http://localhost:'+String(port)+'/'+String(path));
-     fetch('http://localhost:'+String(port)+'/'+String(path),{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true',{
      method:'GET',
      headers: { 
+      'Content-Type': 'application/json'
     }
      })
      .then((response)=>{
@@ -548,6 +549,44 @@ export const callAPIGetSpecUserInfo=(path)=>{
           console.log('success');
           console.log(response);
           return response.json().then(data => resolve(data));
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response.json().then(data => {
+            console.log(data.error);
+            let errorReason = 'An unknown error occurred.';
+            if(data.error==''){
+              errorReason = '';
+            }
+            else if(data.error){
+              errorReason = '';
+            }
+            reject(errorReason);
+          })
+          .catch(() => { reject(new Error('Error parsing response JSON.'));});
+        }
+     })
+     .catch((error)=>{
+         console.log(error);
+     })
+ })
+}
+
+export const callAPIApproveSpot=(path, SpotId,token)=>{
+  return new Promise((resolve, reject) =>{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/'+String(SpotId),{
+     method:'POST',
+     headers: { 
+      Authorization: `Bearer ${String(token)}`,
+      'Content-Type': 'application/json' 
+    }
+     })
+     .then((response)=>{
+      if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          if(response){
+            return resolve(response);
+          }
         } else {
           // 如果状态码不是200，我们要解析JSON来找出错误原因
           response.json().then(data => {

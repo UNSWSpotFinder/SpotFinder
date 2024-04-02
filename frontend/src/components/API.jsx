@@ -78,6 +78,7 @@ export const getSpotDetails = (spotId) => {
       } else {
         response.json().then(data => {
           const errorReason = data.message;
+          console.log(errorReason);
           reject(errorReason);
         }).catch(() => {
           reject(new Error('Error parsing response JSON.'));
@@ -95,8 +96,36 @@ export const getSpotDetails = (spotId) => {
 // 获取车位列表（get）
 export const getAllSpots = () => {
   return new Promise((resolve, reject) => {
-    const endpoint = `${baseUrl}/spot/list`; 
+    const endpoint = `${baseUrl}/spot/list/?isVisible=true`; 
 
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+          return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          console.log(errorReason);
+          const errorReason = data.message;
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
+  });
+};
+export const getAllNotApprovedSpots = () => {
+  return new Promise((resolve, reject) => {
+    const endpoint = `${baseUrl}/spot/list/?isVisible=false`; 
     fetch(endpoint, {
       method: 'GET',
       headers: new Headers({
@@ -109,6 +138,7 @@ export const getAllSpots = () => {
       } else {
         response.json().then(data => {
           const errorReason = data.message;
+          console.log(errorReason);
           reject(errorReason);
         }).catch(() => {
           reject(new Error('Error parsing response JSON.'));

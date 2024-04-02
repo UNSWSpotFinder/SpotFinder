@@ -1,6 +1,11 @@
 package util
 
 import (
+	"capstone-project-9900h14atiktokk/Models/Car"
+	"capstone-project-9900h14atiktokk/Models/Manager"
+	"capstone-project-9900h14atiktokk/Models/Order"
+	"capstone-project-9900h14atiktokk/Models/Spot"
+	"capstone-project-9900h14atiktokk/Models/User"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -169,6 +174,26 @@ func InitMySQL() *gorm.DB {
 	//user := models.UserBasic{}
 	//db.Find(&user)
 	//fmt.Println(user)
+	if err := db.AutoMigrate(&User.Basic{}); err != nil {
+		fmt.Println("Failed to migrate database:", err)
+		return nil
+	}
+	if err := db.AutoMigrate(&Spot.Basic{}); err != nil {
+		fmt.Println("Failed to migrate database:", err)
+		return nil
+	}
+	if err := db.AutoMigrate(&Order.Basic{}); err != nil {
+		fmt.Println("Failed to migrate database:", err)
+		return nil
+	}
+	if err := db.AutoMigrate(&Manager.Basic{}); err != nil {
+		fmt.Println("Failed to migrate database:", err)
+		return nil
+	}
+	if err := db.AutoMigrate(&Car.Basic{}); err != nil {
+		fmt.Println("Failed to migrate database:", err)
+		return nil
+	}
 	return db
 }
 

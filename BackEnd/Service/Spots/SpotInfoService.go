@@ -5,6 +5,7 @@ import (
 	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // GetSpotListHandler 获取车位列表
@@ -13,11 +14,17 @@ import (
 // @Tags Spots
 // @Accept json
 // @Produce json
+// @Param isVisible query bool false "is it isVisible"
 // @Success 200 {string} string "Spot list"
 // @Failure 500 {string} string "Cannot get spot list"
 // @Router /spot/list [get]
 func GetSpotListHandler(c *gin.Context) {
-	spots, err := controller.GetSpotList(Service.DB)
+	var isVisibleParam = c.Query("isVisible")
+	isVisible, err := strconv.ParseBool(isVisibleParam)
+	if err != nil {
+		isVisible = false
+	}
+	spots, err := controller.GetSpotList(Service.DB, isVisible)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Cannot get spot list",

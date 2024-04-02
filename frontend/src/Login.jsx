@@ -116,7 +116,7 @@ export function UserLoginPage(){
                 {/* 其余内容 */}
                 <div className='contentmain'>
                     {/* logo */}
-                    <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+                    <img src='/img/LOGO.svg' height={'100 px'} className='Logo'></img>
                     {/* 剩余内容 */}
                     <div className='LoginUser'>
                         {/* 欢迎语句 */}

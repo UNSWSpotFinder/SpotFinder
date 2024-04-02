@@ -69,13 +69,41 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/User.AddCreationRequest"
+                            "$ref": "#/definitions/controller.CreateCarRequestData"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "code\", \"message\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/car/getMyCar": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "从car的表中获取用户的车辆，而不是从user的表中获取",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "获取用户的车辆",
+                "responses": {
+                    "200": {
+                        "description": "cars\", \"cars\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -133,6 +161,49 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Login Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/approve/{spotId}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "审核车位，用的是URL参数，一次只能查询一辆哦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "审核车位",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot approved",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot approve spot",
                         "schema": {
                             "type": "string"
                         }
@@ -304,6 +375,14 @@ const docTemplate = `{
                     "Spots"
                 ],
                 "summary": "获取车位列表",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "is it isVisible",
+                        "name": "isVisible",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Spot list",
@@ -770,11 +849,6 @@ const docTemplate = `{
         },
         "/user/modifyPasswd": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "修改密码",
                 "consumes": [
                     "application/json"
@@ -1073,35 +1147,6 @@ const docTemplate = `{
                 }
             }
         },
-        "User.AddCreationRequest": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "type": "string",
-                    "example": "brand"
-                },
-                "charge": {
-                    "type": "string",
-                    "example": "charge"
-                },
-                "picture": {
-                    "type": "string",
-                    "example": "picture"
-                },
-                "plate": {
-                    "type": "string",
-                    "example": "plate"
-                },
-                "size": {
-                    "type": "string",
-                    "example": "size"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "type"
-                }
-            }
-        },
         "User.CodeStructData": {
             "type": "object",
             "properties": {
@@ -1290,6 +1335,35 @@ const docTemplate = `{
                 },
                 "repassword": {
                     "type": "string"
+                }
+            }
+        },
+        "controller.CreateCarRequestData": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "brand"
+                },
+                "charge": {
+                    "type": "string",
+                    "example": "charge"
+                },
+                "picture": {
+                    "type": "string",
+                    "example": "picture"
+                },
+                "plate": {
+                    "type": "string",
+                    "example": "plate"
+                },
+                "size": {
+                    "type": "string",
+                    "example": "size"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "type"
                 }
             }
         }
