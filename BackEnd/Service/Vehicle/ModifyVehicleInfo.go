@@ -26,7 +26,8 @@ func ModifyVehicleInfoHandler(c *gin.Context) {
 	var car controller.CreateCarRequestData
 	userRole := c.GetString("role")
 	userID := c.GetString("userID")
-	ownerID, err := controller.GetUserIDByCarID(c.Param("carID"), Service.DB)
+	carID := c.Param("carID")
+	ownerID, err := controller.GetUserIDByCarID(carID, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get user ID"})
 		return
@@ -36,7 +37,6 @@ func ModifyVehicleInfoHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to modify this car"})
 		return
 	}
-	carID := c.Param("carID")
 	if err = c.ShouldBindJSON(&car); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Cannot bind JSON: " + err.Error(),
