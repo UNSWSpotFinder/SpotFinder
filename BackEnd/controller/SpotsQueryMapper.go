@@ -6,17 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
-	"strconv"
-	"sync"
 	"time"
 )
 
 var spotIDList []uint
-
-// 读写锁
-var spotIDMutex sync.RWMutex
 
 // tempSpotBasic 临时车位基本信息，首页展示用
 type tempSpotBasic struct {
@@ -49,35 +43,17 @@ func initSpotIDList(db *gorm.DB) error {
 }
 
 // GetSpotList 从数据库中获取所有车位数据
-func GetSpotList(db *gorm.DB, isVisible bool) ([]*tempSpotBasic, error) {
+func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSpotBasic, error) {
 	if db == nil {
 		return nil, errors.New("db is nil")
 	}
 
-	spotIDMutex.Lock()
-	defer spotIDMutex.Unlock()
+	var allSpots []*Spot.Basic
+	offset := (page - 1) * pageSize // 根据当前页计算偏移量
 
-	// 如果spotIDList为空，则初始化
-	if len(spotIDList) == 0 {
-		if err := initSpotIDList(db); err != nil {
-			return nil, err
-		}
-	}
+	// 构建查询并进行分页
+	query := db.Where("is_visible = ?", isVisible).Offset(offset).Limit(pageSize)
 
-	var selectedIDs []uint
-	if len(spotIDList) <= 50 {
-		selectedIDs = append([]uint{}, spotIDList...) // 使用副本以避免更改原始列表
-	} else {
-		selectedIndexes := rand.Perm(len(spotIDList))[:50] // 随机选择50个不同的索引
-		selectedIDs = make([]uint, 50)
-		for i, idx := range selectedIndexes {
-			selectedIDs[i] = spotIDList[idx]
-		}
-	}
-
-	var allSpots []*Spot.Basic // 注意这里的变量声明变化
-	query := db.Where("id IN ?", selectedIDs)
-	query = query.Where("is_visible = ?", isVisible)
 	if err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
@@ -173,120 +149,4 @@ func CreateSpot(spot *Spot.Basic, userEmail string, db *gorm.DB) error {
 	}
 
 	return nil
-}
-
-func ShowAllOwnedSpot(user *User.Basic, userId string, db *gorm.DB) ([]Spot.Basic, error) {
-
-	userIdInt, _ := strconv.Atoi(userId)
-
-	var spotList []Spot.Basic
-	db.Find(&user, "id = ?", userIdInt)
-
-	//解析用户的车位列表,如果用户没有车位则返回空
-	if user.OwnedSpot == "" {
-		return spotList, nil
-
-	}
-
-	//解析用户的车位列表
-	var spotListJson struct {
-		SpotList []int `json:"OwnedSpot"`
-	}
-	err := json.Unmarshal([]byte(user.OwnedSpot), &spotListJson)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, id := range spotListJson.SpotList { //遍历用户的车位列表
-		var spot Spot.Basic
-		db.First(&spot, "id= ? AND is_visible= ?", id, true)
-		spotList = append(spotList, spot)
-
-	}
-
-	return spotList, nil
-
-}
-
-func UpdateSpot(spot *Spot.Basic, db *gorm.DB) error {
-
-	if err := db.Model(&spot).Updates(spot).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func ChoseSizeWithMyCar(user *User.Basic, plateNumber string, db *gorm.DB) ([]*Spot.Basic, error) {
-	var spot []*Spot.Basic
-
-	//需要拿到id，从jwt token里拿用户id
-
-	db.First(&user, "id = ?", 18) // 找到用户的车辆大小信息,默认拿第18号用户的信息
-
-	//用户的车辆信息是一个json的字符串集合，需要解析
-	type CarInfo struct {
-		CarSize     string `json:"CarSize"`
-		PlateNumber string `json:"PlateNumber"`
-		Pictures    string `json:"Pictures"`
-	}
-
-	//如果用户没有车辆信息，返回空
-	if user.CarInfo == "" {
-		return spot, nil
-
-	}
-	var cars []CarInfo
-	err := json.Unmarshal([]byte(user.CarInfo), &cars)
-	if err != nil {
-		return nil, err
-	}
-
-	//根据车牌号来查询车位大小
-	for _, car := range cars {
-		if car.PlateNumber == plateNumber {
-			// 根据车辆大小信息查找合适的车位
-			err := db.Where("size = ?", car.CarSize).Find(&spot).Error
-			if err != nil {
-				return nil, err
-			}
-			break // 找到匹配的车辆后就可以停止查找
-		}
-	}
-
-	return spot, nil
-}
-
-func UpdateSpotPrice(spot *Spot.Basic, user *User.Basic, spotID string, pricePerDay float32, pricePerWeek float32, pricePerMonth float32, db *gorm.DB) error {
-	//先确认用户是否拥有这个车位
-
-	spotIDInt, _ := strconv.Atoi(spotID)
-
-	db.First(&user, "id = ?", 18) //先默认用第18号用户
-
-	db.First(&spot, "id = ?", spotIDInt)
-
-	if spot.OwnerID != user.ID {
-		return errors.New("用户没有这个车位")
-	}
-
-	//if pricePerDay < 0 || pricePerWeek < 0 || pricePerMonth < 0 {
-	//	return errors.New("价格不能为负数")
-	//}
-
-	//用户有权限修改价格
-	if pricePerDay != 0 {
-		spot.PricePerDay = float64(pricePerDay)
-
-	}
-	if pricePerWeek != 0 {
-		spot.PricePerWeek = float64(pricePerWeek)
-	}
-	if pricePerMonth != 0 {
-		spot.PricePerHour = float64(pricePerMonth)
-	}
-
-	result := db.Model(&spot).Updates(spot)
-
-	return result.Error
-
 }

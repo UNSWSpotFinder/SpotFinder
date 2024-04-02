@@ -14,17 +14,33 @@ import (
 // @Tags Spots
 // @Accept json
 // @Produce json
-// @Param isVisible query bool false "is it isVisible"
-// @Success 200 {string} string "Spot list"
+// @Param isVisible query bool false "Is the spot visible" default(false)
+// @Param page query int false "Page number for pagination" default(1)
+// @Param pageSize query int false "Number of spots per page for pagination" default(15)
+// @Success 200 {object} string "An example of a successful response"
 // @Failure 500 {string} string "Cannot get spot list"
 // @Router /spot/list [get]
 func GetSpotListHandler(c *gin.Context) {
+	pageParam := c.DefaultQuery("page", "1")
+	page, err := strconv.Atoi(pageParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'page' parameter"})
+		return
+	}
+	// 从查询参数中获取 pageSize 参数
+	pageSizeParam := c.DefaultQuery("pageSize", "15") // 如果没有提供，默认大小为 15
+	pageSize, err := strconv.Atoi(pageSizeParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'pageSize' parameter"})
+		return
+	}
+
 	var isVisibleParam = c.Query("isVisible")
 	isVisible, err := strconv.ParseBool(isVisibleParam)
 	if err != nil {
 		isVisible = false
 	}
-	spots, err := controller.GetSpotList(Service.DB, isVisible)
+	spots, err := controller.GetSpotList(Service.DB, isVisible, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Cannot get spot list",

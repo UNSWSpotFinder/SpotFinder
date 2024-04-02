@@ -497,15 +497,26 @@ paths:
       - application/json
       description: 获取车位列表
       parameters:
-      - description: is it isVisible
+      - default: false
+        description: Is the spot visible
         in: query
         name: isVisible
         type: boolean
+      - default: 1
+        description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - default: 15
+        description: Number of spots per page for pagination
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Spot list
+          description: An example of a successful response
           schema:
             type: string
         "500":
