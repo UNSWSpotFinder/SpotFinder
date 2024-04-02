@@ -1,11 +1,11 @@
-package Manager
+package Models
 
 import (
 	"gorm.io/gorm"
 	"time"
 )
 
-type Basic struct {
+type ManagerBasic struct {
 	gorm.Model
 	Name       string     `gorm:"type:varchar(255);not null"`
 	Password   string     `gorm:"type:varchar(255);not null"`
@@ -17,6 +17,6 @@ type Basic struct {
 	DeleteTime *time.Time `gorm:"type:datetime;null"`
 }
 
-func (Basic) TableName() string {
+func (ManagerBasic) TableName() string {
 	return "manager"
 }

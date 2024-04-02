@@ -1,6 +1,7 @@
 package User
 
 import (
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"capstone-project-9900h14atiktokk/Service"
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,7 @@ type loginRequestData struct {
 // @Router /login [post]
 func LoginHandler(c *gin.Context) {
 	var newData loginRequestData
-	var user User.Basic
+	var user Models.UserBasic
 	err := c.ShouldBindJSON(&newData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data binding error"})

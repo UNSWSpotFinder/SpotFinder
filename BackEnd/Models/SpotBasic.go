@@ -1,8 +1,8 @@
-package Spot
+package Models
 
 import "gorm.io/gorm"
 
-type Basic struct {
+type SpotBasic struct {
 	gorm.Model
 	ID uint `gorm:"primaryKey; autoIncrement"`
 	// 一个车位只能属于一个用户
@@ -35,9 +35,10 @@ type Basic struct {
 	AvailableTime string `gorm:"type:text"`
 	OccupiedTime  string `gorm:"type:text"`
 
-	OrderNum uint `gorm:"type:int"`
+	OrderNum uint      `gorm:"type:int"`
+	Owner    UserBasic `gorm:"foreignKey:OwnerID"`
 }
 
-func (Basic) TableName() string {
+func (SpotBasic) TableName() string {
 	return "spot"
 }

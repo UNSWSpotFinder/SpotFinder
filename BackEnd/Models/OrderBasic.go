@@ -1,11 +1,10 @@
-package Order
+package Models
 
 import (
-	"capstone-project-9900h14atiktokk/Models/User"
 	"gorm.io/gorm"
 )
 
-type Basic struct {
+type OrderBasic struct {
 	gorm.Model
 	BookingTime string `gorm:"type:text;not null"`
 	UserID      uint   `gorm:"type:uint;not null"`
@@ -19,9 +18,10 @@ type Basic struct {
 	// Status = "Pending" or "Paid" or "Refund" or "Canceled"
 	Status string `gorm:"type:varchar(255);not null"`
 
-	Owner User.Basic `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Owner  UserBasic `gorm:"foreignKey:OwnerID"`
+	Booker UserBasic `gorm:"foreignKey:UserID"`
 }
 
-func (Basic) TableName() string {
+func (OrderBasic) TableName() string {
 	return "order"
 }

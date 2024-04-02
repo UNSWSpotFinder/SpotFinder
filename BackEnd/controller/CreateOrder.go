@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Order"
+	"capstone-project-9900h14atiktokk/Models"
 	"gorm.io/gorm"
 )
 
-func CreateOrder(db *gorm.DB, order *Order.Basic) error {
+func CreateOrder(db *gorm.DB, order *Models.OrderBasic) error {
 	// 开始事务
 	tx := db.Begin()
 

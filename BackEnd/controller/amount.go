@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Models"
 	"fmt"
 	"gorm.io/gorm"
 )
 
 func TopUp(db *gorm.DB, userID string, amount float64) error {
-	var user User.Basic
+	var user Models.UserBasic
 
 	// 查询该用户的信息
 	if err := db.First(&user, userID).Error; err != nil {
@@ -26,13 +26,13 @@ func TopUp(db *gorm.DB, userID string, amount float64) error {
 	fmt.Printf("Updated user data: %+v\n", user)
 
 	// 更新数据库中的用户信息
-	if err := db.Model(&user).Where("id=?", userID).Updates(User.Basic{Account: user.Account, TopUp: user.TopUp}).Error; err != nil {
+	if err := db.Model(&user).Where("id=?", userID).Updates(Models.UserBasic{Account: user.Account, TopUp: user.TopUp}).Error; err != nil {
 		fmt.Println("Error updating user:", err)
 		return err
 	}
 
 	// 打印更新后从数据库中查询的用户信息
-	var updatedUser User.Basic
+	var updatedUser Models.UserBasic
 	if err := db.First(&updatedUser, userID).Error; err != nil {
 		fmt.Println("Error finding updated user:", err)
 		return err
@@ -43,7 +43,7 @@ func TopUp(db *gorm.DB, userID string, amount float64) error {
 }
 
 func Withdraw(db *gorm.DB, userID string, amount float64) error {
-	var user User.Basic
+	var user Models.UserBasic
 
 	// 查询该用户的信息
 	if err := db.First(&user, userID).Error; err != nil {
@@ -61,13 +61,13 @@ func Withdraw(db *gorm.DB, userID string, amount float64) error {
 	fmt.Printf("Updated user data: %+v\n", user)
 
 	// 更新数据库中的用户信息
-	if err := db.Model(&user).Where("id=?", userID).Updates(User.Basic{Account: user.Account}).Error; err != nil {
+	if err := db.Model(&user).Where("id=?", userID).Updates(Models.UserBasic{Account: user.Account}).Error; err != nil {
 		fmt.Println("Error updating user:", err)
 		return err
 	}
 
 	// 打印更新后从数据库中查询的用户信息
-	var updatedUser User.Basic
+	var updatedUser Models.UserBasic
 	if err := db.First(&updatedUser, userID).Error; err != nil {
 		fmt.Println("Error finding updated user:", err)
 		return err

@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Spot"
+	"capstone-project-9900h14atiktokk/Models"
 	"gorm.io/gorm"
 )
 
 // ApproveSpot 审核车位
 func ApproveSpot(spotId string, db *gorm.DB) error {
-	var spot Spot.Basic
+	var spot Models.SpotBasic
 	result := db.Model(&spot).Where("id = ?", spotId)
 	if result.Error != nil {
 		return result.Error

@@ -1,11 +1,11 @@
-package User
+package Models
 
 import (
 	"gorm.io/gorm"
 	"time"
 )
 
-type Basic struct {
+type UserBasic struct {
 	gorm.Model
 	Name       string     `gorm:"type:varchar(255);not null"`
 	Password   string     `gorm:"type:varchar(255);not null"`
@@ -17,7 +17,7 @@ type Basic struct {
 	DeleteTime *time.Time `gorm:"type:datetime;null"`
 
 	// 用户可以有多个车辆信息，租多个车位
-	CarInfo    string `gorm:"type:text;not null"` // JSON 编码的字符串
+	CarID      string `gorm:"type:text;not null"` // JSON 编码的字符串
 	LeasedSpot string `gorm:"type:text"`
 	Addr       string `gorm:"type:text;"`
 
@@ -27,8 +27,11 @@ type Basic struct {
 	TopUp   float64 `gorm:"type:float;not null"`
 
 	OwnedSpot string `gorm:"type:text;not null"`
+
+	Cars   []CarBasic   `gorm:"foreignKey:OwnerId"`
+	Orders []OrderBasic `gorm:"foreignKey:OwnerID"`
 }
 
-func (Basic) TableName() string {
+func (UserBasic) TableName() string {
 	return "customer"
 }

@@ -1,7 +1,7 @@
 package Order
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Order"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
@@ -40,7 +40,7 @@ func CreateOrderHandler(c *gin.Context) {
 		})
 		return
 	}
-	var order Order.Basic
+	var order Models.OrderBasic
 	var request CreateRequest
 	if err = c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

@@ -1,11 +1,10 @@
-package Vehicle
+package Models
 
 import (
-	"capstone-project-9900h14atiktokk/Models/User"
 	"gorm.io/gorm"
 )
 
-type Basic struct {
+type CarBasic struct {
 	gorm.Model
 	OwnerId uint   `gorm:"type:int4;not null"`
 	Picture string `gorm:"type:longtext;not null"`
@@ -16,9 +15,9 @@ type Basic struct {
 	Charge  string `gorm:"type:varchar(255);"`
 
 	// Car refers to a User
-	Owner *User.Basic `gorm:"foreignKey:OwnerId"`
+	Owner UserBasic `gorm:"foreignKey:OwnerId"`
 }
 
-func (Basic) TableName() string {
+func (CarBasic) TableName() string {
 	return "car"
 }

@@ -1,6 +1,7 @@
 package User
 
 import (
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"capstone-project-9900h14atiktokk/Service"
 	"github.com/gin-gonic/gin"
@@ -59,7 +60,7 @@ func ModifyPasswdHandler(c *gin.Context) {
 	}
 
 	// 更新密码
-	newUserData := User.Basic{Email: request.Email, Password: string(hashedPassword)}
+	newUserData := Models.UserBasic{Email: request.Email, Password: string(hashedPassword)}
 	err = User.ModifyPasswd(Service.DB, &newUserData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
@@ -90,7 +91,7 @@ func ModifyUserInfoHandler(c *gin.Context) {
 	}
 	role, _ := c.Get("role")
 
-	var user User.Basic
+	var user Models.UserBasic
 	var request ModifyUserInfoData
 	err := c.ShouldBindJSON(&request)
 	if err != nil {

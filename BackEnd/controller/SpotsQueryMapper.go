@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Spot"
-	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Models"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -34,7 +33,7 @@ type tempSpotBasic struct {
 // 初始化spotIDList
 func initSpotIDList(db *gorm.DB) error {
 	var ids []uint
-	if err := db.Model(&Spot.Basic{}).Pluck("id", &ids).Error; err != nil {
+	if err := db.Model(&Models.SpotBasic{}).Pluck("id", &ids).Error; err != nil {
 		return err
 	}
 
@@ -48,7 +47,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 		return nil, errors.New("db is nil")
 	}
 
-	var allSpots []*Spot.Basic
+	var allSpots []*Models.SpotBasic
 	offset := (page - 1) * pageSize // 根据当前页计算偏移量
 
 	// 构建查询并进行分页
@@ -62,7 +61,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 		return nil, err
 	}
 
-	// 将 *Spot.Basic 类型转换为 *tempSpotBasic 类型
+	// 将 *Spot.UserBasic 类型转换为 *tempSpotBasic 类型
 	var resultSpots []*tempSpotBasic // 这将是你的最终返回值
 	for _, spot := range allSpots {
 		tempSpot := &tempSpotBasic{
@@ -89,7 +88,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 }
 
 func DeleteSpot(id int, db *gorm.DB) error {
-	var singleSpot Spot.Basic
+	var singleSpot Models.SpotBasic
 	result := db.First(&singleSpot, id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -112,8 +111,8 @@ func DeleteSpot(id int, db *gorm.DB) error {
 	}
 }
 
-func CreateSpot(spot *Spot.Basic, userEmail string, db *gorm.DB) error {
-	var user User.Basic
+func CreateSpot(spot *Models.SpotBasic, userEmail string, db *gorm.DB) error {
+	var user Models.UserBasic
 
 	// 先创建一个车位
 	if err := db.Create(&spot).Error; err != nil {

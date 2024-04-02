@@ -2,10 +2,7 @@ package main
 
 import (
 	"bytes"
-	"capstone-project-9900h14atiktokk/Models/Manager"
-	"capstone-project-9900h14atiktokk/Models/Order"
-	"capstone-project-9900h14atiktokk/Models/Spot"
-	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/util"
 	"encoding/base64"
 	"encoding/json"
@@ -55,19 +52,19 @@ func main() {
 	util.InitConfig()
 	db := util.InitMySQL()
 	// 迁移 schema
-	if err := db.AutoMigrate(&User.Basic{}); err != nil {
+	if err := db.AutoMigrate(&Models.UserBasic{}); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return
 	}
-	if err := db.AutoMigrate(&Spot.Basic{}); err != nil {
+	if err := db.AutoMigrate(&Models.SpotBasic{}); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return
 	}
-	if err := db.AutoMigrate(&Order.Basic{}); err != nil {
+	if err := db.AutoMigrate(&Models.OrderBasic{}); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return
 	}
-	if err := db.AutoMigrate(&Manager.Basic{}); err != nil {
+	if err := db.AutoMigrate(&Models.ManagerBasic{}); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return
 	}
@@ -75,10 +72,10 @@ func main() {
 	userCount := 1000
 	batchSize := 100 // 每批处理的用户数量
 
-	var users []User.Basic
-	var spots []Spot.Basic
-	var orders []Order.Basic
-	var managers []Manager.Basic
+	var users []Models.UserBasic
+	var spots []Models.SpotBasic
+	var orders []Models.OrderBasic
+	var managers []Models.ManagerBasic
 
 	for i := 1; i <= 1; i++ {
 		// 生成随机的日期
@@ -94,7 +91,7 @@ func main() {
 
 		// 构造出生日期字符串
 		dateBirth := day + "/" + month + "/" + year
-		manager := Manager.Basic{
+		manager := Models.ManagerBasic{
 			Name:       "longsizhuo",
 			Password:   string(hashPassword),
 			Phone:      gofakeit.Phone(),
@@ -146,7 +143,7 @@ func main() {
 
 		hashPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 		// 为每个用户创建不同的数据
-		user := User.Basic{
+		user := Models.UserBasic{
 			Name:       gofakeit.Name(),
 			Password:   string(hashPassword),
 			Phone:      gofakeit.Phone(),
@@ -154,7 +151,7 @@ func main() {
 			Avatar:     userAvatar,
 			Email:      gofakeit.Email(),
 			CreateTime: time.Now(),
-			CarInfo:    gofakeit.Car().Model,
+			CarID:      gofakeit.Car().Model,
 			Addr:       string(addrJSON),
 			Account:    Account,
 			Earning:    earning,
@@ -190,7 +187,7 @@ func main() {
 		primaryPicture := pictures[0]
 		picturesJSON, err := json.Marshal(pictures)
 		chargeType := chargeType[gofakeit.Number(0, 4)]
-		spot := Spot.Basic{
+		spot := Models.SpotBasic{
 			SpotName:     gofakeit.Word(),
 			SpotAddr:     gofakeit.Address().Address,
 			SpotType:     spotType[gofakeit.Number(0, 3)],
@@ -212,7 +209,7 @@ func main() {
 			OrderNum:      uint(rand.Intn(10)),
 		}
 
-		order := Order.Basic{
+		order := Models.OrderBasic{
 			Cost:   PricePerDay * float64(rand.Intn(10)),
 			Status: orderStatus[gofakeit.Number(0, 3)],
 		}
@@ -236,10 +233,10 @@ func main() {
 				db.CreateInBatches(managers, batchSize).Error; err != nil {
 				fmt.Printf("Failed to create batch at manager %d: %v\n", i, err)
 			}
-			users = []User.Basic{} // 重置切片，准备下一批次
-			spots = []Spot.Basic{}
-			orders = []Order.Basic{}
-			managers = []Manager.Basic{}
+			users = []Models.UserBasic{} // 重置切片，准备下一批次
+			spots = []Models.SpotBasic{}
+			orders = []Models.OrderBasic{}
+			managers = []Models.ManagerBasic{}
 		}
 	}
 
@@ -252,12 +249,12 @@ func main() {
 	}
 	*/
 	// 遍历所有用户
-	//var customers []User.Basic
+	//var customers []User.ManagerBasic
 	//db.Find(&customers)
 	//
 	//for _, customer := range customers {
 	//	// 查找一个未被占用的车位
-	//	var spot Spot.Basic
+	//	var spot Spot.ManagerBasic
 	//	db.Where("is_occupy = ?", false).First(&spot)
 	//
 	//	if spot.ID != 0 { // 确保找到了车位
