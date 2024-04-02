@@ -29,6 +29,12 @@
     position: relative;
   }
 
+  .booking-detail-title {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+  }
+
   .current-state-title {
     font-size: 23px;
     font-weight: bold;
@@ -45,4 +51,3 @@
     display: flex;
   }
 
- 

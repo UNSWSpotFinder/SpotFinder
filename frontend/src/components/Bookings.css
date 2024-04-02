@@ -95,6 +95,11 @@
     margin-left: 20px;
   }
 
+  .space-park-time, .total-cost {
+    font-size: 15px;
+    margin-top: 5px;
+  }
+
   .space-address {
     color: black;
     font-size: 11px;
