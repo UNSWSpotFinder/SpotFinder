@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Car"
 	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Models/Vehicle"
 	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
@@ -26,7 +26,7 @@ func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err e
 		return resultUser.Error // 如果用户不存在，返回错误
 	}
 
-	car := Car.Basic{
+	car := Vehicle.Basic{
 		OwnerId: user.ID,
 		Picture: carData.Picture,
 		Brand:   carData.Brand,
