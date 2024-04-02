@@ -3,6 +3,7 @@ package Router
 import (
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/Service/Manager"
+	"capstone-project-9900h14atiktokk/Service/Order"
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/Service/Vehicle"
@@ -63,6 +64,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("car/create", Vehicle.AddVehicleHandler)
 	private.GET("car/getMyCar", Vehicle.GetVehicleOfUserHandler)
 	private.POST("car/modifyCarInfo/:carID", Vehicle.ModifyVehicleInfoHandler)
+	private.POST("/spots/:spotId/orders", Order.CreateOrderHandler)
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)

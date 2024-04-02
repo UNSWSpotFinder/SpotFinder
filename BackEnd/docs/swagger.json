@@ -518,6 +518,58 @@
                 }
             }
         },
+        "/spots/{spotID}/orders": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "创建订单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "创建订单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Order",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Order.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Order created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "unable to create order",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/create": {
             "post": {
                 "description": "do ping",
@@ -936,6 +988,38 @@
                 "password": {
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
+        "Order.CreateRequest": {
+            "type": "object",
+            "required": [
+                "bookingTime",
+                "carID",
+                "cost",
+                "ownerID",
+                "spotID"
+            ],
+            "properties": {
+                "bookingTime": {
+                    "type": "string",
+                    "example": ""
+                },
+                "carID": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "cost": {
+                    "type": "number",
+                    "example": 100
+                },
+                "ownerID": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "spotID": {
+                    "type": "integer",
+                    "example": 3
                 }
             }
         },

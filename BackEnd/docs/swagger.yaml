@@ -40,6 +40,30 @@ definitions:
     required:
     - adminID
     type: object
+  Order.CreateRequest:
+    properties:
+      bookingTime:
+        example: ""
+        type: string
+      carID:
+        example: 4
+        type: integer
+      cost:
+        example: 100
+        type: number
+      ownerID:
+        example: 2
+        type: integer
+      spotID:
+        example: 3
+        type: integer
+    required:
+    - bookingTime
+    - carID
+    - cost
+    - ownerID
+    - spotID
+    type: object
   Spots.CreateSpotRequestData:
     properties:
       availableTime:
@@ -563,6 +587,39 @@ paths:
       summary: 修改车位信息
       tags:
       - Spots
+  /spots/{spotID}/orders:
+    post:
+      consumes:
+      - application/json
+      description: 创建订单
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotID
+        required: true
+        type: string
+      - description: Order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/Order.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order created successfully
+          schema:
+            type: string
+        "500":
+          description: unable to create order
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 创建订单
+      tags:
+      - Order
   /user/create:
     post:
       description: do ping

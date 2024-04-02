@@ -6,7 +6,7 @@ type Basic struct {
 	gorm.Model
 	ID uint `gorm:"primaryKey; autoIncrement"`
 	// 一个车位只能属于一个用户
-	OwnerID  uint   `gorm:"type:int;not null"`
+	OwnerID  uint   `gorm:"type:uint;not null"`
 	SpotName string `gorm:"type:varchar(255);not null"`
 	SpotAddr string `gorm:"type:text;not null"`
 	SpotType string `gorm:"type:varchar(255);not null"`

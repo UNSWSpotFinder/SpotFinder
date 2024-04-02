@@ -174,23 +174,13 @@ func InitMySQL() *gorm.DB {
 	//user := models.UserBasic{}
 	//db.Find(&user)
 	//fmt.Println(user)
-	if err := db.AutoMigrate(&User.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
-	}
-	if err := db.AutoMigrate(&Spot.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
-	}
-	if err := db.AutoMigrate(&Order.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
-	}
-	if err := db.AutoMigrate(&Manager.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
-	}
-	if err := db.AutoMigrate(&Vehicle.Basic{}); err != nil {
+	if err := db.AutoMigrate(
+		&User.Basic{},
+		&Spot.Basic{},
+		&Manager.Basic{},
+		&Vehicle.Basic{},
+		&Order.Basic{},
+	); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return nil
 	}
