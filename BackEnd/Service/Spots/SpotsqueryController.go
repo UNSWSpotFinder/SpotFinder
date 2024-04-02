@@ -227,7 +227,7 @@ func ChoseSizeWithMyCarHandler(c *gin.Context) { //根据用户自己设置的�
 func UpdateSpotPriceHandler(c *gin.Context) {
 	//用户自己设置每天每周每月价格
 	// 获取参数
-	//Setp1: 先确认用户是否拥有这个车位
+	//Step1: 先确认用户是否拥有这个车位
 	var user *User.Basic
 
 	var spot *Spot.Basic
