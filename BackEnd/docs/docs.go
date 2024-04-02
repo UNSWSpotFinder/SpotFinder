@@ -131,6 +131,13 @@ const docTemplate = `{
                 "summary": "修改车辆信息",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "CarID",
+                        "name": "carID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "车辆信息",
                         "name": "car",
                         "in": "body",

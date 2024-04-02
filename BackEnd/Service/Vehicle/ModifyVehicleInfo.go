@@ -14,7 +14,7 @@ import (
 // @Tags Cars
 // @Accept json
 // @Produce json
-// @
+// @Param carID path string true "CarID"
 // @Param car body controller.CreateCarRequestData true "车辆信息"
 // @Success 200 {string} string "Vehicle information updated"
 // @Failure 400 {string} string "Data binding error"
@@ -33,7 +33,8 @@ func ModifyVehicleInfoHandler(c *gin.Context) {
 		return
 	}
 	ownerIDStr := strconv.FormatUint(uint64(ownerID), 10)
-	if userRole != "admin" || userID != ownerIDStr {
+	//fmt.Println(ownerIDStr != userID, userRole != "admin", ownerIDStr != userID || userRole != "admin")
+	if userRole != "admin" && userID != ownerIDStr {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to modify this car"})
 		return
 	}

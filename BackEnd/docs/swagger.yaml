@@ -299,6 +299,11 @@ paths:
       - application/json
       description: 修改车辆信息
       parameters:
+      - description: CarID
+        in: path
+        name: carID
+        required: true
+        type: string
       - description: 车辆信息
         in: body
         name: car
