@@ -232,6 +232,7 @@ const ReserveConfirm = styled('button')({
 export const ConfirmBook = ({ data, isOpen, close }) => {
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
+  const { contextState, updateContextState } = useContext(AppContext);
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -297,11 +298,11 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             <CfmLefttxt>Parking Car Infomation</CfmLefttxt>
             <CfmRow2>
               <CfmRightttxt2>Brand of motor vehicle</CfmRightttxt2>
-              <CfmRightttxt2>nu</CfmRightttxt2>
+              <CfmRightttxt2>{contextState.CarType}</CfmRightttxt2>
             </CfmRow2>
             <CfmRow2>
               <CfmRightttxt2>Vehicle registration number</CfmRightttxt2>
-              <CfmRightttxt2>nu</CfmRightttxt2>
+              <CfmRightttxt2>{contextState.CarPlate}</CfmRightttxt2>
             </CfmRow2>
           </CfmRowCol>
           <CfmRowCol>
@@ -765,11 +766,7 @@ export function HomeSpecificLarge() {
             <div key={index} className='headerimg'>
               <img
                 className='speimg'
-                src={
-                  image.includes('base64,')
-                    ? image
-                    : 'data:image/jpeg;base64,' + image
-                }
+                src={ image }
                 alt={`Slide ${index}`}
               />
             </div>
@@ -833,11 +830,7 @@ export function HomeSpecificLarge() {
         <div className='relevent-left'>
           <div className='re-le-le'>
             <img
-              src={
-                data.Profile.includes('data:image/jpeg;base64,')
-                  ? data.Profile
-                  : 'data:image/jpeg;base64,' + data.Profile || '/img/LOGO.svg'
-              }
+              src={ data.Profile }
               className='profile'
             ></img>
             <p className='user_name'>{data.Owner}</p>
