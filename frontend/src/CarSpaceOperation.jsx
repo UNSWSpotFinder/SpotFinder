@@ -27,6 +27,7 @@ import { useError, GetDistance,HoverImage,callAPICreateSpot,callAPIGetSpecSpot,c
 
 // CreatHostingPage
 export const CreateSpace = () => {
+  const [Useable,setUseable]=useState(false);
   const { _, setOpenSnackbar } = useError();
   // link the ref for thumb and other img
   const RefT = useRef(null);
@@ -453,6 +454,7 @@ export const CreateSpace = () => {
   };
   // creat a new hosting
   const CreateNow = () => {
+    setUseable(true);
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
@@ -491,6 +493,7 @@ export const CreateSpace = () => {
         setErrorContent('You must select one type for your spot.');
         setErrorText1(true);
         scrollToElement(scrollToQ1);
+        setUseable(false);
       }
       if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
@@ -499,6 +502,7 @@ export const CreateSpace = () => {
         setErrorContent('You must select one type of car for your spot');
         setErrorText2(true);
         scrollToElement(scrollToQ2);
+        setUseable(false);
       }
       // if the address is not empty
       if (Confirmflag && data.spotAddr) {
@@ -537,6 +541,7 @@ export const CreateSpace = () => {
           console.log(scrollToQ3);
           scrollToElement(scrollToQ3);
         }
+        setUseable(false);
       }
       // if the title is empty
       if (Confirmflag && data.passWay.length === 0) {
@@ -546,6 +551,7 @@ export const CreateSpace = () => {
         setErrorText4(true);
         scrollToElement(scrollToQ4);
         Confirmflag = false;
+        setUseable(false);
       }
       if (Confirmflag && data.charge.length === 0) {
         console.log('no title');
@@ -554,6 +560,7 @@ export const CreateSpace = () => {
         setErrorText5(true);
         scrollToElement(scrollToQ5);
         Confirmflag = false;
+        setUseable(false);
       }
       // if the title is empty
       if (Confirmflag && data.spotName.length === 0) {
@@ -563,6 +570,7 @@ export const CreateSpace = () => {
         setErrorText6(true);
         scrollToElement(scrollToQ6);
         Confirmflag = false;
+        setUseable(false);
       }
       // if the price is empty
       if (Confirmflag && !(isDay || isHour || isWeek)) {
@@ -572,6 +580,7 @@ export const CreateSpace = () => {
         setErrorText7(true);
         Confirmflag = false;
         scrollToElement(scrollToQ7);
+        setUseable(false);
       }
       if (Confirmflag && isDay && !pricePattern.test(PriseDay)) {
         console.log('No price');
@@ -580,6 +589,7 @@ export const CreateSpace = () => {
         setErrorText7(true);
         Confirmflag = false;
         scrollToElement(scrollToQ7);
+        setUseable(false);
       }
       if (Confirmflag && isHour && !pricePattern.test(PriseHour)) {
         console.log('No price');
@@ -588,6 +598,7 @@ export const CreateSpace = () => {
         setErrorText7(true);
         Confirmflag = false;
         scrollToElement(scrollToQ7);
+        setUseable(false);
       }
       if (Confirmflag && isWeek && !pricePattern.test(PriseWeek)) {
         console.log('No price');
@@ -596,6 +607,7 @@ export const CreateSpace = () => {
         setErrorText7(true);
         Confirmflag = false;
         scrollToElement(scrollToQ7);
+        setUseable(false);
       }
       if(Confirmflag && (FirstStart===null || FirstEnd===null)){
         setAllfalse();
@@ -605,6 +617,7 @@ export const CreateSpace = () => {
         setErrorText8(true);
         Confirmflag = false;
         scrollToElement(scrollToQ8);
+        setUseable(false);
       }
       if (Confirmflag) {
         const res = data.availableTime.filter((value) => {
@@ -618,6 +631,7 @@ export const CreateSpace = () => {
             setErrorText8(true);
             Confirmflag = false;
             scrollToElement(scrollToQ8);
+            setUseable(false);
         }
       }
       // if the image is empty
@@ -627,6 +641,7 @@ export const CreateSpace = () => {
         setErrorText9(true);
         Confirmflag = false;
         scrollToElement(scrollToQ9);
+        setUseable(false);
       }
       if(Confirmflag){
         data.availableTime.unshift({
@@ -655,9 +670,14 @@ export const CreateSpace = () => {
                 message:error,
                 timestamp:new Date().getTime()
             });
+            setUseable(false);
         });
       }
     }
+    else{
+      setUseable(false);
+    }
+
   };
   return (
     <div className='CreatChannelOverall'>
@@ -1334,7 +1354,7 @@ export const CreateSpace = () => {
         ))}
       </div>
       <div className='QButton'>
-        <button className='CreatButton' onClick={CreateNow} type='button'>
+        <button className='CreatButton' onClick={CreateNow} disabled={Useable} type='button'>
           Create your hosting
         </button>
       </div>

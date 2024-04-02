@@ -464,11 +464,11 @@ export const callAPIEditSpot=(path,input,token)=>{
  })
 }
 // 获取所有车位
-export const callAPIGetAllSpot=(path,token)=>{
+export const callAPIGetAllSpot=(path,token,page)=>{
   return new Promise((resolve, reject) =>{
      console.log('token: '+token);
      console.log('http://localhost:'+String(port)+'/'+String(path));
-     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true',{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true&page='+page+'&pageSize=15',{
      method:'GET',
      headers: { 
       'Content-Type': 'application/json'
@@ -570,7 +570,6 @@ export const callAPIGetSpecUserInfo=(path)=>{
      })
  })
 }
-
 export const callAPIApproveSpot=(path, SpotId,token)=>{
   return new Promise((resolve, reject) =>{
      fetch('http://localhost:'+String(port)+'/'+String(path)+'/'+String(SpotId),{

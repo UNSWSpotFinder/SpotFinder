@@ -36,6 +36,7 @@ import { private_createTypography } from '@mui/material';
 // 未登录状态的用户页面
 
 function AllSpoting() {
+  let page=1;
   const { contextState, updateContextState } = useContext(AppContext);
   const navigate = useNavigate();
   const goesSpecific = (event) => {
@@ -192,12 +193,13 @@ function AllSpoting() {
     setfilrerSpot(filter);
   }, [contextState, allSpot]);
   function getNewSpot() {
-    callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
+    callAPIGetAllSpot('spot/list', localStorage.getItem('token'),page)
       .then((response) => {
         console.log(response);
         if(response && response.message){
           setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
           setIsLoading(false); // 完成加载后设置为 false
+          page=page+1;
         }
       })
       .catch((error) => {

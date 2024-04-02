@@ -1,4 +1,4 @@
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 import './Regist.css';
 import { motion } from 'framer-motion';
@@ -15,7 +15,7 @@ import {
   callAPIsendEmailCode,
   callAPIRegistUser,
   callAPIRegistAdmin,
-  removeLastSegment
+  removeLastSegment,
 } from './API';
 // 用户注册页面
 export function UserRegistPage() {
@@ -68,18 +68,45 @@ export function UserRegistPage() {
     setTarget(option);
   };
   // 选择头像
-  const [selectedFileName, setSelectedFileName] = useState('/img/LOGO.svg');
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const filePath = file ? URL.createObjectURL(file) : '/img/LOGO.svg';
-    setSelectedFileName(filePath);
-  };
+  const [Thumbil, setThumbil] = useState('');
   const handleBirthdayChange = (date) => {
     console.log(dayjs(date));
     setBirthDate(dayjs(date));
   };
   const EditPhoto = () => {
     document.getElementById('fileInput').click();
+  };
+  const AddThumbil = (event) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      // get the first element
+      const file = files[0];
+      // start render
+      const reader = new FileReader();
+      // loading these image
+      reader.onload = (event) => {
+        if (event.target) {
+          // if the data is valid then set it else prompt error
+          const base64Data = event.target.result;
+          setThumbil(base64Data);
+        }
+      };
+      // when meet error
+      reader.onerror = (event) => {
+        // if the target is not null
+        if (event.target) {
+          // show error
+          console.error('Error reading file:', event.target.error);
+        }
+      };
+      if (file) {
+        // start read the file
+        reader.readAsDataURL(file);
+      }
+      else{
+        reader.readAsDataURL('/img/LOGO.svg');
+      }
+    }
   };
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -90,28 +117,28 @@ export function UserRegistPage() {
   let goeslogin = () => {
     const temp = removeLastSegment(location.pathname);
     console.log(temp);
-    navigate(temp+'userlogin');
+    navigate(temp + 'userlogin');
   };
   useEffect(() => {
     let timeoutId;
     // 在按钮可点击状态改变后，设置一个定时器来在 30 秒后将其重新设为可点击状态
     if (isButtonDisabled) {
-        timeoutId = setTimeout(() => {
-            setIsButtonDisabled(false);
-        }, 30000); // 30 秒
+      timeoutId = setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 30000); // 30 秒
     }
 
     // 清除定时器以避免内存泄漏
     return () => clearTimeout(timeoutId);
-    }, [isButtonDisabled]);
+  }, [isButtonDisabled]);
   function sendCode() {
     if (isButtonDisabled) {
-        setOpenSnackbar({
-            severity:'info',
-            message:'Verification codes are sent too frequently',
-            timestamp:new Date().getTime()
-        });
-        return;
+      setOpenSnackbar({
+        severity: 'info',
+        message: 'Verification codes are sent too frequently',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
     const data = {
       to: Email,
@@ -119,32 +146,32 @@ export function UserRegistPage() {
     setIsButtonDisabled(true);
     console.log(isButtonDisabled);
     callAPIsendEmailCode('user/create/sendEmail', data)
-    .then((response)=>{
+      .then((response) => {
         setverifyVisibility(true);
         setIsButtonDisabled(true);
         console.log(response);
         setOpenSnackbar({
-            severity:'warning',
-            message:'Please fill in your mobile phone number.',
-            timestamp:new Date().getTime()
+          severity: 'warning',
+          message: 'Please fill in your mobile phone number.',
+          timestamp: new Date().getTime(),
         });
         // set open snackbar
         setOpenSnackbar({
           severity: 'success',
           message: 'We have send to ' + Email + ' a code.',
-          timestamp: new Date().getTime()
+          timestamp: new Date().getTime(),
         });
-    })
-    .catch((error)=>{
+      })
+      .catch((error) => {
         // when meet error
         console.log(error);
         setIsButtonDisabled(false);
         setOpenSnackbar({
-            severity: 'error',
-            message: error,
-            timestamp: new Date().getTime()
+          severity: 'error',
+          message: error,
+          timestamp: new Date().getTime(),
         });
-    })
+      });
   }
   function verifyEmail() {
     const data = {
@@ -163,7 +190,7 @@ export function UserRegistPage() {
         setOpenSnackbar({
           severity: 'success',
           message: Email + ' has a been verifed!',
-          timestamp: new Date().getTime()
+          timestamp: new Date().getTime(),
         });
       })
       .catch((error) => {
@@ -171,84 +198,92 @@ export function UserRegistPage() {
         setOpenSnackbar({
           severity: 'error',
           message: error,
-          timestamp: new Date().getTime()
+          timestamp: new Date().getTime(),
         });
         console.log(error);
       });
   }
   function Regist() {
-    if(!isverifyed){
-        setOpenSnackbar({
-            severity:'info',
-            message:'Please Verify your Email address first!',
-            timestamp:new Date().getTime()
-        });
-        return;
+    if (!isverifyed) {
+      setOpenSnackbar({
+        severity: 'info',
+        message: 'Please Verify your Email address first!',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
-    if (phone==''){
-        setOpenSnackbar({
-            severity:'warning',
-            message:'Please fill in your mobile phone number.',
-            timestamp:new Date().getTime()
-        });
-        return;
+    if (phone == '') {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please fill in your mobile phone number.',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
-    if(name==''){
-        setOpenSnackbar({
-            severity:'warning',
-            message:'Please fill in a name so we know how to call you.',
-            timestamp:new Date().getTime()
-        });
-        return;
+    if (name == '') {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please fill in a name so we know how to call you.',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
-    if(Password.length<6||Password.length>16){
-        setOpenSnackbar({
-            severity:'warning',
-            message:'Password must be between 6-16 characters!',
-            timestamp:new Date().getTime()
-        });
-        return;
+    if (Password.length < 6 || Password.length > 16) {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Password must be between 6-16 characters!',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
     if (Password !== Password1) {
-        setOpenSnackbar({
-            severity:'warning',
-            message:'The two password inputs are inconsistent!',
-            timestamp:new Date().getTime()
-        });
-        return;
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'The two password inputs are inconsistent!',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    if(AddThumbil===''){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please upload your frofile photo for our platform security!',
+        timestamp: new Date().getTime(),
+      });
+      return;
     }
     console.log(BirthDate);
     const formattedDate = dayjs(BirthDate).format('DD/MM/YYYY');
-    console.log(formattedDate)
-    const data={
-        avatar: selectedFileName,
-        dateBirth:formattedDate,
-        email:Email,
-        name:name,
-        password:Password,
-        phone: phone,
-        rePassword: Password1
-    }
-    callAPIRegistUser('user/create',data)
-    .then((response)=>{
+    console.log(formattedDate);
+    const data = {
+      avatar: Thumbil,
+      dateBirth: formattedDate,
+      email: Email,
+      name: name,
+      password: Password,
+      phone: phone,
+      rePassword: Password1,
+    };
+    callAPIRegistUser('user/create', data)
+      .then((response) => {
         console.log(response);
         setOpenSnackbar({
-            severity:'success',
-            message:'Welcome join SpotFinder ' + name + '.',
-            timestamp:new Date().getTime()
-        })
+          severity: 'success',
+          message: 'Welcome join SpotFinder ' + name + '.',
+          timestamp: new Date().getTime(),
+        });
         const temp = removeLastSegment(location.pathname);
         console.log(temp);
-        navigate(temp+'userlogin');
-    })
-    .catch((error)=>{
+        navigate(temp + 'userlogin');
+      })
+      .catch((error) => {
         console.log(error);
         setOpenSnackbar({
-            severity:'warning',
-            message:error,
-            timestamp:new Date().getTime()
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
         });
-    });
+      });
   }
   return (
     <div className='overall'>
@@ -442,7 +477,7 @@ export function UserRegistPage() {
               </div>
               <div className='formpart-img'>
                 <img
-                  src={selectedFileName}
+                  src={Thumbil}
                   className='profilephoto'
                   width='100 px'
                   height='100px'
@@ -451,7 +486,7 @@ export function UserRegistPage() {
                   type='file'
                   id='fileInput'
                   style={{ display: 'none' }}
-                  onChange={handleFileChange}
+                  onChange={AddThumbil}
                 />
                 <button
                   onClick={EditPhoto}
@@ -461,7 +496,11 @@ export function UserRegistPage() {
                   Select your profile photo
                 </button>
               </div>
-              <button type='button' className='btn btn-primary logbtn' onClick={Regist}>
+              <button
+                type='button'
+                className='btn btn-primary logbtn'
+                onClick={Regist}
+              >
                 SIGN UP
               </button>
             </form>
@@ -479,219 +518,219 @@ export function UserRegistPage() {
 }
 // 管理员注册页面
 export function AdminRegistPage() {
-    // 上下文错误
-    const { snackbarData, setOpenSnackbar } = useError();
-    //  初始化路由选择器
-    let navigate = useNavigate();
-    // 两个密码可见性
-    const [passwordVisibility1, setPasswordVisibility1] = useState(false);
-    const [passwordVisibility2, setPasswordVisibility2] = useState(false);
-    // 邮箱
-    const [Email, setEmail] = useState('');
-    // 密码
-    const [Password, setPassword] = useState('');
-    const handlePasswordChange = (event) => {
-      setPassword(event.target.value);
-    };
-    // 确认密码
-    const [Password1, setPassword1] = useState('');
-    const handlePassword1Change = (event) => {
-      setPassword1(event.target.value);
-    };
-    // 手机号
-    const [phone, setPhone] = useState('');
-    const handlePhoneChange = (event) => {
-      setPhone(event.target.value);
-    };
-    // 姓名
-    const [name, setName] = useState('');
-    const handleNameChange = (event) => {
-      setName(event.target.value);
-    };
-    const handleEmailChange = (event) => {
-      setEmail(event.target.value);
-    };
-    let backhome = () => {
-      navigate('/');
-    };
-    let goeslogin = () => {
-      navigate('/adminlogin');
-    };
-    function Regist() {
-      if (phone==''){
-          setOpenSnackbar({
-              severity:'warning',
-              message:'Please fill in your mobile phone number.',
-              timestamp:new Date().getTime()
-          });
-          return;
-      }
-      if(name==''){
-          setOpenSnackbar({
-              severity:'warning',
-              message:'Please fill in a name so we know how to call you.',
-              timestamp:new Date().getTime()
-          });
-          return;
-      }
-      if(Password.length<6||Password.length>16){
-          setOpenSnackbar({
-              severity:'warning',
-              message:'Password must be between 6-16 characters!',
-              timestamp:new Date().getTime()
-          });
-          return;
-      }
-      if (Password !== Password1) {
-          setOpenSnackbar({
-              severity:'warning',
-              message:'The two password inputs are inconsistent!',
-              timestamp:new Date().getTime()
-          });
-          return;
-      }
-      const data={
-          adminID:Email,
-          name:name,
-          password:Password,
-          phone: phone,
-          rePassword: Password1
-      }
-      callAPIRegistAdmin('manager/create',data)
-      .then((response)=>{
-          setOpenSnackbar({
-              severity:'success',
-              message:'Admin ' + name + ' registed.',
-              timestamp:new Date().getTime()
-          })
-          navigate('/adminlogin');
-      })
-      .catch((error)=>{
-          console.log(error);
-          setOpenSnackbar({
-              severity:'warning',
-              message:error,
-              timestamp:new Date().getTime()
-          });
+  // 上下文错误
+  const { snackbarData, setOpenSnackbar } = useError();
+  //  初始化路由选择器
+  let navigate = useNavigate();
+  // 两个密码可见性
+  const [passwordVisibility1, setPasswordVisibility1] = useState(false);
+  const [passwordVisibility2, setPasswordVisibility2] = useState(false);
+  // 邮箱
+  const [Email, setEmail] = useState('');
+  // 密码
+  const [Password, setPassword] = useState('');
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+  // 确认密码
+  const [Password1, setPassword1] = useState('');
+  const handlePassword1Change = (event) => {
+    setPassword1(event.target.value);
+  };
+  // 手机号
+  const [phone, setPhone] = useState('');
+  const handlePhoneChange = (event) => {
+    setPhone(event.target.value);
+  };
+  // 姓名
+  const [name, setName] = useState('');
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  let backhome = () => {
+    navigate('/');
+  };
+  let goeslogin = () => {
+    navigate('/adminlogin');
+  };
+  function Regist() {
+    if (phone == '') {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please fill in your mobile phone number.',
+        timestamp: new Date().getTime(),
       });
+      return;
     }
-    return (
-      <div className='overall'>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className='backgrounds'
-        ></motion.div>
-        <motion.div
-          className='contentoverall'
-          initial={{ y: '50%', opacity: 0 }}
-          animate={{ y: '0%', opacity: 1 }}
-          exit={{ y: '50%', opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className='back'>
-            <button onClick={backhome} type='button' className='backbtn'>
-              ×
-            </button>
-          </div>
-          <div className='contentmain'>
-            <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
-            <div className='LoginUser-admin'>
-              <p className='welcomemain-admin'>Welcome to Join SpotFinder</p>
-              <form className='w-100'>
-                <div className='formpart-col'>
-                  <label className='form-label title'>
-                    AdminID
-                  </label>
-                  <input
-                    type='email'
-                    className='form-control setmargin'
-                    onChange={handleEmailChange}
-                    value={Email}
-                    autoComplete='username'
-                  ></input>
-                </div>
-                <div className='formpart-col'>
-                  <label className='form-label title'>Phone</label>
-                  <input
-                    className='form-control setmargin'
-                    value={phone}
-                    onChange={handlePhoneChange}
-                    autoComplete='phone'
-                  ></input>
-                </div>
-                <div className='formpart-col'>
-                  <label className='form-label title'>Preferred name</label>
-                  <input
-                    className='form-control setmargin'
-                    value={name}
-                    onChange={handleNameChange}
-                    autoComplete='name'
-                  ></input>
-                </div>
-                <div className='formpart-col'>
-                  <label className='form-label title'>Password</label>
-                  <input
-                    type={passwordVisibility1 ? 'text' : 'password'}
-                    autoComplete='new-password'
-                    className='form-control setmargin'
-                    value={Password}
-                    onChange={handlePasswordChange}
-                  ></input>
-                </div>
-                <div className='formpart-row'>
-                  <div className='seepart'>
-                    <input
-                      type='checkbox'
-                      onChange={() =>
-                        setPasswordVisibility1(!passwordVisibility1)
-                      }
-                      className='checks'
-                    ></input>
-                    <label className='pwdsee' htmlFor='exampleCheck1'>
-                      show password
-                    </label>
-                  </div>
-                </div>
-                <div className='formpart-col'>
-                  <label className='form-label title'>
-                    Password Confirmation
-                  </label>
-                  <input
-                    type={passwordVisibility2 ? 'text' : 'password'}
-                    autoComplete='new-password'
-                    className='form-control setmargin'
-                    value={Password1}
-                    onChange={handlePassword1Change}
-                  ></input>
-                </div>
-                <div className='seepart'>
+    if (name == '') {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Please fill in a name so we know how to call you.',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    if (Password.length < 6 || Password.length > 16) {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Password must be between 6-16 characters!',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    if (Password !== Password1) {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'The two password inputs are inconsistent!',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    const data = {
+      adminID: Email,
+      name: name,
+      password: Password,
+      phone: phone,
+      rePassword: Password1,
+    };
+    callAPIRegistAdmin('manager/create', data)
+      .then((response) => {
+        setOpenSnackbar({
+          severity: 'success',
+          message: 'Admin ' + name + ' registed.',
+          timestamp: new Date().getTime(),
+        });
+        navigate('/adminlogin');
+      })
+      .catch((error) => {
+        console.log(error);
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+      });
+  }
+  return (
+    <div className='overall'>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.3 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className='backgrounds'
+      ></motion.div>
+      <motion.div
+        className='contentoverall'
+        initial={{ y: '50%', opacity: 0 }}
+        animate={{ y: '0%', opacity: 1 }}
+        exit={{ y: '50%', opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className='back'>
+          <button onClick={backhome} type='button' className='backbtn'>
+            ×
+          </button>
+        </div>
+        <div className='contentmain'>
+          <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+          <div className='LoginUser-admin'>
+            <p className='welcomemain-admin'>Welcome to Join SpotFinder</p>
+            <form className='w-100'>
+              <div className='formpart-col'>
+                <label className='form-label title'>AdminID</label>
                 <input
+                  type='email'
+                  className='form-control setmargin'
+                  onChange={handleEmailChange}
+                  value={Email}
+                  autoComplete='username'
+                ></input>
+              </div>
+              <div className='formpart-col'>
+                <label className='form-label title'>Phone</label>
+                <input
+                  className='form-control setmargin'
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  autoComplete='phone'
+                ></input>
+              </div>
+              <div className='formpart-col'>
+                <label className='form-label title'>Preferred name</label>
+                <input
+                  className='form-control setmargin'
+                  value={name}
+                  onChange={handleNameChange}
+                  autoComplete='name'
+                ></input>
+              </div>
+              <div className='formpart-col'>
+                <label className='form-label title'>Password</label>
+                <input
+                  type={passwordVisibility1 ? 'text' : 'password'}
+                  autoComplete='new-password'
+                  className='form-control setmargin'
+                  value={Password}
+                  onChange={handlePasswordChange}
+                ></input>
+              </div>
+              <div className='formpart-row'>
+                <div className='seepart'>
+                  <input
                     type='checkbox'
                     onChange={() =>
-                    setPasswordVisibility2(!passwordVisibility2)
+                      setPasswordVisibility1(!passwordVisibility1)
                     }
                     className='checks'
+                  ></input>
+                  <label className='pwdsee' htmlFor='exampleCheck1'>
+                    show password
+                  </label>
+                </div>
+              </div>
+              <div className='formpart-col'>
+                <label className='form-label title'>
+                  Password Confirmation
+                </label>
+                <input
+                  type={passwordVisibility2 ? 'text' : 'password'}
+                  autoComplete='new-password'
+                  className='form-control setmargin'
+                  value={Password1}
+                  onChange={handlePassword1Change}
+                ></input>
+              </div>
+              <div className='seepart'>
+                <input
+                  type='checkbox'
+                  onChange={() => setPasswordVisibility2(!passwordVisibility2)}
+                  className='checks'
                 ></input>
                 <label className='pwdsee' htmlFor='exampleCheck1'>
-                    show password
+                  show password
                 </label>
-                </div>
-                <button type='button' className='btn btn-primary logbtn-admin' onClick={Regist}>
-                  SIGN UP
-                </button>
-              </form>
-              <div className='logbottom'>
-                <p className='welcomesub'>Already have an account?</p>
-                <a className='forget' onClick={goeslogin}>
-                  Click here to Sign in
-                </a>
               </div>
+              <button
+                type='button'
+                className='btn btn-primary logbtn-admin'
+                onClick={Regist}
+              >
+                SIGN UP
+              </button>
+            </form>
+            <div className='logbottom'>
+              <p className='welcomesub'>Already have an account?</p>
+              <a className='forget' onClick={goeslogin}>
+                Click here to Sign in
+              </a>
             </div>
           </div>
-        </motion.div>
-      </div>
-    );
-  }
+        </div>
+      </motion.div>
+    </div>
+  );
+}

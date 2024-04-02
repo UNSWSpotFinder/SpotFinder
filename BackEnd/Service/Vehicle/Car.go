@@ -1,4 +1,4 @@
-package Car
+package Vehicle
 
 import (
 	"capstone-project-9900h14atiktokk/Service"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// AddCarHandler 创建车辆
+// AddVehicleHandler 创建车辆
 // @Summary 创建车辆
 // @Schemes
 // @Description do ping
@@ -20,7 +20,7 @@ import (
 // @Fail 500 {string} json{"code", "message"}
 // @Router /car/create [post]
 // @Security BearerAuth
-func AddCarHandler(c *gin.Context) {
+func AddVehicleHandler(c *gin.Context) {
 	var request controller.CreateCarRequestData
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -37,12 +37,12 @@ func AddCarHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Car added",
+		"message": "Vehicle added",
 	})
 	return
 }
 
-// GetCarOfUserHandler 获取用户的车辆
+// GetVehicleOfUserHandler 获取用户的车辆
 // @Summary 获取用户的车辆
 // @Schemes
 // @Description 从car的表中获取用户的车辆，而不是从user的表中获取
@@ -53,9 +53,9 @@ func AddCarHandler(c *gin.Context) {
 // @Fail 500 {string} json{"error", "message"}
 // @Router /car/getMyCar [get]
 // @Security BearerAuth
-func GetCarOfUserHandler(c *gin.Context) {
+func GetVehicleOfUserHandler(c *gin.Context) {
 	userID := c.GetString("userID")
-	cars, err := controller.GetCarOfUser(userID, Service.DB)
+	cars, err := controller.GetVehicleOfUser(userID, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Cannot get car" + err.Error(),
