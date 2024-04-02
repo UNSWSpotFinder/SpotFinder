@@ -4,7 +4,7 @@ import { getUserInfo, topUpAccount, withdrawAccount } from './API';
 import './Dashboard.css';
 
 const Dashboard = () => {
-    // 定义初始状态
+    // 定义用户信息初始状态
     const [userInfo, setUserInfo] = useState({
       name: '',
       account: 0,
@@ -17,8 +17,8 @@ const Dashboard = () => {
     const [topUpAmount, setTopUpAmount] = useState('');
     const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
     const [withdrawAmount, setWithdrawAmount] = useState('');
-
     const navigate = useNavigate();
+
     const goesCreateSpot = (event)=>{
       event.preventDefault(); // 阻止链接的默认行为
       const user = localStorage.getItem('email');
@@ -31,7 +31,7 @@ const Dashboard = () => {
       try {
         const data = await getUserInfo();
         console.log('data:', data);
-        // 解析 ownedSpot JSON 字符串
+        // 储存用户spotID
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
@@ -43,16 +43,16 @@ const Dashboard = () => {
         // 检查头像数据是否存在，并且是否以base64格式开头
         const base64Prefix = 'data:image/jpeg;base64,';
         const avatarData = data.message.avatar;
-        const updatedAvatar = avatarData && avatarData.startsWith(base64Prefix)
-          ? avatarData
-          : `${base64Prefix}${avatarData}`;
+        // const updatedAvatar = avatarData && avatarData.startsWith(base64Prefix)
+        //   ? avatarData
+        //   : `${base64Prefix}${avatarData}`;
 
         // data对象中包含用户信息
         setUserInfo({
           name: data.message.name,
           account: data.message.account,
           earning: data.message.earning,
-          avatar: updatedAvatar,
+          avatar: data.message.avatar,
           ownedSpot: parsedOwnedSpot
         });
       } catch (error) {
@@ -97,7 +97,8 @@ const Dashboard = () => {
       }));
     }).catch(error => {
       console.error('Top up failed:', error);
-      alert('Top up failed, please try again.'); // 实际应用中应使用更友好的通知方式
+      // TODO:使用snackbar或其他通知组件显示错误信息
+      alert('Top up failed, please try again.'); 
     });
   };
 
@@ -121,6 +122,7 @@ const Dashboard = () => {
   const handleWithdrawSubmit = () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
+      // TODO:使用snackbar或其他通知组件显示错误信息
       alert('Please enter a valid amount to withdraw.');
       return;
     }
@@ -136,6 +138,7 @@ const Dashboard = () => {
       }));
     }).catch(error => {
       console.error('Withdraw failed:', error);
+      // TODO:使用snackbar或其他通知组件显示错误信息
       alert('Withdraw failed, please try again.');
     });
   };
@@ -172,8 +175,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-
         {/* 第二列显示当前预定数量 */}
         <div className='second-column-booking'>
           <h5>My Bookings</h5>
@@ -185,11 +186,9 @@ const Dashboard = () => {
         <div className='second-column-booking'>
           <h5>My Listings</h5>
           <div className='listing-number'>1</div>
-          {/* TODO:这里需要之后修改链接路由 */}
           <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
         </div>
       </div>
-
 
       {/* 底部Voucher区域 */}
       <div className="second-vouchers">
@@ -198,7 +197,6 @@ const Dashboard = () => {
 
       </div>
       
-
       {/* 充值弹窗 */}
       {isTopUpModalVisible && (
       <div className="modal">
@@ -232,8 +230,7 @@ const Dashboard = () => {
             />
             <div className="modal-actions">
             <button onClick={handleWithdrawSubmit} className='submit-btn'>Submit</button>
-              <button onClick={handleCancelWithdraw} className='cancel-btn'>Cancel</button>
-              
+              <button onClick={handleCancelWithdraw} className='cancel-btn'>Cancel</button>     
             </div>
           </div>
         </div>

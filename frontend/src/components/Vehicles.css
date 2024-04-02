@@ -56,11 +56,12 @@
     overflow: hidden;
   }
 
-  .left-picture {
+  .left-picture img {
     background-color: #d3d3d3; /* Placeholder color for the thumbnail */
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 5px;
+    margin:5px;
   }
 
   .middle-info {

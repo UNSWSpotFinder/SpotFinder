@@ -174,7 +174,7 @@ export const withdrawAccount = (amount) => {
   });
 };
 
-// 用户创建车辆
+// 用户创建车辆(post)
 export const createCarInfo = (carInfo) => {
   const endpoint = `${baseUrl}/car/create`;
   const token = localStorage.getItem('token');
@@ -197,3 +197,68 @@ export const createCarInfo = (carInfo) => {
     console.error('Error during fetch operation:', error);
   });
 };
+
+// 获取用户车辆信息(get)
+export const getCarInfo = () => {
+  return new Promise((resolve, reject) => {      
+    const endpoint = `${baseUrl}/car/getMyCar`;
+    const token = localStorage.getItem('token');
+
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          const errorReason = data.message;
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
+  });
+};
+
+// 获取订单信息(get)
+export const getBookingsInfo = () => {
+  return new Promise((resolve, reject) => {      
+    const endpoint = `${baseUrl}`;
+    const token = localStorage.getItem('token');
+
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          const errorReason = data.message;
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
+  });
+};
+

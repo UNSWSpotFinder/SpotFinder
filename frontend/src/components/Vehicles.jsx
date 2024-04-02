@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Snackbar } from '@mui/material';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
-import { createCarInfo } from './API';
+import { getCarInfo, createCarInfo } from './API';
 
 const Vehicles = () => {
+  const [carsInfo, setCarsInfo] = useState([]); // 存储获取到的 cars 详细信息
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState(''); // 'add' 或 'edit'
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
   const [vehicleBrand, setVehicleBrand] = useState('');
   const [vehiclePlate, setVehiclePlate] = useState('');
   const [vehicleType, setVehicleType] = useState('');
@@ -16,9 +19,22 @@ const Vehicles = () => {
   const [vehicleCharge, setVehicleCharge] = useState('');
   const [avatar, setAvatar] = useState('');
 
-  const [modalMode, setModalMode] = useState(''); // 'add' 或 'edit'
-
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // 获取车辆信息
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCarInfo();
+        console.log('Car data:', data);
+        setCarsInfo(data.cars);
+      } catch (error) {
+        console.error('Error fetching car info:', error);
+      }
+    }
+    fetchData();
+  }, []);
+
 
 
   // 打开edit/add spot弹窗
@@ -82,29 +98,29 @@ const Vehicles = () => {
     const vehicleInfo = {
       brand: vehicleBrand,
       charge: vehicleCharge,
-      picture: avatar, // 使用DataURL作为图片
+      picture: avatar,
       plate: vehiclePlate,
       size: vehicleSize,
       type: vehicleType
     };
     console.log('Vehicle info:', vehicleInfo);
+
     if(modalMode === 'add') {
       try {
         await createCarInfo(vehicleInfo);
+        const updatedCars = await getCarInfo();
+        setCarsInfo(updatedCars.cars); // 确保这里是响应体中的正确属性
         setSnackbarMessage('Vehicle added successfully!');
+        setOpenSnackbar(true);
       } catch (error) {
-        console.error('Failed to add vehicle:', error);
-        setSnackbarMessage('Failed to add vehicle.');
+        setSnackbarMessage('Failed to add vehicle.'); // 设置添加失败消息
+        setOpenSnackbar(true); // 显示Snackbar
       }
-      
     } else if (modalMode === 'edit') {
+      setSnackbarMessage('Vehicle information updated successfully!'); // 设置编辑成功消息
+      setOpenSnackbar(true); // 显示Snackbar
       // 处理编辑车辆信息逻辑
     }
-  
-    // 显示Snackbar提示
-    setSnackbarMessage('Vehicle information updated successfully!');
-    setOpenSnackbar(true);
-    
     // 关闭弹窗
     closeModal();
   };
@@ -152,45 +168,50 @@ const Vehicles = () => {
       setVehiclePlate(event.target.value);
     };
 
+    // 在每个表单控件的事件处理器中设置自定义的验证消息
+    const handleInvalid = (event) => {
+      event.target.setCustomValidity('This field cannot be left blank');
+    };
+
     
-  
 
   return (
     <div className='dashboard-vehicles'>
       {/* 上方按钮部分 */}
       <div className="button-part">
-        <button className='vehicle-title'>Current Vehicles: 1</button>
+        <button className='vehicle-title'>Current Vehicles: {carsInfo.length}</button>
         <button className='add-a-car-btn' onClick={openAddModal}>Add a new vehicle</button>
 
       </div>
-        {/* 下方车辆部分 */}
+      {/* 下方车辆部分 */}
       <div className='vehicle-part'>
         <h3 className='my-vehicle-title'>My vehicles</h3>
-        <div className='specific-vehicle'>
-          <div className='left-picture'>
-            <div className='vehicle-picture'>vehicle picture</div>
-          </div>
-          <div className='middle-info'>
-            <div className='vehicle-row'>
-              <div className='vehicle-brand'>Toyota</div>
-              <div className='vehicle-plate'>NSW123456</div>
-            </div>
-            <div className='vehicle-row'>
-              <div className='vehicle-type'>4WD/SUV</div>
-              <div className='vehicle-size'>Small</div>
-            </div>
-            <div className='vehicle-charge'>Charge</div>
-          </div>
-          <div className='right-btn-part'>
-            <button className='edit-btn' onClick={openEditModal}>Edit</button>
-
-            <div>
-              <button className='delete-btn' onClick={openDeleteConfirm}>Delete</button>
-            </div>
-            
-          </div>
-        </div>
+        {/* 某个具体车辆部分 */}
+        {carsInfo.map((car) => (
+           <div key={car.ID} className='specific-vehicle'>
+           <div className='left-picture'>
+             {/* 假设您的API返回图片的base64编码，否则您可能需要调整这个 */}
+             <img className='vehicle-picture' src={car.picture} alt='Vehicle' />
+           </div>
+           <div className='middle-info'>
+             <div className='vehicle-row'>
+               <div className='vehicle-brand'>{car.brand}</div>
+               <div className='vehicle-plate'>{car.plate}</div>
+             </div>
+             <div className='vehicle-row'>
+               <div className='vehicle-type'>{car.type}</div>
+               <div className='vehicle-size'>{car.size}</div>
+             </div>
+             <div className='vehicle-charge'>{car.charge}</div>
+           </div>
+           <div className='right-btn-part'>
+             <button className='edit-btn' onClick={() => openEditModal(car)}>Edit</button>
+             <button className='delete-btn' onClick={() => openDeleteConfirm(car)}>Delete</button>
+           </div>
+         </div>
+       ))}
       </div>
+
       {/* add/edit spot弹窗 */}
       {isModalOpen && (
         <div className='modal-overlay'>
@@ -201,15 +222,20 @@ const Vehicles = () => {
               {/* 表单内容 */}
               <div className="form-group">
                 <label htmlFor="brand">Brand of your vehicle</label>
-                <input type="text" id="brand" name="brand" className="input-box"  placeholder='e.g.Toyota' value={vehicleBrand}  onChange={handleBrandChange}/>
+                <input required 
+                  onInvalid={handleInvalid}
+                  type="text" id="brand" name="brand" className="input-box"  placeholder='e.g.Toyota' value={vehicleBrand}  onChange={handleBrandChange}/>
               </div>
               <div className="form-group">
                 <label htmlFor="plate">Plate of your vehicle</label>
-                <input type="text" id="plate" name="plate" className="input-box"  placeholder='e.g.NSW123456'  value={vehiclePlate} onChange={handlePlateChange}/>
+                <input required 
+                  onInvalid={handleInvalid}
+                  type="text" id="plate" name="plate" className="input-box"  placeholder='e.g.NSW123456'  value={vehiclePlate} onChange={handlePlateChange}/>
               </div>
               <div className="form-group">              
               <label htmlFor="type">Type of your vehicle</label>
-                <select value={vehicleType} onChange={handleTypeChange}>
+                <select value={vehicleType} onChange={handleTypeChange}> required
+                  onInvalid={handleInvalid}
                   <option value="">Select</option>
                   <option value="bike">Bike</option>
                   <option value="hatchback">Hatchback</option>
@@ -221,7 +247,8 @@ const Vehicles = () => {
               </div>
               <div className="form-group">              
               <label htmlFor="type">Size of your vehicle</label>
-                <select value={vehicleSize} onChange={handleSizeChange}>
+                <select value={vehicleSize} onChange={handleSizeChange}> required
+                  onInvalid={handleInvalid}
                   <option value="">Select</option>
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
@@ -230,7 +257,8 @@ const Vehicles = () => {
               </div>
               <div div className="form-group">
               <label htmlFor="charge">Does your vehicle need charging?</label>
-                <select value={vehicleCharge} onChange={handleChargeChange}>
+                <select value={vehicleCharge} onChange={handleChargeChange}> required
+                  onInvalid={handleInvalid}
                   <option value="">Select</option>
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
@@ -238,6 +266,8 @@ const Vehicles = () => {
               </div>
               <div className="form-group">
                 <input
+                  required
+                  onInvalid={handleInvalid}
                   accept="image/*"
                   style={{ display: 'none' }}
                   id="upload-avatar"
@@ -272,6 +302,12 @@ const Vehicles = () => {
         </div>
       </div>
 )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </div>
     
   );

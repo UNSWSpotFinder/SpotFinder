@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BookingDetailModal from './BookingDetailModal'
 import './Bookings.css';
+import { getBookingsInfo } from './API';
 
 const Bookings = () => {
 

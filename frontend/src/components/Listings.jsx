@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import OrdersModal from './OrdersModal'; 
 import { getUserInfo, getSpotDetails } from './API';
 import './Listings.css';
@@ -9,7 +9,6 @@ const Listings = () => {
   const navigate=useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
-
   const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const Listings = () => {
             const spotsDetails = await Promise.all(spotsDetailsPromises);
             // 更新状态以反映获取到的 spots 信息
             setSpotsInfo(spotsDetails);
-            console.log('Spots details:', spotsDetails);
+            console.log('SpotsInfo:', spotsDetails);
           }
         }
       } catch (error) {
@@ -81,22 +80,12 @@ const Listings = () => {
    const renderListings = () => {
     const goesEdit=(event)=>{
       navigate('/'+localStorage.getItem('email')+'/editspace/'+event.target.id);
-  
     }
     return spotsInfo.map((spot, index) => {
       if (spot.message) {
-        // 检查图片 URL 是否以特定字符串开头
-        // const base64Prefix = "data:image/jpeg;base64,";
-        // let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
-        //              ? spot.message.Pictures 
-        //              : base64Prefix + spot.message.Pictures;
-        
         // 重设地址格式
         const addr = JSON.parse(spot.message.SpotAddr);
-        console.log(addr);
         const formattedAddr = `${addr.Street}, ${addr.City}, ${addr.State}, ${addr.Postcode}, ${addr.Country}`;
-
-
 
         return (
           <div className='listing-info' key={index}>
@@ -108,6 +97,9 @@ const Listings = () => {
               <div className='location'>{formattedAddr}</div>
               <div className='spot-type'>{spot.message.SpotType}</div>
               <div className='way-to-access'>{spot.message.PassWay}</div>
+              <div className='spot-current-state'>
+                Current state: {spot.message.IsVisible ? 'Unapproved' : 'Approved'}
+              </div>
             </div>
             <div className='manipulation-link'>
               <div className='first-line-link'>
@@ -130,27 +122,15 @@ const Listings = () => {
     });
   };
 
-
-
   return (
     <div className='dashboard-listings'>    
       <div className="button-part">
-        <button className='listing-title'>Current Listings: 1</button>
+        <button className='listing-title'>Current Listings: {spotsInfo.length}</button>
         <button className='add-a-spot-btn' onClick={goesCreate}>Lease a new spot</button>
       </div>     
-
       <div className="list-part">
         <h3 className='listings-title'>Listings</h3>
         {renderListings()}
-
-
-        {/* link to add */}
-        <div className='hint-msg'>
-          {/* TODO:这里需要之后修改链接路由*/}
-          {/* <div className='link-to-add'>
-            <Link to="/home">Lease a new spot</Link>
-          </div>   */}
-        </div>
       </div>
 
       {/* 显示delete弹窗 */}
