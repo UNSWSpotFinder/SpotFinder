@@ -94,10 +94,9 @@ export const getSpotDetails = (spotId) => {
 
 
 // 获取车位列表（get）
-export const getAllSpots = () => {
+export const getAllSpots = (page) => {
   return new Promise((resolve, reject) => {
-    const endpoint = `${baseUrl}/spot/list/?isVisible=true`; 
-
+    const endpoint = `${baseUrl}/spot/list/?isVisible=true&page=${page}&pageSize=15`; 
     fetch(endpoint, {
       method: 'GET',
       headers: new Headers({
@@ -123,9 +122,9 @@ export const getAllSpots = () => {
     });
   });
 };
-export const getAllNotApprovedSpots = () => {
+export const getAllNotApprovedSpots = (page) => {
   return new Promise((resolve, reject) => {
-    const endpoint = `${baseUrl}/spot/list/?isVisible=false`; 
+    const endpoint = `${baseUrl}/spot/list/?isVisible=false&page=${page}&pageSize=15`;
     fetch(endpoint, {
       method: 'GET',
       headers: new Headers({
