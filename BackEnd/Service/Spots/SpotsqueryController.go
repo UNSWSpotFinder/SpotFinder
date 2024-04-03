@@ -1,7 +1,7 @@
 package Spots
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Spot"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
@@ -40,7 +40,7 @@ type CreateSpotRequestData struct {
 // @Router /spot/create [post]
 // @Security BearerAuth
 func CreateSpotController(c *gin.Context) {
-	var spot *Spot.Basic
+	var spot *Models.SpotBasic
 	var request CreateSpotRequestData
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(400, gin.H{
@@ -52,7 +52,7 @@ func CreateSpotController(c *gin.Context) {
 	userEmail := c.GetString("email")
 	user := User.GetUserByEmail(Service.DB, userEmail)
 	// 将请求数据转换为模型
-	spot = &Spot.Basic{
+	spot = &Models.SpotBasic{
 		OwnerID:       user.ID,
 		SpotName:      request.SpotName,
 		SpotAddr:      request.SpotAddr,
