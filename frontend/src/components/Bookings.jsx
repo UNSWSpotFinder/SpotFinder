@@ -5,7 +5,6 @@ import './Bookings.css';
 import { getBookingsInfo } from './API';
 
 const Bookings = () => {
-
   const [showBookingDetailModal, setShowBookingDetailModal] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
@@ -13,7 +12,6 @@ const Bookings = () => {
       const openCancelModal = () => {
         setShowCancelConfirm(true);
       };
-
 
     // 关闭“取消订单”确认框
     const closeCancelConfirm = () => {

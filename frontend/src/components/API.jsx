@@ -259,6 +259,33 @@ export const getCarInfo = () => {
   });
 };
 
+
+// 用户修改车辆(post)
+export const updateCarInfo = (carID, carInfo) => {
+  const endpoint = `${baseUrl}/car/modifyCarInfo/${carID}`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(carInfo),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return null;
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+
 // 获取订单信息(get)
 export const getBookingsInfo = () => {
   return new Promise((resolve, reject) => {      
