@@ -47,10 +47,11 @@ export function CarSpaceChoice() {
   }, []);
 
   let choose = (car) => {
-      let carType = car.type;
-      let carPlate=car.plate;
-      let carCharge=car.charge;
-      let CarPicture=car.picture;
+      let carType = car.Type;
+      let carPlate=car.Plate;
+      let carCharge=car.Charge;
+      let CarPicture=car.Picture;
+      localStorage.setItem("carId",car.ID);
       if(contextState.CarPlate!==carPlate){
         updateContextState({
           CarType:carType,
@@ -109,13 +110,13 @@ export function CarSpaceChoice() {
         {/* 其余内容 */}
         <div className='contentmain-car'>
             {cars.map((car) => (
-            <div key={car.ID} className={contextState.CarPlate === car.plate?'Onecar selected':'Onecar'} onClick={()=>choose(car)}>
-              <img src={car.picture} className='carthumb'></img>
+            <div key={car.ID} className={contextState.CarPlate === car.Plate?'Onecar selected':'Onecar'} onClick={()=>choose(car)}>
+              <img src={car.Picture} className='carthumb'></img>
               <div className='carinfo-right'>
                   <div className='carinfo-right-top'>
-                    <p className='carinfo-brand'>{car.brand}</p>
-                    <p className='carinfo-brand'>{car.type}</p>
-                    <p className='carinfo-id'>{car.plate}</p>
+                    <p className='carinfo-brand'>{car.Brand}</p>
+                    <p className='carinfo-brand'>{car.Type}</p>
+                    <p className='carinfo-id'>{car.Plate}</p>
                   </div>
                 </div>
             </div>
