@@ -159,7 +159,7 @@
   }
   
   
-  .edit-form {
+  .edit-form, .add-form {
     display: flex;
     flex-direction: column;
   }
