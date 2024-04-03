@@ -10,9 +10,9 @@ import (
 )
 
 type CreateRequest struct {
-	BookingTime []Models.TimeRange `json:"bookingTime" example:"" binding:"required"`
-	Cost        float64            `json:"cost" example:"100" binding:"required"`
-	CarID       uint               `json:"carID" example:"4" binding:"required"`
+	BookingTime []Models.TimeRange `json:"bookingTime" binding:"required"`
+	Cost        float64            `json:"cost" binding:"required" example:"100"`
+	CarID       uint               `json:"carID" binding:"required example:这里在swagger测试的时候车辆一定要属于正在登录的用户"`
 }
 
 // CreateOrderHandler 创建订单
@@ -21,13 +21,11 @@ type CreateRequest struct {
 // @Tags Order
 // @Accept json
 // @Produce json
-// @Param spotID path string true "Spot ID"
 // @Param order body CreateRequest true "Order"
 // @Success 200 {string} string "Order created successfully"
 // @Failure 500 {string} string "unable to create order"
 // @Router /spots/{spotID}/orders [post]
 // @Security BearerAuth
-// CreateOrderHandler 创建订单的处理函数
 func CreateOrderHandler(c *gin.Context) {
 	// 从请求中获取用户的 ID
 	userIDStr := c.GetString("userID")

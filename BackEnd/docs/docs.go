@@ -697,13 +697,6 @@ const docTemplate = `{
                 "summary": "创建订单",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Spot ID",
-                        "name": "spotID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
                         "description": "Order",
                         "name": "order",
                         "in": "body",
@@ -1232,24 +1225,53 @@ const docTemplate = `{
         },
         "Models.TimeRange": {
             "type": "object",
+            "required": [
+                "Tid",
+                "distance",
+                "endDate",
+                "startDate"
+            ],
             "properties": {
+                "Tid": {
+                    "type": "string",
+                    "example": "1712312421231"
+                },
                 "distance": {
                     "description": "Distance 时间差",
-                    "type": "string"
+                    "type": "string",
+                    "example": "28"
                 },
                 "endDate": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-04-02T15:00:00.000Z"
                 },
                 "startDate": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-04-02T13:00:00.000Z"
                 }
             }
         },
         "Order.CreateRequest": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "bookingTime",
+                "cost"
+            ],
+            "properties": {
+                "bookingTime": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Models.TimeRange"
+                    }
+                },
+                "carID": {
+                    "type": "integer"
+                },
+                "cost": {
+                    "type": "number",
+                    "example": 100
+                }
+            }
         },
         "Spots.CreateSpotRequestData": {
             "type": "object",
