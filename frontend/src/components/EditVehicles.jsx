@@ -16,10 +16,6 @@ const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, Vehic
   const [vehicleSize, setVehicleSize] = useState(VehicleSize);
   const [vehicleCharge, setVehicleCharge] = useState(VehicleCharge);
   const [avatar, setAvatar] = useState(Avatar);
-  const [editingCarId, setEditingCarId] = useState(EditingCarId);
-
-  const navigate = useNavigate();
-
 
   const handleEditSubmit = async (event) => {
     event.preventDefault();
@@ -31,7 +27,6 @@ const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, Vehic
       size: vehicleSize,
       type: vehicleType,
     };
-      console.log('Vehicle info:', vehicleInfo);
       try {
         await updateCarInfo(EditingCarId.toString(), vehicleInfo); 
         onEdited();

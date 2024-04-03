@@ -15,8 +15,6 @@ const AddVehicleModal = ({ onClose, onAdded }) => {
     const [vehicleCharge, setVehicleCharge] = useState('');
     const [avatar, setAvatar] = useState('');
 
-    const navigate = useNavigate();
-
     // 点击add按钮，设置model为add模式 打开模态框时，重置所有表单字段
     const handleAddSubmit = async (event) => {
         event.preventDefault();
@@ -28,7 +26,6 @@ const AddVehicleModal = ({ onClose, onAdded }) => {
           size: vehicleSize,
           type: vehicleType
         };
-        // console.log('Vehicle info:', vehicleInfo);
         try {
             await createCarInfo(vehicleInfo);
             onAdded();
