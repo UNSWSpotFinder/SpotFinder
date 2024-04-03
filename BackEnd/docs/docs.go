@@ -269,6 +269,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/block/{spotId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "审核车位，用的是URL参数，一次只能查询一辆哦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "把车位ban掉",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot approved",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot approve spot",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/create": {
             "post": {
                 "description": "创建管理员",
@@ -303,6 +346,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/invisible/{spotId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "审核车位，用的是URL参数，一次只能查询一辆哦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "隐藏车位",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot approved",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot approve spot",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/login": {
             "post": {
                 "description": "管理员登陆",
@@ -330,6 +416,49 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Login Success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/unblock/{spotId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "审核车位，用的是URL参数，一次只能查询一辆哦",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "把车位unban掉",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Spot ID",
+                        "name": "spotId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spot approved",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Cannot approve spot",
                         "schema": {
                             "type": "string"
                         }
@@ -435,52 +564,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/order/{orderID}/paid": {
-            "put": {
-                "description": "付款成功的订单",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order"
-                ],
-                "summary": "付款成功的订单",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "orderID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Order paid successfully",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Order not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Unable to update order status",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/order/{orderID}/refund": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "退款订单",
                 "consumes": [
                     "application/json"
@@ -516,55 +606,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Unable to refund order",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/owners/{ownerID}/orders": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "获取指定车位主的所有订单",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order"
-                ],
-                "summary": "获取车位主所有订单",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Owner ID",
-                        "name": "ownerID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Orders",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "No orders found for the owner",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Database error",
                         "schema": {
                             "type": "string"
                         }
@@ -785,7 +826,7 @@ const docTemplate = `{
                 "summary": "创建订单",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Spot ID",
                         "name": "spotID",
                         "in": "path",
@@ -1067,6 +1108,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/orders/asOwner": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取指定车位主的所有订单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "获取车位主所有订单",
+                "responses": {
+                    "200": {
+                        "description": "Orders",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No orders found for the owner",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Database error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/orders/asUser": {
             "get": {
                 "security": [
@@ -1278,21 +1359,49 @@ const docTemplate = `{
                 }
             }
         },
+        "Models.TimeRange": {
+            "type": "object",
+            "required": [
+                "Tid",
+                "distance",
+                "endDate",
+                "startDate"
+            ],
+            "properties": {
+                "Tid": {
+                    "type": "string",
+                    "example": "1712312421231"
+                },
+                "distance": {
+                    "description": "Distance 时间差",
+                    "type": "string",
+                    "example": "28"
+                },
+                "endDate": {
+                    "type": "string",
+                    "example": "2024-04-02T15:00:00.000Z"
+                },
+                "startDate": {
+                    "type": "string",
+                    "example": "2024-04-02T13:00:00.000Z"
+                }
+            }
+        },
         "Order.CreateRequest": {
             "type": "object",
             "required": [
                 "bookingTime",
-                "carID",
                 "cost"
             ],
             "properties": {
                 "bookingTime": {
-                    "type": "string",
-                    "example": ""
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Models.TimeRange"
+                    }
                 },
                 "carID": {
-                    "type": "integer",
-                    "example": 4
+                    "type": "integer"
                 },
                 "cost": {
                     "type": "number",
