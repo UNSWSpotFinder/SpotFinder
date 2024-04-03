@@ -697,6 +697,13 @@ const docTemplate = `{
                 "summary": "创建订单",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Order",
                         "name": "order",
                         "in": "body",

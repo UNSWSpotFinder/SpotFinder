@@ -698,6 +698,11 @@ paths:
       - application/json
       description: 创建订单
       parameters:
+      - description: Spot ID
+        in: path
+        name: spotID
+        required: true
+        type: integer
       - description: Order
         in: body
         name: order

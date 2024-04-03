@@ -21,6 +21,7 @@ type CreateRequest struct {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param spotID path int true "Spot ID"
 // @Param order body CreateRequest true "Order"
 // @Success 200 {string} string "Order created successfully"
 // @Failure 500 {string} string "unable to create order"
