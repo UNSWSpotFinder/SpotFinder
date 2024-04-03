@@ -20,6 +20,14 @@ type OrderBasic struct {
 	Booker UserBasic `gorm:"foreignKey:BookerID"`
 }
 
+type TimeRange struct {
+	// Distance 时间差
+	Distance  string `json:"distance"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+	TID       string `json:"id"`
+}
+
 func (OrderBasic) TableName() string {
 	return "order"
 }

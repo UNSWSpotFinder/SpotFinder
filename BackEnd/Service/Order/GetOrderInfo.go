@@ -52,6 +52,9 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 
 	// 查找订单
 	if err := Service.DB.Where("booker_id = ?", userID).Find(&orders).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusOK, gin.H{"orders": orders})
+		}
 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return
 	}
@@ -66,19 +69,18 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
-// @Param ownerID path int true "Owner ID"
 // @Success 200 {string} string "Orders"
 // @Failure 404 {string} string "No orders found for the owner"
 // @Failure 500 {string} string "Database error"
-// @Router /owners/{ownerID}/orders [get]
+// @Router /user/orders/asOwner [get]
 // @Security BearerAuth
 func GetOwnerAllOrdersHandler(c *gin.Context) {
-	ownerID := c.Param("ownerID") // 从 URL 路径中获取车位主的 Owner ID
+	ownerID := c.GetString("ownerID") // 从 URL 路径中获取车位主的 Owner ID
 	var orders []Models.OrderBasic
 
 	// 查询所有该车位主的订单
-	if err := Service.DB.Joins("JOIN spots ON spots.id = orders.spot_id").
-		Where("spots.owner_id = ?", ownerID).
+	if err := Service.DB.Joins("JOIN spot ON spot.id = order.spot_id").
+		Where("spot.owner_id = ?", ownerID).
 		Find(&orders).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "No orders found for the owner"})
@@ -88,11 +90,6 @@ func GetOwnerAllOrdersHandler(c *gin.Context) {
 		return
 	}
 
-	if len(orders) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No orders found for the owner"})
-		return
-	}
-
 	// 返回所有找到的订单
-	c.JSON(http.StatusOK, orders)
+	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }
