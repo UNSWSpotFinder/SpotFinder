@@ -17,7 +17,7 @@ type UserBasic struct {
 	DeleteTime *time.Time `gorm:"type:datetime;null"`
 
 	// 用户可以有多个车辆信息，租多个车位
-	CarID      string `gorm:"type:text;not null"` // JSON 编码的字符串
+	CarID      string `gorm:"type:text"` // JSON 编码的字符串
 	LeasedSpot string `gorm:"type:text"`
 	Addr       string `gorm:"type:text;"`
 
