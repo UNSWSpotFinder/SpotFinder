@@ -228,7 +228,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>There aren't any such spots that need to be APPROVED at the moment.</p>)}
+        {filteredSpotApp.length===0 && (<p className='Appnull'>{isLoadingApp?"There aren't any such spots that need to be APPROVED at the moment.":"Loading..."}</p>)}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
@@ -306,7 +306,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpot.length===0 && (<p className='Appnull'>Sorry, There aren't any such spots.</p>)}
+        {filteredSpot.length===0 && (<p className='Appnull'>{isLoading?"Sorry, There aren't any such spots.":"Loading..."}</p>)}
       </div>
     </div>
   );

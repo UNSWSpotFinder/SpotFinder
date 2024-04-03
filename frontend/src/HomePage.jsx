@@ -268,6 +268,19 @@ function AllSpoting() {
 }
 
 export function HomePageLarge() {
+  let token = localStorage.getItem('token') || null;
+  let currentuser = localStorage.getItem('email') || null;
+  let AdminId = localStorage.getItem('AdminId')||null;
+  let navigate = useNavigate();
+  useEffect(()=>{
+    if(AdminId){
+      navigate('/admin/' + AdminId);
+    }
+    if(currentuser){
+      navigate('/' + currentuser);
+    }
+  },[])
+
   const { contextState, updateContextState } = useContext(AppContext);
   const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
@@ -302,6 +315,7 @@ export function HomePageLarge() {
       Carlocation: event.target.value,
     });
   };
+
   const handleOrdChange = (event) => {
     let res = event.target.value;
     setO(res === '0');
@@ -329,10 +343,7 @@ export function HomePageLarge() {
     });
   };
   const { _ , setOpenSnackbar } = useError();
-  let token = localStorage.getItem('token') || null;
-  let currentuser = localStorage.getItem('email') || null;
   // 调库
-  let navigate = useNavigate();
   // 进入用户登录页面
   let goesLoginUser = () => {
     navigate('/userlogin');
