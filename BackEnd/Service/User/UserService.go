@@ -1,6 +1,7 @@
 package User
 
 import (
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/Service/Manager"
@@ -98,7 +99,7 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	var user User.Basic
+	var user Models.UserBasic
 	//fmt.Printf("Headers: %+v\n", c.Request.Header)
 	//fmt.Printf("Form data: %+v\n", c.Request.PostForm)
 	user.Phone = request.Phone
@@ -265,7 +266,7 @@ func GetUserInfoHandler(c *gin.Context) {
 			CreateTime: user.CreateTime,
 			DeleteTime: user.DeleteTime,
 			DateBirth:  user.DateBirth,
-			CarInfo:    user.CarInfo,
+			CarInfo:    user.CarID,
 			LeasedSpot: user.LeasedSpot,
 			Addr:       user.Addr,
 			Account:    user.Account,

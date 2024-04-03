@@ -1,7 +1,7 @@
 package Manager
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Manager"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
@@ -32,7 +32,7 @@ type AdminInfo struct {
 // @Router /manager/login [post]
 func LoginHandler(c *gin.Context) {
 	var request loginRequestData
-	var manager Manager.Basic
+	var manager Models.ManagerBasic
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data binding error"})

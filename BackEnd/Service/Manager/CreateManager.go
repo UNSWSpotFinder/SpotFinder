@@ -1,7 +1,7 @@
 package Manager
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Manager"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,7 @@ func CreateManagerHandler(c *gin.Context) {
 		})
 		return
 	}
-	var admin Manager.Basic
+	var admin Models.ManagerBasic
 	admin.Name = request.Name
 	admin.AdminID = request.AdminID
 

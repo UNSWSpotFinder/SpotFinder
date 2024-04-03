@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/User"
-	"capstone-project-9900h14atiktokk/Models/Vehicle"
+	"capstone-project-9900h14atiktokk/Models"
 	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
@@ -19,14 +18,14 @@ type CreateCarRequestData struct {
 
 func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err error) {
 	// 1. 找到相应的用户记录
-	var user User.Basic
+	var user Models.UserBasic
 	fmt.Println(userId)
 	resultUser := db.Where("id = ?", userId).First(&user)
 	if resultUser.Error != nil {
 		return resultUser.Error // 如果用户不存在，返回错误
 	}
 
-	car := Vehicle.Basic{
+	car := Models.CarBasic{
 		OwnerId: user.ID,
 		Picture: carData.Picture,
 		Brand:   carData.Brand,
@@ -44,8 +43,8 @@ func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err e
 
 	// 3. 解析用户的车辆信息
 	var cars []uint
-	if user.CarInfo != "" { // 假设 CarInfo 是存储JSON数组的字段
-		if err = json.Unmarshal([]byte(user.CarInfo), &cars); err != nil {
+	if user.CarID != "" { // 假设 CarID 是存储JSON数组的字段
+		if err = json.Unmarshal([]byte(user.CarID), &cars); err != nil {
 			return err // 如果解析JSON失败，返回错误
 		}
 	}
@@ -56,7 +55,7 @@ func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err e
 	if err != nil {
 		return err // 如果JSON编码失败，返回错误
 	}
-	if result := db.Model(&User.Basic{}).Where("id = ?", userId).Update("car_info", newCarInfo); result.Error != nil {
+	if result := db.Model(&Models.UserBasic{}).Where("id = ?", userId).Update("car_info", newCarInfo); result.Error != nil {
 		return result.Error // 如果数据库更新失败，返回错误
 	}
 

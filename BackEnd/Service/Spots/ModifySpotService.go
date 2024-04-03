@@ -1,7 +1,7 @@
 package Spots
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Spot"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
 	"github.com/gin-gonic/gin"
@@ -49,7 +49,7 @@ func ModifySpotInfoHandler(c *gin.Context) {
 		return
 
 	}
-	spot := Spot.Basic{
+	spot := Models.SpotBasic{
 		ID:            spotID,
 		SpotName:      request.SpotName,
 		SpotAddr:      request.SpotAddr,

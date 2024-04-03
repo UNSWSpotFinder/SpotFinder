@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Manager"
+	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Models/User"
 	"errors"
 	"github.com/spf13/viper"
@@ -10,7 +10,7 @@ import (
 )
 
 // CreateManager 创建管理员
-func CreateManager(admin *Manager.Basic, db *gorm.DB) error {
+func CreateManager(admin *Models.ManagerBasic, db *gorm.DB) error {
 	invalidManager := viper.Get("managers.manager")
 	found := false
 	// 如果管理员 in invalidManager列表中,则创建管理员
@@ -31,8 +31,8 @@ func CreateManager(admin *Manager.Basic, db *gorm.DB) error {
 }
 
 // CheckAdminAlreadyIn  检查管理员是否已被注册
-func CheckAdminAlreadyIn(db *gorm.DB, admin *Manager.Basic) (bool, error) {
-	var tempAdmin Manager.Basic
+func CheckAdminAlreadyIn(db *gorm.DB, admin *Models.ManagerBasic) (bool, error) {
+	var tempAdmin Models.ManagerBasic
 	err := db.Where("name = ?", admin.Name).Take(&tempAdmin).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -47,8 +47,8 @@ func CheckAdminAlreadyIn(db *gorm.DB, admin *Manager.Basic) (bool, error) {
 }
 
 // Login 管理员登录
-func Login(db *gorm.DB, admin *Manager.Basic) (string, error) {
-	var tempAdmin Manager.Basic
+func Login(db *gorm.DB, admin *Models.ManagerBasic) (string, error) {
+	var tempAdmin Models.ManagerBasic
 	err := db.Where("admin_id = ?", admin.AdminID).Take(&tempAdmin).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -67,8 +67,8 @@ func Login(db *gorm.DB, admin *Manager.Basic) (string, error) {
 }
 
 // GetManagerByAdminID 通过邮箱获取管理员
-func GetManagerByAdminID(db *gorm.DB, adminID string) (*Manager.Basic, error) {
-	var admin Manager.Basic
+func GetManagerByAdminID(db *gorm.DB, adminID string) (*Models.ManagerBasic, error) {
+	var admin Models.ManagerBasic
 	err := db.Where("admin_id = ?", adminID).Take(&admin).Error
 	if err != nil {
 		return nil, err
