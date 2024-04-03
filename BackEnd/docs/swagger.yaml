@@ -42,17 +42,39 @@ definitions:
     type: object
   Models.TimeRange:
     properties:
+      Tid:
+        example: "1712312421231"
+        type: string
       distance:
         description: Distance 时间差
+        example: "28"
         type: string
       endDate:
-        type: string
-      id:
+        example: "2024-04-02T15:00:00.000Z"
         type: string
       startDate:
+        example: "2024-04-02T13:00:00.000Z"
         type: string
+    required:
+    - Tid
+    - distance
+    - endDate
+    - startDate
     type: object
   Order.CreateRequest:
+    properties:
+      bookingTime:
+        items:
+          $ref: '#/definitions/Models.TimeRange'
+        type: array
+      carID:
+        type: integer
+      cost:
+        example: 100
+        type: number
+    required:
+    - bookingTime
+    - cost
     type: object
   Spots.CreateSpotRequestData:
     properties:
@@ -680,7 +702,7 @@ paths:
         in: path
         name: spotID
         required: true
-        type: string
+        type: integer
       - description: Order
         in: body
         name: order

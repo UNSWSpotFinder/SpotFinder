@@ -22,10 +22,10 @@ type OrderBasic struct {
 
 type TimeRange struct {
 	// Distance 时间差
-	Distance  string `json:"distance"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
-	TID       string `json:"id"`
+	Distance  string `json:"distance " binding:"required" example:"28"`
+	StartDate string `json:"startDate" binding:"required" example:"2024-04-02T13:00:00.000Z"`
+	EndDate   string `json:"endDate" binding:"required" example:"2024-04-02T15:00:00.000Z"`
+	TID       string `json:"Tid" binding:"required" example:"1712312421231"`
 }
 
 func (OrderBasic) TableName() string {
