@@ -4,6 +4,7 @@ import (
 	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/controller"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -11,7 +12,6 @@ import (
 
 type CreateRequest struct {
 	BookingTime string  `json:"bookingTime" example:"" binding:"required"`
-	SpotID      uint    `json:"spotID" example:"3" binding:"required"`
 	Cost        float64 `json:"cost" example:"100" binding:"required"`
 	CarID       uint    `json:"carID" example:"4" binding:"required"`
 }
@@ -30,30 +30,41 @@ type CreateRequest struct {
 // @Security BearerAuth
 func CreateOrderHandler(c *gin.Context) {
 	// 从请求中获取用户的ID
-	userID := c.GetUint("userID")
+	userIDStr := c.GetString("userID")
+	//if !exist {
+	//	c.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "User not found",
+	//	})
+	//	return
+	//}
+	userID, _ := strconv.Atoi(userIDStr)
 	spotIDStr := c.Param("spotID")
 	spotID, err := strconv.Atoi(spotIDStr)
 	if err != nil {
+		fmt.Println("error", err)
 		c.JSON(http.StatusConflict, gin.H{
-			"error": "Cannot bind spot",
+			"error": err,
 		})
 		return
 	}
 	var order Models.OrderBasic
 	var request CreateRequest
 	if err = c.ShouldBindJSON(&request); err != nil {
+		fmt.Println("error", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Cannot bind order",
+			"error": err,
 		})
 		return
 	}
 	order.BookingTime = request.BookingTime
-	order.BookerID = userID
+	order.BookerID = uint(userID)
+	fmt.Println(userID)
 	order.SpotID = uint(spotID)
 	order.Cost = request.Cost
 	order.CarID = request.CarID
 	order.Status = "Pending"
 	// 将订单存入数据库
+	fmt.Println("order", order)
 	err = controller.CreateOrder(Service.DB, &order)
 	if err != nil {
 		c.JSON(500, gin.H{
