@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import BookingDetailModal from './BookingDetailModal'
 import './Bookings.css';
-import { getBookingsInfo } from './API';
+import { getMyBookingsInfo } from './API';
 
 const Bookings = () => {
   const [showBookingDetailModal, setShowBookingDetailModal] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [mybookingsInfo, setMyBookingsInfo] = useState([]); // 存储获取到的 bookings 信息
+
+    // 获取车辆信息
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const data = await getMyBookingsInfo();
+          console.log('My Bookings data:', data);
+          setMyBookingsInfo(data.cars);
+        } catch (error) {
+          console.error('Error fetching car info:', error);
+        }
+      }
+      fetchData();
+    }, []);
+
 
       // 打开“取消订单”详情弹窗
       const openCancelModal = () => {

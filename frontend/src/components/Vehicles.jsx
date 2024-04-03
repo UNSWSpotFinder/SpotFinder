@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Snackbar } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
-import { getCarInfo, updateCarInfo } from './API';
+import { getCarInfo } from './API';
 import { useNavigate } from 'react-router-dom';
 import AddVehicleModal from './AddVehicles';
 import EditVehicleModal from './EditVehicles';
@@ -23,13 +23,9 @@ const Vehicles = () => {
   const [vehicleSize, setVehicleSize] = useState('');
   const [vehicleCharge, setVehicleCharge] = useState('');
   const [avatar, setAvatar] = useState('');
-
   const [editingCarId, setEditingCarId] = useState('');
-  const [editingCar, setEditingCar] = useState('');
-
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const navigate = useNavigate();
 
   // 获取车辆信息
   useEffect(() => {
@@ -129,12 +125,12 @@ const Vehicles = () => {
   const openEditModal = (car) => {
     setIsEditModalOpen(true);
     setEditingCarId(car.ID);
-    setVehicleBrand(car.brand);
-    setVehiclePlate(car.plate);
-    setVehicleType(car.type);
-    setVehicleSize(car.size);
-    setVehicleCharge(car.charge === 'Yes' ? 'Yes' : 'No');
-    setAvatar(car.picture);
+    setVehicleBrand(car.Brand);
+    setVehiclePlate(car.Plate);
+    setVehicleType(car.Type);
+    setVehicleSize(car.Size);
+    setVehicleCharge(car.Charge === 'Yes' ? 'Yes' : 'No');
+    setAvatar(car.Picture);
   };
 
   // 关闭edit弹窗

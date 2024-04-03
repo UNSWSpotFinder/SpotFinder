@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import Snackbar from '@mui/material/Snackbar';
 import { useNavigate, Link } from 'react-router-dom'; 
 import { getUserInfo, topUpAccount, withdrawAccount } from './API';
 import './Dashboard.css';
 
 const Dashboard = () => {
-    // 定义用户信息初始状态
-    const [userInfo, setUserInfo] = useState({
-      name: '',
-      account: 0,
-      earning: 0,
-      avatar: 'https://via.placeholder.com/150'
-    });
+  // 定义用户信息初始状态
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    account: 0,
+    earning: 0,
+    avatar: 'https://via.placeholder.com/150'
+  });
 
-    // 控制充值弹窗的显示与否以及充值金额
-    const [isTopUpModalVisible, setIsTopUpModalVisible] = useState(false);
-    const [topUpAmount, setTopUpAmount] = useState('');
-    const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
-    const [withdrawAmount, setWithdrawAmount] = useState('');
-    const navigate = useNavigate();
+  // 控制充值弹窗的显示与否以及充值金额
+  const [isTopUpModalVisible, setIsTopUpModalVisible] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
 
-    const goesCreateSpot = (event)=>{
-      event.preventDefault(); // 阻止链接的默认行为
-      const user = localStorage.getItem('email');
-      navigate('/'+user+'/createspace');
-    }
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const navigate = useNavigate();
+
+  const goesCreateSpot = (event)=>{
+    event.preventDefault(); // 阻止链接的默认行为
+    const user = localStorage.getItem('email');
+    navigate('/'+user+'/createspace');
+  }
 
   // 进入 Dashboard 组件时获取用户信息
   useEffect(() => {
@@ -62,6 +67,17 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  
+  // 关闭Snackbar
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
+
+
   // 用于点击链接时执行的函数
   const ClickToFindSpot = (event) => {
     event.preventDefault(); // 阻止链接的默认行为
@@ -80,14 +96,15 @@ const Dashboard = () => {
     // 验证输入是否为有效数字
     const amount = parseFloat(topUpAmount);
     if (isNaN(amount) || amount <= 0) {
-      // TODO:使用snackbar或其他通知组件显示错误信息
-      alert('Please enter a valid amount to top up.'); 
+      setSnackbarMessage('Please enter a valid amount to top up.');
+      setOpenSnackbar(true);
       return;
     }
-  
     topUpAccount(amount).then(response => {
-      // 处理成功响应，如更新UI或通知用户
-      console.log('Top up successful', response);
+      // 处理成功响应通知用户
+      setSnackbarMessage('Top up successfully!');
+      setOpenSnackbar(true);
+
       setIsTopUpModalVisible(false); // 关闭弹窗
       setTopUpAmount(''); // 重置充值金额
       // 这里更新userInfo状态以反映新的账户余额
@@ -97,8 +114,8 @@ const Dashboard = () => {
       }));
     }).catch(error => {
       console.error('Top up failed:', error);
-      // TODO:使用snackbar或其他通知组件显示错误信息
-      alert('Top up failed, please try again.'); 
+      setSnackbarMessage('Top up failed, please try again.');
+      setOpenSnackbar(true);
     });
   };
 
@@ -112,23 +129,33 @@ const Dashboard = () => {
     setIsTopUpModalVisible(true);
   };
 
+  // 处理提现输入变化
+  const handleWithdrawInputChange = (event) => {
+    setWithdrawAmount(event.target.value);
+  };
 
-    // 处理提现输入变化
-    const handleWithdrawInputChange = (event) => {
-      setWithdrawAmount(event.target.value);
-    };
+  
   
   // 处理提现提交
   const handleWithdrawSubmit = () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      // TODO:使用snackbar或其他通知组件显示错误信息
-      alert('Please enter a valid amount to withdraw.');
+      setSnackbarMessage('Please enter a valid amount to withdraw.');
+      setOpenSnackbar(true);
       return;
     }
+      // 检查提现金额是否超过账户余额
+    if (amount > userInfo.account) {
+      setSnackbarMessage('Cannot withdraw more than the account balance.');
+      setOpenSnackbar(true);
+      
+      return;
+  }
+  
 
     withdrawAccount(amount).then(response => {
-      console.log('Withdraw successful', response);
+      setSnackbarMessage('Withdraw successfully!');
+      setOpenSnackbar(true);
       setIsWithdrawModalVisible(false);
       setWithdrawAmount('');
       // 更新userInfo状态以反映新的账户余额
@@ -153,6 +180,8 @@ const Dashboard = () => {
   const showWithdrawModal = () => {
     setIsWithdrawModalVisible(true);
   };
+
+
 
   return (
     <div className="dashboard">
@@ -235,6 +264,12 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </div>
   );
 };

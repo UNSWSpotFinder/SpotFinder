@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Snackbar } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { updateCarInfo } from './API';
@@ -16,10 +16,6 @@ const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, Vehic
   const [vehicleSize, setVehicleSize] = useState(VehicleSize);
   const [vehicleCharge, setVehicleCharge] = useState(VehicleCharge);
   const [avatar, setAvatar] = useState(Avatar);
-  const [editingCarId, setEditingCarId] = useState(EditingCarId);
-
-  const navigate = useNavigate();
-
 
   const handleEditSubmit = async (event) => {
     event.preventDefault();
@@ -31,7 +27,6 @@ const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, Vehic
       size: vehicleSize,
       type: vehicleType,
     };
-      console.log('Vehicle info:', vehicleInfo);
       try {
         await updateCarInfo(EditingCarId.toString(), vehicleInfo); 
         onEdited();
