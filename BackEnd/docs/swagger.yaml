@@ -430,6 +430,33 @@ paths:
       summary: 审核车位
       tags:
       - Manager
+  /manager/block/{spotId}:
+    put:
+      consumes:
+      - application/json
+      description: 审核车位，用的是URL参数，一次只能查询一辆哦
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot approved
+          schema:
+            type: string
+        "500":
+          description: Cannot approve spot
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 把车位ban掉
+      tags:
+      - Manager
   /manager/create:
     post:
       consumes:
@@ -452,6 +479,33 @@ paths:
       summary: 创建管理员
       tags:
       - Manager
+  /manager/invisible/{spotId}:
+    put:
+      consumes:
+      - application/json
+      description: 审核车位，用的是URL参数，一次只能查询一辆哦
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot approved
+          schema:
+            type: string
+        "500":
+          description: Cannot approve spot
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 隐藏车位
+      tags:
+      - Manager
   /manager/login:
     post:
       consumes:
@@ -472,6 +526,33 @@ paths:
           schema:
             type: string
       summary: 管理员登陆
+      tags:
+      - Manager
+  /manager/unblock/{spotId}:
+    put:
+      consumes:
+      - application/json
+      description: 审核车位，用的是URL参数，一次只能查询一辆哦
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Spot approved
+          schema:
+            type: string
+        "500":
+          description: Cannot approve spot
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 把车位unban掉
       tags:
       - Manager
   /order/{orderID}:

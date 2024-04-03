@@ -64,6 +64,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("car/create", Vehicle.AddVehicleHandler)
 	private.GET("car/getMyCar", Vehicle.GetVehicleOfUserHandler)
 	private.POST("car/modifyCarInfo/:carID", Vehicle.ModifyVehicleInfoHandler)
+	private.PUT("/manager/invisible/:spotId", Manager.InvisibleSpotHandler)
 	private.POST("/spots/:spotID/orders", Order.CreateOrderHandler)
 	//private.PUT("/order/:orderID/paid", Order.CompleteOrderHandler)
 	private.PUT("/order/:orderID/cancel", Order.CanceledOrderHandler)
@@ -74,6 +75,8 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)
+	manager.PUT("/manager/block/:spotId", Manager.BlockSpotHandler)
+	manager.PUT("/manager/unblock/:spotId", Manager.UnblockSpotHandler)
 	return r
 
 }
