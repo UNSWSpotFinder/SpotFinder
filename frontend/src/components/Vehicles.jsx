@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Snackbar } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
@@ -129,12 +129,12 @@ const Vehicles = () => {
   const openEditModal = (car) => {
     setIsEditModalOpen(true);
     setEditingCarId(car.ID);
-    setVehicleBrand(car.brand);
-    setVehiclePlate(car.plate);
-    setVehicleType(car.type);
-    setVehicleSize(car.size);
-    setVehicleCharge(car.charge === 'Yes' ? 'Yes' : 'No');
-    setAvatar(car.picture);
+    setVehicleBrand(car.Brand);
+    setVehiclePlate(car.Plate);
+    setVehicleType(car.Type);
+    setVehicleSize(car.Size);
+    setVehicleCharge(car.Charge === 'Yes' ? 'Yes' : 'No');
+    setAvatar(car.Picture);
   };
 
   // 关闭edit弹窗
@@ -157,18 +157,18 @@ const Vehicles = () => {
         {carsInfo.map((car) => (
            <div key={car.ID} className='specific-vehicle'>
            <div className='left-picture'>
-             <img className='vehicle-picture' src={car.picture} alt='Vehicle' />
+             <img className='vehicle-picture' src={car.Picture} alt='Vehicle' />
            </div>
            <div className='middle-info'>
              <div className='vehicle-row'>
-               <div className='vehicle-brand'>{car.brand}</div>
-               <div className='vehicle-plate'>{car.plate}</div>
+               <div className='vehicle-brand'>{car.Brand}</div>
+               <div className='vehicle-plate'>{car.Plate}</div>
              </div>
              <div className='vehicle-row'>
-               <div className='vehicle-type'>{car.type}</div>
-               <div className='vehicle-size'>{car.size}</div>
+               <div className='vehicle-type'>{car.Type}</div>
+               <div className='vehicle-size'>{car.Size}</div>
              </div>
-             <div className='vehicle-charge'>{car.charge}</div>
+             <div className='vehicle-charge'>{car.Charge}</div>
            </div>
            <div className='right-btn-part'>
              <button className='edit-btn' onClick={() => openEditModal(car)}>Edit</button>

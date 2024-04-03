@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrdersModal from './OrdersModal'; 
-import { getUserInfo, getSpotDetails } from './API';
+import { getUserInfo, getSpotDetails, getReceivedBookingsInfo } from './API';
 import './Listings.css';
-import {CreateSpace,EditSpace} from '../CarSpaceOperation';
+
 
 const Listings = () => {
   const navigate=useNavigate();

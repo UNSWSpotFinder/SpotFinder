@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Snackbar } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { updateCarInfo } from './API';

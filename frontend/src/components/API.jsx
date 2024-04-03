@@ -286,10 +286,10 @@ export const updateCarInfo = (carID, carInfo) => {
 };
 
 
-// 获取订单信息(get)
-export const getBookingsInfo = () => {
+// 获取用户的下单信息(get)
+export const getMyBookingsInfo = () => {
   return new Promise((resolve, reject) => {      
-    const endpoint = `${baseUrl}`;
+    const endpoint = `${baseUrl}/user/orders/asUser`;
     const token = localStorage.getItem('token');
 
     fetch(endpoint, {
@@ -318,3 +318,34 @@ export const getBookingsInfo = () => {
   });
 };
 
+// 获取用户作为provider的订单信息(get)
+export const getReceivedBookingsInfo = (ownerID) => {
+  return new Promise((resolve, reject) => {      
+    const endpoint = `${baseUrl}/owners/${ownerID}/orders`;
+    const token = localStorage.getItem('token');
+
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          const errorReason = data.message;
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
+  });
+};
