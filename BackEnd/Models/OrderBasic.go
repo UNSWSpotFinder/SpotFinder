@@ -7,9 +7,8 @@ import (
 type OrderBasic struct {
 	gorm.Model
 	BookingTime string `gorm:"type:text;not null"`
-	UserID      uint   `gorm:"type:uint;not null"`
 	// 一个订单只能属于一个用户
-	OwnerID uint `gorm:"type:uint;not null"`
+	BookerID uint `gorm:"type:bigint(20) unsigned;not null"`
 	// 一个订单只能属于一个车位
 	SpotID uint `gorm:"type:uint;not null"`
 	// Cost = Price * Time
@@ -18,8 +17,7 @@ type OrderBasic struct {
 	// Status = "Pending" or "Paid" or "Refund" or "Canceled"
 	Status string `gorm:"type:varchar(255);not null"`
 
-	Owner  UserBasic `gorm:"foreignKey:OwnerID"`
-	Booker UserBasic `gorm:"foreignKey:UserID"`
+	Booker UserBasic `gorm:"foreignKey:BookerID"`
 }
 
 func (OrderBasic) TableName() string {

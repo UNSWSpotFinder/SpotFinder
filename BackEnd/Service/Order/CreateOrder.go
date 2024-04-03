@@ -11,7 +11,6 @@ import (
 
 type CreateRequest struct {
 	BookingTime string  `json:"bookingTime" example:"" binding:"required"`
-	OwnerID     uint    `json:"ownerID" example:"2" binding:"required"`
 	SpotID      uint    `json:"spotID" example:"3" binding:"required"`
 	Cost        float64 `json:"cost" example:"100" binding:"required"`
 	CarID       uint    `json:"carID" example:"4" binding:"required"`
@@ -49,8 +48,7 @@ func CreateOrderHandler(c *gin.Context) {
 		return
 	}
 	order.BookingTime = request.BookingTime
-	order.UserID = userID
-	order.OwnerID = request.OwnerID
+	order.BookerID = userID
 	order.SpotID = uint(spotID)
 	order.Cost = request.Cost
 	order.CarID = request.CarID

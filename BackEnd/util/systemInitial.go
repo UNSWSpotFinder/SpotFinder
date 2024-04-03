@@ -170,16 +170,23 @@ func InitMySQL() *gorm.DB {
 	//user := models.UserBasic{}
 	//db.Find(&user)
 	//fmt.Println(user)
-	if err := db.AutoMigrate(
-		&Models.UserBasic{},
-		&Models.SpotBasic{},
-		&Models.ManagerBasic{},
-		&Models.CarBasic{},
-		&Models.OrderBasic{},
-	); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.UserBasic{}); err != nil {
+		fmt.Println(err)
+
 	}
+	if err := db.AutoMigrate(&Models.ManagerBasic{}); err != nil {
+		fmt.Println(err)
+
+	}
+	if err := db.AutoMigrate(&Models.CarBasic{}); err != nil {
+		fmt.Println(err)
+
+	}
+	if err := db.AutoMigrate(&Models.OrderBasic{}); err != nil {
+		fmt.Println(err)
+
+	}
+
 	return db
 }
 

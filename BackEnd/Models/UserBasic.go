@@ -29,7 +29,8 @@ type UserBasic struct {
 	OwnedSpot string `gorm:"type:text;not null"`
 
 	Cars   []CarBasic   `gorm:"foreignKey:OwnerId"`
-	Orders []OrderBasic `gorm:"foreignKey:OwnerID"`
+	Spots  []SpotBasic  `gorm:"foreignKey:OwnerID"`
+	Orders []OrderBasic `gorm:"foreignKey:BookerID"`
 }
 
 func (UserBasic) TableName() string {
