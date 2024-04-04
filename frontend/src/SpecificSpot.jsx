@@ -293,7 +293,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     setcanOrder(true);
     // change the conponment
     let tempdata = {
-      bookingTime:JSON.stringify(data.BookingDuration),
+      bookingTime:data.BookingDuration,
       carID:Number(localStorage.getItem("carId")),
       cost:data.TotalPrice
     }
@@ -441,9 +441,9 @@ export function HomeSpecificLarge() {
   const Confirm = () => {
     let temp = {
       Tid: Date.now(), // unique id
-      startDate: FirstStart,
-      endDate: FirstEnd,
-      distance: Firstdistance,
+      startDate: FirstStart.format(),
+      endDate: FirstEnd.format(),
+      distance: Firstdistance.toString(),
     };
     if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
@@ -472,9 +472,14 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    let resultIntervals=timeIntervals.map((data)=>{
+      data.startDate=data.startDate.format();
+      data.endDate=data.endDate.format();
+      data.distance=data.distance.toString();
+    })
     setdata((prevData) => ({
       ...prevData,
-      BookingDuration: [temp, ...timeIntervals],
+      BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
       TotalPrice: TotalPrice,
     }));
@@ -783,12 +788,12 @@ export function HomeSpecificLarge() {
         FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
     data.AvailableTime.map((item) => {
-      console.log(
-        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-          FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
-      );
+      // console.log(
+      //   FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+      //     FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+      // );
     });
-    console.log(selectedStartRange);
+    // console.log(selectedStartRange);
     if (!selectedStartRange) return true;
     return (
       !dayjs(date).isSameOrAfter(FirstStart) ||
