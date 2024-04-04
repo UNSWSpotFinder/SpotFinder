@@ -441,8 +441,8 @@ export function HomeSpecificLarge() {
   const Confirm = () => {
     let temp = {
       Tid: Date.now(), // unique id
-      startDate: FirstStart.format(),
-      endDate: FirstEnd.format(),
+      startDate: FirstStart.format().toString(),
+      endDate: FirstEnd.format().toString(),
       distance: Firstdistance.toString(),
     };
     if (FirstStart === null || FirstEnd === null) {
@@ -473,8 +473,8 @@ export function HomeSpecificLarge() {
       return;
     }
     let resultIntervals=timeIntervals.map((data)=>{
-      data.startDate=data.startDate.format();
-      data.endDate=data.endDate.format();
+      data.startDate=data.startDate.format().toString();
+      data.endDate=data.endDate.format().toString();
       data.distance=data.distance.toString();
     })
     setdata((prevData) => ({
@@ -639,6 +639,9 @@ export function HomeSpecificLarge() {
         setallpic(res);
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
+            if( response.message.name==='boyang'){
+                
+            }
             setdata((prevData) => ({
               ...prevData,
               Profile: response.message.avatar,
