@@ -19,10 +19,11 @@ div.contentmain-caradd{
     flex-direction: column;
     padding: 0px 10%;
     margin-top: 20px;
+    overflow-y: scroll;
 }
 div.Onecar{
     width: 80%;
-    height: 200px;
+    min-height: 200px;
     background-color: rgb(240, 240, 240);
     border-radius: 10px;
     margin: 10px 0px;
@@ -57,7 +58,7 @@ div.carinfo-right-bottom{
 }
 div.addcar{
     width: 80%;
-    height: 200px;
+    min-height: 200px;
     background-color: rgb(240, 240, 240);
     border-radius: 10px;
     margin: 10px 0px;

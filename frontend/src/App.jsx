@@ -12,7 +12,7 @@ import React, {
 import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link,useParams, useLocation} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link,useParams, useLocation, useNavigate} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{

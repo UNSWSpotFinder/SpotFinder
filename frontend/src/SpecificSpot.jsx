@@ -28,6 +28,9 @@ import {
   useParams,
 } from 'react-router-dom';
 import {
+  getUserInfo
+} from './components/API';
+import {
   AdminLoginPage,
   UserLoginPage,
   UserLoginPageForgetPassword,
@@ -41,6 +44,7 @@ import {
   callAPIGetSpecUserInfo,
   GetDistanceAll,
   CalculateAllTime,
+  callAPICreateOrder
 } from './API';
 import './SpecificSpot.css';
 import { indigo } from '@mui/material/colors';
@@ -55,7 +59,7 @@ const CfmContent = styled('div')({
   position: 'absolute',
   zIndex: '4',
   width: '80%',
-  height: '550px',
+  height: '640px',
   backgroundColor: 'rgb(255, 255, 255)',
   borderRadius: '10px',
   boxShadow: '0px 1px 10px 1px rgba(42, 42, 42, 0.5)',
@@ -89,7 +93,7 @@ const CfmCenterContent = styled('div')({
   fontSize: '20px',
   margin: '0px',
   padding: '20px 0px 0px 0px',
-  height: '400px',
+  height: '450px',
   overflowY: 'scroll',
   textAlign: 'center',
   color: 'rgb(0, 0, 0)',
@@ -179,9 +183,10 @@ const CfmFac = styled('div')({
   },
 });
 const CfmBottom = styled('div')({
-  width: '100%',
+  width: '90%',
+  marginLeft:'10%',
   display: 'flex',
-  height: '50px',
+  flexDirection: "column",
   justifyContent: 'center',
 });
 const CfmGuestBlock = styled('div')({
@@ -210,7 +215,7 @@ const LogoPath = styled('img')({
 });
 const ReserveConfirm = styled('button')({
   marginBottom: '15px',
-  backgroundColor: 'rgb(0, 128, 255)',
+  backgroundColor: '#E22229',
   fontSize: '16px',
   width: '90%',
   fontWeight: '500',
@@ -221,7 +226,7 @@ const ReserveConfirm = styled('button')({
   borderRadius: '7px',
   color: 'white',
   '&:hover': {
-    backgroundColor: 'rgb(0, 109, 218);',
+    backgroundColor: '#9e0005',
     color: 'white',
   },
   '&:disabled': {
@@ -230,16 +235,44 @@ const ReserveConfirm = styled('button')({
   },
 });
 export const ConfirmBook = ({ data, isOpen, close }) => {
+  const [topup,settp]=useState(false);
+  const [canOrder,setcanOrder]=useState(false);
+  const [Payed,setPayed]=useState(false);
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
+  const { contextState, updateContextState } = useContext(AppContext);
   // use the navigate to go to the user page
+  const [Balance,setBalance]=useState('');
+
+  useEffect(()=>{
+    getUserInfo().then((response)=>{
+      console.log(response.message.account);
+      setBalance(response.message.account);
+    }).catch((error)=>{
+    });
+    if(Balance - data.TotalPrice<0){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Your available balance is not enough, please Topup',
+        timestamp: new Date().getTime(),
+      });
+      setcanOrder(true);
+      settp(true);
+      return;
+    }else{
+      settp(false);
+    }
+  },[Balance,data.TotalPrice,isOpen]);
   const navigate = useNavigate();
   // get the hosting id from the url
-  const { HostingId } = useParams();
+  const {  username , Spotid } = useParams();
   // go to the user page
   const goesMain = () => {
-    navigate('/user/' + localStorage.getItem('email'));
+    navigate('/' + localStorage.getItem('email')+'/dashboard/bookings');
   };
+  const goesTopUp= () =>{
+    navigate('/' + localStorage.getItem('email')+'/dashboard');
+  }
   // go back to detail page
   const back = () => {
     setConfirmState(false);
@@ -249,7 +282,44 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   const { _, setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const ReverseBook = () => {
+    if(Balance-data.TotalPrice<0){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Your available balance is not enough, please Topup',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    setcanOrder(true);
     // change the conponment
+    let tempdata = {
+      bookingTime:data.BookingDuration,
+      carID:Number(localStorage.getItem("carId")),
+      cost:data.TotalPrice
+    }
+    console.log(tempdata);
+    callAPICreateOrder("spots/"+localStorage.getItem('spotID')+'/orders',localStorage.getItem('token'),tempdata).then(
+      (response) => {
+        setOpenSnackbar({
+          severity: 'success',
+          message: 'You successfully pay your order!Thank you.',
+          timestamp: new Date().getTime(),
+        });
+        setConfirmState(true);
+        setcanOrder(false);
+        return;
+      }
+    ).catch(
+      (error) => {
+        setOpenSnackbar({
+          severity: 'warning',
+          message: 'There exist some error, please try again.',
+          timestamp: new Date().getTime(),
+        });
+        setcanOrder(false);
+        return;
+      }
+    );
     console.log(data);
   };
   let conponment = (
@@ -297,17 +367,17 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             <CfmLefttxt>Parking Car Infomation</CfmLefttxt>
             <CfmRow2>
               <CfmRightttxt2>Brand of motor vehicle</CfmRightttxt2>
-              <CfmRightttxt2>nu</CfmRightttxt2>
+              <CfmRightttxt2>{contextState.CarType}</CfmRightttxt2>
             </CfmRow2>
             <CfmRow2>
               <CfmRightttxt2>Vehicle registration number</CfmRightttxt2>
-              <CfmRightttxt2>nu</CfmRightttxt2>
+              <CfmRightttxt2>{contextState.CarPlate}</CfmRightttxt2>
             </CfmRow2>
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Booking Time</CfmLefttxt>
             {data.BookingDuration.map((date, index) => (
-              <CfmRow2 key={date.id}>
+              <CfmRow2 key={date.Tid}>
                 <CfmRightttxt2>
                   {data.BookWay === 'H'
                     ? 'From ' +
@@ -331,9 +401,14 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             <CfmLefttxt>Total Price</CfmLefttxt>
             <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
           </CfmRowP>
+          <CfmRowP>
+            <CfmLefttxt>Your Available Balance</CfmLefttxt>
+            <CfmRightttxt>${Balance}</CfmRightttxt>
+          </CfmRowP>
         </CfmCenterContent>
         <CfmBottom>
           <ReserveConfirm
+            disabled={canOrder}
             onClick={() => {
               if (ConfirmState) {
                 goesMain();
@@ -346,6 +421,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
               ? 'Goes to HomePage'
               : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
           </ReserveConfirm>
+          {topup && <ReserveConfirm onClick={() => {goesTopUp()}}>{'Goes to TopUp'}</ReserveConfirm>}
         </CfmBottom>
       </CfmContent>
     </div>
@@ -364,10 +440,10 @@ export function HomeSpecificLarge() {
   };
   const Confirm = () => {
     let temp = {
-      id: Date.now(), // unique id
-      startDate: FirstStart,
-      endDate: FirstEnd,
-      distance: Firstdistance,
+      Tid: Date.now(), // unique id
+      startDate: FirstStart.format().toString(),
+      endDate: FirstEnd.format().toString(),
+      distance: Firstdistance.toString(),
     };
     if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
@@ -396,9 +472,14 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    let resultIntervals=timeIntervals.map((data)=>{
+      data.startDate=data.startDate.format().toString();
+      data.endDate=data.endDate.format().toString();
+      data.distance=data.distance.toString();
+    })
     setdata((prevData) => ({
       ...prevData,
-      BookingDuration: [temp, ...timeIntervals],
+      BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
       TotalPrice: TotalPrice,
     }));
@@ -558,6 +639,9 @@ export function HomeSpecificLarge() {
         setallpic(res);
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
+            if( response.message.name==='boyang'){
+                
+            }
             setdata((prevData) => ({
               ...prevData,
               Profile: response.message.avatar,
@@ -602,7 +686,7 @@ export function HomeSpecificLarge() {
     let res = CalculateAllTime(
       [
         {
-          id: Date.now(), // unique id
+          Tid: Date.now(), // unique id
           startDate: FirstStart,
           endDate: FirstEnd,
           distance: 0,
@@ -612,7 +696,7 @@ export function HomeSpecificLarge() {
       bookway
     );
     console.log(res);
-    setDistance(res);
+    setDistance(GetDistanceAll(FirstStart,bookway,FirstEnd));
     setTotalPrice(calculateTotalPrice(res));
   }, [timeIntervals, FirstStart, FirstEnd, bookway]);
   // change the first available date
@@ -628,7 +712,7 @@ export function HomeSpecificLarge() {
     setTimeIntervals((currentInterval) => [
       ...currentInterval,
       {
-        id: Date.now(), // unique id
+        Tid: Date.now(), // unique id
         startDate: null,
         endDate: null,
         distance: 0,
@@ -645,7 +729,7 @@ export function HomeSpecificLarge() {
       if (already) {
         // set the new interval value
         newIntervals[index] = {
-          id: already.id,
+          Tid: already.Tid,
           startDate: date,
           endDate: already.endDate,
           distance: GetDistanceAll(date, bookway, already.endDate),
@@ -665,7 +749,7 @@ export function HomeSpecificLarge() {
       // update the interval value
       if (already) {
         newIntervals[index] = {
-          id: already.id,
+          Tid: already.Tid,
           startDate: already.startDate,
           endDate: date,
           distance: GetDistanceAll(already.startDate, bookway, date),
@@ -679,7 +763,7 @@ export function HomeSpecificLarge() {
   const deleteInterval = (id) => {
     // delete the interval by filter the id
     setTimeIntervals((prevIntervals) =>
-      prevIntervals.filter((interval) => interval.id !== id)
+      prevIntervals.filter((interval) => interval.Tid !== id)
     );
   };
 
@@ -707,12 +791,12 @@ export function HomeSpecificLarge() {
         FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
     data.AvailableTime.map((item) => {
-      console.log(
-        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-          FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
-      );
+      // console.log(
+      //   FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+      //     FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+      // );
     });
-    console.log(selectedStartRange);
+    // console.log(selectedStartRange);
     if (!selectedStartRange) return true;
     return (
       !dayjs(date).isSameOrAfter(FirstStart) ||
@@ -765,11 +849,7 @@ export function HomeSpecificLarge() {
             <div key={index} className='headerimg'>
               <img
                 className='speimg'
-                src={
-                  image.includes('base64,')
-                    ? image
-                    : 'data:image/jpeg;base64,' + image
-                }
+                src={ image }
                 alt={`Slide ${index}`}
               />
             </div>
@@ -833,11 +913,7 @@ export function HomeSpecificLarge() {
         <div className='relevent-left'>
           <div className='re-le-le'>
             <img
-              src={
-                data.Profile.includes('data:image/jpeg;base64,')
-                  ? data.Profile
-                  : 'data:image/jpeg;base64,' + data.Profile || '/img/LOGO.svg'
-              }
+              src={ data.Profile }
               className='profile'
             ></img>
             <p className='user_name'>{data.Owner}</p>
@@ -1041,7 +1117,7 @@ export function HomeSpecificLarge() {
                   <button
                     className='ClearInterval-book'
                     onClick={() => {
-                      deleteInterval(interval.id);
+                      deleteInterval(interval.Tid);
                     }}
                   >
                     Delete

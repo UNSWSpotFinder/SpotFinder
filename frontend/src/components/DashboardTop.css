@@ -35,6 +35,10 @@ img.searchbtn{
   margin-top: auto;
 }
 
+.Applogo {
+  cursor: pointer;
+}
+
 
 /* 顶部按钮 */
 .top-button {

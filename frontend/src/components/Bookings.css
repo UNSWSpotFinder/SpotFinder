@@ -3,19 +3,37 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px;
+    margin: 10px;
+    
+  }
+  .booking-btn {
+    margin:10px, 
   }
 
-  .booking-title {
+  .current-booking-title, .past-booking-title {
     background-color: #fff;
     color: #e11e2c;
     border: 2px solid #e11e2c;
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
+    margin-right: 10px;
   }
 
-  .booking-title:hover {
+  .current-booking-title.active, .past-booking-title.active {
+    background-color: #e11e2c;
+    color: #fff;
+  }
+  
+  .current-booking-title:not(.active):hover, .past-booking-title:not(.active):hover {
+    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+  }
+
+  .current-booking-title:hover {
+    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+  }
+
+  .past-booking-title:hover {
     box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
   }
 
@@ -52,6 +70,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
   }
 
   .picture, .right-btn-part {
@@ -67,7 +87,6 @@
     background-color: #d3d3d3; 
     width: 150px;
     height: 150px;
-    /* border-radius: 5px; */
   }
 
   .space-information {
@@ -93,6 +112,11 @@
 
   .space-rate{
     margin-left: 20px;
+  }
+
+  .space-park-time, .total-cost {
+    font-size: 15px;
+    margin-top: 5px;
   }
 
   .space-address {

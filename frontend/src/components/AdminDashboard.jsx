@@ -8,6 +8,8 @@ import { AppContext } from '../App';
 
 
 const AdminDashboard = () => {
+  let pageA=1;
+  let pageB=1;
   const { contextState, updateContextState } = useContext(AppContext);
   let handleLocation = (event)=>{
     updateContextState({
@@ -83,13 +85,14 @@ const AdminDashboard = () => {
   }, []); 
   const getNewSpot=() =>{
     console.log('ty');
-    getAllSpots()
+    getAllSpots(pageB)
     .then((data) => {
       console.log('o');
       console.log(data);
-      const datanow = data.message;
+      const datanow = data.message || [];
       setSpots((prevSpots) => [...prevSpots, ...datanow]); 
       setIsLoading(false);
+      pageB+=1;
       // console.log('Spots:', data.message);
       // console.log('Rendering spots:', spots);
       // console.log('Rendering spots:', spots[1].SpotName);
@@ -99,13 +102,14 @@ const AdminDashboard = () => {
     });
   }
   const getNewApprove=()=>{
-    getAllNotApprovedSpots()
+    getAllNotApprovedSpots(pageA)
     .then((data) => {
       console.log('n');
       console.log(data);
-      const datanow2=data.message;
+      const datanow2 = data.message || [];
       setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
       setIsLoadingApp(false);
+      pageA+=1;
     })
     .catch((error) => {
       console.error('Failed to fetch spots:', error);
@@ -224,7 +228,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>There aren't any such spots that need to be APPROVED at the moment.</p>)}
+        {filteredSpotApp.length===0 && (<p className='Appnull'>{isLoadingApp?"There aren't any such spots that need to be APPROVED at the moment.":"Loading..."}</p>)}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
@@ -302,7 +306,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpot.length===0 && (<p className='Appnull'>Sorry, There aren't any such spots.</p>)}
+        {filteredSpot.length===0 && (<p className='Appnull'>{isLoading?"Sorry, There aren't any such spots.":"Loading..."}</p>)}
       </div>
     </div>
   );

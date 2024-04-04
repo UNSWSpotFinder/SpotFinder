@@ -164,7 +164,7 @@ return (
         <Alert onClose={handleClose} severity={snackbarData.severity}>
         {snackbarData.message}
         </Alert>
-  </Snackbar>
+    </Snackbar>
 );
 };
 export const callAPIsendEmailCode = (path,input)=>{
@@ -464,11 +464,11 @@ export const callAPIEditSpot=(path,input,token)=>{
  })
 }
 // 获取所有车位
-export const callAPIGetAllSpot=(path,token)=>{
+export const callAPIGetAllSpot=(path,token,page)=>{
   return new Promise((resolve, reject) =>{
      console.log('token: '+token);
      console.log('http://localhost:'+String(port)+'/'+String(path));
-     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true',{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/?isVisible=true&page='+page+'&pageSize=15',{
      method:'GET',
      headers: { 
       'Content-Type': 'application/json'
@@ -569,4 +569,156 @@ export const callAPIGetSpecUserInfo=(path)=>{
          console.log(error);
      })
  })
+}
+export const callAPIApproveSpot=(path, SpotId,token)=>{
+  return new Promise((resolve, reject) =>{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/'+String(SpotId),{
+     method:'POST',
+     headers: { 
+      Authorization: `Bearer ${String(token)}`,
+      'Content-Type': 'application/json' 
+    }
+     })
+     .then((response)=>{
+      if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          if(response){
+            return resolve(response);
+          }
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response.json().then(data => {
+            console.log(data.error);
+            let errorReason = 'An unknown error occurred.';
+            if(data.error==''){
+              errorReason = '';
+            }
+            else if(data.error){
+              errorReason = '';
+            }
+            reject(errorReason);
+          })
+          .catch(() => { reject(new Error('Error parsing response JSON.'));});
+        }
+     })
+     .catch((error)=>{
+         console.log(error);
+     })
+ })
+}
+
+export const callAPIBlockSpot=(path, SpotId,token)=>{
+  return new Promise((resolve, reject) =>{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/'+String(SpotId),{
+     method:'PUT',
+     headers: { 
+      Authorization: `Bearer ${String(token)}`,
+      'Content-Type': 'application/json' 
+    }
+     })
+     .then((response)=>{
+      if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          if(response){
+            return resolve(response);
+          }
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response.json().then(data => {
+            console.log(data.error);
+            let errorReason = 'An unknown error occurred.';
+            if(data.error==''){
+              errorReason = '';
+            }
+            else if(data.error){
+              errorReason = '';
+            }
+            reject(errorReason);
+          })
+          .catch(() => { reject(new Error('Error parsing response JSON.'));});
+        }
+     })
+     .catch((error)=>{
+         console.log(error);
+     })
+ })
+}
+
+export const callAPIHiddenSpot=(path, SpotId,token)=>{
+  return new Promise((resolve, reject) =>{
+     fetch('http://localhost:'+String(port)+'/'+String(path)+'/'+String(SpotId),{
+     method:'PUT',
+     headers: { 
+      Authorization: `Bearer ${String(token)}`,
+      'Content-Type': 'application/json' 
+    }
+     })
+     .then((response)=>{
+      if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          if(response){
+            return resolve(response);
+          }
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response.json().then(data => {
+            console.log(data.error);
+            let errorReason = 'An unknown error occurred.';
+            if(data.error==''){
+              errorReason = '';
+            }
+            else if(data.error){
+              errorReason = '';
+            }
+            reject(errorReason);
+          })
+          .catch(() => { reject(new Error('Error parsing response JSON.'));});
+        }
+     })
+     .catch((error)=>{
+         console.log(error);
+     })
+ })
+}
+
+export const callAPICreateOrder=(path,token,input)=>{
+  return new Promise((resolve, reject) =>{
+    console.log(input);
+    console.log('token: '+token);
+    console.log('http://localhost:'+String(port)+'/'+String(path));
+    fetch('http://localhost:'+String(port)+'/'+String(path),{
+    method:'POST',
+    headers: { 
+     Authorization: `Bearer ${String(token)}`,
+     'Content-Type': 'application/json' 
+   },
+    body:JSON.stringify(input),
+    })
+    .then((response)=>{
+     if (response.status === 200) {
+         console.log('success');
+         return response.json().then(data => resolve(data));
+       } else {
+         // 如果状态码不是200，我们要解析JSON来找出错误原因
+         response.json().then(data => {
+           console.log(data.error);
+           let errorReason = 'An unknown error occurred.';
+           if(data.error=='invalid manager'){
+             errorReason = 'It looks like you are not an employee of our company.';
+           }
+           else if(data.error){
+             errorReason = 'User has been registered!';
+           }
+           reject(errorReason);
+         })
+         .catch(() => { reject(new Error('Error parsing response JSON.'));});
+       }
+    })
+    .catch((error)=>{
+        console.log(error);
+    })
+})
 }

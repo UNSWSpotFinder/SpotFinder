@@ -32,6 +32,9 @@ import {
   callAPICreateSpot,
   callAPIGetSpecSpot,
   callAPIEditSpot,
+  callAPIApproveSpot,
+  callAPIBlockSpot,
+  callAPIHiddenSpot
 } from './API';
 const CfmContent = styled('div')({
   position: 'absolute',
@@ -100,7 +103,6 @@ const ReserveConfirm = styled('button')({
   backgroundColor: 'rgb(202, 16, 16)',
   fontSize: '16px',
   width: '80%',
-  fontWeight: '500',
   letterSpacing: '1px',
   height: '40px',
   border: '0px',
@@ -117,7 +119,6 @@ const ReserveConfirmblack = styled('button')({
   backgroundColor: 'rgb(0, 0, 0)',
   fontSize: '16px',
   width: '80%',
-  fontWeight: '500',
   letterSpacing: '1px',
   height: '40px',
   border: '0px',
@@ -128,8 +129,25 @@ const ReserveConfirmblack = styled('button')({
     color: 'rgb(180, 180, 180);',
   },
 });
+const ReserveConfirmgray = styled('button')({
+  marginBottom: '15px',
+  backgroundColor: 'rgb(245, 245, 245)',
+  fontSize: '16px',
+  width: '80%',
+  letterSpacing: '1px',
+  height: '40px',
+  border: '0px',
+  margin: '10px 10%',
+  borderRadius: '7px',
+  color: 'black',
+  '&:hover': {
+    backgroundColor: 'rgb(235, 235, 235)',
+  },
+});
 // 修改
 export const ApproveCheck = ({ data, isOpen, close }) => {
+  // get the set open snackbar function
+  const { _ , setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -139,25 +157,26 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
   const back = () => {
     close();
   };
-  // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
-  const EditInfo = (id) => {
-    callAPIEditSpot(
-      'spot/modifySpotInfo/' + id,
-      data,
-      localStorage.getItem('token')
+  const SendFeedback = () => {
+    setOpenSnackbar({
+      severity: 'success',
+      message: 'Spot successfully approved!',
+      timestamp: new Date().getTime(),
+    });
+    navigate('/admin/' + adminid);
+  };
+  const Approve = (id) => {
+    callAPIApproveSpot(
+      'manager/approve',
+      id,
+      localStorage.getItem('token'),
     )
-      .then((response) => {
+    .then((response) => {
         console.log(response);
-        setOpenSnackbar({
-          severity: 'success',
-          message: 'Edit Spot Successful!',
-          timestamp: new Date().getTime(),
-        });
-        navigate('/admin/' + adminid);
-      })
-      .catch((error) => {
+        SendFeedback();
+    })
+    .catch((error) => {
         console.log('np');
         console.log(data);
         setOpenSnackbar({
@@ -165,7 +184,27 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
           message: error,
           timestamp: new Date().getTime(),
         });
-      });
+    });
+  };
+  const EditInfo = (id) => {
+    callAPIEditSpot(
+      'spot/modifySpotInfo/' + id,
+      data,
+      localStorage.getItem('token')
+    )
+    .then((response) => {
+        console.log(response);
+        Approve(id);
+    })
+    .catch((error) => {
+        console.log('np');
+        console.log(data);
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+    });
     // change the conponment
     console.log(data);
   };
@@ -259,7 +298,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
 };
 // 删除
 export const DeleteCheck = ({ isOpen, close }) => {
-  const { Spotid } = useParams();
+  const { adminid, Spotid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -268,10 +307,35 @@ export const DeleteCheck = ({ isOpen, close }) => {
   const back = () => {
     close();
   };
+  const SendFeedback = () => {
+    setOpenSnackbar({
+      severity: 'success',
+      message: 'Spot has been Blocked! All user would never see it.',
+      timestamp: new Date().getTime(),
+    });
+    navigate('/admin/' + adminid);
+  };
   // get the set open snackbar function
   const { _, setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const DeleteInfo = (id) => {
+    callAPIBlockSpot(
+      'manager/block',
+      id,
+      localStorage.getItem('token'),
+    )
+    .then((response) => {
+        console.log(response);
+        SendFeedback();
+    })
+    .catch((error) => {
+        console.log('np');
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+    });
     // change the conponment
     console.log('DELETE SUCCESS' + id);
   };
@@ -299,10 +363,78 @@ export const DeleteCheck = ({ isOpen, close }) => {
   );
   return isOpen ? conponment : null;
 };
+export const HiddenCheck = ({ isOpen, close }) => {
+  const { adminid, Spotid } = useParams();
+  // use the navigate to go to the user page
+  const navigate = useNavigate();
+  // get the hosting id from the url
+  // go to the user page
+  // go back to detail page
+  const back = () => {
+    close();
+  };
+  const SendFeedback = () => {
+    setOpenSnackbar({
+      severity: 'success',
+      message: 'Spot has been Hidden! You can republish it later.',
+      timestamp: new Date().getTime(),
+    });
+    navigate('/admin/' + adminid);
+  };
+  // get the set open snackbar function
+  const { _, setOpenSnackbar } = useError();
+  // this function used when the user click the confirm button
+  const HiddenInfo = (id) => {
+    callAPIHiddenSpot(
+      'manager/invisible',
+      id,
+      localStorage.getItem('token'),
+    )
+    .then((response) => {
+        console.log(response);
+        SendFeedback();
+    })
+    .catch((error) => {
+        console.log('np');
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+    });
+    // change the conponment
+    console.log('DELETE SUCCESS' + id);
+  };
+  let conponment = (
+    <div className='CfmAll'>
+      <div className='CfmBack'></div>
+      <CfmContent>
+        <CfmHeight>
+          <CfmClose onClick={back}>{'Back'}</CfmClose>
+          <CfmHead>Spot Hidden Response</CfmHead>
+        </CfmHeight>
+        <CfmRowCol>
+          <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
+          <textarea className='Feedback'></textarea>
+        </CfmRowCol>
+        <ReserveConfirmgray
+          onClick={() => {
+            HiddenInfo(Spotid);
+          }}
+        >
+          {'Send Feedback  &  Hidden'}
+        </ReserveConfirmgray>
+      </CfmContent>
+    </div>
+  );
+  return isOpen ? conponment : null;
+};
+
 // EditHostingPage
 export const ManagerEditSpace = () => {
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
+  const [isOpenHidden, setOpenHidden] = useState(false);
   const { adminid, Spotid } = useParams();
   console.log(adminid);
   console.log(Spotid);
@@ -356,8 +488,8 @@ export const ManagerEditSpace = () => {
           endDate: dayjs(item.endDate),
         }));
         console.log(all_time);
-        setFirstStart(all_time[0].endDate);
-        setFirstEnd(all_time[0].startDate);
+        setFirstStart(all_time[0].startDate);
+        setFirstEnd(all_time[0].endDate);
         setDistance(all_time[0].distance);
         setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
       })
@@ -983,6 +1115,9 @@ export const ManagerEditSpace = () => {
   const DeleteNow = () => {
     setOpenDelete(true);
   };
+  const HiddenNow = () => {
+    setOpenHidden(true);
+  };
   return (
     <div className='CreatChannelOverall'>
       <EditCheck
@@ -990,6 +1125,12 @@ export const ManagerEditSpace = () => {
         isOpen={isOpenApprove}
         close={() => {
           setOpenApprove(false);
+        }}
+      />
+      <HiddenCheck
+        isOpen={isOpenHidden}
+        close={() => {
+          setOpenHidden(false);
         }}
       />
       <DeleteCheck
@@ -1536,6 +1677,7 @@ export const ManagerEditSpace = () => {
                       <DatePicker
                         label='Start Date'
                         value={FirstStart}
+                        minDate={dayjs(new Date())}
                         onChange={(date) => {
                           if (date) FirstStartChange(date);
                         }}
@@ -1550,6 +1692,7 @@ export const ManagerEditSpace = () => {
                       <DatePicker
                         label='End Date'
                         value={FirstEnd}
+                        minDate={dayjs(FirstStart)}
                         onChange={(date) => {
                           if (date) FirstEndChange(date);
                         }}
@@ -1582,6 +1725,7 @@ export const ManagerEditSpace = () => {
                         <DatePicker
                           label='Start Date'
                           value={interval.startDate}
+                          minDate={dayjs(new Date())}
                           onChange={(date) => {
                             if (date) handleStartDateChange(index, date);
                           }}
@@ -1592,10 +1736,11 @@ export const ManagerEditSpace = () => {
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='End Date'
-                          value={interval.startDate}
+                          value={interval.endDate}
+                          minDate={dayjs(interval.startDate)}
                           onChange={(date) => {
                             if (date) handleEndDateChange(index, date);
                           }}
@@ -1690,8 +1835,8 @@ export const ManagerEditSpace = () => {
         >
           Edit Spot
         </button>
-        <button className='CreatButton-b white' onClick={goesHost}>
-          Back to Dashboard
+        <button className='CreatButton-b white' onClick={() => HiddenNow()}>
+          Hidden This Spot
         </button>
         <button
           className='CreatButton-b black'
@@ -1761,8 +1906,8 @@ export const ManagerApproveEditSpace = () => {
           endDate: dayjs(item.endDate),
         }));
         console.log(all_time);
-        setFirstStart(all_time[0].endDate);
-        setFirstEnd(all_time[0].startDate);
+        setFirstStart(all_time[0].startDate);
+        setFirstEnd(all_time[0].endDate);
         setDistance(all_time[0].distance);
         setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
       })
@@ -2940,6 +3085,7 @@ export const ManagerApproveEditSpace = () => {
                       <DatePicker
                         label='Start Date'
                         value={FirstStart}
+                        minDate={dayjs(new Date())}
                         onChange={(date) => {
                           if (date) FirstStartChange(date);
                         }}
@@ -2954,6 +3100,7 @@ export const ManagerApproveEditSpace = () => {
                       <DatePicker
                         label='End Date'
                         value={FirstEnd}
+                        minDate={dayjs(FirstStart)}
                         onChange={(date) => {
                           if (date) FirstEndChange(date);
                         }}
@@ -2982,7 +3129,7 @@ export const ManagerApproveEditSpace = () => {
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='Start Date'
                           value={interval.startDate}
@@ -2996,10 +3143,11 @@ export const ManagerApproveEditSpace = () => {
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           label='End Date'
-                          value={interval.startDate}
+                          value={interval.endDate}
+                          minDate={dayjs(interval.FirstStart)}
                           onChange={(date) => {
                             if (date) handleEndDateChange(index, date);
                           }}

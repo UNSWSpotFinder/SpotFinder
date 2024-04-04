@@ -36,6 +36,7 @@ import { private_createTypography } from '@mui/material';
 // 未登录状态的用户页面
 
 function AllSpoting() {
+  let page=1;
   const { contextState, updateContextState } = useContext(AppContext);
   const navigate = useNavigate();
   const goesSpecific = (event) => {
@@ -192,12 +193,13 @@ function AllSpoting() {
     setfilrerSpot(filter);
   }, [contextState, allSpot]);
   function getNewSpot() {
-    callAPIGetAllSpot('spot/list', localStorage.getItem('token'))
+    callAPIGetAllSpot('spot/list', localStorage.getItem('token'),page)
       .then((response) => {
         console.log(response);
         if(response && response.message){
           setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
           setIsLoading(false); // 完成加载后设置为 false
+          page=page+1;
         }
       })
       .catch((error) => {
@@ -266,6 +268,19 @@ function AllSpoting() {
 }
 
 export function HomePageLarge() {
+  let token = localStorage.getItem('token') || null;
+  let currentuser = localStorage.getItem('email') || null;
+  let AdminId = localStorage.getItem('AdminId')||null;
+  let navigate = useNavigate();
+  useEffect(()=>{
+    if(AdminId){
+      navigate('/admin/' + AdminId);
+    }
+    if(currentuser){
+      navigate('/' + currentuser);
+    }
+  },[])
+
   const { contextState, updateContextState } = useContext(AppContext);
   const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
@@ -300,6 +315,7 @@ export function HomePageLarge() {
       Carlocation: event.target.value,
     });
   };
+
   const handleOrdChange = (event) => {
     let res = event.target.value;
     setO(res === '0');
@@ -327,10 +343,7 @@ export function HomePageLarge() {
     });
   };
   const { _ , setOpenSnackbar } = useError();
-  let token = localStorage.getItem('token') || null;
-  let currentuser = localStorage.getItem('email') || null;
   // 调库
-  let navigate = useNavigate();
   // 进入用户登录页面
   let goesLoginUser = () => {
     navigate('/userlogin');

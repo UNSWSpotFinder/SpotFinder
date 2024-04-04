@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import OrdersModal from './OrdersModal'; 
-import { getUserInfo, getSpotDetails } from './API';
+import { getUserInfo, getSpotDetails, getReceivedBookingsInfo } from './API';
 import './Listings.css';
-import {CreateSpace,EditSpace} from '../CarSpaceOperation';
+
 
 const Listings = () => {
   const navigate=useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
-
   const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
+  const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // 存储获取到的 received bookings 信息
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        console.log('User data:', data);
         // 解析 ownedSpot JSON 字符串
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
           if (ownedSpotObject.OwnedSpot) {
             parsedOwnedSpot = ownedSpotObject.OwnedSpot;
-            console.log('ParsedOwnedSpot:', parsedOwnedSpot);
             // 并行获取所有 spots 的详细信息
             const spotsDetailsPromises = parsedOwnedSpot.map(spotId => getSpotDetails(spotId));
             const spotsDetails = await Promise.all(spotsDetailsPromises);
@@ -36,6 +34,19 @@ const Listings = () => {
         console.error('Error fetching user info or spots details:', error);
       }
     };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getReceivedBookingsInfo();
+        console.log('Received bookings data:', data);
+        setReceivedBookingsInfo(data.message);
+      } catch (error) {
+        console.error('Error fetching received bookings info:', error);
+      }
+    }
     fetchData();
   }, []);
   
@@ -81,22 +92,12 @@ const Listings = () => {
    const renderListings = () => {
     const goesEdit=(event)=>{
       navigate('/'+localStorage.getItem('email')+'/editspace/'+event.target.id);
-  
     }
     return spotsInfo.map((spot, index) => {
       if (spot.message) {
-        // 检查图片 URL 是否以特定字符串开头
-        // const base64Prefix = "data:image/jpeg;base64,";
-        // let imageUrl = spot.message.Pictures.startsWith(base64Prefix) 
-        //              ? spot.message.Pictures 
-        //              : base64Prefix + spot.message.Pictures;
-        
         // 重设地址格式
         const addr = JSON.parse(spot.message.SpotAddr);
-        console.log(addr);
         const formattedAddr = `${addr.Street}, ${addr.City}, ${addr.State}, ${addr.Postcode}, ${addr.Country}`;
-
-
 
         return (
           <div className='listing-info' key={index}>
@@ -108,6 +109,9 @@ const Listings = () => {
               <div className='location'>{formattedAddr}</div>
               <div className='spot-type'>{spot.message.SpotType}</div>
               <div className='way-to-access'>{spot.message.PassWay}</div>
+              <div className='spot-current-state'>
+                Current state: {spot.message.IsVisible ? 'Unapproved' : 'Approved'}
+              </div>
             </div>
             <div className='manipulation-link'>
               <div className='first-line-link'>
@@ -130,27 +134,15 @@ const Listings = () => {
     });
   };
 
-
-
   return (
     <div className='dashboard-listings'>    
       <div className="button-part">
-        <button className='listing-title'>Current Listings: 1</button>
+        <button className='listing-title'>Current Listings: {spotsInfo.length}</button>
         <button className='add-a-spot-btn' onClick={goesCreate}>Lease a new spot</button>
       </div>     
-
       <div className="list-part">
         <h3 className='listings-title'>Listings</h3>
         {renderListings()}
-
-
-        {/* link to add */}
-        <div className='hint-msg'>
-          {/* TODO:这里需要之后修改链接路由*/}
-          {/* <div className='link-to-add'>
-            <Link to="/home">Lease a new spot</Link>
-          </div>   */}
-        </div>
       </div>
 
       {/* 显示delete弹窗 */}

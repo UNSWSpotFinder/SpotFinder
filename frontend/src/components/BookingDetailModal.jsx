@@ -1,13 +1,24 @@
 import React from 'react';
+import EventIcon from '@mui/icons-material/Event';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import IconButton from '@mui/material/IconButton';
 import './BookingDetailModal.css';
 
 const BookingDetailModal = ({ closeBookingDetailModal }) => {
+  const handleScheduleChange = () => {
+    console.log('schedule change');
+  }
+
+  const handleVehicleChange = () => {
+    console.log('vehicle change');
+  }
+
   return (
     <div className="orders-modal-overlay">
       <div className="orders-modal-content">
         {/* 标题区域 */}
         <div className="orders-modal-header">
-          <div className='current-state-title'>Bookings</div>
+          <div className='booking-detail-title'>Booking Details</div>
           <button onClick={closeBookingDetailModal} className="close-btn">✖</button>
         </div>
 
@@ -33,12 +44,20 @@ const BookingDetailModal = ({ closeBookingDetailModal }) => {
           <div className='spot-info-middle'>
             <div className='booking-period'>
               Time: 26/2/2024-28/2/2024
-              <button>Change shecdule</button>
+              <div>
+                {/* <IconButton onClick={handleScheduleChange}>
+                  <EventIcon /> 
+                </IconButton> */}
+              </div>
             </div>
             <div className='booking-total-cost'>Total cost: $114</div>
             <div className='booking-vehicle'>
               Your vehicle: Lamborghini
-              <button>Change vehicle</button>
+              <div>
+                {/* <IconButton onClick={handleVehicleChange}>
+                  <DirectionsCarIcon />
+                </IconButton> */}
+              </div>
             </div>
 
           </div>

@@ -6,7 +6,7 @@ const Messages = () => {
   return (
     <div className='DashboardMessages'>
       {/* 组件的JSX结构 */}
-      Messages
+      There is no message yet.
     </div>
   );
 }

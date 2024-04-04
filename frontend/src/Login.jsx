@@ -446,7 +446,7 @@ export function AdminLoginPage(){
                     timestamp:new Date().getTime()
                 });
                 localStorage.setItem('token',response.token);
-                localStorage.setItem('email',Email);
+                localStorage.setItem('AdminId',Email);
                 navigate(`/admin/${Email}`);
             })
             .catch((error)=>{
