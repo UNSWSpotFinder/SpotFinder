@@ -10,31 +10,43 @@ const Listings = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
+  const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // 存储获取到的 received bookings 信息
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        console.log('User data:', data);
         // 解析 ownedSpot JSON 字符串
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
           if (ownedSpotObject.OwnedSpot) {
             parsedOwnedSpot = ownedSpotObject.OwnedSpot;
-            console.log('ParsedOwnedSpot:', parsedOwnedSpot);
             // 并行获取所有 spots 的详细信息
             const spotsDetailsPromises = parsedOwnedSpot.map(spotId => getSpotDetails(spotId));
             const spotsDetails = await Promise.all(spotsDetailsPromises);
             // 更新状态以反映获取到的 spots 信息
             setSpotsInfo(spotsDetails);
-            console.log('SpotsInfo:', spotsDetails);
+            console.log('Spots details:', spotsDetails);
           }
         }
       } catch (error) {
         console.error('Error fetching user info or spots details:', error);
       }
     };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getReceivedBookingsInfo();
+        console.log('Received bookings data:', data);
+        setReceivedBookingsInfo(data.message);
+      } catch (error) {
+        console.error('Error fetching received bookings info:', error);
+      }
+    }
     fetchData();
   }, []);
   

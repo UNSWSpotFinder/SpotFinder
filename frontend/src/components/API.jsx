@@ -59,7 +59,7 @@ export const updateUserInfo = (userInfo) => {
   
   
 
-// 获取特定用户的 spot 列表（get）
+// 获取用户的 spot 列表（get）
 export const getSpotDetails = (spotId) => {
   return new Promise((resolve, reject) => {
     const endpoint = `${baseUrl}/spot/${spotId}`;
@@ -319,9 +319,9 @@ export const getMyBookingsInfo = () => {
 };
 
 // 获取用户作为provider的订单信息(get)
-export const getReceivedBookingsInfo = (ownerID) => {
+export const getReceivedBookingsInfo = () => {
   return new Promise((resolve, reject) => {      
-    const endpoint = `${baseUrl}/owners/${ownerID}/orders`;
+    const endpoint = `${baseUrl}/user/orders/asOwner`;
     const token = localStorage.getItem('token');
 
     fetch(endpoint, {
@@ -349,3 +349,5 @@ export const getReceivedBookingsInfo = (ownerID) => {
     });
   });
 };
+
+// 获取车位详情(get)
