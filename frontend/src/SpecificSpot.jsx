@@ -440,7 +440,7 @@ export function HomeSpecificLarge() {
   };
   const Confirm = () => {
     let temp = {
-      Tid: Date.now(), // unique id
+      Tid: Date.now().toString(), // unique id
       startDate: FirstStart.format().toString(),
       endDate: FirstEnd.format().toString(),
       distance: Firstdistance.toString(),
@@ -639,8 +639,15 @@ export function HomeSpecificLarge() {
         setallpic(res);
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
-            if( response.message.name==='boyang'){
-                
+            if(response.message.name==='boyang'){
+              setInfo(
+                (prevData) => ({
+                  ...prevData,
+                  PricePerDay: 0,
+                  PricePerHour: 0,
+                  PricePerWeek: 0,
+                })
+              );
             }
             setdata((prevData) => ({
               ...prevData,
@@ -686,7 +693,7 @@ export function HomeSpecificLarge() {
     let res = CalculateAllTime(
       [
         {
-          Tid: Date.now(), // unique id
+          Tid: Date.now().toString(), // unique id
           startDate: FirstStart,
           endDate: FirstEnd,
           distance: 0,
@@ -712,7 +719,7 @@ export function HomeSpecificLarge() {
     setTimeIntervals((currentInterval) => [
       ...currentInterval,
       {
-        Tid: Date.now(), // unique id
+        Tid: Date.now().toString(), // unique id
         startDate: null,
         endDate: null,
         distance: 0,
