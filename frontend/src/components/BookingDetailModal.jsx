@@ -45,18 +45,18 @@ const BookingDetailModal = ({ closeBookingDetailModal }) => {
             <div className='booking-period'>
               Time: 26/2/2024-28/2/2024
               <div>
-                <IconButton onClick={handleScheduleChange}>
+                {/* <IconButton onClick={handleScheduleChange}>
                   <EventIcon /> 
-                </IconButton>
+                </IconButton> */}
               </div>
             </div>
             <div className='booking-total-cost'>Total cost: $114</div>
             <div className='booking-vehicle'>
               Your vehicle: Lamborghini
               <div>
-                <IconButton onClick={handleVehicleChange}>
+                {/* <IconButton onClick={handleVehicleChange}>
                   <DirectionsCarIcon />
-                </IconButton>
+                </IconButton> */}
               </div>
             </div>
 
