@@ -75,7 +75,7 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 // @Router /user/orders/asOwner [get]
 // @Security BearerAuth
 func GetOwnerAllOrdersHandler(c *gin.Context) {
-	ownerID := c.GetString("ownerID") // 从 URL 路径中获取车位主的 Owner ID
+	ownerID := c.GetString("userID") // 从 URL 路径中获取车位主的 Owner ID
 	var orders []Models.OrderBasic
 
 	// 查询所有该车位主的订单
