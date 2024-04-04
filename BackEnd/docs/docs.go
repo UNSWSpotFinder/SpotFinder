@@ -1391,6 +1391,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "bookingTime",
+                "carID",
                 "cost"
             ],
             "properties": {
@@ -1404,8 +1405,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "cost": {
-                    "type": "number",
-                    "example": 100
+                    "type": "number"
                 }
             }
         },

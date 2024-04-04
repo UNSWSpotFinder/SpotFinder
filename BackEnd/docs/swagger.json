@@ -1379,6 +1379,7 @@
             "type": "object",
             "required": [
                 "bookingTime",
+                "carID",
                 "cost"
             ],
             "properties": {
@@ -1392,8 +1393,7 @@
                     "type": "integer"
                 },
                 "cost": {
-                    "type": "number",
-                    "example": 100
+                    "type": "number"
                 }
             }
         },

@@ -11,8 +11,8 @@ import (
 
 type CreateRequest struct {
 	BookingTime []Models.TimeRange `json:"bookingTime" binding:"required"`
-	Cost        float64            `json:"cost" binding:"required" example:"100"`
-	CarID       uint               `json:"carID" binding:"required example:这里在swagger测试的时候车辆一定要属于正在登录的用户"`
+	Cost        float64            `json:"cost" binding:"required"`
+	CarID       uint               `json:"carID" binding:"required"`
 }
 
 // CreateOrderHandler 创建订单

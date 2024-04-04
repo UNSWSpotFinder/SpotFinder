@@ -70,10 +70,10 @@ definitions:
       carID:
         type: integer
       cost:
-        example: 100
         type: number
     required:
     - bookingTime
+    - carID
     - cost
     type: object
   Spots.CreateSpotRequestData:
