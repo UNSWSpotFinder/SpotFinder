@@ -4,12 +4,8 @@ import (
 	"capstone-project-9900h14atiktokk/Models"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
-	"time"
 )
-
-var spotIDList []uint
 
 // tempSpotBasic 临时车位基本信息，首页展示用
 type tempSpotBasic struct {
@@ -30,17 +26,6 @@ type tempSpotBasic struct {
 	IsBlocked    bool
 }
 
-// 初始化spotIDList
-func initSpotIDList(db *gorm.DB) error {
-	var ids []uint
-	if err := db.Model(&Models.SpotBasic{}).Pluck("id", &ids).Error; err != nil {
-		return err
-	}
-
-	spotIDList = ids
-	return nil
-}
-
 // GetSpotList 从数据库中获取所有车位数据
 func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSpotBasic, error) {
 	if db == nil {
@@ -49,15 +34,20 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 
 	var allSpots []*Models.SpotBasic
 	offset := (page - 1) * pageSize // 根据当前页计算偏移量
-
+	query := db.Model(&Models.SpotBasic{}).Where("is_visible = ?", isVisible)
+	if !isVisible {
+		// If isVisible is false, also check that is_blocked is false
+		query = query.Where("is_blocked = ?", false)
+	}
 	// 构建查询并进行分页
-	query := db.Where("is_visible = ?", isVisible).Offset(offset).Limit(pageSize)
 
-	if err := query.Select(
+	err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
 			"price_per_hour, order_num, pictures").
-		Find(&allSpots).Error; err != nil {
+		Offset(offset).Limit(pageSize).
+		Find(&allSpots).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,30 +75,6 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 	}
 
 	return resultSpots, nil
-}
-
-func DeleteSpot(id int, db *gorm.DB) error {
-	var singleSpot Models.SpotBasic
-	result := db.First(&singleSpot, id)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-
-			return nil
-		}
-		return result.Error
-	}
-
-	if singleSpot.IsVisible == false {
-
-		fmt.Println("已经下架了")
-		return nil
-
-	} else {
-
-		result := db.Model(&singleSpot).Updates(map[string]interface{}{"IsVisible": false, "DeletedAt": time.Now()})
-
-		return result.Error
-	}
 }
 
 func CreateSpot(spot *Models.SpotBasic, userEmail string, db *gorm.DB) error {
