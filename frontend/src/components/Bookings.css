@@ -133,13 +133,18 @@
     padding-top: 2px;
   }
 
-  .booking-detail-btn, .booking-cancel-btn {
+  .booking-detail-btn, .booking-cancel-btn, .booking-review-btn {
     margin-right: 5px;
     border: none;
     padding: 5px 20px;
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 5px;
+  }
+
+  .booking-review-btn{
+    background-color: black; 
+    color: white;
   }
 
   .booking-detail-btn {

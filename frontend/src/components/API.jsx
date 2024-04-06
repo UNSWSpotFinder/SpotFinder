@@ -350,4 +350,29 @@ export const getReceivedBookingsInfo = () => {
   });
 };
 
-// 获取车位详情(get)
+// 删除订单(put)
+export const cancelBooking = (orderID) => {
+  const endpoint = `${baseUrl}/order/${orderID}/cancel`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+
+// 发送接收messages（get）
