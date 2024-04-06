@@ -375,4 +375,67 @@ export const cancelBooking = (orderID) => {
 };
 
 
-// 发送接收messages（get）
+// 接受messages（get）
+// export const getMessage = (ReceiverID) => {
+//   return new Promise((resolve, reject) => {      
+//     const endpoint = `ws://localhost:8080/ws`;
+//     const token = localStorage.getItem('token');
+
+//     fetch(endpoint, {
+//       method: 'GET',
+//       headers: new Headers({
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${token}`,
+//       }),
+//     })
+//     .then(response => {
+//       if (response.ok) {
+//         return response.json().then(data => resolve(data));
+//       } else {
+//         response.json().then(data => {
+//           const errorReason = data.message;
+//           reject(errorReason);
+//         }).catch(() => {
+//           reject(new Error('Error parsing response JSON.'));
+//         });
+//       }
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       reject(new Error('Network error! Please try again.'));
+//     });
+//   });
+// };
+
+// 发送messages（post）
+// export const sendMessage = (ReceiverID, Content) => {
+//   return new Promise((resolve, reject) => {      
+//     const endpoint = `ws://localhost:8080/ws`;
+//     const token = localStorage.getItem('token');
+
+//     fetch(endpoint, {
+//       method: 'POST',
+//       headers: new Headers({
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${token}`,
+//       }),
+//       body: JSON.stringify(Content),
+//     })
+//     .then(response => {
+//       if (response.ok) {
+//         return response.json().then(data => resolve(data));
+//       } else {
+//         response.json().then(data => {
+//           const errorReason = data.message;
+//           reject(errorReason);
+//         }).catch(() => {
+//           reject(new Error('Error parsing response JSON.'));
+//         });
+//       }
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       reject(new Error('Network error! Please try again.'));
+//     });
+//   });
+// };
