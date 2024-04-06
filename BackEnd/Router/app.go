@@ -31,6 +31,11 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 
+	// webSocket route
+	r.GET("/ws", func(c *gin.Context) {
+		Service.WebSocketsHandler(c)
+	})
+
 	// Public routes
 	public := r.Group("/")
 	public.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
