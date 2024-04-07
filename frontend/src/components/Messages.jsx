@@ -4,44 +4,61 @@ const Messages = () => {
   const [ws, setWs] = useState(null);
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [content, setContent] = useState('');
-  const [receiverID, setReceiverID] = useState(''); 
+  const [receiverID, setReceiverID] = useState('');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    // 初始化WebSocket连接
-    const websocket = new WebSocket('ws://localhost:8080/ws');
-    websocket.onopen = () => {
-      console.log('WebSocket Connected');
-      // 发送认证信息（如token）
-      websocket.send(JSON.stringify({ action: 'authenticate', token: token }));
+    useEffect(() => {
+        let websocket;
+        function connect() {
+            const token = localStorage.getItem('token');
+            websocket = new WebSocket(`ws://localhost:8080/ws`);
+            websocket.onopen = () => {
+                console.log('WebSocket Connected');
+                websocket.send(JSON.stringify({ type: 'authenticate', token: token }));
+            };
+            websocket.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                setReceivedMessages(prevMessages => [...prevMessages, message]);
+            };
+            // websocket.onclose = () => {
+            //     console.log('WebSocket Disconnected');
+            //     if (shouldReconnect) {
+            //         setTimeout(() => {
+            //             connect();
+            //         }, 1000); // 1秒后重连
+            //     }
+            // };
+            websocket.onerror = (error) => {
+                console.error('WebSocket Error:', error);
+            };
+            setWs(websocket);
+        }
+
+        connect();
+
+        return () => {
+            setShouldReconnect(false); // 阻止重连
+            websocket.close();
+        };
+    }, []);
+
+
+    const handleSendMessage = () => {
+        // 检查WebSocket连接状态是否为OPEN
+        if (ws && receiverID) {
+            const message = {
+                receiverId: parseInt(receiverID, 10),
+                content: content,
+            };
+            ws.send(JSON.stringify(message));
+            setContent(''); // 清空输入框
+        } else {
+            console.error('WebSocket is not open.', ws, );
+            // 可以在此处处理重新连接逻辑或通知用户
+        }
     };
-    websocket.onmessage = (event) => {
-      // 处理接收到的消息
-      const message = JSON.parse(event.data);
-      setReceivedMessages((prevMessages) => [...prevMessages, message]);
-    };
-    setWs(websocket);
 
-    // 清理函数
-    return () => {
-      websocket.close();
-    };
-  }, []);
 
-  const handleSendMessage = () => {
-    // 发送消息
-    if (ws && receiverID) {
-      const message = {
-        action: 'send_message',
-        receiverID: receiverID, // 包括receiverID
-        content: content,
-      };
-      ws.send(JSON.stringify(message));
-      setContent(''); // 清空输入框
-    }
-  };
-
-  return (
+    return (
     <div className='DashboardMessages'>
       <h1>WebSocket Test Client</h1>
       <h2>Messages Area</h2>
