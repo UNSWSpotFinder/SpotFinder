@@ -70,7 +70,7 @@ func WebsocketHandler(c *gin.Context) {
 	var authMsg AuthMessage
 	err = json.Unmarshal(message, &authMsg)
 	if err != nil || authMsg.Type != "authenticate" {
-		sendErrorMessage(conn, "Invalid authentication message")
+		SendErrorMessage(conn, "Invalid authentication message")
 		fmt.Println("Failed to unmarshal authentication message or wrong message type:", err)
 		return
 	}
@@ -78,19 +78,26 @@ func WebsocketHandler(c *gin.Context) {
 	// Validate the token
 	claims, err := ValidateToken(authMsg.Token, viper.GetString("secrete.key"))
 	if err != nil {
-		sendErrorMessage(conn, fmt.Sprintf("Authentication failed: %v", err))
+		SendErrorMessage(conn, fmt.Sprintf("Authentication failed: %v", err))
 		return
 	}
 
 	userId, err := strconv.ParseUint(claims["userID"].(string), 10, 64)
+	if err != nil {
+		SendErrorMessage(conn, "Invalid user ID in token")
+		fmt.Println("Invalid user ID in token:", err)
+		return
+	}
 
 	clientConnections[uint(userId)] = conn
 	defer delete(clientConnections, uint(userId))
+	SendRecentMessages(conn, uint(userId))
+	sendPendingMessages(conn, uint(userId))
 
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			sendErrorMessage(conn, "Error during message reading")
+			SendErrorMessage(conn, "Error during message reading")
 			fmt.Println("Error during message reading:", err)
 			break
 		}
@@ -104,7 +111,7 @@ func WebsocketHandler(c *gin.Context) {
 		var msg WSMessage
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
-			sendErrorMessage(conn, "Error during message unmarshalling")
+			SendErrorMessage(conn, "Error during message unmarshalling")
 			fmt.Println("Error during message unmarshalling:", err)
 			continue
 		}
@@ -121,7 +128,7 @@ func WebsocketHandler(c *gin.Context) {
 		// 存储到数据库
 		result := Service.DB.Create(&dbMessage) // 确保Models.DB已经正确配置和初始化
 		if result.Error != nil {
-			sendErrorMessage(conn, "Failed to save message")
+			SendErrorMessage(conn, "Failed to save message")
 			fmt.Printf("Failed to save message: %v", result.Error)
 			continue
 		}
@@ -132,11 +139,13 @@ func WebsocketHandler(c *gin.Context) {
 		if found {
 			// 发送消息给接收端
 			if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
-				sendErrorMessage(conn, "Error sending message to receiver")
+				SendErrorMessage(conn, "Error sending message to receiver")
 				fmt.Printf("Error sending message to receiver: %v\n", err)
+			} else {
+				Service.DB.Model(&dbMessage).Update("delivered", true)
 			}
 		} else {
-			sendErrorMessage(conn, "Receiver not found")
+			SendErrorMessage(conn, "Receiver not found")
 			fmt.Printf("Receiver %d not found\n", msg.ReceiverID)
 		}
 	}
@@ -162,7 +171,7 @@ func ValidateToken(tokenString, secretKey string) (jwt.MapClaims, error) {
 	return nil, fmt.Errorf("invalid token")
 }
 
-func sendErrorMessage(conn *websocket.Conn, errorMsg string) {
+func SendErrorMessage(conn *websocket.Conn, errorMsg string) {
 	errMsg := map[string]string{
 		"error": errorMsg,
 	}
@@ -170,5 +179,29 @@ func sendErrorMessage(conn *websocket.Conn, errorMsg string) {
 	err := conn.WriteMessage(websocket.TextMessage, errJson)
 	if err != nil {
 		return
+	}
+}
+
+func sendPendingMessages(conn *websocket.Conn, userID uint) {
+	var messages []Models.Message
+	// 查询未送达的消息
+	result := Service.DB.Where("receiver_id = ? AND delivered = false", userID).Find(&messages)
+	if result.Error != nil {
+		fmt.Printf("Failed to retrieve pending messages: %v\n", result.Error)
+		return
+	}
+
+	for _, msg := range messages {
+		msgJson, err := json.Marshal(msg)
+		if err != nil {
+			fmt.Printf("Error marshalling message: %v\n", err)
+			continue
+		}
+		if err := conn.WriteMessage(websocket.TextMessage, msgJson); err != nil {
+			fmt.Printf("Failed to send pending message: %v\n", err)
+			continue
+		}
+		// 更新消息为已送达
+		Service.DB.Model(&msg).Update("Delivered", true)
 	}
 }
