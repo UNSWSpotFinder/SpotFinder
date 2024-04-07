@@ -3,6 +3,7 @@ package Router
 import (
 	"capstone-project-9900h14atiktokk/Service"
 	"capstone-project-9900h14atiktokk/Service/Manager"
+	"capstone-project-9900h14atiktokk/Service/Message"
 	"capstone-project-9900h14atiktokk/Service/Order"
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
@@ -30,11 +31,10 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
+	SecreteKey := viper.GetString("secrete.key")
 
 	// webSocket route
-	r.GET("/ws", func(c *gin.Context) {
-		Service.WebSocketsHandler(c)
-	})
+	r.GET("/ws", Message.WebsocketHandler)
 
 	// Public routes
 	public := r.Group("/")
@@ -55,9 +55,9 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.POST("/manager/login", Manager.LoginHandler)
 	public.GET("/spot/:spotId", Spots.GetSpotDetailsHandler)
 	public.GET("/user/simpleInfo/:id", User.GetSimpleUserInfoHandler)
+
 	// Private (authenticated) routes
 	private := r.Group("/")
-	SecreteKey := viper.GetString("secrete.key")
 	private.Use(Service.AuthMiddleware(SecreteKey)) // Use your actual secret key here, not "BearerAuth"
 	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)

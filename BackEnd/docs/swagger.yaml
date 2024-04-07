@@ -1085,6 +1085,30 @@ paths:
       summary: 提现
       tags:
       - User
+  /ws:
+    get:
+      consumes:
+      - application/json
+      description: Upgrades the HTTP connection to a WebSocket connection to handle
+        real-time communication.
+      produces:
+      - application/json
+      responses:
+        "101":
+          description: Upgraded to WebSocket protocol.
+          schema:
+            type: string
+        "400":
+          description: Bad request, cannot upgrade to WebSocket.
+          schema:
+            type: string
+        "500":
+          description: Internal server error.
+          schema:
+            type: string
+      summary: WebSocket communication endpoint
+      tags:
+      - websocket
 securityDefinitions:
   BearerAuth:
     in: header

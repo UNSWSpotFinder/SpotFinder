@@ -1,47 +1,29 @@
-package main
+package Message
 
 import (
 	pb "capstone-project-9900h14atiktokk/Service/Message/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"io"
-	"log"
-	"net"
-	"time"
+	"context"
 )
 
-type server struct {
-	pb.UnimplementedGreeterServer
+type Server struct {
+	pb.UnimplementedChatServiceServer
+	messages []pb.Message // 假设这里用slice来暂存消息
 }
 
-func (s *server) SayHello(stream pb.Greeter_SayHelloServer) error {
-	for {
-		in, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		reply := &pb.HelloReply{
-			Message:   "Hello " + in.Name,
-			Time:      timestamppb.New(time.Now()),
-			MessageId: in.MessageId, // assuming MessageId is echoed back
-		}
-		if err := stream.Send(reply); err != nil {
-			return err
-		}
-	}
+func (s *Server) SendMessage(ctx context.Context, message *pb.Message) (*pb.SendMessageResponse, error) {
+	// 这里简单地将消息存储起来
+	s.messages = append(s.messages, *message)
+	return &pb.SendMessageResponse{Success: true}, nil
 }
 
-func main() {
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+func (s *Server) ReceiveMessage(req *pb.StreamMessagesRequest, stream pb.ChatService_ReceiveMessageServer) error {
+	for i := range s.messages {
+		msg := &s.messages[i] // Use a pointer to the message
+		if msg.ReceiverId == req.ReceiverId {
+			if err := stream.Send(msg); err != nil {
+				return err
+			}
+		}
 	}
-	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	return nil
 }
