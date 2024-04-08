@@ -83,6 +83,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/car/getCar/{carID}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "通过车辆ID获取车辆",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "获取车辆",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "车辆ID",
+                        "name": "carID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "car\", \"car\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/car/getMyCar": {
             "get": {
                 "security": [
@@ -1300,6 +1337,11 @@ const docTemplate = `{
         },
         "/ws": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Upgrades the HTTP connection to a WebSocket connection to handle real-time communication.",
                 "consumes": [
                     "application/json"
@@ -1311,6 +1353,17 @@ const docTemplate = `{
                     "websocket"
                 ],
                 "summary": "WebSocket communication endpoint",
+                "parameters": [
+                    {
+                        "description": "WebSocket message",
+                        "name": "WSMessage",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Message.WSMessage"
+                        }
+                    }
+                ],
                 "responses": {
                     "101": {
                         "description": "Upgraded to WebSocket protocol.",
@@ -1391,6 +1444,17 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
+        "Message.WSMessage": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "receiverId": {
+                    "type": "integer"
                 }
             }
         },

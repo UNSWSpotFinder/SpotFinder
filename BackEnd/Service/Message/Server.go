@@ -40,7 +40,7 @@ var clientConnections = make(map[uint]*websocket.Conn)
 // @Accept  json
 // @Produce json
 // @Param WSMessage body WSMessage true "WebSocket message"
-// @Router ws://localhost:8080/ws [get]
+// @Router /ws [get]
 // @Success 101 {string} string "Upgraded to WebSocket protocol."
 // @Failure 400 {string} string "Bad request, cannot upgrade to WebSocket."
 // @Failure 500 {string} string "Internal server error."
