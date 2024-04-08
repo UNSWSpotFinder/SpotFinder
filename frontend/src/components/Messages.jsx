@@ -5,7 +5,7 @@ const Messages = () => {
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [content, setContent] = useState('');
   const [receiverID, setReceiverID] = useState('');
-    const [shouldReconnect, setShouldReconnect] = useState(true);
+  const [shouldReconnect, setShouldReconnect] = useState(true);
 
     useEffect(() => {
         let websocket;

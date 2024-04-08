@@ -6,7 +6,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { updateCarInfo } from './API';
 import './Vehicles.css';
 
-const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, VehiclePlate, VehicleType, VehicleSize, VehicleCharge, Avatar  }) => {
+const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, VehicleBrand, VehiclePlate, VehicleType, VehicleSize, VehicleCharge, Avatar  }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -93,8 +93,11 @@ const EditVehicleModal = ({ onClose, onEdited, EditingCarId, VehicleBrand, Vehic
   <div>
       <div className='modal-overlay'>
           <div className='modal-content'>
-          <h3> Edit a new Vehicle</h3>
-
+            <div className="orders-modal-header">
+              <div className='current-state-title'> Edit a new Vehicle</div>
+              <button className="close-btn" onClick={closeEditModal}>✖</button>
+            </div>
+  
           <form className='edit-form' onSubmit={handleEditSubmit}> 
               {/* 表单内容 */}
               <div className="form-group">

@@ -17,7 +17,10 @@
     border-radius: 5px;
     width: 90%;
     max-width: 800px;
-    overflow: auto; /* 内容太多，需要滚动 */
+    overflow: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
   }
   
   .orders-modal-header {
@@ -51,3 +54,31 @@
     display: flex;
   }
 
+  .spot-address {
+    color: black;
+    font-size: 11px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+  }
+
+  .right-provider-info{
+    text-align: center;
+  }
+
+  .provider-avatar img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+  }
+
+  .provider-name{
+    font-size: 15px;
+    font-weight: bold;
+    
+  }
+
+  .spot-thumbnail img {
+    width: 150px;
+    height: 150px;
+    border-radius: 5%;
+  }
