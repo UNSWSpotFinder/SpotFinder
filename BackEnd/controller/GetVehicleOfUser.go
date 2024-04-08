@@ -11,3 +11,10 @@ func GetVehicleOfUser(userID string, db *gorm.DB) (cars []Models.CarBasic, err e
 	}
 	return cars, nil
 }
+
+func GetVehicleByCarID(carID string, db *gorm.DB) (car Models.CarBasic, err error) {
+	if result := db.Where("id = ?", carID).First(&car); result.Error != nil {
+		return car, result.Error
+	}
+	return car, nil
+}

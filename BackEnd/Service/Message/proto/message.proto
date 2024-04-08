@@ -1,0 +1,33 @@
+syntax = "proto3";
+option go_package = "/proto;proto";
+package Message;
+
+import "google/protobuf/timestamp.proto";
+
+// 定义消息格式
+message Message {
+  string sender_id = 1;
+  string receiver_id = 2;
+  string content = 3;
+  google.protobuf.Timestamp time = 4;
+}
+
+// 定义服务接口
+service ChatService {
+  // 发送消息
+  rpc SendMessage(Message) returns (SendMessageResponse);
+
+  // 接收消息
+  rpc ReceiveMessage(StreamMessagesRequest) returns (stream Message);
+}
+
+// 发送消息的响应
+message SendMessageResponse {
+  bool success = 1;
+  string error = 2; // 错误消息
+}
+
+// 接收消息的请求参数
+message StreamMessagesRequest {
+  string receiver_id = 1;
+}

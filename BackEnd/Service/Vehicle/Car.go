@@ -67,3 +67,30 @@ func GetVehicleOfUserHandler(c *gin.Context) {
 	})
 	return
 }
+
+// GetVehicleByCarIDHandler 获取车辆
+// @Summary 获取车辆
+// @Schemes
+// @Description 通过车辆ID获取车辆
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param carID path string true "车辆ID"
+// @Success 200 {string} json{"car", "car"}
+// @Fail 500 {string} json{"error", "message"}
+// @Router /car/getCar/{carID} [get]
+// @Security BearerAuth
+func GetVehicleByCarIDHandler(c *gin.Context) {
+	carID := c.Param("carID")
+	car, err := controller.GetVehicleByCarID(carID, Service.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Cannot get car" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"car": car,
+	})
+	return
+}

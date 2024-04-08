@@ -3,6 +3,7 @@ package Order
 import (
 	"capstone-project-9900h14atiktokk/Models"
 	"capstone-project-9900h14atiktokk/Service"
+	"capstone-project-9900h14atiktokk/controller"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,42 +16,60 @@ import (
 // IsOrderCompleted 检查订单状态，如果未完成则更新订单状态为已支付
 func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) {
 	var order Models.OrderBasic
-
-	// 查找订单的状态
-	if err := Service.DB.First(&order, "id = ?", orderID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, err
-		}
-		return false, err
+	// 首先检查订单是否存在并获取订单信息
+	if err := db.Preload("Booker").First(&order, "id = ?", orderID).Error; err != nil {
+		return false, err // 包含了记录未找到的情况
 	}
+
+	// 解析预订时间
 	var bookingTimes []Models.TimeRange
-	err := json.Unmarshal([]byte(order.BookingTime), &bookingTimes)
-	if err != nil {
+	if err := json.Unmarshal([]byte(order.BookingTime), &bookingTimes); err != nil {
 		return false, err // 解析JSON失败
 	}
 
-	// 检查预订时间是否满足条件
+	// 检查订单状态和预订时间
+	now := time.Now()
 	for _, bt := range bookingTimes {
 		startDate, err := time.Parse(time.RFC3339, bt.StartDate)
 		if err != nil {
 			return false, err // 解析时间失败
 		}
 
-		// 如果当前时间晚于结束时间减去一小时，则将订单标记为完成
-		if time.Now().After(startDate.Add(-time.Hour)) {
-			if status == "Completed" {
-				// 如果已经完成，返回错误
-				return true, nil
-			}
+		if now.After(startDate.Add(-time.Hour)) && status != "Completed" {
+			err := db.Transaction(func(tx *gorm.DB) error {
+				// 更新订单状态
+				order.Status = "Completed"
+				if err := tx.Save(&order).Error; err != nil {
+					return err
+				}
 
-			// 更新订单状态为已完成
-			order.Status = "Completed"
-			if err := db.Save(&order).Error; err != nil {
-				return false, err // 保存订单状态失败
+				// 获取车位拥有者
+				var owner Models.UserBasic
+				ownerID := controller.GetUserIDBySpotID(order.SpotID, db)
+				if err := tx.First(&owner, "id = ?", ownerID).Error; err != nil {
+					return err
+				}
+
+				// 更新用户余额和收益
+				order.Booker.Account -= order.Cost
+				owner.Earning += order.Cost
+				owner.Account += order.Cost
+				if err := tx.Save(&order.Booker).Error; err != nil {
+					return err
+				}
+				if err := tx.Save(&owner).Error; err != nil {
+					return err
+				}
+
+				return nil // 事务提交
+			})
+			if err != nil {
+				return false, err
 			}
-			break // 更新了一个订单就可以跳出循环了
+			return true, nil
 		}
 	}
+
 	if order.Status == "Completed" {
 		return true, nil
 	}
