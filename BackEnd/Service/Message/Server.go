@@ -137,14 +137,21 @@ func WebsocketHandler(c *gin.Context) {
 		// 尝试找到接收者的连接
 		receiverConn, found := clientConnections[msg.ReceiverID]
 		if found {
+			message, err := json.Marshal(dbMessage)
+			if err != nil {
+				SendErrorMessage(conn, "Error marshalling message")
+				fmt.Printf("Error marshalling message: %v\n", err)
+				continue
+			}
 			// 发送消息给接收端
 			if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
 				SendErrorMessage(conn, "Error sending message to receiver")
 				fmt.Printf("Error sending message to receiver: %v\n", err)
 			} else {
-				Service.DB.Model(&dbMessage).Update("delivered", true)
+				SendErrorMessage(conn, "Message sent unsuccessfully")
 			}
 		} else {
+			Service.DB.Model(&dbMessage).Update("delivered", true)
 			SendErrorMessage(conn, "Receiver not found")
 			fmt.Printf("Receiver %d not found\n", msg.ReceiverID)
 		}
