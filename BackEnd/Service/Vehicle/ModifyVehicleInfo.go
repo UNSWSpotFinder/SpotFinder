@@ -53,3 +53,41 @@ func ModifyVehicleInfoHandler(c *gin.Context) {
 	}
 
 }
+
+// DeleteVehicleHandler 删除车辆
+// @Summary 删除车辆
+// @Description 删除车辆
+// @Tags Cars
+// @Accept json
+// @Produce json
+// @Param carID path string true "CarID"
+// @Success 200 {string} string "Vehicle deleted"
+// @Failure 500 {string} string "SQL error message"
+// @Router /car/deleteCar/{carID} [delete]
+// @Security BearerAuth
+func DeleteVehicleHandler(c *gin.Context) {
+	userRole := c.GetString("role")
+	userID := c.GetString("userID")
+	carID := c.Param("carID")
+	ownerID, err := controller.GetUserIDByCarID(carID, Service.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot get user ID"})
+		return
+	}
+	ownerIDStr := strconv.FormatUint(uint64(ownerID), 10)
+	if userRole != "admin" && userID != ownerIDStr {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to delete this car"})
+		return
+	}
+	err = controller.DeleteVehicle(userID, carID, Service.DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Cannot delete vehicle" + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Vehicle deleted",
+	})
+	return
+}
