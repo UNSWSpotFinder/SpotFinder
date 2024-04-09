@@ -17,7 +17,9 @@
     border-radius: 5px;
     width: 90%;
     max-width: 800px;
-    overflow: auto; /* 内容太多，需要滚动 */
+    max-height: 80vh; 
+    overflow-y: auto;
+    padding: 20px;
   }
   
   .orders-modal-header {
@@ -58,6 +60,20 @@
   .carousel-container {
     margin: 20px 0;
   }
+
+  .spot-details {
+    display: flex;
+    align-items: center;
+  }
+  .img-container {
+    margin-right: 10px;
+  }
+
+  .spot-details img {
+    width: 150px;
+    height: 150px;
+    border-radius: 5%;
+  }
   
   .order-info {
     display: flex;
@@ -78,8 +94,8 @@
   }
   
   .custome-info img {
-    width: 50px;
-    height: 50px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
   }
   
@@ -102,15 +118,15 @@
 
 
   
-  .send-msg-btn, .accept-btn {
+  .send-msg-btn, .accept-btn, .order-review-btn  {
     margin-right: 5px;
     border: none;
     padding: 5px 20px;
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 5px;
-    background-color: #e11e2c; 
     width: 140px;
+    background-color: #e11e2c; 
     color: white;
   }
 
@@ -135,8 +151,20 @@
   }
 
 
-
   .order-cancel-btn:hover {
     background-color:darkgray;
     color: black;
+  }
+
+  .order-review-btn {
+    background-color: black; 
+    color: white;
+    text-align: center;
+  }
+
+  .no-orders-message {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
   }

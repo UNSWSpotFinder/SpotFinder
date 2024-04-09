@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BookingDetailModal from './BookingDetailModal'
-import { getMyBookingsInfo, getSpotDetails } from './API';
+import { getMyBookingsInfo, getSpotDetails, cancelBooking } from './API';
 import Snackbar from '@mui/material/Snackbar';
 import './Bookings.css';
 
@@ -11,13 +11,16 @@ const Bookings = () => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [myBookingsInfo, setMyBookingsInfo] = useState([]); // 存储获取到的 bookings 信息
   const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
-
-  // 新增状态来追踪当前是'Current' 还是 'Past'
-  const [currentView, setCurrentView] = useState('Current');
-
-  // 分类订单
+  const [currentView, setCurrentView] = useState('Current');   // 新增状态来追踪当前是'Current' 还是 'Past'
   const currentBookings = myBookingsInfo.filter(booking => booking.Status === 'Pending');
-  const pastBookings = myBookingsInfo.filter(booking => booking.Status === 'Complete');
+  const pastBookings = myBookingsInfo.filter(booking => booking.Status === 'Completed');
+
+  // 用于存储要cancel的booking的ID
+  const [selectedBookingID, setSelectedBookingID] = useState(null);
+  // 用于存储要显示的booking的详细信息
+  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
+  const [selectedSpotInfo, setSelectedSpotInfo] = useState(null);
+
 
   // 切换视图的函数
   const switchToCurrent = () => {
@@ -28,36 +31,37 @@ const Bookings = () => {
     setCurrentView('Past');
   };
 
+  // 获取orders和spots信息
+  const fetchBookingsAndSpots = async () => {
+    try {
+      // 获取预订信息
+      const bookingDataResult = await getMyBookingsInfo();
+      const bookingsArray = bookingDataResult.orders;
+      console.log('My Bookings array:', bookingsArray);
+      
+      // 获取所有bookings相关的spots信息
+      const spotsInfoPromises = bookingsArray.map(booking => {
+        return getSpotDetails(booking.SpotID);
+      });
+
+      // 等待所有spot信息的promises解决
+      const spotsDetails = await Promise.all(spotsInfoPromises);
+
+      // 储存spots信息
+      const structuredSpotsInfo = spotsDetails.map(detail => detail.message || {});
+      console.log('Structured Spots Info:', structuredSpotsInfo);
+      
+      // 设置状态
+      setMyBookingsInfo(bookingsArray);
+      setSpotsInfo(structuredSpotsInfo);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
 
   // 获取orders和spots信息
   useEffect(() => {
-    const fetchBookingsAndSpots = async () => {
-      try {
-        // 获取预订信息
-        const bookingDataResult = await getMyBookingsInfo();
-        const bookingsArray = bookingDataResult.orders;
-        console.log('My Bookings array:', bookingsArray);
-        
-        // 获取所有bookings相关的spots信息
-        const spotsInfoPromises = bookingsArray.map(booking => {
-          return getSpotDetails(booking.SpotID);
-        });
-  
-        // 等待所有spot信息的promises解决
-        const spotsDetails = await Promise.all(spotsInfoPromises);
-  
-        // 储存spots信息
-        const structuredSpotsInfo = spotsDetails.map(detail => detail.message || {});
-        console.log('Structured Spots Info:', structuredSpotsInfo);
-        
-        // 设置状态
-        setMyBookingsInfo(bookingsArray);
-        setSpotsInfo(structuredSpotsInfo);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-  
     fetchBookingsAndSpots();
   }, []);
 
@@ -96,7 +100,9 @@ const Bookings = () => {
   
 
   // 打开“取消订单”详情弹窗
-  const openCancelModal = () => {
+  const openCancelModal = (bookingID) => {
+    setSelectedBookingID(bookingID); // 存储当前要取消的预订 ID
+    console.log('Cancel Booking ID:', bookingID);
     setShowCancelConfirm(true);
   };
 
@@ -107,19 +113,32 @@ const Bookings = () => {
   
   // TODO:取消订单列表项
   const handleCancel = () => {
-    console.log("Booking cancel");
-    // 在这里关闭确认弹窗
-    closeCancelConfirm();
+      cancelBooking(selectedBookingID).then(() => {
+        // 成功取消后的操作，例如提示用户，更新状态等
+        console.log("Booking cancelled successfully");
   
-    // 显示一个删除cancel的提示
-    // setSnackbarMessage('Booking cancel successfully!');
-    // setOpenSnackbar(true);
+        // 可能需要重新获取预订信息来更新 UI
+        fetchBookingsAndSpots();
+
+        // 关闭确认框
+        setShowCancelConfirm(false);
+  
+        // 清除选中的预订 ID
+        setSelectedBookingID(null);
+      }).catch(error => {
+        // 处理错误，例如提示用户取消失败
+        console.error("Error cancelling the booking:", error);
+      });
+    
   };
 
 
 
   // 打开订单详情弹窗
-  const openBookingDetailModal = () => {
+  const openBookingDetailModal = (booking, spot) => {
+    // 保存选中的booking和spot信息
+    setSelectedBookingDetails(booking); 
+    setSelectedSpotInfo(spot);
     setShowBookingDetailModal(true);
   };
   
@@ -176,17 +195,19 @@ const Bookings = () => {
                   <div className='way-to-access'>{spotInfo.PassWay}</div>
                 </div>
                 <div className='right-btn-part'>
-                  <button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking.ID)}>Details</button>
+                <button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotsInfo.find(spot => spot.ID === booking.SpotID))}>Details</button>
                   {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
                   {booking.Status === 'Pending' && (
                     <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
+                  )}
+                  {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
+                  {booking.Status === 'Completed' && (
+                    <button className='booking-review-btn'>Review</button>
                   )}
                 </div>
               </div>
             );
           })}
-
-
 
 
 
@@ -208,8 +229,12 @@ const Bookings = () => {
 
       {/* 显示booking details 弹窗 */}
       {showBookingDetailModal && (
-        <BookingDetailModal closeBookingDetailModal={closeBookingDetailModal} />
-      )}
+          <BookingDetailModal
+            closeBookingDetailModal={closeBookingDetailModal}
+            bookingDetails={selectedBookingDetails}
+            spotInfo={selectedSpotInfo}
+          />
+        )}
     </div>
   );
 }

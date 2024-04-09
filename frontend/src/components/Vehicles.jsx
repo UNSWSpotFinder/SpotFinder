@@ -144,7 +144,6 @@ const Vehicles = () => {
       <div className="button-part">
         <button className='vehicle-title'>Current Vehicles: {carsInfo.length}</button>
         <button onClick={openAddModal} className='add-a-car-btn'>Add a new vehicle</button>
-
       </div>
       {/* 下方车辆部分 */}
       <div className='vehicle-part'>
@@ -175,7 +174,12 @@ const Vehicles = () => {
       </div>
 
       {/* add/edit spot弹窗 */}
-      {isAddModalOpen && <AddVehicleModal onClose={closeAddModal} onAdded={handleVehicleAdded} />}
+      {isAddModalOpen && 
+        <AddVehicleModal 
+          onClose={closeAddModal} 
+          onAdded={handleVehicleAdded} 
+          closeAddModal={closeAddModal}
+          />}
       {isEditModalOpen && (
         <EditVehicleModal
           onClose={closeEditModal}
@@ -187,6 +191,7 @@ const Vehicles = () => {
           VehicleSize={vehicleSize}
           VehicleCharge={vehicleCharge}
           Avatar={avatar}
+          closeEditModal={closeEditModal}
         />
       )}
 
