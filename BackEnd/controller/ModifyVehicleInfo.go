@@ -20,3 +20,10 @@ func GetUserIDByCarID(carID string, db *gorm.DB) (uint, error) {
 
 	return car.OwnerId, nil
 }
+
+func DeleteVehicle(userID string, carID string, db *gorm.DB) error {
+	if err := db.Where("owner_id = ? AND id = ?", userID, carID).Delete(&Models.CarBasic{}).Error; err != nil {
+		return err
+	}
+	return nil
+}

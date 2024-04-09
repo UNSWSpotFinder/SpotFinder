@@ -319,6 +319,33 @@ paths:
       summary: 创建车辆
       tags:
       - Cars
+  /car/deleteCar/{carID}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除车辆
+      parameters:
+      - description: CarID
+        in: path
+        name: carID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vehicle deleted
+          schema:
+            type: string
+        "500":
+          description: SQL error message
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 删除车辆
+      tags:
+      - Cars
   /car/getCar/{carID}:
     get:
       consumes:
