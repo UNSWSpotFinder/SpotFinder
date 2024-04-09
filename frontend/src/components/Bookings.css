@@ -140,6 +140,7 @@
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 5px;
+    width: 100px;
   }
 
   .booking-review-btn{
@@ -149,6 +150,10 @@
   
   .booking-review-btn:hover {
     background-color: darkgray;
+  }
+
+  .rating-stars {
+    margin-top: 10px;
   }
 
   .booking-detail-btn {

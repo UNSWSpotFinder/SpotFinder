@@ -93,12 +93,12 @@
     }
 
   .save-button {
-    margin-right: 10px;
-    color: #e11e2c; 
-    background-color: #fff;
+    margin-right: 10px; 
+    background-color: #e11e2c;
     width: 100px;
+    color: #fff; 
     font-weight:bold ;
-    border: 1px solid #e11e2c;
+    border: none;
     padding: 10px 20px;
     cursor: pointer;
   }

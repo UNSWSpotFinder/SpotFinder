@@ -40,17 +40,20 @@ const Listings = () => {
     fetchData();
   }, []);
 
+  // 更新订单信息的函数
+  const fetchOrders = async () => {
+    try {
+      const receivedBookingsData = await getReceivedBookingsInfo();
+      console.log('ReceivedBookingsInfo:', receivedBookingsData.orders);
+      setReceivedBookingsInfo(receivedBookingsData.orders);
+    } catch (error) {
+      console.error('Error fetching received bookings info:', error);
+    }
+  };
+
+  // 确保你在useEffect里调用fetchOrders来初始化订单信息
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const receivedBookingsData = await getReceivedBookingsInfo();
-        console.log('ReceivedBookingsInfo:', receivedBookingsData.orders);
-        setReceivedBookingsInfo(receivedBookingsData.orders); 
-      } catch (error) {
-        console.error('Error fetching received bookings info:', error);
-      }
-    };
-    fetchData();
+    fetchOrders();
   }, []);
   
 
@@ -171,6 +174,7 @@ const Listings = () => {
           closeOrdersModal={closeOrdersModal}
           spot={spotsInfo.find(spot => spot.message.ID === selectedSpotId)?.message}
           orders={ordersForSelectedSpot}
+          fetchOrders={fetchOrders}
         />
       )}
     </div>

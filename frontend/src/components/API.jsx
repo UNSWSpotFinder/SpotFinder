@@ -384,7 +384,7 @@ export const getReceivedBookingsInfo = () => {
 
 // 删除订单(put)
 export const cancelBooking = (orderID) => {
-  const endpoint = `${baseUrl}/order/${orderID}/。`;
+  const endpoint = `${baseUrl}/order/${orderID}/cancel`;
   const token = localStorage.getItem('token');
 
   return fetch(endpoint, {

@@ -1,10 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { getUserSimpleInfo } from './API';
+import { getUserSimpleInfo, cancelBooking } from './API';
 import './OrdersModal.css';
 import './Listings.css';
 
-const OrdersModal = ({ closeOrdersModal, spot, orders }) => {
+const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [bookersInfo, setBookersInfo] = useState({}); 
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [selectedOrderID, setSelectedOrderID] = useState(null); // 用于存储要cancel的order的ID
+
+    // 取消订单列表项
+  const handleCancel = () => {
+    console.log('Cancelling order ID:', selectedOrderID);
+    cancelBooking(selectedOrderID).then(() => {
+      // 成功取消后的操作，例如提示用户，更新状态等
+      console.log("Order cancelled successfully");
+      fetchOrders(); // 
+      // 关闭确认框
+      setShowCancelConfirm(false);
+      // 清除选中的预订 ID
+      setSelectedOrderID(null);
+    }).catch(error => {
+      // 处理错误，提示用户取消失败
+      console.error("Error cancelling the booking:", error);
+    });
+};
+
+  // 打开“取消订单”详情弹窗
+  const openCancelModal = (orderID) => {
+    setSelectedOrderID(orderID); // 存储当前要取消的预订 ID
+    console.log('Cancel order ID:', orderID);
+    setShowCancelConfirm(true);
+  };
+
+  // 关闭“取消订单”确认框
+  const closeCancelConfirm = () => {
+    setShowCancelConfirm(false);
+  };
 
   useEffect(() => {
     // 定义一个加载所有用户信息的异步函数
@@ -107,17 +138,32 @@ const OrdersModal = ({ closeOrdersModal, spot, orders }) => {
                   <div className='order-info-spec'>End: {end}</div>
                   <div className='order-info-spec'>Total earning: ${order.Cost}</div>
                   <div className='order-info-spec'>Current State:{order.Status}</div>
+                  <div className='order-info-spec'>VehicleID: {order.CarID}</div>
                 </div>
                 <div className="modal-button-part">
                   <button className='send-msg-btn'>Send a msg</button>
-                  {order.Status === 'Pending' && (<button className='order-cancel-btn'>Cancel</button>)}
-                  {order.Status === 'Completed' &&(<btn className='order-review-btn'>Review</btn>)}
+                  {order.Status === 'Pending' && (
+                    <button className='order-cancel-btn' onClick={() => openCancelModal(order.ID)}>Cancel</button>
+                  )}
+                  {/* {order.Status === 'Completed' &&(<btn className='order-review-btn'>Review</btn>)} */}
                 </div>
               </div>
             );
           })
         )}
       </div>
+            {/* 显示cancel弹窗 */}
+            {showCancelConfirm && (
+            <div className='modal-overlay'>
+              <div className='modal-content'>
+                <h3>Are you sure to cancel the order?</h3>
+                <div className="form-buttons">
+                  <button onClick={handleCancel} className='cancel-confirm-btn'>Yes</button>
+                  <button onClick={closeCancelConfirm} className='cancel-cancel-btn'>No</button>
+                </div>
+              </div>
+            </div>
+      )}
     </div>
   );
 };

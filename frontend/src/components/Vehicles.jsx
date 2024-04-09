@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
-import { IconButton } from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
 import { getCarInfo } from './API';
-import { useNavigate } from 'react-router-dom';
 import AddVehicleModal from './AddVehicles';
 import EditVehicleModal from './EditVehicles';
 
@@ -32,7 +29,7 @@ const Vehicles = () => {
     const fetchData = async () => {
       try {
         const data = await getCarInfo();
-        console.log('Car data:', data);
+        // console.log('Car data:', data);
         setCarsInfo(data.cars);
       } catch (error) {
         console.error('Error fetching car info:', error);
