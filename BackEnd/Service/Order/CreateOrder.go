@@ -5,6 +5,7 @@ import (
 	"capstone-project-9900h14atiktokk/Service"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -66,6 +67,13 @@ func CreateOrderHandler(c *gin.Context) {
 	order.Cost = request.Cost
 	order.CarID = request.CarID
 	order.Status = "Pending"
+
+	// 原子更新order_num
+	result := Service.DB.Model(&Models.SpotBasic{}).Where("id = ?", spotID).Update("order_num", gorm.Expr("order_num + ?", 1))
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update spot order number"})
+		return
+	}
 
 	// 将订单存入数据库
 	if err = Service.DB.Create(&order).Error; err != nil {

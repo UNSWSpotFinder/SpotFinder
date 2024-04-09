@@ -44,7 +44,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 	err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
-			"price_per_hour, order_num, pictures").
+			"price_per_hour, order_num, pictures, available_time").
 		Offset(offset).Limit(pageSize).
 		Find(&allSpots).Error
 	if err != nil {
