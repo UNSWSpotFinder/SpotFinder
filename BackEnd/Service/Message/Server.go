@@ -92,7 +92,7 @@ func WebsocketHandler(c *gin.Context) {
 	clientConnections[uint(userId)] = conn
 	defer delete(clientConnections, uint(userId))
 	SendRecentMessages(conn, uint(userId))
-	sendPendingMessages(conn, uint(userId))
+	//sendPendingMessages(conn, uint(userId))
 
 	for {
 		_, message, err := conn.ReadMessage()

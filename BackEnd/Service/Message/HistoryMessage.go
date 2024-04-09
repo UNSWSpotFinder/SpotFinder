@@ -11,7 +11,10 @@ import (
 // SendRecentMessages 在用户连接WebSocket时发送历史消息
 func SendRecentMessages(conn *websocket.Conn, userID uint) {
 	var messages []Models.Message
-	result := Service.DB.Where("receiver_id = ?", userID).Order("sent_at desc").Limit(50).Find(&messages)
+	result := Service.DB.
+		Where("receiver_id = ?", userID).
+		Or("sender_id = ?", userID).
+		Order("sent_at desc").Limit(50).Find(&messages)
 	if result.Error != nil {
 		fmt.Println("Failed to fetch recent messages:", result.Error)
 		return
