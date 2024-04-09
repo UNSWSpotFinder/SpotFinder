@@ -40,7 +40,7 @@ var clientConnections = make(map[uint]*websocket.Conn)
 // @Accept  json
 // @Produce json
 // @Param WSMessage body WSMessage true "WebSocket message"
-// @Router ws://localhost:8080/ws [get]
+// @Router /ws [get]
 // @Success 101 {string} string "Upgraded to WebSocket protocol."
 // @Failure 400 {string} string "Bad request, cannot upgrade to WebSocket."
 // @Failure 500 {string} string "Internal server error."
@@ -92,7 +92,7 @@ func WebsocketHandler(c *gin.Context) {
 	clientConnections[uint(userId)] = conn
 	defer delete(clientConnections, uint(userId))
 	SendRecentMessages(conn, uint(userId))
-	sendPendingMessages(conn, uint(userId))
+	//sendPendingMessages(conn, uint(userId))
 
 	for {
 		_, message, err := conn.ReadMessage()
