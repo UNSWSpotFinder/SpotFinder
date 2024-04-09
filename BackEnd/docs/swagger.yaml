@@ -40,6 +40,13 @@ definitions:
     required:
     - adminID
     type: object
+  Message.WSMessage:
+    properties:
+      content:
+        type: string
+      receiverId:
+        type: integer
+    type: object
   Models.TimeRange:
     properties:
       Tid:
@@ -310,6 +317,29 @@ paths:
       security:
       - BearerAuth: []
       summary: 创建车辆
+      tags:
+      - Cars
+  /car/getCar/{carID}:
+    get:
+      consumes:
+      - application/json
+      description: 通过车辆ID获取车辆
+      parameters:
+      - description: 车辆ID
+        in: path
+        name: carID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: car", "car"}
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 获取车辆
       tags:
       - Cars
   /car/getMyCar:
@@ -1091,6 +1121,13 @@ paths:
       - application/json
       description: Upgrades the HTTP connection to a WebSocket connection to handle
         real-time communication.
+      parameters:
+      - description: WebSocket message
+        in: body
+        name: WSMessage
+        required: true
+        schema:
+          $ref: '#/definitions/Message.WSMessage'
       produces:
       - application/json
       responses:
@@ -1106,6 +1143,8 @@ paths:
           description: Internal server error.
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: WebSocket communication endpoint
       tags:
       - websocket

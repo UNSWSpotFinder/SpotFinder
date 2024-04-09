@@ -77,6 +77,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.GET("/order/:orderID", Order.GetOrderInfoHandler)
 	private.GET("/user/orders/asUser", Order.GetUserAllOrdersHandler)
 	private.GET("/user/orders/asOwner", Order.GetOwnerAllOrdersHandler)
+	private.GET("/car/getCar/:carID", Vehicle.GetVehicleByCarIDHandler)
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)
