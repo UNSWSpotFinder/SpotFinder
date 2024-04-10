@@ -435,16 +435,11 @@ export function HomeSpecificLarge() {
   const [bookway, setbookway] = useState(contextState.BookWay);
   const [isbook, setIsbook] = useState(false);
   const [TotalPrice, setTotalPrice] = useState(0);
+  const [sameOwner,setsameOwner] = useState(false);
   const closebook = () => {
     setIsbook(false);
   };
   const Confirm = () => {
-    let temp = {
-      Tid: Date.now().toString(), // unique id
-      startDate: FirstStart.format().toString(),
-      endDate: FirstEnd.format().toString(),
-      distance: Firstdistance.toString(),
-    };
     if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
         severity: 'warning',
@@ -453,6 +448,12 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    let temp = {
+      Tid: Date.now().toString(), // unique id
+      startDate: FirstStart.format().toString(),
+      endDate: FirstEnd.format().toString(),
+      distance: Firstdistance.toString(),
+    };
     if (contextState.CarPlate===''){
       setOpenSnackbar({
         severity: 'warning',
@@ -481,7 +482,7 @@ export function HomeSpecificLarge() {
       ...prevData,
       BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
-      TotalPrice: TotalPrice,
+      TotalPrice: (sameOwner? 0 : TotalPrice),
     }));
     console.log(timeIntervals);
 
@@ -592,6 +593,7 @@ export function HomeSpecificLarge() {
     }
   };
   let getDetail = () => {
+    const currentname = localStorage.getItem('username') || null;
     const carId = localStorage.getItem('spotID');
     callAPIGetSpecSpot('spot/' + carId)
       .then((response) => {
@@ -639,15 +641,9 @@ export function HomeSpecificLarge() {
         setallpic(res);
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
-            if(response.message.name==='boyang'){
-              setInfo(
-                (prevData) => ({
-                  ...prevData,
-                  PricePerDay: 0,
-                  PricePerHour: 0,
-                  PricePerWeek: 0,
-                })
-              );
+            console.log(response.message);
+            if(response.message.name === currentname){
+              setsameOwner(true);
             }
             setdata((prevData) => ({
               ...prevData,
@@ -1136,7 +1132,9 @@ export function HomeSpecificLarge() {
           <div className='confirm-part'>
             <div className='PriceTotal'>
               <p className='Pricetxt'>Total Price</p>
-              <p className='PriceValue'>${TotalPrice}</p>
+              <p className={sameOwner ? 'PriceValue-del':'PriceValue'}>${TotalPrice}</p>
+              <p className='PriceValue'>{'$0'}</p>
+              <p className='discount-reason'>{'(Owner booking)'}</p>
             </div>
             <button className='confirm-btn' onClick={Confirm}>
               Appointment
@@ -1165,7 +1163,7 @@ export function HomeSpecificLarge() {
           <img className='Review-left-img' src='/img/profile.png'></img>
           <div className='Review-right'>
             <div className='Review-top'>
-              <p className='r-name'>BoyangYu</p>
+              <p className='r-name'>boyang</p>
               <Rating
                 name='read-only '
                 className='black-star'

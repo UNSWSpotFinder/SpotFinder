@@ -431,7 +431,7 @@ p.border-given{
 }
 div.container-half{
     width: 100%;
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: scroll;
     margin-top: 15px;
     margin-bottom: 15px;
@@ -484,6 +484,12 @@ div.info{
     margin: 0px 10px;
     max-width: calc(100% - 150px);
     min-width: calc(100% - 150px);
+    overflow-x: hidden;
+    overflow-y:auto;
+}
+div.info-report{
+    width: 100%;
+    margin: 10px 0px 10px 10px;
     overflow-x: hidden;
     overflow-y:auto;
 }

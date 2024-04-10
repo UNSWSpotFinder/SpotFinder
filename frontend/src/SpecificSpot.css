@@ -371,6 +371,21 @@ p.PriceValue {
   font-size: 20px;
   font-weight: 600;
 }
+p.PriceValue-del {
+  margin: 0px;
+  padding: 0px;
+  font-size: 20px;
+  text-decoration: line-through;
+  margin: 0px 5px 0px 0px;
+  color: rgb(56, 56, 56);
+  font-weight: 500;
+}
+p.discount-reason{
+  margin: 0px 0px 0px 5px;
+  padding: 0px 0px 3px 0px;
+  font-size: 20px;
+  font-weight: 400;
+}
 button.confirm-btn {
   background-color: rgb(197, 0, 0);
   color: white;

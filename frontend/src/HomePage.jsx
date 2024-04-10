@@ -52,7 +52,7 @@ function AllSpoting() {
       }
     }
   };
-  const { _, setOpenSnackbar } = useError();
+  const { _ , setOpenSnackbar } = useError();
   let [allSpot, setAllSpot] = useState([]);
   let [filteredSpot, setfilrerSpot] = useState([]);
   const contentRef = useRef(null);
@@ -141,9 +141,34 @@ function AllSpoting() {
       });
     }
     console.log(contextState.CarType);
-    if (
-      contextState.order_rank_way === true &&
-      contextState.score_rank_way == true
+    if(contextState.order_rank_way === 0){
+        if(contextState.score_rank_way === 1){
+          filter.sort((a, b) => {
+            return b.Rate - a.Rate;
+          });
+        }
+        else if(contextState.score_rank_way === 2){
+          filter.sort((a, b) => {
+            return a.Rate - b.Rate;
+          });
+        }
+    }
+    else if(contextState.score_rank_way === 0){
+      if(contextState.order_rank_way===1){
+        filter.sort((a, b) => {
+          return b.OrderNum - a.OrderNum;
+        });
+      }
+      else if(contextState.order_rank_way===2){
+        filter.sort((a, b) => {
+          return a.OrderNum - b.OrderNum;
+        });
+      }
+      
+    }
+    else if (
+      contextState.order_rank_way === 1 &&
+      contextState.score_rank_way === 1
     ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
@@ -153,8 +178,8 @@ function AllSpoting() {
         return b.OrderNum - a.OrderNum; // 同样，这里是降序排序
       });
     } else if (
-      contextState.order_rank_way === true &&
-      contextState.score_rank_way == false
+      contextState.order_rank_way === 1 &&
+      contextState.score_rank_way === 2
     ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
@@ -165,8 +190,8 @@ function AllSpoting() {
         return b.OrderNum - a.OrderNum; // 这里是降序排序
       });
     } else if (
-      contextState.order_rank_way === false &&
-      contextState.score_rank_way == true
+      contextState.order_rank_way === 2 &&
+      contextState.score_rank_way === 1
     ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
@@ -177,8 +202,8 @@ function AllSpoting() {
         return a.OrderNum - b.OrderNum; // 这里是升序排序
       });
     } else if (
-      contextState.order_rank_way === false &&
-      contextState.score_rank_way == false
+      contextState.order_rank_way === 2 &&
+      contextState.score_rank_way == 2
     ) {
       filter.sort((a, b) => {
         // 首先根据rate字段排序
@@ -282,31 +307,22 @@ export function HomePageLarge() {
   },[])
 
   const { contextState, updateContextState } = useContext(AppContext);
-  const [orderway, setorderway] = useState('');
   const [minP, setminP] = useState(contextState.minPrise);
   const [maxP, setmaxP] = useState(contextState.maxPrise);
-  const [fitsize, setsize] = useState(contextState.CarType);
-  const [R, setR] = useState(contextState.score_rank_way);
-  const [O, setO] = useState(contextState.order_rank_way);
-  const [startDate, setstartDate] = useState(contextState.StartDay);
-  const [endDate, setendDate] = useState(contextState.EndDay);
   const handleStartDate = (event) => {
-    setstartDate(event);
     updateContextState({
       StartDay: event,
     });
   };
   const handleEndDate = (event) => {
-    setendDate(event);
     updateContextState({
       EndDay: event,
     });
   };
   const handlePopChange = (event) => {
     let res = event.target.value;
-    setR(res === '0');
     updateContextState({
-      order_rank_way: res === '0',
+      order_rank_way: Number(res),
     });
     console.log(contextState);
   };
@@ -315,12 +331,10 @@ export function HomePageLarge() {
       Carlocation: event.target.value,
     });
   };
-
   const handleOrdChange = (event) => {
     let res = event.target.value;
-    setO(res === '0');
     updateContextState({
-      score_rank_way: res === '0',
+      score_rank_way: Number(res),
     });
     console.log(contextState);
   };
@@ -480,8 +494,9 @@ export function HomePageLarge() {
           aria-label='Default select example'
           onChange={handlePopChange}
         >
-          <option value='0'>Highest sales</option>
-          <option value='1'>Lowest sales</option>
+          <option value={0}>Default</option>
+          <option value={1}>Highest sales</option>
+          <option value={2}>Lowest sales</option>
         </select>
         <select
           defaultValue={contextState.score_rank_way}
@@ -489,8 +504,9 @@ export function HomePageLarge() {
           aria-label='Default select example'
           onChange={handleOrdChange}
         >
-          <option value='0'>Highest rates</option>
-          <option value='1'>Lowest rates</option>
+          <option value={0}>Default</option>
+          <option value={1}>Highest rates</option>
+          <option value={2}>Lowest rates</option>
         </select>
         <select
           defaultValue={contextState.BookWay}
@@ -508,7 +524,7 @@ export function HomePageLarge() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label='Parking'
-                  value={startDate}
+                  value={contextState.StartDay}
                   onChange={handleStartDate}
                 />
               </LocalizationProvider>
@@ -517,7 +533,7 @@ export function HomePageLarge() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   label='Leaving'
-                  value={endDate}
+                  value={contextState.EndDay}
                   onChange={handleEndDate}
                 />
               </LocalizationProvider>
@@ -529,7 +545,7 @@ export function HomePageLarge() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label='Parking'
-                value={startDate}
+                value={contextState.StartDay}
                 onChange={handleStartDate}
               />
             </LocalizationProvider>
@@ -538,7 +554,7 @@ export function HomePageLarge() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label='Leaving'
-                value={endDate}
+                value={contextState.EndDay}
                 onChange={handleEndDate}
               />
             </LocalizationProvider>
@@ -576,30 +592,20 @@ export function HomePageLarge() {
 export function HomePageSmall() {
   let currentuser = localStorage.getItem('email') || null;
   const { contextState, updateContextState } = useContext(AppContext);
-  const [minP, setminP] = useState(contextState.minPrise);
-  const [maxP, setmaxP] = useState(contextState.maxPrise);
-  const [fitsize, setsize] = useState(contextState.CarType);
-  const [R, setR] = useState(contextState.score_rank_way);
-  const [O, setO] = useState(contextState.order_rank_way);
-  const [startDate, setstartDate] = useState(contextState.StartDay);
-  const [endDate, setendDate] = useState(contextState.EndDay);
   const handleStartDate = (event) => {
-    setstartDate(event);
     updateContextState({
       StartDay: event,
     });
   };
   const handleEndDate = (event) => {
-    setendDate(event);
     updateContextState({
       EndDay: event,
     });
   };
   const handlePopChange = (event) => {
     let res = event.target.value;
-    setR(res === '0');
     updateContextState({
-      score_rank_way: res === '0',
+      score_rank_way: Number(res),
     });
     console.log(contextState);
   };
@@ -610,9 +616,8 @@ export function HomePageSmall() {
   };
   const handleOrdChange = (event) => {
     let res = event.target.value;
-    setO(res === '0');
     updateContextState({
-      order_rank_way: res === '0',
+      order_rank_way: Number(res),
     });
   };
   const handleOrdwayChange = (event) => {
@@ -622,13 +627,11 @@ export function HomePageSmall() {
     });
   };
   const handleminpriceChange = (event) => {
-    setminP(event.target.value);
     updateContextState({
       minPrise: event.target.value,
     });
   };
   const handlemaxpriceChange = (event) => {
-    setmaxP(event.target.value);
     updateContextState({
       maxPrise: event.target.value,
     });
@@ -842,7 +845,7 @@ export function HomePageSmall() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label='Parking time'
-                    value={startDate}
+                    value={contextState.StartDay}
                     onChange={handleStartDate}
                   />
                 </LocalizationProvider>
@@ -851,7 +854,7 @@ export function HomePageSmall() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label='Leaving time'
-                    value={endDate}
+                    value={contextState.StartDay}
                     onChange={handleEndDate}
                   />
                 </LocalizationProvider>
@@ -863,7 +866,7 @@ export function HomePageSmall() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label='Parking time'
-                    value={startDate}
+                    value={contextState.EndDay}
                     onChange={handleStartDate}
                   />
                 </LocalizationProvider>
@@ -872,7 +875,7 @@ export function HomePageSmall() {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label='Leaving time'
-                    value={endDate}
+                    value={contextState.EndDay}
                     onChange={handleEndDate}
                   />
                 </LocalizationProvider>

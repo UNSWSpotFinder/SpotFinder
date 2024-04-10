@@ -43,8 +43,8 @@ export const AppContext = React.createContext();
 export const AppProvider = ({ children }) => {
   // 保存信息的状态
   const [contextState, setContextState] = useState({
-    order_rank_way: true,
-    score_rank_way: true,
+    order_rank_way: 0,
+    score_rank_way: 0,
     maxPrise: '',
     minPrise: '',
     CarType: '',
