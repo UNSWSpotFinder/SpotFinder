@@ -133,7 +133,7 @@
     padding-top: 2px;
   }
 
-  .booking-detail-btn, .booking-cancel-btn, .booking-review-btn {
+  .booking-detail-btn, .booking-cancel-btn, .booking-review-btn, .booking-report-btn {
     margin-right: 5px;
     border: none;
     padding: 5px 20px;
@@ -149,6 +149,15 @@
   }
   
   .booking-review-btn:hover {
+    background-color: darkgray;
+  }
+
+  .booking-report-btn{
+    background-color: black;
+    color: white;
+  }
+  
+  .booking-report-btn:hover {
     background-color: darkgray;
   }
 

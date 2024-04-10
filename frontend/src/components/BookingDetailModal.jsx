@@ -5,8 +5,6 @@ import { getUserSimpleInfo, getCarInfo } from './API';
 const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo }) => {
   const [providerInfo, setProviderInfo] = useState({ avatar: '', name: '' });
   console.log('Booking Details:', bookingDetails);
-  // console.log('Spot Info:', spotInfo);
-  // console.log('Providerid:', spotInfo.OwnerID);
 
   // 解析地址
   function parseAddress(spotAddr) {
@@ -50,10 +48,8 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
         console.error('Error fetching provider info:', error);
       }
     };
-  
     fetchProviderInfo();
   }, [spotInfo]); 
-  
 
 
   return (
@@ -64,7 +60,6 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
           <div className='booking-detail-title'>Booking Details</div>
           <button onClick={closeBookingDetailModal} className="close-btn">✖</button>
         </div>
-
         {/* 车位信息区域 */}
         <div className='spot-info-container'>
           <div className="spot-info-top">
@@ -79,15 +74,13 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
               <div className='way-to-access'>{spotInfo.PassWay}</div>
               {/* TODO:轮播图 */}
               {/* <div className="carousel-container"></div> */}
-            </div>
-            
+            </div>         
             {/* 右侧的provider信息 */}
             <div className="right-provider-info">
               <div className='provider-avatar'>
                 <img src={providerInfo.avatar} alt="Provider avatar" />
               </div>
-              <div className='provider-name'>Provider:{providerInfo.name}</div>
-              
+              <div className='provider-name'>Provider:{providerInfo.name}</div>           
             </div>
           </div>
           <div className='spot-info-middle'>
@@ -98,15 +91,12 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
               <div>
               </div>
             </div>
-
           </div>
           <div className='spot-info-bottom'>
             {/* <div className='way-to-access'>Indoor lot</div>
             <div className='way-to-access'>Keys</div> */}
           </div>
-
         </div>
-
       </div>
     </div>
   );

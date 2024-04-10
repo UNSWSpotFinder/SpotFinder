@@ -317,6 +317,61 @@ export const updateCarInfo = (carID, carInfo) => {
   });
 };
 
+// 用户删除车辆(delete)
+export const deleteCar = (carID) => {
+  const endpoint = `${baseUrl}/car/deleteCar/${carID}`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return null;
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+// 用户获取某辆车信息(get)
+export const getSpecificCarInfo = (carID) => {
+  return new Promise((resolve, reject) => {      
+    const endpoint = `${baseUrl}/car/getCar/${carID}`;
+    const token = localStorage.getItem('token');
+
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          const errorReason = data.message;
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
+  });
+};
 
 // 获取用户的下单信息(get)
 export const getMyBookingsInfo = () => {
