@@ -217,3 +217,9 @@
   .cancel-cancel-btn:hover {
     background-color: #f66;
   }
+
+  .no-bookings-message a {
+    color: #e11e2c;
+    margin-left: 10px;
+
+  }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrdersModal from './OrdersModal'; 
-import { getUserInfo, getSpotDetails, getReceivedBookingsInfo, getUserSimpleInfo } from './API';
+import { getUserInfo, getSpotDetails, getReceivedBookingsInfo } from './API';
 import './Listings.css';
 
 
@@ -160,7 +160,11 @@ const Listings = () => {
       {showDeleteConfirm && (
       <div className='modal-overlay'>
         <div className='modal-content'>
-          <h3>Are you sure you want to delete?</h3>
+        <div className="orders-modal-header">
+          <div className='delete-confirm-title'>Are you sure to delete this spot?</div>
+          <button onClick={closeDeleteConfirm} className="close-btn">✖</button>
+        </div>
+          
       <div className="form-buttons">
         <button onClick={handleDelete} className='delete-confirm-btn'>Delete</button>
         <button onClick={closeDeleteConfirm} className='delete-cancel-btn'>Cancel</button>

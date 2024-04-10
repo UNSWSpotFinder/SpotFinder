@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './BookingDetailModal.css';
-import { getUserSimpleInfo, getCarInfo } from './API';
+import { getUserSimpleInfo, getSpecificCarInfo } from './API';
 
 const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo }) => {
   const [providerInfo, setProviderInfo] = useState({ avatar: '', name: '' });
-  console.log('Booking Details:', bookingDetails);
+  // console.log('Booking Details:', bookingDetails);
+
+  const [carInfo, setCarInfo] = useState(null);
+  const [loadingCarInfo, setLoadingCarInfo] = useState(true);
 
   // 解析地址
   function parseAddress(spotAddr) {
@@ -52,6 +55,28 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
   }, [spotInfo]); 
 
 
+  // 获取车辆信息
+  useEffect(() => {
+    const fetchCarInfo = async () => {
+      try {
+        setLoadingCarInfo(true);
+        const response = await getSpecificCarInfo(bookingDetails.CarID);
+        console.log('Car Info:', response.car);
+        setCarInfo(response.car);
+      } catch (error) {
+        // 如果发生错误，则假设车辆已被删除
+        setCarInfo('This car has been deleted');
+      } finally {
+        setLoadingCarInfo(false);
+      }
+    };
+
+    if (bookingDetails.CarID) {
+      fetchCarInfo();
+    }
+  }, [bookingDetails.CarID]);
+
+
   return (
     <div className="orders-modal-overlay">
       <div className="orders-modal-content">
@@ -87,10 +112,15 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
             <div className='booking-period'>{formatBookingTime(bookingDetails.BookingTime)}</div>
             <div className='booking-total-cost'>Total cost:${bookingDetails.Cost}</div>
             <div className='booking-vehicle'>
-              Your vehicle ID: {bookingDetails.CarID}
-              <div>
-              </div>
-            </div>
+
+              {loadingCarInfo
+              ? 'Loading car information...'
+              : carInfo === 'This car has been deleted'
+                ? carInfo
+                : ` ${carInfo.Brand}  ${carInfo.Plate}`}
+            <div>
+          </div>
+          </div>
           </div>
           <div className='spot-info-bottom'>
             {/* <div className='way-to-access'>Indoor lot</div>
