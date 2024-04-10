@@ -24,6 +24,15 @@ import (
 func GetOrderInfoHandler(c *gin.Context) {
 	orderID := c.Param("orderID")
 	var order Models.OrderBasic
+	status, err := IsOrderCompleted(Service.DB, orderID, "Cancelled")
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": err})
+		return
+	}
+	if status {
+		c.JSON(http.StatusOK, gin.H{"error": "order is already completed"})
+		return
+	}
 
 	// 查找订单
 	if err := Service.DB.First(&order, orderID).Error; err != nil {

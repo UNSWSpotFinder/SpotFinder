@@ -71,6 +71,49 @@
                 }
             }
         },
+        "/car/deleteCar/{carID}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除车辆",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "删除车辆",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CarID",
+                        "name": "carID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vehicle deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "SQL error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/car/getCar/{carID}": {
             "get": {
                 "security": [
