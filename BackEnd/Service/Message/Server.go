@@ -147,8 +147,11 @@ func WebsocketHandler(c *gin.Context) {
 			if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
 				SendErrorMessage(conn, "Error sending message to receiver")
 				fmt.Printf("Error sending message to receiver: %v\n", err)
-			} else {
-				SendErrorMessage(conn, "Message sent unsuccessfully")
+			}
+			// 发送消息给发送端
+			if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+				SendErrorMessage(conn, "Error sending message to sender")
+				fmt.Printf("Error sending message to sender: %v\n", err)
 			}
 		} else {
 			Service.DB.Model(&dbMessage).Update("delivered", true)
