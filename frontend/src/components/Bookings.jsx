@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Rating from '@mui/material/Rating';
+import Snackbar from '@mui/material/Snackbar';
 import BookingDetailModal from './BookingDetailModal'
 import { getMyBookingsInfo, getSpotDetails, cancelBooking } from './API';
-import Snackbar from '@mui/material/Snackbar';
 import './Bookings.css';
-
 
 const Bookings = () => {
   const [showBookingDetailModal, setShowBookingDetailModal] = useState(false);
@@ -14,13 +13,10 @@ const Bookings = () => {
   const [currentView, setCurrentView] = useState('Current');   // 新增状态来追踪当前是'Current' 还是 'Past'
   const currentBookings = myBookingsInfo.filter(booking => booking.Status === 'Pending');
   const pastBookings = myBookingsInfo.filter(booking => booking.Status === 'Completed');
-
-  // 用于存储要cancel的booking的ID
-  const [selectedBookingID, setSelectedBookingID] = useState(null);
-  // 用于存储要显示的booking的详细信息
-  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
+  const [selectedBookingID, setSelectedBookingID] = useState(null);// 用于存储要cancel的booking的ID
+  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);// 用于存储要显示的booking的详细信息
   const [selectedSpotInfo, setSelectedSpotInfo] = useState(null);
-
+  const [rating, setRating] = useState(1); // 设置评分
 
   // 切换视图的函数
   const switchToCurrent = () => {
@@ -44,10 +40,7 @@ const Bookings = () => {
         return getSpotDetails(booking.SpotID);
       });
 
-      // 等待所有spot信息的promises解决
       const spotsDetails = await Promise.all(spotsInfoPromises);
-
-      // 储存spots信息
       const structuredSpotsInfo = spotsDetails.map(detail => detail.message || {});
       console.log('Structured Spots Info:', structuredSpotsInfo);
       
@@ -58,7 +51,6 @@ const Bookings = () => {
       console.error('Error fetching data:', error);
     }
   };
-
 
   // 获取orders和spots信息
   useEffect(() => {
@@ -72,8 +64,7 @@ const Bookings = () => {
       return `${address.Street}, ${address.City}, ${address.State}, ${address.Country}, ${address.Postcode}`;
     } catch (e) {
       return 'Default Address';
-    }
-  }
+    }}
 
   // 解析时间
   function formatBookingTime(bookingTimeJson) {
@@ -96,8 +87,7 @@ const Bookings = () => {
       return 'Invalid booking time';
     }
     return 'No booking time available';
-  }
-  
+  } 
 
   // 打开“取消订单”详情弹窗
   const openCancelModal = (bookingID) => {
@@ -111,13 +101,13 @@ const Bookings = () => {
     setShowCancelConfirm(false);
   };
   
-  // TODO:取消订单列表项
+  // 取消订单列表项
   const handleCancel = () => {
       cancelBooking(selectedBookingID).then(() => {
         // 成功取消后的操作，例如提示用户，更新状态等
         console.log("Booking cancelled successfully");
   
-        // 可能需要重新获取预订信息来更新 UI
+        // 重新获取预订信息来更新 UI
         fetchBookingsAndSpots();
 
         // 关闭确认框
@@ -126,13 +116,11 @@ const Bookings = () => {
         // 清除选中的预订 ID
         setSelectedBookingID(null);
       }).catch(error => {
-        // 处理错误，例如提示用户取消失败
+        // 处理错误，提示用户取消失败
         console.error("Error cancelling the booking:", error);
       });
     
   };
-
-
 
   // 打开订单详情弹窗
   const openBookingDetailModal = (booking, spot) => {
@@ -147,11 +135,9 @@ const Bookings = () => {
     setShowBookingDetailModal(false);
   };
 
-
   return (
     <div className='dashboard-bookings'>
       {/* 组件的JSX结构 */}
-
       <div className="button-part">
         <div className='booking-btn'>
           {/* <button className='current-booking-title'>Current Bookings: {}</button> */}
@@ -171,14 +157,12 @@ const Bookings = () => {
         </div>
         <button className='add-a-new-booking-btn'> Add a new booking</button>
       </div>
-
       <div className='booking-part'>
-      <h3 className='bookings-title'>{currentView === 'Current' ? 'Current Bookings' : 'Past Bookings'}</h3>
+        <h3 className='bookings-title'>{currentView === 'Current' ? 'Current Bookings' : 'Past Bookings'}</h3>
           {/* 单个booking */}
           {(currentView === 'Current' ? currentBookings : pastBookings).map((booking, index) => {
             // 根据booking的SpotID找到对应的spot信息
             const spotInfo = spotsInfo.find(spot => spot.ID === booking.SpotID);
-
             return (
               <div key={booking.ID} className='single-booking-info'>
                 <div className='picture'>
@@ -198,21 +182,28 @@ const Bookings = () => {
                 <button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotsInfo.find(spot => spot.ID === booking.SpotID))}>Details</button>
                   {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
                   {booking.Status === 'Pending' && (
-                    <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
+                    <div>
+                      <button className='booking-report-btn'>Report</button>
+                      <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
+                    </div>
                   )}
                   {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
                   {booking.Status === 'Completed' && (
-                    <button className='booking-review-btn'>Review</button>
+                    // <button className='booking-review-btn'>Review</button>  
+                    <Rating
+                    className='rating-stars'
+                    name={`unique-rating-${booking.ID}`} // 确保name属性是唯一的
+                    value={rating}
+                    onChange={(event, newValue) => {
+                      setRating(newValue);
+                      // 这里可以添加代码来处理评分变化，例如保存评分到服务器
+                    }}
+                  />         
                   )}
                 </div>
               </div>
             );
           })}
-
-
-
-
-
       </div>
       {/* 显示cancel弹窗 */}
       {showCancelConfirm && (
@@ -225,7 +216,7 @@ const Bookings = () => {
           </div>
         </div>
       </div>
-)}
+      )}
 
       {/* 显示booking details 弹窗 */}
       {showBookingDetailModal && (

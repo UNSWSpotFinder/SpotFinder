@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
-import { IconButton } from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import './Vehicles.css';
-import { getCarInfo } from './API';
-import { useNavigate } from 'react-router-dom';
+import { getCarInfo, deleteCar } from './API';
 import AddVehicleModal from './AddVehicles';
 import EditVehicleModal from './EditVehicles';
 
@@ -25,6 +22,8 @@ const Vehicles = () => {
   const [avatar, setAvatar] = useState('');
   const [editingCarId, setEditingCarId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteCarId, setDeleteCarId] = useState('');
+
 
 
   // 获取车辆信息
@@ -32,7 +31,7 @@ const Vehicles = () => {
     const fetchData = async () => {
       try {
         const data = await getCarInfo();
-        console.log('Car data:', data);
+        // console.log('Car data:', data);
         setCarsInfo(data.cars);
       } catch (error) {
         console.error('Error fetching car info:', error);
@@ -70,8 +69,9 @@ const Vehicles = () => {
 
 
   // 打开删除确认弹窗
-  const openDeleteConfirm = () => {
+  const openDeleteConfirm = (car) => {
     setShowDeleteConfirm(true);
+    setDeleteCarId(car.ID);
   };
   
   // 关闭删除确认弹窗
@@ -92,19 +92,25 @@ const Vehicles = () => {
 
 
 
-  // TODO:处理删除车辆信息
-  const handleDelete = () => {
-    console.log("Vehicle deleted");
+  // 处理删除车辆信息
+  const handleDelete = async () => {
+    try {
+      await deleteCar(deleteCarId);
+      setSnackbarMessage('Vehicle deleted successfully!');
+      setOpenSnackbar(true);
+      closeDeleteConfirm();
   
-    // 可以在这里关闭确认弹窗
-    closeDeleteConfirm();
-  
-    // 显示一个删除成功的提示
-    setSnackbarMessage('Vehicle deleted successfully!');
-    setOpenSnackbar(true);
+      // 重新获取更新后的车辆信息列表
+      const updatedCars = await getCarInfo();
+      setCarsInfo(updatedCars.cars);
+    } catch (error) {
+      console.error('Error deleting car:', error);
+      setSnackbarMessage('Vehicle deleted unsuccessfully. Please try again.');
+      setOpenSnackbar(true);
+
+    }
   };
   
-
 
   // 点击add按钮，设置model为add模式 打开模态框时，重置所有表单字段
   const openAddModal = () => {

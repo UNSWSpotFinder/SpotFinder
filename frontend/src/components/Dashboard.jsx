@@ -35,14 +35,14 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        console.log('data:', data);
+        // console.log('data:', data);
         // 储存用户spotID
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
           if (ownedSpotObject.OwnedSpot) {
             parsedOwnedSpot = ownedSpotObject.OwnedSpot;
-            console.log('parsedOwnedSpot:', parsedOwnedSpot);
+            // console.log('parsedOwnedSpot:', parsedOwnedSpot);
           }
         }
         // 检查头像数据是否存在，并且是否以base64格式开头

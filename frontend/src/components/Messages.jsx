@@ -5,27 +5,29 @@ const Messages = () => {
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [content, setContent] = useState('');
   const [receiverID, setReceiverID] = useState('');
-  const [shouldReconnect, setShouldReconnect] = useState(true);
+  const [shouldReconnect, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
 
     useEffect(() => {
         let websocket;
         function connect() {
             const token = localStorage.getItem('token');
-            websocket = new WebSocket(`ws://localhost:8080/ws`);
+            websocket = new WebSocket(`ws://localhost:8080/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
+                // 当WebSocket连接打开时的回调函数
                 console.log('WebSocket Connected');
-                websocket.send(JSON.stringify({ type: 'authenticate', token: token }));
+                websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // 发送认证信息
             };
+
             websocket.onmessage = (event) => {
-                console.log("Raw message data:", event.data);
+                // 当WebSocket接收到消息时的回调函数
                 try {
                     const data = JSON.parse(event.data);
                     console.log("Parsed data:", data);
                     if (Array.isArray(data)) {
-                        // Assuming that an array of messages means these are historical messages
+                        //假设收到的是一个消息数组，则将它设置为接收到的消息
                         setReceivedMessages(data);
                     } else {
-                        // Adding a single message to the list
+                        // 否则，将单条消息添加到消息数组中
                         setReceivedMessages(prevMessages => [...prevMessages, data]);
                     }
                 } catch (err) {
@@ -39,10 +41,10 @@ const Messages = () => {
             setWs(websocket);
         }
 
-        connect();
+        connect(); // 调用connect函数以连接WebSocket
 
         return () => {
-            setShouldReconnect(false); // 阻止重连
+            setShouldReconnect(false); // 更新状态为不再尝试重连
             if (websocket) {
                 websocket.close();
             }
@@ -50,11 +52,12 @@ const Messages = () => {
     }, []);
 
 
+    // 发送消息的函数
     const handleSendMessage = () => {
         // 检查WebSocket连接状态是否为OPEN
         if (ws && ws.readyState === WebSocket.OPEN && receiverID) {
             const message = {
-                receiverId: parseInt(receiverID, 10),
+                receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
                 content: content,
             };
             ws.send(JSON.stringify(message));
@@ -87,12 +90,15 @@ const Messages = () => {
                     onChange={e => setReceiverID(e.target.value)}
                 />
             </div>
-            <input
-                type="text"
-                value={content}
-                placeholder="Enter message"
-                onChange={e => setContent(e.target.value)}
-            />
+            <div>
+                <input
+                    type="text"
+                    value={content}
+                    placeholder="Enter message"
+                    onChange={e => setContent(e.target.value)}
+                />
+            </div>
+
             <button onClick={handleSendMessage}>Send</button>
         </div>
     );

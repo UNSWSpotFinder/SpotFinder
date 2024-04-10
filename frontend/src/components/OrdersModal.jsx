@@ -1,10 +1,82 @@
 import React, { useEffect, useState } from 'react';
-import { getUserSimpleInfo } from './API';
+import { getUserSimpleInfo, cancelBooking, getSpecificCarInfo, } from './API';
+import Snackbar from '@mui/material/Snackbar';
 import './OrdersModal.css';
 import './Listings.css';
 
-const OrdersModal = ({ closeOrdersModal, spot, orders }) => {
+const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [bookersInfo, setBookersInfo] = useState({}); 
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [selectedOrderID, setSelectedOrderID] = useState(null); // 用于存储要cancel的order的ID
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageContent, setMessageContent] = useState('');
+  const [selectedBookerID, setSelectedBookerID] = useState(null);
+  const [receiverID, setReceiverID] = useState('');
+  const [selectedBooker, setSelectedBooker] = useState(null);
+
+  const [ws, setWs] = useState(null);
+
+  useEffect(() => {
+    // 定义创建WebSocket连接的函数
+    const createWebSocketConnection = () => {
+      const webSocket = new WebSocket('ws://localhost:8080/ws');
+
+      webSocket.onopen = () => {
+        console.log('WebSocket connection established');
+        // WebSocket连接建立后的操作，例如发送认证信息等
+        webSocket.send(JSON.stringify({ type: 'authenticate', token: localStorage.getItem('token') })); // 发送认证信息
+      };
+
+      webSocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      // 管理WebSocket实例
+      setWs(webSocket);
+    };
+
+    // 只在组件挂载时创建WebSocket连接
+    if (!ws) {
+      createWebSocketConnection();
+    }
+
+    // 组件卸载时关闭WebSocket连接
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
+  }, [ws]);
+
+    // 取消订单列表项
+  const handleCancel = () => {
+    console.log('Cancelling order ID:', selectedOrderID);
+    cancelBooking(selectedOrderID).then(() => {
+      // 成功取消后的操作，例如提示用户，更新状态等
+      console.log("Order cancelled successfully");
+      fetchOrders(); // 
+      // 关闭确认框
+      setShowCancelConfirm(false);
+      // 清除选中的预订 ID
+      setSelectedOrderID(null);
+    }).catch(error => {
+      // 处理错误，提示用户取消失败
+      console.error("Error cancelling the booking:", error);
+    });
+};
+
+  // 打开“取消订单”详情弹窗
+  const openCancelModal = (orderID) => {
+    setSelectedOrderID(orderID); // 存储当前要取消的预订 ID
+    console.log('Cancel order ID:', orderID);
+    setShowCancelConfirm(true);
+  };
+
+  // 关闭“取消订单”确认框
+  const closeCancelConfirm = () => {
+    setShowCancelConfirm(false);
+  };
 
   useEffect(() => {
     // 定义一个加载所有用户信息的异步函数
@@ -55,6 +127,40 @@ const OrdersModal = ({ closeOrdersModal, spot, orders }) => {
     return 'No booking time available';
   }
 
+  // 打开发送消息的弹窗
+  const openMessageModal = (bookerID,booker) => {
+    setSelectedBookerID(bookerID);
+    setSelectedBooker(booker);
+    setShowMessageModal(true);
+  };
+
+  // 关闭发送消息的弹窗
+  const closeMessageModal = () => {
+    setShowMessageModal(false);
+    setMessageContent('');
+  };
+
+  const handleSendMessage = () => {
+    if (ws && ws.readyState === WebSocket.OPEN && messageContent && selectedBookerID) {
+      // 服务器期待的消息格式如下
+      const message = {
+        to: parseInt(selectedBookerID,10),
+        content: messageContent,
+      };
+
+      ws.send(JSON.stringify(message));
+
+      console.log(`Message sent to ${selectedBookerID}: ${messageContent}`);
+      // 清理操作
+      setMessageContent('');
+      closeMessageModal();
+    } else {
+      console.error('WebSocket is not open or no message content.');
+    }
+  };
+  
+
+  
 
   return (
     <div className="orders-modal-overlay">
@@ -107,17 +213,53 @@ const OrdersModal = ({ closeOrdersModal, spot, orders }) => {
                   <div className='order-info-spec'>End: {end}</div>
                   <div className='order-info-spec'>Total earning: ${order.Cost}</div>
                   <div className='order-info-spec'>Current State:{order.Status}</div>
+                  <div className='order-info-spec'>VehicleID: {order.CarID}</div>
                 </div>
                 <div className="modal-button-part">
-                  <button className='send-msg-btn'>Send a msg</button>
-                  {order.Status === 'Pending' && (<button className='order-cancel-btn'>Cancel</button>)}
-                  {order.Status === 'Completed' &&(<btn className='order-review-btn'>Review</btn>)}
+                  <button className='send-msg-btn' onClick={() => openMessageModal(order.BookerID, booker)}>Send a msg</button>
+                  {order.Status === 'Pending' && (
+                    <button className='order-cancel-btn' onClick={() => openCancelModal(order.ID)}>Cancel</button>
+                  )}
+                  {/* {order.Status === 'Completed' &&(<btn className='order-review-btn'>Review</btn>)} */}
                 </div>
               </div>
             );
           })
         )}
       </div>
+            {/* 显示cancel弹窗 */}
+            {showCancelConfirm && (
+            <div className='modal-overlay'>
+              <div className='modal-content'>
+                <h3>Are you sure to cancel the order?</h3>
+                <div className="form-buttons">
+                  <button onClick={handleCancel} className='cancel-confirm-btn'>Yes</button>
+                  <button onClick={closeCancelConfirm} className='cancel-cancel-btn'>No</button>
+                </div>
+              </div>
+            </div>
+      )}
+
+      {/* 发送消息的弹窗 */}
+      {showMessageModal && (
+        <div className="message-modal-overlay">
+
+          <div className="message-modal-content">
+            <div className="messages-modal-header">
+              <div className='send-to-title'>Send to: {bookersInfo[selectedBookerID]?.name || 'Loading...'}</div>
+              <button onClick={closeMessageModal} className="close-btn">✖</button>
+            </div>
+            <input
+              type="text"
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+              placeholder="Enter your message here"
+              className='message-input'
+            />
+            <button onClick={handleSendMessage} className='send-msg-confim-btn'>Send</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

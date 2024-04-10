@@ -24,7 +24,7 @@ const Profile = () => {
   useEffect(() => {
     setIsLoading(true); // 开始获取数据时设置头像加载状态为true
     getUserInfo().then(data => {
-      console.log('User info:', data);
+      // console.log('User info:', data);
       // 填充用户信息
       const userInfo = data.message;
 
@@ -209,7 +209,7 @@ const Profile = () => {
       {/* 取消/保存按钮 */}
       <div className="action-buttons-container">
         <div className="action-buttons">
-          <button type="button" className="cancel-button">Cancel</button>
+          {/* <button type="button" className="cancel-button">Cancel</button> */}
           <button type="button" className="save-button" onClick={handleSave}>Save</button>
         </div>
       </div>
