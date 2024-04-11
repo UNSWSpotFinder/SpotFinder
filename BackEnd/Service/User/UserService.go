@@ -169,7 +169,7 @@ func CreateUser(c *gin.Context) {
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
-//	@Param			emailconfigs body RequestData	true	"Recipient emailconfigs address"	Format(emailconfigs)
+//	@Param			emailconfigs body RequestData	true	"Recipient email configs address"
 //	@Success		200		{object}	RequestData	"OK"
 //	@Failure		400		{object}	nil			"Bad Request"
 //	@Failure		500		{object}	nil			"Internal Server Error"
