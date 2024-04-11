@@ -28,6 +28,9 @@ import {
   useParams,
 } from 'react-router-dom';
 import {
+  getUserInfo
+} from './components/API';
+import {
   AdminLoginPage,
   UserLoginPage,
   UserLoginPageForgetPassword,
@@ -41,7 +44,11 @@ import {
   callAPIGetSpecUserInfo,
   GetDistanceAll,
   CalculateAllTime,
+  callAPICreateOrder
 } from './API';
+import {
+  withdrawAccount
+} from './components/API'
 import './SpecificSpot.css';
 import { indigo } from '@mui/material/colors';
 import Box from '@mui/material/Box';
@@ -55,7 +62,7 @@ const CfmContent = styled('div')({
   position: 'absolute',
   zIndex: '4',
   width: '80%',
-  height: '550px',
+  height: '640px',
   backgroundColor: 'rgb(255, 255, 255)',
   borderRadius: '10px',
   boxShadow: '0px 1px 10px 1px rgba(42, 42, 42, 0.5)',
@@ -89,7 +96,7 @@ const CfmCenterContent = styled('div')({
   fontSize: '20px',
   margin: '0px',
   padding: '20px 0px 0px 0px',
-  height: '400px',
+  height: '364px',
   overflowY: 'scroll',
   textAlign: 'center',
   color: 'rgb(0, 0, 0)',
@@ -107,7 +114,16 @@ const CfmRow2 = styled('div')({
   justifyContent: 'space-between',
   width: '100%',
   alignItems: 'center',
-  height: '40px',
+  height: '30px',
+});
+const CfmRow3 = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%',
+  alignItems: 'center',
+  height: '30px',
+  margin: '0px',
+  padding: '0px'
 });
 const CfmRowP = styled('div')({
   display: 'flex',
@@ -118,77 +134,53 @@ const CfmRowP = styled('div')({
 const CfmRowCol = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  height: 'auto',
   margin: '10px 10% 0px 10%',
-  paddingBottom: '10px',
+  paddingBottom: '0px',
   borderBottom: '1px solid rgb(220, 220, 220)',
 });
 const CfmLefttxt = styled('p')({
   textAlign: 'left',
   margin: '0px',
-  marginBottom: '10px',
+  marginBottom: '5px',
+  padding: '0px',
   fontSize: '15px',
   color: 'rgb(42, 42, 42)',
 });
 const CfmBigtxt = styled('p')({
   textAlign: 'left',
-  margin: '0px 10px 10px 10px',
+  margin: '0px 10px 15px 10px',
   fontSize: '20px',
   maxWidth: '100%',
   wordWrap: 'break-word',
 });
 const CfmRightttxt = styled('p')({
   textAlign: 'left',
+  margin: '0px 10px 15px 10px',
+  fontSize: '15px',
+  color: 'rgb(85, 85, 85)',
+  maxWidth: '100%',
+  wordWrap: 'break-word',
+});
+const CfmRightBigttxt = styled('p')({
+  textAlign: 'left',
   margin: '0px 10px 10px 10px',
-  fontSize: '14px',
+  fontSize: '15px',
   color: 'rgb(85, 85, 85)',
   maxWidth: '100%',
   wordWrap: 'break-word',
 });
 const CfmRightttxt2 = styled('p')({
-  margin: '0px 0px 10px 0px',
+  margin: '0px 0px 0px 0px',
   fontSize: '15px',
   color: 'rgb(85, 85, 85)',
   wordWrap: 'break-word',
 });
-const CfmValuettxt = styled('p')({
-  textAlign: 'left',
-  margin: '0px',
-  marginLeft: '10px',
-  fontSize: '13px',
-  color: 'rgb(0, 0, 0)',
-  width: 'auto',
-  fontWeight: '500',
-});
-const CfmGuest = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'left',
-  marginbBottm: '5px',
-});
-const CfmFac = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-  '@media (max-width: 700px)': {
-    justifyContent: 'left',
-  },
-  '@media (min-width: 700px)': {
-    justifyContent: 'space-around',
-  },
-});
 const CfmBottom = styled('div')({
-  width: '100%',
+  width: '90%',
+  marginLeft:'10%',
   display: 'flex',
-  height: '50px',
+  flexDirection: "column",
   justifyContent: 'center',
-});
-const CfmGuestBlock = styled('div')({
-  margin: '0px 10px 0px 0px',
-  alignItems: 'center',
-  width: 'auto',
-  display: 'flex',
 });
 const CfmHead = styled('p')({
   '@media (max-width: 390px)': {
@@ -204,13 +196,9 @@ const CfmHead = styled('p')({
   letterSpacing: '0.2px',
   color: 'rgb(48, 48, 48)',
 });
-const LogoPath = styled('img')({
-  width: '13px',
-  height: '13px',
-});
 const ReserveConfirm = styled('button')({
   marginBottom: '15px',
-  backgroundColor: 'rgb(0, 128, 255)',
+  backgroundColor: '#E22229',
   fontSize: '16px',
   width: '90%',
   fontWeight: '500',
@@ -221,7 +209,7 @@ const ReserveConfirm = styled('button')({
   borderRadius: '7px',
   color: 'white',
   '&:hover': {
-    backgroundColor: 'rgb(0, 109, 218);',
+    backgroundColor: '#9e0005',
     color: 'white',
   },
   '&:disabled': {
@@ -230,27 +218,109 @@ const ReserveConfirm = styled('button')({
   },
 });
 export const ConfirmBook = ({ data, isOpen, close }) => {
+  console.log(data.BookingDuration);
+  const [topup,settp]=useState(false);
+  const [canOrder,setcanOrder]=useState(false);
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
   const { contextState, updateContextState } = useContext(AppContext);
   // use the navigate to go to the user page
+  const [Balance,setBalance]=useState('');
+  const [selectedOption, setSelectedOption] = useState('0');
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+    // 根据选项执行相应的操作
+    if (event.target.value === '0') {
+      // 如果选中了 SpotAccount，则执行相关操作
+      console.log('Spot Account 被选中');
+      // 在这里执行你的操作
+    } else if (event.target.value === '1') {
+      // 如果选中了 VisaCard，则执行相关操作
+      console.log('Visa Card 被选中');
+      // 在这里执行你的操作
+    }
+  };
+  useEffect(()=>{
+    getUserInfo().then((response)=>{
+      console.log(response.message.account);
+      setBalance(response.message.account);
+    }).catch((error)=>{
+    });
+    if(selectedOption === '0' && Balance - data.TotalPrice<0){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Your available balance is not enough, please Topup',
+        timestamp: new Date().getTime(),
+      });
+      setcanOrder(true);
+      settp(true);
+      return;
+    }else{
+      setcanOrder(false);
+      settp(false);
+    }
+  },[Balance,data.TotalPrice,isOpen,selectedOption]);
   const navigate = useNavigate();
   // get the hosting id from the url
-  const { HostingId } = useParams();
+  const {  username , Spotid } = useParams();
   // go to the user page
   const goesMain = () => {
-    navigate('/user/' + localStorage.getItem('email'));
+    navigate('/' + localStorage.getItem('email')+'/dashboard/bookings');
   };
+  const goesTopUp= () =>{
+    navigate('/' + localStorage.getItem('email')+'/dashboard');
+  }
   // go back to detail page
   const back = () => {
     setConfirmState(false);
     close();
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { _ , setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const ReverseBook = () => {
+    if(selectedOption === 0  && Balance - data.TotalPrice<0){
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Your available balance is not enough, please Topup',
+        timestamp: new Date().getTime(),
+      });
+      return;
+    }
+    setcanOrder(true);
     // change the conponment
+    let tempdata = {
+      bookingTime:data.BookingDuration,
+      carID:Number(localStorage.getItem("carId")),
+      cost:data.TotalPrice
+    }
+    console.log(tempdata);
+    callAPICreateOrder("spots/"+localStorage.getItem('spotID')+'/orders',localStorage.getItem('token'),tempdata).then(
+      (response) => {
+
+        setOpenSnackbar({
+          severity: 'success',
+          message: 'You successfully pay your order!Thank you.',
+          timestamp: new Date().getTime(),
+        })
+        if(selectedOption==='0'){
+          withdrawAccount(data.TotalPrice);
+        }
+        setConfirmState(true);
+        setcanOrder(false);
+        return;
+      }
+    ).catch(
+      (error) => {
+        setOpenSnackbar({
+          severity: 'warning',
+          message: 'There exist some error, please try again.',
+          timestamp: new Date().getTime(),
+        });
+        setcanOrder(false);
+        return;
+      }
+    );
     console.log(data);
   };
   let conponment = (
@@ -264,7 +334,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         <CfmCenterContent>
           <CfmRow>
             <CfmBigtxt>{data.SpotName + ' ' + data.SpotType}</CfmBigtxt>
-            <CfmRightttxt>{'Hosted by ' + data.Owner}</CfmRightttxt>
+            <CfmRightBigttxt>{'Hosted by ' + data.Owner}</CfmRightBigttxt>
           </CfmRow>
           <CfmRowCol>
             <CfmLefttxt>Hosting Address</CfmLefttxt>
@@ -281,8 +351,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             </CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
-            <CfmLefttxt>Access Way</CfmLefttxt>
-            <CfmRightttxt>{data.Passway}</CfmRightttxt>
+            <CfmRow3>
+              <CfmLefttxt>Access Way</CfmLefttxt>
+              <CfmRightttxt>{data.Passway}</CfmRightttxt>
+            </CfmRow3>
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Facilities</CfmLefttxt>
@@ -308,7 +380,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           <CfmRowCol>
             <CfmLefttxt>Booking Time</CfmLefttxt>
             {data.BookingDuration.map((date, index) => (
-              <CfmRow2 key={date.id}>
+              <CfmRow2 key={date.Tid}>
                 <CfmRightttxt2>
                   {data.BookWay === 'H'
                     ? 'From ' +
@@ -328,13 +400,38 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
               </CfmRow2>
             ))}
           </CfmRowCol>
-          <CfmRowP>
+        </CfmCenterContent>
+        <CfmRowP>
             <CfmLefttxt>Total Price</CfmLefttxt>
             <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
-          </CfmRowP>
-        </CfmCenterContent>
+        </CfmRowP>
+          <div className='payment-part'>
+            <p className='payment_method'>Select your payment method</p>
+            <select className='payment-choice' value={selectedOption} onChange={handleSelectChange}>
+              <option className='choice-p' value='0' >SpotAccount</option>
+              <option className='choice-p' value='1' >Visa Card</option>
+            </select>
+          </div>
+          { 
+            selectedOption === '0' &&(
+            <div className='balance-part'>
+              <CfmLefttxt>Your Available Balance</CfmLefttxt>
+              <p className='balance-value'>${Number(Balance).toFixed(2)+' - $'+data.TotalPrice}</p>
+              <p className='balance-value'>${Number(Balance).toFixed(2)-data.TotalPrice}</p>
+            </div>
+            )
+          }
+          { 
+            selectedOption === '1' &&(
+            <div className='balance-part'>
+              <CfmLefttxt>Your payment would through online payment platform.</CfmLefttxt>
+              <p className='balance-value'>{'BPay'}</p>
+            </div>
+            )
+          }
         <CfmBottom>
-          <ReserveConfirm
+          {( selectedOption === '1' || !topup) && <ReserveConfirm
+            disabled={canOrder}
             onClick={() => {
               if (ConfirmState) {
                 goesMain();
@@ -344,9 +441,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             }}
           >
             {ConfirmState
-              ? 'Goes to HomePage'
+              ? 'Goes to view your Booking'
               : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
-          </ReserveConfirm>
+          </ReserveConfirm>}
+          {(selectedOption==='0' && topup) && <ReserveConfirm onClick={() => {goesTopUp()}}>{'Goes to TopUp'}</ReserveConfirm>}
         </CfmBottom>
       </CfmContent>
     </div>
@@ -360,16 +458,11 @@ export function HomeSpecificLarge() {
   const [bookway, setbookway] = useState(contextState.BookWay);
   const [isbook, setIsbook] = useState(false);
   const [TotalPrice, setTotalPrice] = useState(0);
+  const [sameOwner,setsameOwner] = useState(false);
   const closebook = () => {
     setIsbook(false);
   };
   const Confirm = () => {
-    let temp = {
-      id: Date.now(), // unique id
-      startDate: FirstStart,
-      endDate: FirstEnd,
-      distance: Firstdistance,
-    };
     if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
         severity: 'warning',
@@ -378,6 +471,12 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    let temp = {
+      Tid: Date.now().toString(), // unique id
+      startDate: FirstStart.format().toString(),
+      endDate: FirstEnd.format().toString(),
+      distance: Firstdistance.toString(),
+    };
     if (contextState.CarPlate===''){
       setOpenSnackbar({
         severity: 'warning',
@@ -397,11 +496,19 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+
+    let resultIntervals=timeIntervals.map((data)=>{
+      data.startDate = data.startDate.format().toString();
+      data.endDate = data.endDate.format().toString();
+      data.distance = data.distance.toString();
+      return data;
+    });
+    console.log(resultIntervals);
     setdata((prevData) => ({
       ...prevData,
-      BookingDuration: [temp, ...timeIntervals],
+      BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
-      TotalPrice: TotalPrice,
+      TotalPrice: (sameOwner ? ( Number((TotalPrice * 0.15).toFixed(2))) : TotalPrice),
     }));
     console.log(timeIntervals);
 
@@ -414,6 +521,7 @@ export function HomeSpecificLarge() {
   const handlebookway = (event) => {
     setbookway(event.target.value);
   };
+
   var settings = {
     dots: true,
     infinite: true,
@@ -512,6 +620,7 @@ export function HomeSpecificLarge() {
     }
   };
   let getDetail = () => {
+    const currentname = localStorage.getItem('username') || null;
     const carId = localStorage.getItem('spotID');
     callAPIGetSpecSpot('spot/' + carId)
       .then((response) => {
@@ -559,6 +668,10 @@ export function HomeSpecificLarge() {
         setallpic(res);
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
+            console.log(response.message);
+            if(response.message.name === currentname){
+              setsameOwner(true);
+            }
             setdata((prevData) => ({
               ...prevData,
               Profile: response.message.avatar,
@@ -603,7 +716,7 @@ export function HomeSpecificLarge() {
     let res = CalculateAllTime(
       [
         {
-          id: Date.now(), // unique id
+          Tid: Date.now().toString(), // unique id
           startDate: FirstStart,
           endDate: FirstEnd,
           distance: 0,
@@ -613,8 +726,9 @@ export function HomeSpecificLarge() {
       bookway
     );
     console.log(res);
-    setDistance(res);
+    setDistance(GetDistanceAll(FirstStart,bookway,FirstEnd));
     setTotalPrice(calculateTotalPrice(res));
+    console.log(timeIntervals);
   }, [timeIntervals, FirstStart, FirstEnd, bookway]);
   // change the first available date
   const FirstStartChange = (date) => {
@@ -629,7 +743,7 @@ export function HomeSpecificLarge() {
     setTimeIntervals((currentInterval) => [
       ...currentInterval,
       {
-        id: Date.now(), // unique id
+        Tid: Date.now().toString(), // unique id
         startDate: null,
         endDate: null,
         distance: 0,
@@ -646,7 +760,7 @@ export function HomeSpecificLarge() {
       if (already) {
         // set the new interval value
         newIntervals[index] = {
-          id: already.id,
+          Tid: already.Tid,
           startDate: date,
           endDate: already.endDate,
           distance: GetDistanceAll(date, bookway, already.endDate),
@@ -666,7 +780,7 @@ export function HomeSpecificLarge() {
       // update the interval value
       if (already) {
         newIntervals[index] = {
-          id: already.id,
+          Tid: already.Tid,
           startDate: already.startDate,
           endDate: date,
           distance: GetDistanceAll(already.startDate, bookway, date),
@@ -680,7 +794,7 @@ export function HomeSpecificLarge() {
   const deleteInterval = (id) => {
     // delete the interval by filter the id
     setTimeIntervals((prevIntervals) =>
-      prevIntervals.filter((interval) => interval.id !== id)
+      prevIntervals.filter((interval) => interval.Tid !== id)
     );
   };
 
@@ -708,12 +822,12 @@ export function HomeSpecificLarge() {
         FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
     data.AvailableTime.map((item) => {
-      console.log(
-        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-          FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
-      );
+      // console.log(
+      //   FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+      //     FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+      // );
     });
-    console.log(selectedStartRange);
+    // console.log(selectedStartRange);
     if (!selectedStartRange) return true;
     return (
       !dayjs(date).isSameOrAfter(FirstStart) ||
@@ -871,10 +985,10 @@ export function HomeSpecificLarge() {
       <div className='Order-part'>
         <div className='order-time'>
           <div className='PublishInfo-park'>
-            <div className='IntervalHeader-book'>
-              <p className='PublishTitle'>Booking Time</p>
-              <div className='display-flex'>
-                <p className='bkt'>BookType</p>
+            <div className = 'IntervalHeader-book'>
+              <p className = 'PublishTitle'>Booking Time</p>
+              <div className = 'display-flex'>
+                <p className = 'bkt'>BookType</p>
                 <select
                   value={bookway}
                   className='form-select mglr-r'
@@ -1034,7 +1148,7 @@ export function HomeSpecificLarge() {
                   <button
                     className='ClearInterval-book'
                     onClick={() => {
-                      deleteInterval(interval.id);
+                      deleteInterval(interval.Tid);
                     }}
                   >
                     Delete
@@ -1046,7 +1160,9 @@ export function HomeSpecificLarge() {
           <div className='confirm-part'>
             <div className='PriceTotal'>
               <p className='Pricetxt'>Total Price</p>
-              <p className='PriceValue'>${TotalPrice}</p>
+              <p className={sameOwner ? 'PriceValue-del':'PriceValue'}>${TotalPrice}</p>
+              {sameOwner && <p className='PriceValue'>{(TotalPrice*0.15).toFixed(2)}</p>}
+              {sameOwner && <p className='discount-reason'>{'(Owner booking)'}</p>}
             </div>
             <button className='confirm-btn' onClick={Confirm}>
               Appointment
@@ -1075,7 +1191,7 @@ export function HomeSpecificLarge() {
           <img className='Review-left-img' src='/img/profile.png'></img>
           <div className='Review-right'>
             <div className='Review-top'>
-              <p className='r-name'>BoyangYu</p>
+              <p className='r-name'>boyang</p>
               <Rating
                 name='read-only '
                 className='black-star'

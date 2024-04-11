@@ -12,7 +12,7 @@ import React, {
 import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link,useParams, useLocation} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link,useParams, useLocation, useNavigate} from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{
@@ -43,8 +43,8 @@ export const AppContext = React.createContext();
 export const AppProvider = ({ children }) => {
   // 保存信息的状态
   const [contextState, setContextState] = useState({
-    order_rank_way: true,
-    score_rank_way: true,
+    order_rank_way: 0,
+    score_rank_way: 0,
     maxPrise: '',
     minPrise: '',
     CarType: '',

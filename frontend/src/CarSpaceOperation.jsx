@@ -1111,7 +1111,7 @@ export const CreateSpace = () => {
       </div>
       <div className='Q' ref={scrollToQ7} id='Q7'>
         <p className='Q4q'>Next we'll help you set up your parking revenue.</p>
-        <p className='QtwoQsub'>You can change it anytime.</p>
+        <p className='QtwoQsub'>You can change it anytime and 15% of the fee your earned would be deducted by the platform as the service fee.</p>
         <div className='Q6aDiv'>
           <div className='Q6-row'>
             <div className='row-left'>
@@ -2496,7 +2496,7 @@ export const EditSpace = () => {
       </div>
       <div className='Q' ref={scrollToQ7} id='Q7'>
         <p className='Q4q'>Next we'll help you set up your parking revenue.</p>
-        <p className='QtwoQsub'>You can change it anytime.</p>
+        <p className='QtwoQsub'>You can change it anytime and 15% of the fee your earned would be deducted by the platform as the service fee.</p>
         <div className='Q6aDiv'>
           <div className='Q6-row'>
             <div className='row-left'>

@@ -4,6 +4,7 @@ import { useState,useEffect } from 'react';
 import { motion,AnimatePresence } from 'framer-motion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { getUserInfo } from './components/API'
 import {
     useError,
     callAPIverifyEmailCode,
@@ -73,6 +74,15 @@ export function UserLoginPage(){
                 });
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('email',Email);
+                getUserInfo().then((response)=>{
+                    localStorage.setItem('username',response.message.name);
+                }).catch((error)=>{
+                    setOpenSnackbar({
+                        severity:'error',
+                        message:'Can not get user information.',
+                        timestamp:new Date().getTime()
+                    });
+                })
                 if(localStorage.getItem('spotID')){
                     navigate(`/${Email}` + '/detail/' + localStorage.getItem('spotID'));
                 }
@@ -446,7 +456,8 @@ export function AdminLoginPage(){
                     timestamp:new Date().getTime()
                 });
                 localStorage.setItem('token',response.token);
-                localStorage.setItem('email',Email);
+                localStorage.setItem('AdminId',Email);
+                
                 navigate(`/admin/${Email}`);
             })
             .catch((error)=>{

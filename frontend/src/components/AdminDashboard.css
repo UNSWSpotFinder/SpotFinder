@@ -10,3 +10,176 @@ p.Appnull{
     padding: 10px;
     border-radius: 10px;
 }
+
+p.report-content{
+    padding: 0px;
+    margin: 0px;
+    font-size: 14px;
+    height: 45px;
+    margin-top: 0px;
+    color: #303030;
+}
+p.spot-info-label{
+    padding: 0px;
+    margin: 0px;
+    height: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #4f4f4f;
+}
+p.space-type-info{
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    height: 20px;
+    margin-top: 0px;
+    color: #7F7F7F;
+    margin-bottom: 0px;
+}
+p.space-location-report{
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    height: 34px;
+    max-width: 90%;
+    margin-top: 0px;
+    color: #7F7F7F;
+}
+div.right-bottom-report{
+    width: 100%;
+    display: flex;
+    margin-top: 5px;
+    flex-direction: row;
+    justify-content: right;
+}
+button.specific-info-report{
+    border: 0px;
+    background-color:#E22229;
+    border-radius: 5px;
+    color: white;
+    height: 30px;
+    width: 110px;
+    margin: 0px 5px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+button.specific-info-report:hover{
+    background-color:#ba191e;
+}
+button.specific-info-report:disabled {
+    opacity: 0.5;
+}
+button.solved{
+    background-color:#008d6c;
+}
+button.solved:hover{
+    background-color:rgb(0, 101, 74);
+}
+div.Data{
+    width: 200px;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+div.circle{
+    width: 100px;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    margin: 20px 10px 15px 10px;
+    font-size: 20px;
+    border-radius: 50px;
+}
+div.blue{
+    color: rgb(0, 132, 255);
+    border: 5px solid rgb(0, 132, 255);
+}
+p.blue-c{
+    color: rgb(0, 132, 255);
+}
+div.red{
+    color: rgb(194, 21, 21);
+    border: 5px solid rgb(194, 21, 21);
+}
+p.red-c{
+    color: rgb(194, 21, 21);
+}
+div.green{
+    color: rgb(0, 157, 126);
+    border: 5px solid rgb(0, 157, 126);
+}
+p.green-c{
+    color: rgb(0, 157, 126);
+}
+div.yellow{
+    color: rgb(255, 191, 0);
+    border: 5px solid rgb(255, 191, 0);
+}
+p.yellow-c{
+    color:  rgb(255, 191, 0);
+}
+div.purple{
+    color: rgb(166, 0, 255);
+    border: 5px solid rgb(166, 0, 255);
+}
+p.purple-c{
+    color: rgb(166, 0, 255);
+}
+div.Data-way{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+p.circle-text{
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    font-size: 20px;
+    font-weight: 600;
+}
+p.DataMeaning{
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+    font-weight: 600;
+}
+div.Total-Earing{
+    justify-content: center;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+p.Total-Earing-title{
+    font-size: 50px;
+    margin-right: 20px;
+    font-weight: 200;
+    color: black;
+}
+p.Total-Earing-content{
+    font-size: 50px;
+    font-weight: 200;
+    letter-spacing: 2px;
+    color: black;
+}
+p.Total-Earing-content-change{
+    margin-left: 10px;
+    margin-bottom: 25px;
+    font-size: 25px;
+    font-weight: 200;
+    color: rgb(110, 110, 110);
+}
+p.changes{
+    margin-left: 5px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    font-weight: 300;
+    color: #129c7c;
+}

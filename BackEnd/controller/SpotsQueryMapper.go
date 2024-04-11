@@ -1,16 +1,11 @@
 package controller
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Spot"
-	"capstone-project-9900h14atiktokk/Models/User"
+	"capstone-project-9900h14atiktokk/Models"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
-	"time"
 )
-
-var spotIDList []uint
 
 // tempSpotBasic 临时车位基本信息，首页展示用
 type tempSpotBasic struct {
@@ -31,38 +26,32 @@ type tempSpotBasic struct {
 	IsBlocked    bool
 }
 
-// 初始化spotIDList
-func initSpotIDList(db *gorm.DB) error {
-	var ids []uint
-	if err := db.Model(&Spot.Basic{}).Pluck("id", &ids).Error; err != nil {
-		return err
-	}
-
-	spotIDList = ids
-	return nil
-}
-
 // GetSpotList 从数据库中获取所有车位数据
 func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSpotBasic, error) {
 	if db == nil {
 		return nil, errors.New("db is nil")
 	}
 
-	var allSpots []*Spot.Basic
+	var allSpots []*Models.SpotBasic
 	offset := (page - 1) * pageSize // 根据当前页计算偏移量
-
+	query := db.Model(&Models.SpotBasic{}).Where("is_visible = ?", isVisible)
+	if !isVisible {
+		// If isVisible is false, also check that is_blocked is false
+		query = query.Where("is_blocked = ?", false)
+	}
 	// 构建查询并进行分页
-	query := db.Where("is_visible = ?", isVisible).Offset(offset).Limit(pageSize)
 
-	if err := query.Select(
+	err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
-			"price_per_hour, order_num, pictures").
-		Find(&allSpots).Error; err != nil {
+			"price_per_hour, order_num, pictures, available_time").
+		Offset(offset).Limit(pageSize).
+		Find(&allSpots).Error
+	if err != nil {
 		return nil, err
 	}
 
-	// 将 *Spot.Basic 类型转换为 *tempSpotBasic 类型
+	// 将 *Spot.UserBasic 类型转换为 *tempSpotBasic 类型
 	var resultSpots []*tempSpotBasic // 这将是你的最终返回值
 	for _, spot := range allSpots {
 		tempSpot := &tempSpotBasic{
@@ -88,32 +77,8 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 	return resultSpots, nil
 }
 
-func DeleteSpot(id int, db *gorm.DB) error {
-	var singleSpot Spot.Basic
-	result := db.First(&singleSpot, id)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-
-			return nil
-		}
-		return result.Error
-	}
-
-	if singleSpot.IsVisible == false {
-
-		fmt.Println("已经下架了")
-		return nil
-
-	} else {
-
-		result := db.Model(&singleSpot).Updates(map[string]interface{}{"IsVisible": false, "DeletedAt": time.Now()})
-
-		return result.Error
-	}
-}
-
-func CreateSpot(spot *Spot.Basic, userEmail string, db *gorm.DB) error {
-	var user User.Basic
+func CreateSpot(spot *Models.SpotBasic, userEmail string, db *gorm.DB) error {
+	var user Models.UserBasic
 
 	// 先创建一个车位
 	if err := db.Create(&spot).Error; err != nil {

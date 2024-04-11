@@ -1,11 +1,7 @@
 package util
 
 import (
-	"capstone-project-9900h14atiktokk/Models/Manager"
-	"capstone-project-9900h14atiktokk/Models/Order"
-	"capstone-project-9900h14atiktokk/Models/Spot"
-	"capstone-project-9900h14atiktokk/Models/User"
-	"capstone-project-9900h14atiktokk/Models/Vehicle"
+	"capstone-project-9900h14atiktokk/Models"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -174,26 +170,26 @@ func InitMySQL() *gorm.DB {
 	//user := models.UserBasic{}
 	//db.Find(&user)
 	//fmt.Println(user)
-	if err := db.AutoMigrate(&User.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.UserBasic{}); err != nil {
+		fmt.Println(err)
+
 	}
-	if err := db.AutoMigrate(&Spot.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.ManagerBasic{}); err != nil {
+		fmt.Println(err)
+
 	}
-	if err := db.AutoMigrate(&Order.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.CarBasic{}); err != nil {
+		fmt.Println(err)
+
 	}
-	if err := db.AutoMigrate(&Manager.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.OrderBasic{}); err != nil {
+		fmt.Println(err)
+
 	}
-	if err := db.AutoMigrate(&Vehicle.Basic{}); err != nil {
-		fmt.Println("Failed to migrate database:", err)
-		return nil
+	if err := db.AutoMigrate(&Models.Message{}); err != nil {
+		fmt.Println(err)
 	}
+
 	return db
 }
 
