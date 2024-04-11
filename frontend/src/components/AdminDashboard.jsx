@@ -21,9 +21,12 @@ const AdminDashboard = () => {
   const [filteredSpotApp, setfilrerSpotApp] = useState([]);
   const navigate = useNavigate();
   const { _, setOpenSnackbar } = useError();
-  const [isLoading,setIsLoading] = useState(true);
-  const [isLoadingApp,setIsLoadingApp]=useState(true);
+  let isLoading = false;
+  let isLoadingApp = false;
+  const [isL,setL]=useState(true);
+  const [isLApp,setLApp]=useState(true);
   const ApproveRef = useRef(null);
+  const ReportRef = useRef(null);
   const PublishRef = useRef(null);
   let logout = () => {
     if (localStorage.getItem('token')) {
@@ -48,25 +51,54 @@ const AdminDashboard = () => {
       });
     }
     setfilrerSpot(datas);
+    isLoading=false;
+    setL(false);
     setfilrerSpotApp(datasApp);
+    isLoadingApp=false;
+    setLApp(false);
+    console.log(isLoading);
+    console.log(isLoadingApp);
   },[contextState.Carlocation, spots,AppSpots])
-  useEffect(()=>{
-    getNewApprove();
-    getNewSpot();
-  },[]);
+  // useEffect(()=>{
+  //   if(filteredSpot.length===0 && !isL){
+  //     isLoading=true;
+  //     setL(true);
+  //     console.log(isLoading);
+  //     getNewSpot();
+  //   }
+  // },[filteredSpot]);
+  // useEffect(()=>{
+  //   if(filteredSpotApp.length===0 && !isLApp){
+  //     isLoadingApp=true;
+  //     setLApp(true);
+  //     console.log(isLoadingApp);
+  //     getNewApprove();
+  //   }
+  // },[filteredSpotApp]);
   useEffect(() => {
+    getNewSpot();
+    getNewApprove();
     const apListener = () => {
       const ap = ApproveRef.current;
+      // console.log(ap.scrollHeight - ap.scrollTop);
+      // console.log(ap.clientHeight);
+      // console.log(isLoadingApp);
       if (!isLoadingApp && ap.scrollHeight - ap.scrollTop <= ap.clientHeight) {
-        setIsLoadingApp(true);
+        isLoadingApp=true;
+        setLApp(true);
         console.log("Reached the bottom");
         getNewApprove();
       }
     };
-    const scListener = () => {
+    const scListener = (isLoading) => {
       const sc = PublishRef.current;
-      if (!isLoading && sc.scrollHeight - sc.scrollTop <= sc.clientHeight) {
-        setIsLoading(true);
+      // console.log(sc.scrollHeight - sc.scrollTop);
+      // console.log(sc.clientHeight);
+      console.log(isLoading);
+      if (!isLoading && (sc.scrollHeight - sc.scrollTop <= sc.clientHeight)) {
+        isLoading=true;
+        setL(true);
+        console.log(isLoading);
         console.log("Reached the bottom");
         getNewSpot();
       }
@@ -74,9 +106,8 @@ const AdminDashboard = () => {
     const element = PublishRef.current;
     const element2= ApproveRef.current;
     console.log(element);
-    element.addEventListener('scroll', scListener);
+    element.addEventListener('scroll', ()=>{scListener(isLoading)});
     element2.addEventListener('scroll',apListener);
-
     return () => {
       element.removeEventListener('scroll', scListener);
       element2.removeEventListener('scroll',apListener);
@@ -90,15 +121,14 @@ const AdminDashboard = () => {
       console.log(data);
       const datanow = data.message || [];
       setSpots((prevSpots) => [...prevSpots, ...datanow]); 
-      setIsLoading(false);
-      pageB+=1;
-      // console.log('Spots:', data.message);
-      // console.log('Rendering spots:', spots);
-      // console.log('Rendering spots:', spots[1].SpotName);
+      pageB = pageB + 1;
+      console.log(pageB);
+      console.log('Spots:', data.message);
     })
     .catch((error) => {
       console.error('Failed to fetch spots:', error);
-      setIsLoading(false);
+      isLoading=false;
+      setL(false);
     });
   }
   const getNewApprove=()=>{
@@ -108,12 +138,12 @@ const AdminDashboard = () => {
       console.log(data);
       const datanow2 = data.message || [];
       setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
-      setIsLoadingApp(false);
       pageA+=1;
     })
     .catch((error) => {
       console.error('Failed to fetch spots:', error);
-      setIsLoadingApp(false);
+      isLoadingApp=false;
+      setLApp(false);
     });
   }
   const goToDetails = (spotId) => {
@@ -196,7 +226,7 @@ const AdminDashboard = () => {
         <p className='changes'>{'(+$243.57)'}</p>
       </div>
       <p className='title-for-spot'>Reported Information</p>
-      <div className='container-half' ref={ApproveRef}>
+      <div className='container-half' ref={ReportRef}>
         {filteredSpotApp.map((spot, index) => (
           <div key={index} className='SpaceOverall manager'>
             <div className='info-report'>
@@ -256,7 +286,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLoadingApp?"There aren't any report that need to be SOLVED at the moment.":"Loading..."}</p>)}
+        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLApp?"There aren't any report that need to be SOLVED at the moment.":"Loading..."}</p>)}
       </div>
       <p className='title-for-spot border-given'>Spot to Approve</p>
       <div className='container-half' ref={ApproveRef}>
@@ -334,7 +364,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLoadingApp?"There aren't any such spots that need to be APPROVED at the moment.":"Loading..."}</p>)}
+        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLApp?"There aren't any such spots that need to be APPROVED at the moment.":"Loading..."}</p>)}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
@@ -412,7 +442,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpot.length===0 && (<p className='Appnull'>{!isLoading?"Sorry, There aren't any such spots.":"Loading..."}</p>)}
+        {filteredSpot.length===0 && (<p className='Appnull'>{!isL?"Sorry, There aren't any such spots.":"Loading..."}</p>)}
       </div>
     </div>
   );

@@ -46,6 +46,9 @@ import {
   CalculateAllTime,
   callAPICreateOrder
 } from './API';
+import {
+  withdrawAccount
+} from './components/API'
 import './SpecificSpot.css';
 import { indigo } from '@mui/material/colors';
 import Box from '@mui/material/Box';
@@ -93,7 +96,7 @@ const CfmCenterContent = styled('div')({
   fontSize: '20px',
   margin: '0px',
   padding: '20px 0px 0px 0px',
-  height: '450px',
+  height: '364px',
   overflowY: 'scroll',
   textAlign: 'center',
   color: 'rgb(0, 0, 0)',
@@ -111,7 +114,16 @@ const CfmRow2 = styled('div')({
   justifyContent: 'space-between',
   width: '100%',
   alignItems: 'center',
-  height: '40px',
+  height: '30px',
+});
+const CfmRow3 = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%',
+  alignItems: 'center',
+  height: '30px',
+  margin: '0px',
+  padding: '0px'
 });
 const CfmRowP = styled('div')({
   display: 'flex',
@@ -122,65 +134,46 @@ const CfmRowP = styled('div')({
 const CfmRowCol = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  height: 'auto',
   margin: '10px 10% 0px 10%',
-  paddingBottom: '10px',
+  paddingBottom: '0px',
   borderBottom: '1px solid rgb(220, 220, 220)',
 });
 const CfmLefttxt = styled('p')({
   textAlign: 'left',
   margin: '0px',
-  marginBottom: '10px',
+  marginBottom: '5px',
+  padding: '0px',
   fontSize: '15px',
   color: 'rgb(42, 42, 42)',
 });
 const CfmBigtxt = styled('p')({
   textAlign: 'left',
-  margin: '0px 10px 10px 10px',
+  margin: '0px 10px 15px 10px',
   fontSize: '20px',
   maxWidth: '100%',
   wordWrap: 'break-word',
 });
 const CfmRightttxt = styled('p')({
   textAlign: 'left',
+  margin: '0px 10px 15px 10px',
+  fontSize: '15px',
+  color: 'rgb(85, 85, 85)',
+  maxWidth: '100%',
+  wordWrap: 'break-word',
+});
+const CfmRightBigttxt = styled('p')({
+  textAlign: 'left',
   margin: '0px 10px 10px 10px',
-  fontSize: '14px',
+  fontSize: '15px',
   color: 'rgb(85, 85, 85)',
   maxWidth: '100%',
   wordWrap: 'break-word',
 });
 const CfmRightttxt2 = styled('p')({
-  margin: '0px 0px 10px 0px',
+  margin: '0px 0px 0px 0px',
   fontSize: '15px',
   color: 'rgb(85, 85, 85)',
   wordWrap: 'break-word',
-});
-const CfmValuettxt = styled('p')({
-  textAlign: 'left',
-  margin: '0px',
-  marginLeft: '10px',
-  fontSize: '13px',
-  color: 'rgb(0, 0, 0)',
-  width: 'auto',
-  fontWeight: '500',
-});
-const CfmGuest = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'left',
-  marginbBottm: '5px',
-});
-const CfmFac = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap',
-  '@media (max-width: 700px)': {
-    justifyContent: 'left',
-  },
-  '@media (min-width: 700px)': {
-    justifyContent: 'space-around',
-  },
 });
 const CfmBottom = styled('div')({
   width: '90%',
@@ -188,12 +181,6 @@ const CfmBottom = styled('div')({
   display: 'flex',
   flexDirection: "column",
   justifyContent: 'center',
-});
-const CfmGuestBlock = styled('div')({
-  margin: '0px 10px 0px 0px',
-  alignItems: 'center',
-  width: 'auto',
-  display: 'flex',
 });
 const CfmHead = styled('p')({
   '@media (max-width: 390px)': {
@@ -208,10 +195,6 @@ const CfmHead = styled('p')({
   textAlign: 'center',
   letterSpacing: '0.2px',
   color: 'rgb(48, 48, 48)',
-});
-const LogoPath = styled('img')({
-  width: '13px',
-  height: '13px',
 });
 const ReserveConfirm = styled('button')({
   marginBottom: '15px',
@@ -235,22 +218,35 @@ const ReserveConfirm = styled('button')({
   },
 });
 export const ConfirmBook = ({ data, isOpen, close }) => {
+  console.log(data.BookingDuration);
   const [topup,settp]=useState(false);
   const [canOrder,setcanOrder]=useState(false);
-  const [Payed,setPayed]=useState(false);
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
   const { contextState, updateContextState } = useContext(AppContext);
   // use the navigate to go to the user page
   const [Balance,setBalance]=useState('');
-
+  const [selectedOption, setSelectedOption] = useState('0');
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+    // 根据选项执行相应的操作
+    if (event.target.value === '0') {
+      // 如果选中了 SpotAccount，则执行相关操作
+      console.log('Spot Account 被选中');
+      // 在这里执行你的操作
+    } else if (event.target.value === '1') {
+      // 如果选中了 VisaCard，则执行相关操作
+      console.log('Visa Card 被选中');
+      // 在这里执行你的操作
+    }
+  };
   useEffect(()=>{
     getUserInfo().then((response)=>{
       console.log(response.message.account);
       setBalance(response.message.account);
     }).catch((error)=>{
     });
-    if(Balance - data.TotalPrice<0){
+    if(selectedOption === '0' && Balance - data.TotalPrice<0){
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
@@ -260,9 +256,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       settp(true);
       return;
     }else{
+      setcanOrder(false);
       settp(false);
     }
-  },[Balance,data.TotalPrice,isOpen]);
+  },[Balance,data.TotalPrice,isOpen,selectedOption]);
   const navigate = useNavigate();
   // get the hosting id from the url
   const {  username , Spotid } = useParams();
@@ -279,10 +276,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     close();
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { _ , setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const ReverseBook = () => {
-    if(Balance-data.TotalPrice<0){
+    if(selectedOption === 0  && Balance - data.TotalPrice<0){
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
@@ -300,11 +297,15 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     console.log(tempdata);
     callAPICreateOrder("spots/"+localStorage.getItem('spotID')+'/orders',localStorage.getItem('token'),tempdata).then(
       (response) => {
+
         setOpenSnackbar({
           severity: 'success',
           message: 'You successfully pay your order!Thank you.',
           timestamp: new Date().getTime(),
-        });
+        })
+        if(selectedOption==='0'){
+          withdrawAccount(data.TotalPrice);
+        }
         setConfirmState(true);
         setcanOrder(false);
         return;
@@ -333,7 +334,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         <CfmCenterContent>
           <CfmRow>
             <CfmBigtxt>{data.SpotName + ' ' + data.SpotType}</CfmBigtxt>
-            <CfmRightttxt>{'Hosted by ' + data.Owner}</CfmRightttxt>
+            <CfmRightBigttxt>{'Hosted by ' + data.Owner}</CfmRightBigttxt>
           </CfmRow>
           <CfmRowCol>
             <CfmLefttxt>Hosting Address</CfmLefttxt>
@@ -350,8 +351,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             </CfmRightttxt>
           </CfmRowCol>
           <CfmRowCol>
-            <CfmLefttxt>Access Way</CfmLefttxt>
-            <CfmRightttxt>{data.Passway}</CfmRightttxt>
+            <CfmRow3>
+              <CfmLefttxt>Access Way</CfmLefttxt>
+              <CfmRightttxt>{data.Passway}</CfmRightttxt>
+            </CfmRow3>
           </CfmRowCol>
           <CfmRowCol>
             <CfmLefttxt>Facilities</CfmLefttxt>
@@ -397,17 +400,37 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
               </CfmRow2>
             ))}
           </CfmRowCol>
-          <CfmRowP>
+        </CfmCenterContent>
+        <CfmRowP>
             <CfmLefttxt>Total Price</CfmLefttxt>
             <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
-          </CfmRowP>
-          <CfmRowP>
-            <CfmLefttxt>Your Available Balance</CfmLefttxt>
-            <CfmRightttxt>${Balance}</CfmRightttxt>
-          </CfmRowP>
-        </CfmCenterContent>
+        </CfmRowP>
+          <div className='payment-part'>
+            <p className='payment_method'>Select your payment method</p>
+            <select className='payment-choice' value={selectedOption} onChange={handleSelectChange}>
+              <option className='choice-p' value='0' >SpotAccount</option>
+              <option className='choice-p' value='1' >Visa Card</option>
+            </select>
+          </div>
+          { 
+            selectedOption === '0' &&(
+            <div className='balance-part'>
+              <CfmLefttxt>Your Available Balance</CfmLefttxt>
+              <p className='balance-value'>${Number(Balance).toFixed(2)+' - $'+data.TotalPrice}</p>
+              <p className='balance-value'>${Number(Balance).toFixed(2)-data.TotalPrice}</p>
+            </div>
+            )
+          }
+          { 
+            selectedOption === '1' &&(
+            <div className='balance-part'>
+              <CfmLefttxt>Your payment would through online payment platform.</CfmLefttxt>
+              <p className='balance-value'>{'BPay'}</p>
+            </div>
+            )
+          }
         <CfmBottom>
-          <ReserveConfirm
+          {( selectedOption === '1' || !topup) && <ReserveConfirm
             disabled={canOrder}
             onClick={() => {
               if (ConfirmState) {
@@ -418,10 +441,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             }}
           >
             {ConfirmState
-              ? 'Goes to HomePage'
+              ? 'Goes to view your Booking'
               : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
-          </ReserveConfirm>
-          {topup && <ReserveConfirm onClick={() => {goesTopUp()}}>{'Goes to TopUp'}</ReserveConfirm>}
+          </ReserveConfirm>}
+          {(selectedOption==='0' && topup) && <ReserveConfirm onClick={() => {goesTopUp()}}>{'Goes to TopUp'}</ReserveConfirm>}
         </CfmBottom>
       </CfmContent>
     </div>
@@ -473,16 +496,19 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+
     let resultIntervals=timeIntervals.map((data)=>{
-      data.startDate=data.startDate.format().toString();
-      data.endDate=data.endDate.format().toString();
-      data.distance=data.distance.toString();
-    })
+      data.startDate = data.startDate.format().toString();
+      data.endDate = data.endDate.format().toString();
+      data.distance = data.distance.toString();
+      return data;
+    });
+    console.log(resultIntervals);
     setdata((prevData) => ({
       ...prevData,
       BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
-      TotalPrice: (sameOwner? 0 : TotalPrice),
+      TotalPrice: (sameOwner ? ( Number((TotalPrice * 0.15).toFixed(2))) : TotalPrice),
     }));
     console.log(timeIntervals);
 
@@ -495,6 +521,7 @@ export function HomeSpecificLarge() {
   const handlebookway = (event) => {
     setbookway(event.target.value);
   };
+
   var settings = {
     dots: true,
     infinite: true,
@@ -701,6 +728,7 @@ export function HomeSpecificLarge() {
     console.log(res);
     setDistance(GetDistanceAll(FirstStart,bookway,FirstEnd));
     setTotalPrice(calculateTotalPrice(res));
+    console.log(timeIntervals);
   }, [timeIntervals, FirstStart, FirstEnd, bookway]);
   // change the first available date
   const FirstStartChange = (date) => {
@@ -957,10 +985,10 @@ export function HomeSpecificLarge() {
       <div className='Order-part'>
         <div className='order-time'>
           <div className='PublishInfo-park'>
-            <div className='IntervalHeader-book'>
-              <p className='PublishTitle'>Booking Time</p>
-              <div className='display-flex'>
-                <p className='bkt'>BookType</p>
+            <div className = 'IntervalHeader-book'>
+              <p className = 'PublishTitle'>Booking Time</p>
+              <div className = 'display-flex'>
+                <p className = 'bkt'>BookType</p>
                 <select
                   value={bookway}
                   className='form-select mglr-r'
@@ -1133,8 +1161,8 @@ export function HomeSpecificLarge() {
             <div className='PriceTotal'>
               <p className='Pricetxt'>Total Price</p>
               <p className={sameOwner ? 'PriceValue-del':'PriceValue'}>${TotalPrice}</p>
-              <p className='PriceValue'>{'$0'}</p>
-              <p className='discount-reason'>{'(Owner booking)'}</p>
+              {sameOwner && <p className='PriceValue'>{(TotalPrice*0.15).toFixed(2)}</p>}
+              {sameOwner && <p className='discount-reason'>{'(Owner booking)'}</p>}
             </div>
             <button className='confirm-btn' onClick={Confirm}>
               Appointment

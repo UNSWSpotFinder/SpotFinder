@@ -485,3 +485,39 @@ div.CfmBack{
   background-color: black;
   opacity: 0.3;
 }
+div.payment-part{
+  display: flex;
+  width: 80%;
+  margin:15px 10% 0px 10%;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+}
+p.payment_method{
+  font-size: 18px;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+select.payment-choice{
+  font-size: 16px;
+  width: 170px;
+  margin: 5px;
+  padding: 5px 0px 5px 10px;
+  border-radius: 10px;
+}
+option.choice-p{
+  font-size: 15px;
+  margin: 5px 0px 0px 0px;
+}
+div.balance-part{
+  display: flex;
+  width: 80%;
+  margin: 5px 10% 0px 10%;
+  justify-content: space-between;
+  border-bottom: 1px dashed black;
+}
+p.balance-value{
+  margin: 0px;
+  padding: 0px;
+}
