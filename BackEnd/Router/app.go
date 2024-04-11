@@ -5,6 +5,7 @@ import (
 	"capstone-project-9900h14atiktokk/Service/Manager"
 	"capstone-project-9900h14atiktokk/Service/Message"
 	"capstone-project-9900h14atiktokk/Service/Order"
+	"capstone-project-9900h14atiktokk/Service/Report"
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/Service/Vehicle"
@@ -31,6 +32,8 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Schemes = []string{"http", "https", "ws"}
+
 	SecreteKey := viper.GetString("secrete.key")
 
 	// webSocket route
@@ -79,11 +82,14 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.GET("/user/orders/asOwner", Order.GetOwnerAllOrdersHandler)
 	private.GET("/car/getCar/:carID", Vehicle.GetVehicleByCarIDHandler)
 	private.DELETE("/car/deleteCar/:carID", Vehicle.DeleteVehicleHandler)
+	private.POST("/spots/:spotID/report", Report.CreateReportHandler)
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)
 	manager.PUT("/manager/block/:spotId", Manager.BlockSpotHandler)
 	manager.PUT("/manager/unblock/:spotId", Manager.UnblockSpotHandler)
+	manager.GET("/manager/report", Report.GetReportInfoHandler)
+	manager.POST("/manager/report/solve", Report.SolveReportHandler)
 	return r
 
 }
