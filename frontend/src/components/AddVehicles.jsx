@@ -19,21 +19,21 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
     const handleAddSubmit = async (event) => {
         event.preventDefault();
         const vehicleInfo = {
-          brand: vehicleBrand,
-          charge: vehicleCharge,
-          picture: avatar,
-          plate: vehiclePlate,
-          size: vehicleSize,
-          type: vehicleType
+            brand: vehicleBrand,
+            charge: vehicleCharge,
+            picture: avatar,
+            plate: vehiclePlate,
+            size: vehicleSize,
+            type: vehicleType
         };
         try {
             await createCarInfo(vehicleInfo);
             onAdded();
             onClose();
-          } catch (error) {
+            } catch (error) {
             setSnackbarMessage('Failed to add vehicle.' + error.message);
             setOpenSnackbar(true);
-          }
+            }
     }
 
     // 添加处理表单字段变化的函数
@@ -69,7 +69,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
             reader.readAsDataURL(file);
         }
     };
-      
+        
     // 在每个表单控件的事件处理器中设置自定义的验证消息
     const handleInvalid = (event) => {
     event.target.setCustomValidity('This field cannot be left blank');

@@ -213,7 +213,9 @@ const Profile = () => {
           <button type="button" className="save-button" onClick={handleSave}>Save</button>
         </div>
       </div>
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}
+      <Snackbar open={snackbarOpen} 
+      autoHideDuration={6000} 
+      onClose={() => setSnackbarOpen(false)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
             {snackbarMessage}

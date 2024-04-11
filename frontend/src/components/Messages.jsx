@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import './Messages.css';
 
 const Messages = () => {
   const [ws, setWs] = useState(null);
   const [receivedMessages, setReceivedMessages] = useState([]);
-  const [content, setContent] = useState('');
-  const [receiverID, setReceiverID] = useState('');
   const [shouldReconnect, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
 
     useEffect(() => {
@@ -51,56 +50,20 @@ const Messages = () => {
         };
     }, []);
 
-
-    // 发送消息的函数
-    const handleSendMessage = () => {
-        // 检查WebSocket连接状态是否为OPEN
-        if (ws && ws.readyState === WebSocket.OPEN && receiverID) {
-            const message = {
-                receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
-                content: content,
-            };
-            ws.send(JSON.stringify(message));
-            setContent(''); // 清空输入框
-        } else {
-            console.error('WebSocket is not open.', ws);
-            // 可以在此处处理重新连接逻辑或通知用户
-        }
-    };
-
-
-    return (
-        <div className='DashboardMessages'>
-            <h1>WebSocket Test Client</h1>
-            <h2>Messages Area</h2>
-            <div id="messages">
-                {receivedMessages.map((msg, index) => (
-                    <div key={index} className='received-msg'>
-                        <p><strong>From:</strong> {msg.SenderID} <strong>To:</strong> {msg.ReceiverID}</p>
-                        <p>{msg.Content}</p>
-                        <p><small>Sent at: {new Date(msg.SentAt).toLocaleString()}</small></p>
-                    </div>
-                ))}
+  return (
+    <div className='DashboardMessages'>
+      <div id="messages">
+        {receivedMessages.map((msg, index) => (
+          <div key={index} className='received-msg'>
+            <div className='msg-header'>
+              <div><strong>You've got a message from: {msg.SenderID}</strong> </div>
+              <div>{new Date(msg.SentAt).toLocaleString()}</div>
             </div>
-            <div>
-                <input
-                    type="text"
-                    value={receiverID}
-                    placeholder="Receiver ID"
-                    onChange={e => setReceiverID(e.target.value)}
-                />
-            </div>
-            <div>
-                <input
-                    type="text"
-                    value={content}
-                    placeholder="Enter message"
-                    onChange={e => setContent(e.target.value)}
-                />
-            </div>
-
-            <button onClick={handleSendMessage}>Send</button>
+            <div className='msg-content'>{msg.Content}</div>
         </div>
+        ))}
+      </div>
+    </div>
     );
 }
 

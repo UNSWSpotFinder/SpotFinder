@@ -23,6 +23,12 @@ const Bookings = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const handleSnackbarClose = () => setOpenSnackbar(false);
 
+  const [showBookingReportModal,setShowBookingReportModal]=useState(false);
+  const [reportContent,setReportContent]=useState('');
+
+  const [showBookingReviewModal,setShowBookingReviewModal]=useState(false);
+  const [reviewContent,setReviewContent]=useState('');
+
   // 切换视图的函数
   const switchToCurrent = () => {
     setCurrentView('Current');
@@ -107,6 +113,24 @@ const Bookings = () => {
     setShowCancelConfirm(false);
   };
   
+  // 打开订单report弹窗
+  const openReportModal=()=>{
+    setShowBookingReportModal(true);
+  }
+  // 关闭订单report弹窗
+  const closeReportModal=()=>{
+    setShowBookingReportModal(false);
+  }
+
+  // 打开订单Review弹窗
+  const openReviewModal=()=>{
+    setShowBookingReviewModal(true);
+  }
+  // 关闭订单Review弹窗
+  const closeReviewModal=()=>{
+    setShowBookingReviewModal(false);
+  }
+
   // 取消订单列表项
   const handleCancel = () => {
       cancelBooking(selectedBookingID).then(() => {
@@ -196,22 +220,15 @@ const Bookings = () => {
                   {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
                   {booking.Status === 'Pending' && (
                     <div>
-                      <button className='booking-report-btn'>Report</button>
+                      <button className='booking-report-btn' onClick={openReportModal}>Report</button>
                       <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
                     </div>
                   )}
                   {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
                   {booking.Status === 'Completed' && (
-                    // <button className='booking-review-btn'>Review</button>  
-                    <Rating
-                    className='rating-stars'
-                    name={`unique-rating-${booking.ID}`} 
-                    value={rating}
-                    onChange={(event, newValue) => {
-                      setRating(newValue);
-                      // TODO:处理评分变化，例如保存评分到服务器
-                    }}
-                  />         
+                    <div>
+                      <button className='booking-review-btn' onClick={openReviewModal}>Review</button>
+                    </div>  
                   )}
                 </div>
               </div>
@@ -247,6 +264,57 @@ const Bookings = () => {
             spotInfo={selectedSpotInfo}
           />
         )}
+
+      {/* 显示 Booking Report 弹窗 */}
+      {showBookingReportModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <div className="orders-modal-header">
+              <div className='cancel-confirm-title'>Report your issue</div>
+              <button onClick={closeReportModal} className="close-btn">✖</button>
+            </div>
+            <div> Please write down your reason to report the spot:</div>
+            <textarea required
+            type="text"
+            value={reportContent}
+            onChange={(e) => setReportContent(e.target.value)}
+            className='reason-input'
+            />
+            <button className='report-submit-btn'>Submit</button>
+          </div>
+        </div>
+      )}
+
+      {/* 显示 Booking Review 弹窗 */}
+      {showBookingReviewModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <div className="orders-modal-header">
+              <div className='cancel-confirm-title'>Spot Review</div>
+              <button onClick={closeReviewModal} className="close-btn">✖</button>
+            </div>
+            <div> Please write down your review of this spot:</div>
+
+            <Rating
+              className='rating-stars'
+              // name={`unique-rating-${booking.ID}`} 
+              value={rating}
+              onChange={(event, newValue) => {
+                setRating(newValue);
+                // TODO:处理评分变化，例如保存评分到服务器
+              }}
+            />
+            <textarea required
+            type="text"
+            value={reviewContent}
+            onChange={(e) => setReviewContent(e.target.value)}
+            className='reason-input'
+            />
+            <button className='report-submit-btn'>Submit</button>
+          </div>
+        </div>
+      )}
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

@@ -283,7 +283,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
               <div className='send-to-title'>Send to: {bookersInfo[selectedBookerID]?.name || 'Loading...'}</div>
               <button onClick={closeMessageModal} className="close-btn">✖</button>
             </div>
-            <input
+            <input required
               type="text"
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}
