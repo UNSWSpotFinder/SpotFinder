@@ -34,6 +34,21 @@ func setupLogger() {
 	logrus.SetOutput(io.MultiWriter(file, os.Stdout))
 }
 
+// @title           SpotFinder
+// @version         1.0
+// @description     This is a server for SpotFinder, a project for 9900H14A. Maybe it could be a good memory.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Sizhuo Long
+// @contact.url    https://www.github.com/longsizhuo
+// @contact.email  longsizhuo@gmail.com
+
+// @BasePath  /
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  Find out more about Swagger
+// @externalDocs.url          http://swagger.io
 func main() {
 	setupLogger()
 	logrus.Info("Starting the application...")

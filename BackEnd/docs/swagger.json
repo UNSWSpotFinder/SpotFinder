@@ -1,8 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is a server for SpotFinder, a project for 9900H14A. Maybe it could be a good memory.",
+        "title": "SpotFinder",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Sizhuo Long",
+            "url": "https://www.github.com/longsizhuo",
+            "email": "longsizhuo@gmail.com"
+        },
+        "version": "1.0"
     },
+    "basePath": "/",
     "paths": {
         "/authorization": {
             "get": {
@@ -491,6 +500,90 @@
                 }
             }
         },
+        "/manager/report": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取举报信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "获取举报信息",
+                "responses": {
+                    "200": {
+                        "description": "Report info",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Unable to get report info",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/report/solve": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据举报结果禁用相关的车位或标记报告为已解决。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "处理举报",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Result should be either 'success' or 'failure'",
+                        "name": "result",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report processed successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid report ID or result parameter",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/unblock/{spotId}": {
             "put": {
                 "security": [
@@ -926,6 +1019,58 @@
                 }
             }
         },
+        "/spots/{spotID}/report": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "创建举报",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "创建举报",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Message",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "unable to create report",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/create": {
             "post": {
                 "description": "do ping",
@@ -969,8 +1114,7 @@
                 "summary": "Send code",
                 "parameters": [
                     {
-                        "format": "emailconfigs",
-                        "description": "Recipient emailconfigs address",
+                        "description": "Recipient email configs address",
                         "name": "emailconfigs",
                         "in": "body",
                         "required": true,
@@ -1814,10 +1958,17 @@
         }
     },
     "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        },
         "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
         }
+    },
+    "externalDocs": {
+        "description": "Find out more about Swagger",
+        "url": "http://swagger.io"
     }
 }
