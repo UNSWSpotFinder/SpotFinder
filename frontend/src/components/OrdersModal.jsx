@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUserSimpleInfo, cancelBooking, getSpecificCarInfo, } from './API';
+import { getUserSimpleInfo, cancelBooking, getSpecificCarInfo } from './API';
 import Snackbar from '@mui/material/Snackbar';
 import './OrdersModal.css';
 import './Listings.css';
@@ -8,14 +8,19 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [bookersInfo, setBookersInfo] = useState({}); 
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [selectedOrderID, setSelectedOrderID] = useState(null); // 用于存储要cancel的order的ID
-
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageContent, setMessageContent] = useState('');
   const [selectedBookerID, setSelectedBookerID] = useState(null);
-  const [receiverID, setReceiverID] = useState('');
   const [selectedBooker, setSelectedBooker] = useState(null);
+  const [carsInfo, setCarsInfo] = useState({});
 
   const [ws, setWs] = useState(null);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+    // 关闭Snackbar
+  const handleSnackbarClose = () => setOpenSnackbar(false);
 
   useEffect(() => {
     // 定义创建WebSocket连接的函数
@@ -54,7 +59,8 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     console.log('Cancelling order ID:', selectedOrderID);
     cancelBooking(selectedOrderID).then(() => {
       // 成功取消后的操作，例如提示用户，更新状态等
-      console.log("Order cancelled successfully");
+      setSnackbarMessage('Order cancelled successfully.');
+      setOpenSnackbar(true);
       fetchOrders(); // 
       // 关闭确认框
       setShowCancelConfirm(false);
@@ -64,7 +70,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       // 处理错误，提示用户取消失败
       console.error("Error cancelling the booking:", error);
     });
-};
+  };
 
   // 打开“取消订单”详情弹窗
   const openCancelModal = (orderID) => {
@@ -96,8 +102,31 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       setBookersInfo(bookersData); // 更新状态
     };
 
+    // 获取停在某spot的vehicle信息
+    const loadCarsInfo = async () => {
+      const carsInfoUpdates = {};
+      const carRequests = orders.map(order => getSpecificCarInfo(order.CarID)
+        .then(info => {
+          console.log('Car info:', info.car);
+          carsInfoUpdates[order.CarID] = info.car; // 如果成功获取，则存储车辆信息
+        })
+        .catch(error => {
+          carsInfoUpdates[order.CarID] = 'This car has been deleted'; // 如果获取失败，则设置提示信息
+        })
+      );
+  
+      await Promise.all(carRequests);
+      setCarsInfo(carsInfoUpdates); // 更新状态，存储每个车辆的信息或错误提示
+    };
+
     // 调用该函数
     loadBookersInfo();
+
+    if (orders.length > 0) {
+      loadCarsInfo();
+    }
+
+    
   }, [orders]); // 当orders更新时触发
 
   // 重设地址格式
@@ -144,13 +173,13 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     if (ws && ws.readyState === WebSocket.OPEN && messageContent && selectedBookerID) {
       // 服务器期待的消息格式如下
       const message = {
-        to: parseInt(selectedBookerID,10),
+        receiverId: parseInt(selectedBookerID,10),
         content: messageContent,
       };
 
       ws.send(JSON.stringify(message));
 
-      console.log(`Message sent to ${selectedBookerID}: ${messageContent}`);
+      // console.log(`Message sent to ${selectedBookerID}: ${messageContent}`);
       // 清理操作
       setMessageContent('');
       closeMessageModal();
@@ -158,9 +187,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       console.error('WebSocket is not open or no message content.');
     }
   };
-  
-
-  
 
   return (
     <div className="orders-modal-overlay">
@@ -180,7 +206,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
               <div className='spot-title'>{spot.SpotName}</div>
               <div className='location'>{formattedAddr}</div>
               <div className='spot-size'>Fit to {spot.Size}</div>
-
             </div>
           </div>
         
@@ -209,11 +234,18 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
                   <div className='order-hint-msg'>Has rented this spot</div>
                 </div>
                 <div className="custome-details">
-                  <div className='order-info-spec'>Start: {start}</div>
-                  <div className='order-info-spec'>End: {end}</div>
-                  <div className='order-info-spec'>Total earning: ${order.Cost}</div>
-                  <div className='order-info-spec'>Current State:{order.Status}</div>
-                  <div className='order-info-spec'>VehicleID: {order.CarID}</div>
+                  <div className='order-info-spec1'>Start: {start}</div>
+                  <div className='order-info-spec1'>End: {end}</div>
+                  <div className='order-info-spec2'>Total earning: ${order.Cost}</div>
+                  <div className='order-info-spec3'>
+                    {carsInfo[order.CarID] 
+                      ? (typeof carsInfo[order.CarID] === 'string' 
+                          ? carsInfo[order.CarID] 
+                          : `${carsInfo[order.CarID].Brand}  ${carsInfo[order.CarID].Plate}`)
+                      : 'Loading car information...'
+                    }
+                  </div>
+                  <div className='order-info-spec4'>Current State:{order.Status}</div>
                 </div>
                 <div className="modal-button-part">
                   <button className='send-msg-btn' onClick={() => openMessageModal(order.BookerID, booker)}>Send a msg</button>
@@ -227,23 +259,25 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
           })
         )}
       </div>
-            {/* 显示cancel弹窗 */}
-            {showCancelConfirm && (
-            <div className='modal-overlay'>
-              <div className='modal-content'>
-                <h3>Are you sure to cancel the order?</h3>
-                <div className="form-buttons">
-                  <button onClick={handleCancel} className='cancel-confirm-btn'>Yes</button>
-                  <button onClick={closeCancelConfirm} className='cancel-cancel-btn'>No</button>
-                </div>
-              </div>
-            </div>
+      {/* 显示cancel弹窗 */}
+      {showCancelConfirm && (
+      <div className='modal-overlay'>
+        <div className='modal-content'>
+          <div className="orders-modal-header">
+            <div className='cancel-confirm-title'>Are you sure to cancel the order?</div>
+            <button onClick={closeCancelConfirm} className="close-btn">✖</button>
+          </div>
+          <div className="form-buttons">
+            <button onClick={handleCancel} className='cancel-confirm-btn'>Yes</button>
+            <button onClick={closeCancelConfirm} className='cancel-cancel-btn'>No</button>
+          </div>
+        </div>
+      </div>
       )}
 
       {/* 发送消息的弹窗 */}
       {showMessageModal && (
         <div className="message-modal-overlay">
-
           <div className="message-modal-content">
             <div className="messages-modal-header">
               <div className='send-to-title'>Send to: {bookersInfo[selectedBookerID]?.name || 'Loading...'}</div>
@@ -260,6 +294,12 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
           </div>
         </div>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </div>
   );
 };
