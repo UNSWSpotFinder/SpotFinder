@@ -277,6 +277,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   };
   // get the set open snackbar function
   const { _ , setOpenSnackbar } = useError();
+  const _lodash = require('lodash');
   // this function used when the user click the confirm button
   const ReverseBook = () => {
     if(selectedOption === 0  && Balance - data.TotalPrice<0){
@@ -288,9 +289,15 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       return;
     }
     setcanOrder(true);
+    let temp = _lodash.cloneDeep(data.BookingDuration);
+    console.log(temp);
+    temp.map((item)=>{
+      item.startDate = item.startDate.format().toString();
+      item.endDate = item.endDate.format().toString();
+    })
     // change the conponment
     let tempdata = {
-      bookingTime:data.BookingDuration,
+      bookingTime:temp,
       carID:Number(localStorage.getItem("carId")),
       cost:data.TotalPrice
     }
@@ -473,10 +480,11 @@ export function HomeSpecificLarge() {
     }
     let temp = {
       Tid: Date.now().toString(), // unique id
-      startDate: FirstStart.format().toString(),
-      endDate: FirstEnd.format().toString(),
+      startDate: FirstStart,
+      endDate: FirstEnd,
       distance: Firstdistance.toString(),
     };
+    console.log(FirstStart);
     if (contextState.CarPlate===''){
       setOpenSnackbar({
         severity: 'warning',
@@ -496,13 +504,8 @@ export function HomeSpecificLarge() {
       });
       return;
     }
-
-    let resultIntervals=timeIntervals.map((data)=>{
-      data.startDate = data.startDate.format().toString();
-      data.endDate = data.endDate.format().toString();
-      data.distance = data.distance.toString();
-      return data;
-    });
+    console.log(timeIntervals);
+    let resultIntervals = timeIntervals
     console.log(resultIntervals);
     setdata((prevData) => ({
       ...prevData,
@@ -813,13 +816,12 @@ export function HomeSpecificLarge() {
   };
 
   // 结束日期的 shouldDisableDate 函数，依赖于已选择的开始日期
-  const DisabledEndDate = (date, FirstStart) => {
-    if (!FirstStart) return true;
-
+  const DisabledEndDate = (date, currentdate) => {
+    if (!currentdate) return true;
     const selectedStartRange = data.AvailableTime.find(
       (item) =>
-        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-        FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+        currentdate.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+        currentdate.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
     data.AvailableTime.map((item) => {
       // console.log(
@@ -830,7 +832,7 @@ export function HomeSpecificLarge() {
     // console.log(selectedStartRange);
     if (!selectedStartRange) return true;
     return (
-      !dayjs(date).isSameOrAfter(FirstStart) ||
+      !dayjs(date).isSameOrAfter(currentdate) ||
       !dayjs(date).isSameOrBefore(
         dayjs(selectedStartRange.endDate).subtract(1, 'day')
       )
@@ -1076,7 +1078,7 @@ export function HomeSpecificLarge() {
               </div>
             </div>
             {timeIntervals.map((interval, index) => (
-              <div className='TimeInterval-book' key={interval.id}>
+              <div className='TimeInterval-book' key={interval.Tid}>
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
                     {bookway == 'H' ? (
