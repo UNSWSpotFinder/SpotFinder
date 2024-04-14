@@ -13,7 +13,7 @@ func SendRecentMessages(conn *websocket.Conn, userID uint) {
 	var messages []Models.Message
 	result := Service.DB.Preload("Sender").Preload("Receiver").
 		Where("receiver_id = ?", userID).
-		//Or("sender_id = ?", userID).
+		Or("sender_id = ?", userID).
 		Order("sent_at desc").Limit(50).Find(&messages)
 	if result.Error != nil {
 		fmt.Println("Failed to fetch recent messages:", result.Error)
