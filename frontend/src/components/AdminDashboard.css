@@ -10,6 +10,30 @@ p.Appnull{
     padding: 10px;
     border-radius: 10px;
 }
+p.Loading{
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+    /* background-color: rgb(245, 245, 245); */
+    height: 50px;
+    color: black;
+    align-content:center;
+    margin-bottom: 20px;
+    padding: 0px 10px 10px 10px;
+    border-radius: 10px;
+}
+p.fin{
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+    color: #b1b1b1;
+    /* background-color: rgb(245, 245, 245); */
+    height: 20px;
+    align-content:center;
+    margin-bottom: 10px;
+    padding: 0px 10px 0px 10px;
+    border-radius: 10px;
+}
 
 p.report-content{
     padding: 0px;
@@ -36,14 +60,21 @@ p.space-type-info{
     color: #7F7F7F;
     margin-bottom: 0px;
 }
+p.spot-name-detail{
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 0px;
+    color: #717171;
+}
 p.space-location-report{
     padding: 0px;
-    margin: 0px;
+    margin:  0px 0px 0px 8px;
     font-size: 12px;
     height: 34px;
     max-width: 90%;
     margin-top: 0px;
-    color: #7F7F7F;
+    font-weight: 400;
+    color: #404040;
 }
 div.right-bottom-report{
     width: 100%;
