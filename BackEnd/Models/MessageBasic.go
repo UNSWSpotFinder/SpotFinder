@@ -14,8 +14,8 @@ type Message struct {
 	ReadAt     *time.Time `gorm:"type:datetime;null"`
 	Delivered  bool       `gorm:"type:boolean;default:false"` // 新增字段表示消息是否已送达
 
-	Sender   UserBasic `gorm:"foreignKey:SenderID;"`
-	Receiver UserBasic `gorm:"foreignKey:ReceiverID;"`
+	Sender   ManagerBasic `gorm:"foreignKey:SenderID;"`
+	Receiver UserBasic    `gorm:"foreignKey:ReceiverID;"`
 }
 
 func (Message) TableName() string {

@@ -40,3 +40,6 @@ March 12, 2024
 添加了提现和充值功能，给JWT添加了id字段
 添加了ModifySpot
 难点：车位只有id这一个主键，而user拥有string类型的email作为唯一性约束的键可以用于查找，而Spot只…能用uint进行查找，一开始没有传入进去，后来进行了好几次类型转换才成功
+
+April 14, 2024
+修改了Message的发送方式，现在是由manager发送给user，而不是user发送给user

@@ -82,6 +82,12 @@ func WebsocketHandler(c *gin.Context) {
 		return
 	}
 
+	//role := claims["role"].(string)
+	//if role != "manager" {
+	//	SendErrorMessage(conn, "You are not allowed to access this service")
+	//	return
+	//}
+
 	userId, err := strconv.ParseUint(claims["userID"].(string), 10, 64)
 	if err != nil {
 		SendErrorMessage(conn, "Invalid user ID in token")
