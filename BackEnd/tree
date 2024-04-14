@@ -1,0 +1,81 @@
+└
+ › tree
+.
+├── Config
+│   └── app.yml 这里 存的是redis的账号密码以及管理员的名字，还有jwt 的服务端密钥
+├── Docker-compose.yml 这里是docker的配置文件
+├── Dockerfile 这里是docker container的运行逻辑
+├── Models
+│   ├── CarBasic.go  这里是车位的结构体，用来接收或者操作数据库使用
+│   ├── ManagerBasic.go 这里是管理员的结构体，用来接收或者操作数据库使用
+│   ├── MessageBasic.go 这里是定义用户发送信息的结构体
+│   ├── OrderBasic.go   这里是订单的结构体
+│   ├── ReportBasic.go  这里是举报功能的结构体
+│   ├── SpotBasic.go   这里是车位的结构体
+│   ├── User
+│   │   └── UserController.go这里的是操作用户表的函数
+│   └── UserBasic.go 这里是用户的结构体
+├── Router
+│   └── app.go  里面是gin的路由，定义了前端连接后端的api路径
+├── Service
+│   ├── Manager
+│   │   ├── CreateManager.go  控制层的代码，这里就是接收http请求的相关代码 ，里面有swagger的例子
+│   │   ├── LoginManagerService.go 控制层的代码，这里就是接收http请求的相关代码，里面有swagger的例子
+│   │   └── ManageSpot.go 控制层的代码，这里就是接收http请求的相关代码，里面有swagger的例子
+│   ├── Message
+│   │   ├── HistoryMessage.go 获取历史消息
+│   │   ├── Notification.go 管理员发送通知
+│   │   ├── Server.go websocket服务器
+│   │   ├── proto  grpc定义的protol文件，这个是一个统一的接口定义，现在没用上
+│   │   │   ├── message.pb.go
+│   │   │   ├── message.proto
+│   │   │   └── message_grpc.pb.go
+│   │   └── serverMessage.go grpc的服务端代码
+│   ├── Order
+│   │   ├── CreateOrder.go 创建订单
+│   │   ├── GetOrderInfo.go 获取订单： 获取用户的订单-获取所有订单-获取provider订单
+│   │   └── ModifyOrder.go 修改订单： 退款-完成-取消
+│   ├── Report
+│   │   └── CreateReport.go report的相关控制层代码
+│   ├── Service.go  测试database是否响应
+│   ├── Spots
+│   │   ├── ModifySpotService.go  修改车位信息
+│   │   ├── SpotInfoService.go  返回车位信息
+│   │   └── CreateSPotService.go 创建车位
+│   ├── User
+│   │   ├── EmailService.go 用户登录的生成验证码的和发送邮件的代码，有生成随机数，发送邮件的相关api
+│   │   ├── LoginUserService.go 用户登录验证的代码
+│   │   ├── ModifyUserService.go 修改用户个人信息的代码
+│   │   └── UserService.go 里面有获取用户列表，创建用户的相关api
+│   ├── Vehicle
+│   │   ├── Car.go 添加车位、获取车位信息
+│   │   └── ModifyVehicleInfo.go 修改车位的api
+│   └── jwtMiddleware.go  jwt的配置文件，里面包含怎么从请求头读取认证信息以及解析token的代码
+├── app.log    websocket服务器的日志文件
+├── controller 这里是对数据库进行操作的相关代码
+│   ├── ApproveSpot.go 审核车位。对数据库进行的is_vislable 字段进行查询
+│   ├── CreateCar.go  创建一个车辆信息的代码
+│   ├── CreateOrder.go 创建一个订单的代码
+│   ├── GetOwnerFromSpot.go 获取车位的拥有者信息
+│   ├── GetSpots.go 从数据库中获取当前的车位数据
+│   ├── GetVehicleOfUser.go根据用户id返回车辆信息
+│   ├── ModifyVehicleInfo.go 根据用户id和车位id进行查询
+│   ├── SpotsQueryMapper.go 分页查询的实现逻辑
+│   ├── amount.go 充值相关操作数据库操作
+│   └── manager.go 创建管理员，管理员登陆，通过邮箱获取管理员的相关数据库操作
+├── docs 这里是swagger的文件
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
+├── go.mod golang的一些依赖
+├── go.sum golang一些依赖
+├── logo.html   这里是一个logo的html文件，没用上
+├── main.go 主程序，启动在这里
+├── test   测试文件夹
+│   ├── initialDB.go 删库跑路的代码，别动
+│   └── testGorm.go 随机添加数据库的数据
+└── util 获取gmail api的地方
+    ├── credentials.json  这里是获取gmail api的凭证，需要去google cloud platform申请
+    ├── quickstart.py  获取gmail api的python实现
+    ├── systemInitial.go  Viper，GmailAPI，MySQL, Redis的初始化
+    └── token.json 生成的api会在这里，初次生成的时候没有这个文件，需要去用quickstart.py
