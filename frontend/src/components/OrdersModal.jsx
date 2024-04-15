@@ -173,6 +173,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     if (ws && ws.readyState === WebSocket.OPEN && messageContent && selectedBookerID) {
       // 服务器期待的消息格式如下
       const message = {
+        type: 'message',
         receiverId: parseInt(selectedBookerID,10),
         content: messageContent,
       };
