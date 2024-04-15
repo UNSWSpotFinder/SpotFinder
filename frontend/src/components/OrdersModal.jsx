@@ -173,6 +173,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     if (ws && ws.readyState === WebSocket.OPEN && messageContent && selectedBookerID) {
       // 服务器期待的消息格式如下
       const message = {
+        type: 'message',
         receiverId: parseInt(selectedBookerID,10),
         content: messageContent,
       };
@@ -283,7 +284,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
               <div className='send-to-title'>Send to: {bookersInfo[selectedBookerID]?.name || 'Loading...'}</div>
               <button onClick={closeMessageModal} className="close-btn">✖</button>
             </div>
-            <input
+            <input required
               type="text"
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}

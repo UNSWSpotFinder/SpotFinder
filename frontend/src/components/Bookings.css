@@ -143,7 +143,7 @@
     width: 100px;
   }
 
-  .booking-review-btn{
+  .booking-review-btn, .booking-review-btn {
     background-color: black; 
     color: white;
   }
@@ -222,4 +222,28 @@
     color: #e11e2c;
     margin-left: 10px;
 
+  }
+
+  .reason-input {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+  }
+
+  .report-submit-btn{
+    width: 350px;
+    margin-left: 15px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    color: white;
+    background-color: #e11e2c; 
+  }
+
+  .report-submit-btn:hover {
+    background-color: #f66;
   }

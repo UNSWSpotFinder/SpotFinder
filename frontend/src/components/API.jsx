@@ -461,6 +461,31 @@ export const cancelBooking = (orderID) => {
   });
 };
 
+// 用户创建举报(post)
+export const createReport = (spotID, reportMessage) => {
+  const endpoint = `${baseUrl}/spots/${spotID}/report`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ message: reportMessage }), 
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    // 如果没有返回内容，
+    return null;
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
 
 
 // call API to get all report

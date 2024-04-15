@@ -3,25 +3,33 @@ import { useNavigate, Link } from 'react-router-dom';
 import Rating from '@mui/material/Rating';
 import Snackbar from '@mui/material/Snackbar';
 import BookingDetailModal from './BookingDetailModal'
-import { getMyBookingsInfo, getSpotDetails, cancelBooking } from './API';
+import { getMyBookingsInfo, getSpotDetails, cancelBooking, createReport } from './API';
 import './Bookings.css';
 
 const Bookings = () => {
   const [showBookingDetailModal, setShowBookingDetailModal] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [myBookingsInfo, setMyBookingsInfo] = useState([]); // 存储获取到的 bookings 信息
-  const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
-  const [currentView, setCurrentView] = useState('Current');   // 新增状态来追踪当前是'Current' 还是 'Past'
+  const [myBookingsInfo, setMyBookingsInfo] = useState([]);
+  const [spotsInfo, setSpotsInfo] = useState([]);
+  const [currentView, setCurrentView] = useState('Current');
   const currentBookings = myBookingsInfo.filter(booking => booking.Status === 'Pending');
   const pastBookings = myBookingsInfo.filter(booking => booking.Status === 'Completed');
-  const [selectedBookingID, setSelectedBookingID] = useState(null);// 用于存储要cancel的booking的ID
-  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);// 用于存储要显示的booking的详细信息
+  const [selectedBookingID, setSelectedBookingID] = useState(null);
+  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
   const [selectedSpotInfo, setSelectedSpotInfo] = useState(null);
-  const [rating, setRating] = useState(1); // 设置评分
+  const [rating, setRating] = useState(1);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const handleSnackbarClose = () => setOpenSnackbar(false);
+
+  const [showBookingReportModal, setShowBookingReportModal] = useState(false);
+  const [reportContent, setReportContent] = useState('');
+
+  const [showBookingReviewModal, setShowBookingReviewModal] = useState(false);
+  const [reviewContent, setReviewContent] = useState('');
+
+  const [selectedSpotID, setSelectedSpotID] = useState(null); // 保存选中的 Spot ID
 
   // 切换视图的函数
   const switchToCurrent = () => {
@@ -39,7 +47,7 @@ const Bookings = () => {
       // 获取预订信息
       const bookingDataResult = await getMyBookingsInfo();
       const bookingsArray = bookingDataResult.orders;
-      // console.log('My Bookings array:', bookingsArray);
+      console.log('My Bookings array:', bookingsArray);
       
       // 获取所有bookings相关的spots信息
       const spotsInfoPromises = bookingsArray.map(booking => {
@@ -107,6 +115,26 @@ const Bookings = () => {
     setShowCancelConfirm(false);
   };
   
+  // 打开订单report弹窗
+  const openReportModal = (spotID) => {
+    setSelectedSpotID(spotID);  // 保存 Spot ID
+    console.log("Opening report modal for Spot ID:", spotID);
+    setShowBookingReportModal(true);
+  };
+  // 关闭订单report弹窗
+  const closeReportModal=()=>{
+    setShowBookingReportModal(false);
+  }
+
+  // 打开订单Review弹窗
+  const openReviewModal=()=>{
+    setShowBookingReviewModal(true);
+  }
+  // 关闭订单Review弹窗
+  const closeReviewModal=()=>{
+    setShowBookingReviewModal(false);
+  }
+
   // 取消订单列表项
   const handleCancel = () => {
       cancelBooking(selectedBookingID).then(() => {
@@ -137,6 +165,43 @@ const Bookings = () => {
     setShowBookingDetailModal(false);
   };
 
+  // 上传举报信息
+  const handleReportSubmit = () => {
+    // console.log('Report Content:', reportContent);
+    // console.log('Selected Spot ID:', selectedSpotID);
+    if (selectedSpotID && reportContent.trim()) {
+      createReport(selectedSpotID, reportContent)
+        .then(result => {
+          if (result === null) {
+            setSnackbarMessage('Report submitted successfully.');
+            setOpenSnackbar(true);
+          } else {
+            // 如果结果不为 null，则抛错误
+            throw new Error('Unexpected result: ' + result);
+          }
+        })
+        .catch(error => {
+          console.error("Error submitting the report:", error);
+          setSnackbarMessage('Failed to submit the report: ' + (error.message || "Unknown error"));
+          setOpenSnackbar(true);
+        })
+        .finally(() => {
+          // 无论请求成功还是失败，最后都会执行的代码
+          setShowBookingReportModal(false); // 关闭模态框
+          setReportContent(''); // 清空报告内容
+          setSelectedSpotID(null); // 清空选中的 Spot ID
+        });
+    } else {
+      // 如果报告内容为空，则直接通知用户
+      console.log("Missing Spot ID or report content is empty.");
+      setSnackbarMessage('Report cannot be empty.');
+      setOpenSnackbar(true);
+    }
+  };
+  
+  
+
+
 
   // 用于点击链接时执行的函数
   const ClickToFindSpot = (event) => {
@@ -147,19 +212,19 @@ const Bookings = () => {
     }
   };
 
+
+
   return (
     <div className='dashboard-bookings'>
       {/* 组件的JSX结构 */}
       <div className="button-part">
         <div className='booking-btn'>
-          {/* <button className='current-booking-title'>Current Bookings: {}</button> */}
           <button
             className={`current-booking-title ${currentView === 'Current' ? 'active' : ''}`}
             onClick={switchToCurrent}
           >
             Current Bookings: {currentBookings.length}
           </button>
-          {/* <button className='past-booking-title'>Past Bookings: {}</button> */}
           <button
             className={`past-booking-title ${currentView === 'Past' ? 'active' : ''}`}
             onClick={switchToPast}
@@ -171,17 +236,16 @@ const Bookings = () => {
       </div>
       <div className='booking-part'>
         <h3 className='bookings-title'>{currentView === 'Current' ? 'Current Bookings' : 'Past Bookings'}</h3>
-          {/* 单个booking */}
-          
+          {/* 单个booking */}    
           {myBookingsInfo.length > 0 ? (currentView === 'Current' ? currentBookings : pastBookings).map((booking, index) => {
             // 根据booking的SpotID找到对应的spot信息
             const spotInfo = spotsInfo.find(spot => spot.ID === booking.SpotID);
+            // console.log('Spot Info:', spotInfo);
             return (
               <div key={booking.ID} className='single-booking-info'>
                 <div className='picture'>
                   <img src={spotInfo.Pictures} alt="Thumbnail" />
                 </div>
-
                 <div className='space-information'>
                   <div className='space-title'>{spotInfo.SpotName}</div>
                   {/* 格式化日期、地址 */}
@@ -196,22 +260,15 @@ const Bookings = () => {
                   {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
                   {booking.Status === 'Pending' && (
                     <div>
-                      <button className='booking-report-btn'>Report</button>
+                      <button className='booking-report-btn' onClick={() => openReportModal(spotInfo.ID)}>Report</button>
                       <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
                     </div>
                   )}
                   {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
                   {booking.Status === 'Completed' && (
-                    // <button className='booking-review-btn'>Review</button>  
-                    <Rating
-                    className='rating-stars'
-                    name={`unique-rating-${booking.ID}`} 
-                    value={rating}
-                    onChange={(event, newValue) => {
-                      setRating(newValue);
-                      // TODO:处理评分变化，例如保存评分到服务器
-                    }}
-                  />         
+                    <div>
+                      <button className='booking-review-btn' onClick={openReviewModal}>Review</button>
+                    </div>  
                   )}
                 </div>
               </div>
@@ -247,6 +304,57 @@ const Bookings = () => {
             spotInfo={selectedSpotInfo}
           />
         )}
+
+      {/* 显示 Booking Report 弹窗 */}
+      {showBookingReportModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <div className="orders-modal-header">
+              <div className='cancel-confirm-title'>Report your issue</div>
+              <button onClick={closeReportModal} className="close-btn">✖</button>
+            </div>
+            <div> Please write down your reason to report the spot:</div>
+            <textarea required
+            type="text"
+            value={reportContent}
+            onChange={(e) => setReportContent(e.target.value)}
+            className='reason-input'
+            />
+            <button onClick={() => handleReportSubmit()} className='report-submit-btn'>Submit</button>
+          </div>
+        </div>
+      )}
+
+      {/* 显示 Booking Review 弹窗 */}
+      {showBookingReviewModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <div className="orders-modal-header">
+              <div className='cancel-confirm-title'>Spot Review</div>
+              <button onClick={closeReviewModal} className="close-btn">✖</button>
+            </div>
+            <div> Please write down your review of this spot:</div>
+
+            <Rating
+              className='rating-stars'
+              // name={`unique-rating-${booking.ID}`} 
+              value={rating}
+              onChange={(event, newValue) => {
+                setRating(newValue);
+                // TODO:处理评分变化，例如保存评分到服务器
+              }}
+            />
+            <textarea required
+            type="text"
+            value={reviewContent}
+            onChange={(e) => setReviewContent(e.target.value)}
+            className='reason-input'
+            />
+            <button onClick={handleReportSubmit} className='report-submit-btn'>Submit</button>
+          </div>
+        </div>
+      )}
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

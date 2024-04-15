@@ -7,6 +7,9 @@ const Messages = () => {
   const [receiverID, setReceiverID] = useState('');
   const [shouldReconnect, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
 
+  const [notifications, setNotifications] = useState([]); // 用于存储通知
+  const [messages, setMessages] = useState([]); // 用于存储消息
+
     useEffect(() => {
         let websocket;
         function connect() {
@@ -23,17 +26,25 @@ const Messages = () => {
                 try {
                     const data = JSON.parse(event.data);
                     console.log("Parsed data:", data);
+            
                     if (Array.isArray(data)) {
-                        //假设收到的是一个消息数组，则将它设置为接收到的消息
-                        setReceivedMessages(data);
+                      // 分类并排序消息
+                      const newNotifications = data.filter(msg => msg.type === 'notification').sort((a, b) => new Date(b.SentAt) - new Date(a.SentAt));
+                      const newMessages = data.filter(msg => msg.type === 'message').sort((a, b) => new Date(b.SentAt) - new Date(a.SentAt));
+                      setNotifications(newNotifications); // 设置通知
+                      setMessages(newMessages); // 设置消息
                     } else {
-                        // 否则，将单条消息添加到消息数组中
-                        setReceivedMessages(prevMessages => [...prevMessages, data]);
+                      // 根据类型更新单条消息或通知，并排序
+                      if (data.type === 'message') {
+                        setMessages(prevMessages => [data, ...prevMessages].sort((a, b) => new Date(b.SentAt) - new Date(a.SentAt)));
+                      } else if (data.type === 'notification') {
+                        setNotifications(prevNotifications => [data, ...prevNotifications].sort((a, b) => new Date(b.SentAt) - new Date(a.SentAt)));
+                      }
                     }
-                } catch (err) {
+                  } catch (err) {
                     console.error('Failed to parse message from server:', err);
-                }
-            };
+                  }
+                };
 
             websocket.onerror = (error) => {
                 console.error('WebSocket Error:', error);
@@ -57,6 +68,7 @@ const Messages = () => {
         // 检查WebSocket连接状态是否为OPEN
         if (ws && ws.readyState === WebSocket.OPEN && receiverID) {
             const message = {
+                Type: 'message',
                 receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
                 content: content,
             };
@@ -71,15 +83,23 @@ const Messages = () => {
 
     return (
         <div className='DashboardMessages'>
-            <h1>WebSocket Test Client</h1>
-            <h2>Messages Area</h2>
+            <h2>Notifications</h2>
+            <div id="notifications">
+                {notifications.map((notification, index) => (
+                <div key={index} className='received-notification'>
+                    <p>{notification.content.Content}</p>
+                    <p><small>Received at: {new Date(notification.content.SentAt).toLocaleString()}</small></p>
+                </div>
+                ))}
+            </div>
+            <h2>Messages</h2>
             <div id="messages">
-                {receivedMessages.map((msg, index) => (
-                    <div key={index} className='received-msg'>
-                        <p><strong>From:</strong> {msg.SenderID} <strong>To:</strong> {msg.ReceiverID}</p>
-                        <p>{msg.Content}</p>
-                        <p><small>Sent at: {new Date(msg.SentAt).toLocaleString()}</small></p>
-                    </div>
+                {messages.map((message, index) => (
+                <div key={index} className='received-message'>
+                    <p><strong>From:</strong> {message.content.SenderID} <strong>To:</strong> {message.content.ReceiverID}</p>
+                    <p>{message.content.Content}</p>
+                    <p><small>Sent at: {new Date(message.content.SentAt).toLocaleString()}</small></p>
+                </div>
                 ))}
             </div>
             <div>
