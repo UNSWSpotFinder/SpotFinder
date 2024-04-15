@@ -141,6 +141,9 @@ function AllSpoting() {
       });
     }
     console.log(contextState.CarType);
+
+    
+    // get the order method
     if(contextState.order_rank_way === 0){
         if(contextState.score_rank_way === 1){
           filter.sort((a, b) => {

@@ -27,6 +27,7 @@ type AuthMessage struct {
 }
 
 type WSMessage struct {
+	Type       string `json:"type"` // "message" 或 "notification"
 	ReceiverID uint   `json:"receiverId"`
 	Content    string `json:"content"`
 }
@@ -82,6 +83,12 @@ func WebsocketHandler(c *gin.Context) {
 		return
 	}
 
+	//role := claims["role"].(string)
+	//if role != "manager" {
+	//	SendErrorMessage(conn, "You are not allowed to access this service")
+	//	return
+	//}
+
 	userId, err := strconv.ParseUint(claims["userID"].(string), 10, 64)
 	if err != nil {
 		SendErrorMessage(conn, "Invalid user ID in token")
@@ -92,7 +99,7 @@ func WebsocketHandler(c *gin.Context) {
 	clientConnections[uint(userId)] = conn
 	defer delete(clientConnections, uint(userId))
 	SendRecentMessages(conn, uint(userId))
-	//sendPendingMessages(conn, uint(userId))
+	SendRecentNotifications(conn, uint(userId))
 
 	for {
 		_, message, err := conn.ReadMessage()
@@ -102,12 +109,6 @@ func WebsocketHandler(c *gin.Context) {
 			break
 		}
 
-		conn.SetCloseHandler(func(code int, text string) error {
-			fmt.Printf("Connection closed with code %d: %s\n", code, text)
-			delete(clientConnections, uint(userId))
-			return nil
-		})
-
 		var msg WSMessage
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
@@ -116,47 +117,19 @@ func WebsocketHandler(c *gin.Context) {
 			continue
 		}
 
-		fmt.Println(userId, msg.ReceiverID, msg.Content)
-		// 创建数据库消息实例
-		dbMessage := Models.Message{
-			SenderID:   uint(userId),
-			ReceiverID: msg.ReceiverID,
-			Content:    msg.Content,
-			SentAt:     time.Now(),
-		}
-
-		// 存储到数据库
-		result := Service.DB.Create(&dbMessage) // 确保Models.DB已经正确配置和初始化
-		if result.Error != nil {
-			SendErrorMessage(conn, "Failed to save message")
-			fmt.Printf("Failed to save message: %v", result.Error)
-			continue
-		}
-
-		fmt.Printf("Received message from %d to %d: %s", userId, msg.ReceiverID, msg.Content)
-		// 尝试找到接收者的连接
-		receiverConn, found := clientConnections[msg.ReceiverID]
-		if found {
-			message, err := json.Marshal(dbMessage)
-			if err != nil {
-				SendErrorMessage(conn, "Error marshalling message")
-				fmt.Printf("Error marshalling message: %v\n", err)
-				continue
+		switch msg.Type {
+		case "message":
+			// 处理发送消息逻辑
+			handleMessage(conn, uint(userId), msg)
+		case "notification":
+			// 处理发送通知逻辑
+			if err := SendNotification(msg.ReceiverID, msg.Content); err != nil {
+				SendErrorMessage(conn, "Failed to send notification")
+				fmt.Printf("Failed to send notification: %v\n", err)
 			}
-			// 发送消息给接收端
-			if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
-				SendErrorMessage(conn, "Error sending message to receiver")
-				fmt.Printf("Error sending message to receiver: %v\n", err)
-			}
-			// 发送消息给发送端
-			if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
-				SendErrorMessage(conn, "Error sending message to sender")
-				fmt.Printf("Error sending message to sender: %v\n", err)
-			}
-		} else {
-			Service.DB.Model(&dbMessage).Update("delivered", true)
-			SendErrorMessage(conn, "Receiver not found")
-			fmt.Printf("Receiver %d not found\n", msg.ReceiverID)
+		default:
+			SendErrorMessage(conn, "Invalid message type")
+			fmt.Println("Received invalid message type")
 		}
 	}
 }
@@ -192,26 +165,49 @@ func SendErrorMessage(conn *websocket.Conn, errorMsg string) {
 	}
 }
 
-func sendPendingMessages(conn *websocket.Conn, userID uint) {
-	var messages []Models.Message
-	// 查询未送达的消息
-	result := Service.DB.Where("receiver_id = ? AND delivered = false", userID).Find(&messages)
+// handleMessage Processes a message received from a WebSocket connection user to user.
+func handleMessage(conn *websocket.Conn, senderID uint, msg WSMessage) {
+	fmt.Println(senderID, msg.ReceiverID, msg.Content)
+	// 创建数据库消息实例
+	dbMessage := Models.Message{
+		SenderID:   senderID,
+		ReceiverID: msg.ReceiverID,
+		Content:    msg.Content,
+		SentAt:     time.Now(),
+	}
+
+	// 存储到数据库
+	result := Service.DB.Preload("Receiver").Create(&dbMessage)
 	if result.Error != nil {
-		fmt.Printf("Failed to retrieve pending messages: %v\n", result.Error)
+		SendErrorMessage(conn, "Failed to save message")
+		fmt.Printf("Failed to save message: %v", result.Error)
 		return
 	}
 
-	for _, msg := range messages {
-		msgJson, err := json.Marshal(msg)
+	dbMessage.Receiver.Password = ""
+
+	dataToSend := map[string]interface{}{
+		"type":    "message",
+		"content": dbMessage,
+	}
+
+	// 尝试找到接收者的连接，如果在线，则发送消息
+	receiverConn, found := clientConnections[msg.ReceiverID]
+	if found {
+		message, err := json.Marshal(dataToSend)
 		if err != nil {
+			SendErrorMessage(conn, "Error marshalling message")
 			fmt.Printf("Error marshalling message: %v\n", err)
-			continue
+			return
 		}
-		if err := conn.WriteMessage(websocket.TextMessage, msgJson); err != nil {
-			fmt.Printf("Failed to send pending message: %v\n", err)
-			continue
+		// 发送消息给接收端
+		if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
+			SendErrorMessage(conn, "Error sending message to receiver")
+			fmt.Printf("Error sending message to receiver: %v\n", err)
 		}
-		// 更新消息为已送达
-		Service.DB.Model(&msg).Update("Delivered", true)
+	} else {
+		Service.DB.Model(&dbMessage).Update("Delivered", true)
+		SendErrorMessage(conn, "Receiver not found")
+		fmt.Printf("Receiver %d not found\n", msg.ReceiverID)
 	}
 }

@@ -1,10 +1,11 @@
 import React, { useEffect, useState,useContext,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
-import { getAllSpots,getAllNotApprovedSpots } from './API';
+import { getAllSpots, getAllNotApprovedSpots, callAPIgetAllreport, callAPIsolved } from './API';
 import '../HomePage.css';
 import { useError } from '../API';
 import { AppContext } from '../App';
+
 
 const AdminDashboard = () => {
   let pageA=1;
@@ -15,10 +16,15 @@ const AdminDashboard = () => {
       Carlocation:event.target.value
     });
   }
+  const [reports, setReports] = useState([]);
+  const [isLReport,setisreport] = useState(true);
+  const [finishedReport,setFinishedReport]=useState(false);
   const [spots, setSpots] = useState([]);
   const [AppSpots,setAppSpots]=useState([]);
   const [filteredSpot, setfilrerSpot] = useState([]);
   const [filteredSpotApp, setfilrerSpotApp] = useState([]);
+  const [finishedApp,setfinishedApp]=useState(false);
+  const [finishedSpot,setfinishedSpot]=useState(false);
   const navigate = useNavigate();
   const { _, setOpenSnackbar } = useError();
   let isLoading = false;
@@ -28,6 +34,24 @@ const AdminDashboard = () => {
   const ApproveRef = useRef(null);
   const ReportRef = useRef(null);
   const PublishRef = useRef(null);
+  const getReport=()=>{
+    callAPIgetAllreport().then((data) => {
+      console.log('n');
+      console.log(data)
+      const datanow = data.report || [];
+      console.log(datanow);
+      setReports((prevSpots) => [...prevSpots, ...datanow]); 
+      setisreport(false);
+      if(data.report===null || data.report.length<=15){
+        setFinishedReport(true);
+      }
+    })
+    .catch((error) => {
+      console.error('Failed to fetch spots:', error);
+      isLoadingApp=false;
+      setisreport(false);
+    });
+  }
   let logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.clear();
@@ -40,8 +64,8 @@ const AdminDashboard = () => {
     }
   };
   useEffect(()=>{
-    let datas=spots;
-    let datasApp=AppSpots;
+    let datas = spots;
+    let datasApp = AppSpots;
     if (contextState.Carlocation !== '') {
       datas = datas.filter((data) => {
         return data.SpotName.includes(contextState.Carlocation);
@@ -51,38 +75,24 @@ const AdminDashboard = () => {
       });
     }
     setfilrerSpot(datas);
-    isLoading=false;
-    setL(false);
     setfilrerSpotApp(datasApp);
-    isLoadingApp=false;
-    setLApp(false);
     console.log(isLoading);
     console.log(isLoadingApp);
   },[contextState.Carlocation, spots,AppSpots])
-  // useEffect(()=>{
-  //   if(filteredSpot.length===0 && !isL){
-  //     isLoading=true;
-  //     setL(true);
-  //     console.log(isLoading);
-  //     getNewSpot();
-  //   }
-  // },[filteredSpot]);
-  // useEffect(()=>{
-  //   if(filteredSpotApp.length===0 && !isLApp){
-  //     isLoadingApp=true;
-  //     setLApp(true);
-  //     console.log(isLoadingApp);
-  //     getNewApprove();
-  //   }
-  // },[filteredSpotApp]);
   useEffect(() => {
     getNewSpot();
     getNewApprove();
+    getReport();
+    const rpListener=()=>{
+      const rp = ReportRef.current;
+      if (!isLReport && rp.scrollHeight - rp.scrollTop <= rp.clientHeight) {
+        setisreport(true);
+        console.log("Reached the bottom");
+        getReport();
+      }
+    }
     const apListener = () => {
       const ap = ApproveRef.current;
-      // console.log(ap.scrollHeight - ap.scrollTop);
-      // console.log(ap.clientHeight);
-      // console.log(isLoadingApp);
       if (!isLoadingApp && ap.scrollHeight - ap.scrollTop <= ap.clientHeight) {
         isLoadingApp=true;
         setLApp(true);
@@ -103,11 +113,14 @@ const AdminDashboard = () => {
         getNewSpot();
       }
     };
-    const element = PublishRef.current;
-    const element2= ApproveRef.current;
+    const element  = PublishRef.current;
+    const element2 = ApproveRef.current;
+    const element3 = ReportRef.current;
     console.log(element);
     element.addEventListener('scroll', ()=>{scListener(isLoading)});
     element2.addEventListener('scroll',apListener);
+    element3.addEventListener('scroll',rpListener);
+
     return () => {
       element.removeEventListener('scroll', scListener);
       element2.removeEventListener('scroll',apListener);
@@ -124,6 +137,11 @@ const AdminDashboard = () => {
       pageB = pageB + 1;
       console.log(pageB);
       console.log('Spots:', data.message);
+      isLoading=false;
+      setL(false);
+      if(data.message===null || data.message.length<=15){
+        setfinishedSpot(true);
+      }
     })
     .catch((error) => {
       console.error('Failed to fetch spots:', error);
@@ -139,6 +157,11 @@ const AdminDashboard = () => {
       const datanow2 = data.message || [];
       setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
       pageA+=1;
+      isLoadingApp=false;
+      setLApp(false);
+      if(data.message===null || data.message.length<=15){
+        setfinishedApp(true);
+      }
     })
     .catch((error) => {
       console.error('Failed to fetch spots:', error);
@@ -147,13 +170,17 @@ const AdminDashboard = () => {
     });
   }
   const goToDetails = (spotId) => {
-    navigate(`/admin/${localStorage.getItem('email')}/${spotId}`);
+    navigate(`/admin/${localStorage.getItem('AdminId')}/${spotId}`);
   };
   const goToApprove = (spotId) => {
-    navigate(`/admin/${localStorage.getItem('email')}/Approve/${spotId}`);
+    navigate(`/admin/${localStorage.getItem('AdminId')}/Approve/${spotId}`);
   }
-  const Solved = (ReportId) => {
-    console.log(ReportId);
+  const goToReport = (ReportId,spotId) => {
+    navigate(`/admin/${localStorage.getItem('AdminId')}/Report/${ReportId}/${spotId}`);
+  }
+  const Solved = (ReportId,rep) => {
+    rep.IsSolved=!rep.IsSolved;
+    callAPIsolved(ReportId);
   }
   return (
     <div className='admin-dashboard'>
@@ -227,30 +254,34 @@ const AdminDashboard = () => {
       </div>
       <p className='title-for-spot'>Reported Information</p>
       <div className='container-half' ref={ReportRef}>
-        {filteredSpotApp.map((spot, index) => (
+        {reports.map((rep, index) => (
           <div key={index} className='SpaceOverall manager'>
             <div className='info-report'>
               <div className='right-top'>
                 <p className='space-title'>
-                  {'Boyang Yu'+ ' Reported this spot'}
+                  {rep.Reporter.Name + '  Reported this spot'}
                 </p>
               </div>
+              <p className='space-email'>
+                  {rep.Reporter.Email}
+                </p>
               <p className='report-content'>
-                {'The location of this spot is not correct and I can not contect the provider.'}
+                {rep.Reason}
               </p>
               <p className='spot-info-label'>
               {'Spot Information'}
               </p>
+              <div className='spot-info-details'>
+              <p className='spot-name-detail'>{rep.Spot.SpotName}</p>
               <p className='space-location-report'>
               {(() => {
                   try {
                     // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
                     // For example, if it's an object like { "address": "123 Main St." }
                     // you could return the address like so:
-                    const add = JSON.parse(spot.SpotAddr);
+                    const add = JSON.parse(rep.Spot.SpotAddr);
                     return (
-                      spot.SpotName
-                      +' located in '+
+                      'located in '+
                       add.Street +
                       ', ' +
                       add.City +
@@ -262,31 +293,35 @@ const AdminDashboard = () => {
                       add.Postcode
                     ); // replace 'address' with the actual property name you want to display
                   } catch (e) {
-                    return spot.SpotAddr; // or return some default message or component
+                    return rep.Spot.SpotAddr; // or return some default message or component
                   }
                 })()}
               </p>
+              </div>
+
               {/* <p className='space-type'>Fits a {spot.Size}</p> */}
               <div className='right-bottom-report'>
                 <button
                   className='specific-info-report'
-                  onClick={() => goToApprove(spot.ID)}
-                  disabled={ spot.ID!=='1' }
+                  onClick={() => goToReport(rep.ID,rep.Spot.ID)}
+                  disabled={rep.IsSolved}
                 >
                   Check Report
                 </button>
                 <button
                   className='specific-info-report solved'
-                  onClick={()=>{Solved(spot.ID)}}
-                  disabled={ spot.ID!=='1' }
+                  onClick={()=>{Solved(rep.ID,rep)}}
+                  disabled={rep.IsSolved}
                 >
-                  {spot.ID!=='1' ?'Solved':'Mark as Sloved'}
+                  {rep.IsSolved ?'Solved':'Mark as Sloved'}
                 </button>
               </div>
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLApp?"There aren't any report that need to be SOLVED at the moment.":"Loading..."}</p>)}
+        {reports.length===0 && !isLReport &&(<p className='Appnull'>{"There aren't any report that need to be SOLVED at the moment."}</p>)}
+        {isLReport && !finishedReport && (<p className='Loading'>{"Loading..."}</p>)}
+        {finishedReport && (<p className='fin'>{"No more report"}</p>)}
       </div>
       <p className='title-for-spot border-given'>Spot to Approve</p>
       <div className='container-half' ref={ApproveRef}>
@@ -364,7 +399,9 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && (<p className='Appnull'>{!isLApp?"There aren't any such spots that need to be APPROVED at the moment.":"Loading..."}</p>)}
+        {filteredSpotApp.length===0 && !isLApp  && (<p className='Appnull'>{"Sorry, There aren't any such spots."}</p>)}
+        {isLApp && !finishedApp && (<p className='Loading'>{"Loading..."}</p>)}
+        {finishedApp && (<p className='fin'>{"No more spot"}</p>)}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
@@ -442,7 +479,9 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpot.length===0 && (<p className='Appnull'>{!isL?"Sorry, There aren't any such spots.":"Loading..."}</p>)}
+        {filteredSpot.length===0 && !isL  && (<p className='Appnull'>{"Sorry, There aren't any such spots."}</p>)}
+        {isL && !finishedSpot && (<p className='Loading'>{"Loading..."}</p>)}
+        {finishedSpot && (<p className='fin'>{"No more spot"}</p>)}
       </div>
     </div>
   );

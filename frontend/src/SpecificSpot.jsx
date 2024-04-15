@@ -27,9 +27,7 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom';
-import {
-  getUserInfo
-} from './components/API';
+import { getUserInfo } from './components/API';
 import {
   AdminLoginPage,
   UserLoginPage,
@@ -44,11 +42,9 @@ import {
   callAPIGetSpecUserInfo,
   GetDistanceAll,
   CalculateAllTime,
-  callAPICreateOrder
+  callAPICreateOrder,
 } from './API';
-import {
-  withdrawAccount
-} from './components/API'
+import { withdrawAccount } from './components/API';
 import './SpecificSpot.css';
 import { indigo } from '@mui/material/colors';
 import Box from '@mui/material/Box';
@@ -123,7 +119,7 @@ const CfmRow3 = styled('div')({
   alignItems: 'center',
   height: '30px',
   margin: '0px',
-  padding: '0px'
+  padding: '0px',
 });
 const CfmRowP = styled('div')({
   display: 'flex',
@@ -177,9 +173,9 @@ const CfmRightttxt2 = styled('p')({
 });
 const CfmBottom = styled('div')({
   width: '90%',
-  marginLeft:'10%',
+  marginLeft: '10%',
   display: 'flex',
-  flexDirection: "column",
+  flexDirection: 'column',
   justifyContent: 'center',
 });
 const CfmHead = styled('p')({
@@ -219,13 +215,13 @@ const ReserveConfirm = styled('button')({
 });
 export const ConfirmBook = ({ data, isOpen, close }) => {
   console.log(data.BookingDuration);
-  const [topup,settp]=useState(false);
-  const [canOrder,setcanOrder]=useState(false);
+  const [topup, settp] = useState(false);
+  const [canOrder, setcanOrder] = useState(false);
   // inital the confirm state to false
   const [ConfirmState, setConfirmState] = useState(false);
   const { contextState, updateContextState } = useContext(AppContext);
   // use the navigate to go to the user page
-  const [Balance,setBalance]=useState('');
+  const [Balance, setBalance] = useState('');
   const [selectedOption, setSelectedOption] = useState('0');
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -240,13 +236,14 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // 在这里执行你的操作
     }
   };
-  useEffect(()=>{
-    getUserInfo().then((response)=>{
-      console.log(response.message.account);
-      setBalance(response.message.account);
-    }).catch((error)=>{
-    });
-    if(selectedOption === '0' && Balance - data.TotalPrice<0){
+  useEffect(() => {
+    getUserInfo()
+      .then((response) => {
+        console.log(response.message.account);
+        setBalance(response.message.account);
+      })
+      .catch((error) => {});
+    if (selectedOption === '0' && Balance - data.TotalPrice < 0) {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
@@ -255,31 +252,78 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       setcanOrder(true);
       settp(true);
       return;
-    }else{
+    } else {
       setcanOrder(false);
       settp(false);
     }
-  },[Balance,data.TotalPrice,isOpen,selectedOption]);
+  }, [Balance, data.TotalPrice, isOpen, selectedOption]);
+  useEffect(()=>{
+    if(localStorage.getItem('payed')){
+      let k_r = localStorage.getItem('payed')==='true' ? true : false;
+      console.log(k_r);
+      setcanOrder(false);
+      if(k_r){
+        let temp = _lodash.cloneDeep(data.BookingDuration);
+        console.log(temp);
+        temp.map((item) => {
+          item.startDate = item.startDate.format().toString();
+          item.endDate = item.endDate.format().toString();
+        });
+        // change the conponment
+        let tempdata = {
+          bookingTime: temp,
+          carID: Number(localStorage.getItem('carId')),
+          cost: data.TotalPrice,
+        };
+        callAPICreateOrder(
+          'spots/' + localStorage.getItem('spotID') + '/orders',
+          localStorage.getItem('token'),
+          tempdata
+        )
+          .then((response) => {
+            setOpenSnackbar({
+              severity: 'success',
+              message: 'You successfully pay your order!Thank you.',
+              timestamp: new Date().getTime(),
+            });
+            setConfirmState(k_r);
+          })
+          .catch((error) => {
+            setOpenSnackbar({
+              severity: 'warning',
+              message: 'There exist some error, please try again.',
+              timestamp: new Date().getTime(),
+            });
+          });
+      }
+    }
+    localStorage.removeItem('payed');
+
+  },[localStorage.getItem('payed')]);
   const navigate = useNavigate();
   // get the hosting id from the url
-  const {  username , Spotid } = useParams();
+  const { username, Spotid } = useParams();
   // go to the user page
   const goesMain = () => {
-    navigate('/' + localStorage.getItem('email')+'/dashboard/bookings');
+    navigate('/' + localStorage.getItem('email') + '/dashboard/bookings');
+    localStorage.removeItem('payed');
   };
-  const goesTopUp= () =>{
-    navigate('/' + localStorage.getItem('email')+'/dashboard');
-  }
+  const goesTopUp = () => {
+    navigate('/' + localStorage.getItem('email') + '/dashboard');
+    localStorage.removeItem('payed');
+  };
   // go back to detail page
   const back = () => {
     setConfirmState(false);
+    localStorage.removeItem('payed');
     close();
   };
   // get the set open snackbar function
-  const { _ , setOpenSnackbar } = useError();
+  const { _, setOpenSnackbar } = useError();
+  const _lodash = require('lodash');
   // this function used when the user click the confirm button
   const ReverseBook = () => {
-    if(selectedOption === 0  && Balance - data.TotalPrice<0){
+    if (selectedOption === 0 && Balance - data.TotalPrice < 0) {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
@@ -287,31 +331,44 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       });
       return;
     }
-    setcanOrder(true);
+    let temp = _lodash.cloneDeep(data.BookingDuration);
+    console.log(temp);
+    temp.map((item) => {
+      item.startDate = item.startDate.format().toString();
+      item.endDate = item.endDate.format().toString();
+    });
     // change the conponment
     let tempdata = {
-      bookingTime:data.BookingDuration,
-      carID:Number(localStorage.getItem("carId")),
-      cost:data.TotalPrice
-    }
+      bookingTime: temp,
+      carID: Number(localStorage.getItem('carId')),
+      cost: data.TotalPrice,
+    };
     console.log(tempdata);
-    callAPICreateOrder("spots/"+localStorage.getItem('spotID')+'/orders',localStorage.getItem('token'),tempdata).then(
-      (response) => {
-
+    setcanOrder(true);
+    if (selectedOption === '1') {
+      localStorage.setItem('Payprice',data.TotalPrice);
+      navigate('/' + username + '/detail/' + Spotid + '/Visa');
+      return;
+    }
+    callAPICreateOrder(
+      'spots/' + localStorage.getItem('spotID') + '/orders',
+      localStorage.getItem('token'),
+      tempdata
+    )
+      .then((response) => {
         setOpenSnackbar({
           severity: 'success',
           message: 'You successfully pay your order!Thank you.',
           timestamp: new Date().getTime(),
-        })
-        if(selectedOption==='0'){
+        });
+        if (selectedOption === '0') {
           withdrawAccount(data.TotalPrice);
         }
         setConfirmState(true);
         setcanOrder(false);
         return;
-      }
-    ).catch(
-      (error) => {
+      })
+      .catch((error) => {
         setOpenSnackbar({
           severity: 'warning',
           message: 'There exist some error, please try again.',
@@ -319,8 +376,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         });
         setcanOrder(false);
         return;
-      }
-    );
+      });
     console.log(data);
   };
   let conponment = (
@@ -402,63 +458,180 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           </CfmRowCol>
         </CfmCenterContent>
         <CfmRowP>
-            <CfmLefttxt>Total Price</CfmLefttxt>
-            <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
+          <CfmLefttxt>Total Price</CfmLefttxt>
+          <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
         </CfmRowP>
-          <div className='payment-part'>
-            <p className='payment_method'>Select your payment method</p>
-            <select className='payment-choice' value={selectedOption} onChange={handleSelectChange}>
-              <option className='choice-p' value='0' >SpotAccount</option>
-              <option className='choice-p' value='1' >Visa Card</option>
-            </select>
-          </div>
-          { 
-            selectedOption === '0' &&(
-            <div className='balance-part'>
-              <CfmLefttxt>Your Available Balance</CfmLefttxt>
-              <p className='balance-value'>${Number(Balance).toFixed(2)+' - $'+data.TotalPrice}</p>
-              <p className='balance-value'>${Number(Balance).toFixed(2)-data.TotalPrice}</p>
-            </div>
-            )
-          }
-          { 
-            selectedOption === '1' &&(
-            <div className='balance-part'>
-              <CfmLefttxt>Your payment would through online payment platform.</CfmLefttxt>
-              <p className='balance-value'>{'BPay'}</p>
-            </div>
-            )
-          }
-        <CfmBottom>
-          {( selectedOption === '1' || !topup) && <ReserveConfirm
-            disabled={canOrder}
-            onClick={() => {
-              if (ConfirmState) {
-                goesMain();
-              } else {
-                ReverseBook();
-              }
-            }}
+        <div className='payment-part'>
+          <p className='payment_method'>Select your payment method</p>
+          <select
+            className='payment-choice'
+            value={selectedOption}
+            onChange={handleSelectChange}
           >
-            {ConfirmState
-              ? 'Goes to view your Booking'
-              : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
-          </ReserveConfirm>}
-          {(selectedOption==='0' && topup) && <ReserveConfirm onClick={() => {goesTopUp()}}>{'Goes to TopUp'}</ReserveConfirm>}
+            <option className='choice-p' value='0'>
+              SpotAccount
+            </option>
+            <option className='choice-p' value='1'>
+              Visa Card
+            </option>
+          </select>
+        </div>
+        {selectedOption === '0' && (
+          <div className='balance-part'>
+            <CfmLefttxt>Your Available Balance</CfmLefttxt>
+            <p className='balance-value'>
+              ${Number(Balance).toFixed(2) + ' - $' + data.TotalPrice}
+            </p>
+            <p className='balance-value'>
+              ${Number(Balance).toFixed(2) - data.TotalPrice}
+            </p>
+          </div>
+        )}
+        {selectedOption === '1' && (
+          <div className='balance-part'>
+            <CfmLefttxt>
+              Your payment would through online payment platform.
+            </CfmLefttxt>
+            <p className='balance-value'>{'BPay'}</p>
+          </div>
+        )}
+        <CfmBottom>
+          {(selectedOption === '1' || !topup) && (
+            <ReserveConfirm
+              disabled={canOrder}
+              onClick={() => {
+                if (ConfirmState) {
+                  goesMain();
+                } else {
+                  ReverseBook();
+                }
+              }}
+            >
+              {ConfirmState
+                ? 'Goes to view your Booking'
+                : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
+            </ReserveConfirm>
+          )}
+          {selectedOption === '0' && topup && (
+            <ReserveConfirm
+              onClick={() => {
+                goesTopUp();
+              }}
+            >
+              {'Goes to TopUp'}
+            </ReserveConfirm>
+          )}
         </CfmBottom>
       </CfmContent>
     </div>
   );
   return isOpen ? conponment : null;
 };
+
+export const VisaPayment = () => {
+  const { _, setOpenSnackbar } = useError();
+  const [cardnumber,setnumber]=useState('');
+  const [Fname,setFname]=useState('');
+  const [Lname,setLname]=useState('');
+  const [CVC,setCVC]=useState('');
+  const [Expire,setexpire]=useState('');
+  let navigate=useNavigate();
+  let Price = Number(localStorage.getItem('Payprice')).toFixed(2);
+  const back = () => {
+    localStorage.setItem('payed','false');
+    navigate(-1);
+  }
+  // 验证函数
+function validateInput(cardnumber, Fname, Lname, CVC, Expire) {
+  // 正则表达式定义
+  const cardNumberPattern = /^\d{16}$/; // 16 位数字
+  const namePattern = /^[A-Z]+$/; // 纯大写字母
+  const cvcPattern = /^\d{3}$/; // 3 位数字
+  const expirePattern = /^(0[1-9]|1[0-2])\/(\d{2})$/; // 'XX/YY' 格式，XX 00-12, YY 00-99
+  
+  // 验证
+  const isCardNumberValid = cardNumberPattern.test(cardnumber);
+  const isFnameValid = namePattern.test(Fname);
+  const isLnameValid = namePattern.test(Lname);
+  const isCVCValid = cvcPattern.test(CVC);
+  const isExpireValid = expirePattern.test(Expire);
+  if(!isCardNumberValid){
+    setOpenSnackbar({
+      severity: 'warning',
+      message:
+        'Payment Wrong, card number incorrect.',
+      timestamp: new Date().getTime(),
+    });
+  }
+  else if (!isExpireValid || !isCVCValid || !isFnameValid || !isLnameValid){
+    setOpenSnackbar({
+      severity: 'warning',
+      message:
+        'Payment Wrong, card details incorrect.',
+      timestamp: new Date().getTime(),
+    });
+  }
+
+  // 返回布尔值，表示所有验证是否都通过
+  return isCardNumberValid && isFnameValid && isLnameValid && isCVCValid && isExpireValid;
+}
+
+  const pay =() => {
+    let confirm= validateInput(cardnumber, Fname, Lname, CVC, Expire);
+    if(confirm){
+      localStorage.setItem('payed','true');
+      navigate(-1);
+    }
+  }
+  return (
+    <div className='payment'>
+      <div className='payment-cont'>
+        <div className='payment-header'>
+          <button className='payment-cancel' onClick={back}>Cancel Payment</button>
+        </div>
+        <div className='payment-center'>
+          <div className='CardName'>
+            <div className='CardNum-payment'>
+              <label className='payment-title' >CARD NUMBER</label>
+              <input className='cardnuminput-payment' placeholder='0000 0000 0000 0000' value={cardnumber} onChange={(event)=>{setnumber(event.target.value)}}></input>
+            </div>
+            <div className='CardNum-payment'>
+              <label className='payment-title' >EXPIRY</label>
+              <input className='nameinput-payment' placeholder='MM/YY' value={Expire} onChange={(event)=>{setexpire(event.target.value)}}></input>
+            </div>
+          </div>
+          <div className='CardName'>
+            <div className='PartName'>
+              <label className='payment-title' >FIRST NAME</label>
+              <input className='nameinput-payment' placeholder='XXXX' value={Fname} onChange={(event)=>{setFname(event.target.value)}}></input>
+            </div>
+            <div className='PartName'>
+              <label className='payment-title'>FAMILY NAME</label>
+              <input className='nameinput-payment' placeholder='XXXX' value={Lname} onChange={(event)=>{setLname(event.target.value)}} ></input>
+            </div>
+            <div className='PartName'>
+              <label className='payment-title'>CVC</label>
+              <input className='cvc-payment' placeholder='XXX' value={CVC} onChange={(event)=>{setCVC(event.target.value)}}></input>
+            </div>
+          </div>
+          <div className='Tot-part'>
+            <p className='Tot-PAY'>Total Price</p>
+            <p className='Tot-PAY'>${Price}</p>
+          </div>
+          <button className='pay-button' onClick={pay}>Process payment</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 export function HomeSpecificLarge() {
   const { _, setOpenSnackbar } = useError();
-  const {username, Spotid}=useParams();
+  const { username, Spotid } = useParams();
   const { contextState, updateContextState } = useContext(AppContext);
   const [bookway, setbookway] = useState(contextState.BookWay);
   const [isbook, setIsbook] = useState(false);
   const [TotalPrice, setTotalPrice] = useState(0);
-  const [sameOwner,setsameOwner] = useState(false);
+  const [sameOwner, setsameOwner] = useState(false);
   const closebook = () => {
     setIsbook(false);
   };
@@ -466,18 +639,20 @@ export function HomeSpecificLarge() {
     if (FirstStart === null || FirstEnd === null) {
       setOpenSnackbar({
         severity: 'warning',
-        message: 'Please check your parking time, the park-in time and drive-out time of each time slot cannot be empty.',
+        message:
+          'Please check your parking time, the park-in time and drive-out time of each time slot cannot be empty.',
         timestamp: new Date().getTime(),
       });
       return;
     }
     let temp = {
       Tid: Date.now().toString(), // unique id
-      startDate: FirstStart.format().toString(),
-      endDate: FirstEnd.format().toString(),
+      startDate: FirstStart,
+      endDate: FirstEnd,
       distance: Firstdistance.toString(),
     };
-    if (contextState.CarPlate===''){
+    console.log(FirstStart);
+    if (contextState.CarPlate === '') {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Please select the vehicle you want to park.',
@@ -496,19 +671,16 @@ export function HomeSpecificLarge() {
       });
       return;
     }
-
-    let resultIntervals=timeIntervals.map((data)=>{
-      data.startDate = data.startDate.format().toString();
-      data.endDate = data.endDate.format().toString();
-      data.distance = data.distance.toString();
-      return data;
-    });
+    console.log(timeIntervals);
+    let resultIntervals = timeIntervals;
     console.log(resultIntervals);
     setdata((prevData) => ({
       ...prevData,
       BookingDuration: [temp, ...resultIntervals],
       BookWay: bookway,
-      TotalPrice: (sameOwner ? ( Number((TotalPrice * 0.15).toFixed(2))) : TotalPrice),
+      TotalPrice: sameOwner
+        ? Number((TotalPrice * 0.15).toFixed(2))
+        : TotalPrice,
     }));
     console.log(timeIntervals);
 
@@ -572,17 +744,16 @@ export function HomeSpecificLarge() {
     TotalPrice: 0,
     BookWay: '',
   });
-  const CarSelect=()=>{
-    if(localStorage.token){
+  const CarSelect = () => {
+    if (localStorage.token) {
       window.scrollTo(0, 0);
-      let spotid=localStorage.getItem('spotID');
-      navigate('/'+username+'/detail/'+spotid+'/choose');
-    }
-    else{
+      let spotid = localStorage.getItem('spotID');
+      navigate('/' + username + '/detail/' + spotid + '/choose');
+    } else {
       window.scrollTo(0, 0);
       goesLoginUser();
     }
-  }
+  };
   useEffect(() => {
     getDetail();
     console.log(isbook);
@@ -669,7 +840,7 @@ export function HomeSpecificLarge() {
         callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
           .then((response) => {
             console.log(response.message);
-            if(response.message.name === currentname){
+            if (response.message.name === currentname) {
               setsameOwner(true);
             }
             setdata((prevData) => ({
@@ -726,7 +897,7 @@ export function HomeSpecificLarge() {
       bookway
     );
     console.log(res);
-    setDistance(GetDistanceAll(FirstStart,bookway,FirstEnd));
+    setDistance(GetDistanceAll(FirstStart, bookway, FirstEnd));
     setTotalPrice(calculateTotalPrice(res));
     console.log(timeIntervals);
   }, [timeIntervals, FirstStart, FirstEnd, bookway]);
@@ -813,13 +984,12 @@ export function HomeSpecificLarge() {
   };
 
   // 结束日期的 shouldDisableDate 函数，依赖于已选择的开始日期
-  const DisabledEndDate = (date, FirstStart) => {
-    if (!FirstStart) return true;
-
+  const DisabledEndDate = (date, currentdate) => {
+    if (!currentdate) return true;
     const selectedStartRange = data.AvailableTime.find(
       (item) =>
-        FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-        FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
+        currentdate.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
+        currentdate.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
     data.AvailableTime.map((item) => {
       // console.log(
@@ -830,7 +1000,7 @@ export function HomeSpecificLarge() {
     // console.log(selectedStartRange);
     if (!selectedStartRange) return true;
     return (
-      !dayjs(date).isSameOrAfter(FirstStart) ||
+      !dayjs(date).isSameOrAfter(currentdate) ||
       !dayjs(date).isSameOrBefore(
         dayjs(selectedStartRange.endDate).subtract(1, 'day')
       )
@@ -878,11 +1048,7 @@ export function HomeSpecificLarge() {
         <Slider {...settings} className='w100'>
           {allpic.map((image, index) => (
             <div key={index} className='headerimg'>
-              <img
-                className='speimg'
-                src={ image }
-                alt={`Slide ${index}`}
-              />
+              <img className='speimg' src={image} alt={`Slide ${index}`} />
             </div>
           ))}
         </Slider>
@@ -943,10 +1109,7 @@ export function HomeSpecificLarge() {
       <div className='relevent-part'>
         <div className='relevent-left'>
           <div className='re-le-le'>
-            <img
-              src={ data.Profile }
-              className='profile'
-            ></img>
+            <img src={data.Profile} className='profile'></img>
             <p className='user_name'>{data.Owner}</p>
           </div>
           <p className='provided'>Provided this car space</p>
@@ -985,10 +1148,10 @@ export function HomeSpecificLarge() {
       <div className='Order-part'>
         <div className='order-time'>
           <div className='PublishInfo-park'>
-            <div className = 'IntervalHeader-book'>
-              <p className = 'PublishTitle'>Booking Time</p>
-              <div className = 'display-flex'>
-                <p className = 'bkt'>BookType</p>
+            <div className='IntervalHeader-book'>
+              <p className='PublishTitle'>Booking Time</p>
+              <div className='display-flex'>
+                <p className='bkt'>BookType</p>
                 <select
                   value={bookway}
                   className='form-select mglr-r'
@@ -1076,7 +1239,7 @@ export function HomeSpecificLarge() {
               </div>
             </div>
             {timeIntervals.map((interval, index) => (
-              <div className='TimeInterval-book' key={interval.id}>
+              <div className='TimeInterval-book' key={interval.Tid}>
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
                     {bookway == 'H' ? (
@@ -1160,9 +1323,15 @@ export function HomeSpecificLarge() {
           <div className='confirm-part'>
             <div className='PriceTotal'>
               <p className='Pricetxt'>Total Price</p>
-              <p className={sameOwner ? 'PriceValue-del':'PriceValue'}>${TotalPrice}</p>
-              {sameOwner && <p className='PriceValue'>{(TotalPrice*0.15).toFixed(2)}</p>}
-              {sameOwner && <p className='discount-reason'>{'(Owner booking)'}</p>}
+              <p className={sameOwner ? 'PriceValue-del' : 'PriceValue'}>
+                ${TotalPrice}
+              </p>
+              {sameOwner && (
+                <p className='PriceValue'>{(TotalPrice * 0.15).toFixed(2)}</p>
+              )}
+              {sameOwner && (
+                <p className='discount-reason'>{'(Owner booking)'}</p>
+              )}
             </div>
             <button className='confirm-btn' onClick={Confirm}>
               Appointment
@@ -1172,16 +1341,30 @@ export function HomeSpecificLarge() {
         <div className='car-select'>
           <div className='car-select-left'>
             <p className='car-title'>Charge of motor vehicle</p>
-            <input className='car-content' disabled={true} value={contextState.CarCharge}></input>
+            <input
+              className='car-content'
+              disabled={true}
+              value={contextState.CarCharge}
+            ></input>
 
             <p className='car-title'>Type of montor vecicle</p>
-            <input className='car-content' disabled={true} value={contextState.CarType}></input>
+            <input
+              className='car-content'
+              disabled={true}
+              value={contextState.CarType}
+            ></input>
 
             <p className='car-title'>Vehicle registration number</p>
-            <input className='car-content' disabled={true} value={contextState.CarPlate}></input>
+            <input
+              className='car-content'
+              disabled={true}
+              value={contextState.CarPlate}
+            ></input>
 
             <img src='/img/car.jpeg' className='carprofile'></img>
-            <button className='choose-car'onClick={CarSelect}>Select Your Car</button>
+            <button className='choose-car' onClick={CarSelect}>
+              Select Your Car
+            </button>
           </div>
         </div>
       </div>

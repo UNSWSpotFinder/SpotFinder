@@ -487,3 +487,51 @@ export const createReport = (spotID, reportMessage) => {
   });
 };
 
+
+// call API to get all report
+export const callAPIgetAllreport = () => {
+  const endpoint = `${baseUrl}/manager/report`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+// call API to slove one report
+export const callAPIsolved = (reportid) => {
+  const endpoint = `${baseUrl}/manager/report/solve?report_id=${reportid}&result=failure`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
