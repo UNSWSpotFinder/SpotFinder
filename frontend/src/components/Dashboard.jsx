@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import { useNavigate, Link } from 'react-router-dom'; 
-import { getUserInfo, topUpAccount, withdrawAccount } from './API';
+import { getUserInfo, topUpAccount, withdrawAccount, getReceivedBookingsInfo, getMyBookingsInfo } from './API';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -18,11 +18,11 @@ const Dashboard = () => {
   const [topUpAmount, setTopUpAmount] = useState('');
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
   const navigate = useNavigate();
+  const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // 存储获取到的 received bookings 信息
+  const [myBookingsInfo, setMyBookingsInfo] = useState([]); // 存储获取到的 bookings 信息
 
   const goesCreateSpot = (event)=>{
     event.preventDefault(); // 阻止链接的默认行为
@@ -35,22 +35,16 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        console.log('data:', data);
+        // console.log('data:', data);
         // 储存用户spotID
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
           if (ownedSpotObject.OwnedSpot) {
             parsedOwnedSpot = ownedSpotObject.OwnedSpot;
-            console.log('parsedOwnedSpot:', parsedOwnedSpot);
+            // console.log('parsedOwnedSpot:', parsedOwnedSpot);
           }
         }
-        // 检查头像数据是否存在，并且是否以base64格式开头
-        const base64Prefix = 'data:image/jpeg;base64,';
-        const avatarData = data.message.avatar;
-        // const updatedAvatar = avatarData && avatarData.startsWith(base64Prefix)
-        //   ? avatarData
-        //   : `${base64Prefix}${avatarData}`;
 
         // data对象中包含用户信息
         setUserInfo({
@@ -67,7 +61,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  
   // 关闭Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -75,8 +68,6 @@ const Dashboard = () => {
     }
     setOpenSnackbar(false);
   };
-
-
 
   // 用于点击链接时执行的函数
   const ClickToFindSpot = (event) => {
@@ -86,8 +77,7 @@ const Dashboard = () => {
       navigate(`/${email}`); // 使用email值进行导航
     }
   };
-
-    
+ 
   const handleTopUpInputChange = (event) => {
     setTopUpAmount(event.target.value);
   };
@@ -133,8 +123,6 @@ const Dashboard = () => {
   const handleWithdrawInputChange = (event) => {
     setWithdrawAmount(event.target.value);
   };
-
-  
   
   // 处理提现提交
   const handleWithdrawSubmit = () => {
@@ -147,12 +135,9 @@ const Dashboard = () => {
       // 检查提现金额是否超过账户余额
     if (amount > userInfo.account) {
       setSnackbarMessage('Cannot withdraw more than the account balance.');
-      setOpenSnackbar(true);
-      
+      setOpenSnackbar(true); 
       return;
   }
-  
-
     withdrawAccount(amount).then(response => {
       setSnackbarMessage('Withdraw successfully!');
       setOpenSnackbar(true);
@@ -176,12 +161,46 @@ const Dashboard = () => {
     setWithdrawAmount('');
   };
 
-      // 显示提现弹窗
+  // 显示提现弹窗
   const showWithdrawModal = () => {
     setIsWithdrawModalVisible(true);
   };
 
+  // 更新订单信息的函数
+  const fetchOrders = async () => {
+    try {
+      const receivedBookingsData = await getReceivedBookingsInfo();
+      setReceivedBookingsInfo(receivedBookingsData.orders);
+    } catch (error) {
+      console.error('Error fetching received bookings info:', error);
+    }
+  };
 
+  // 初始化收到的订单信息
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+    // 获取orders和spots信息
+    const fetchBookings = async () => {
+      try {
+        // 获取预订信息
+        const bookingDataResult = await getMyBookingsInfo();
+        const bookingsArray = bookingDataResult.orders;
+        console.log('My Bookings array:', bookingsArray);     
+        // 设置状态
+        setMyBookingsInfo(bookingsArray);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    // 获取bookings信息并计算Current bookings数量
+    useEffect(() => {
+      fetchBookings();
+    }, []);
+
+    const pendingBookingsCount = myBookingsInfo.filter(booking => booking.Status === 'Pending').length;
 
   return (
     <div className="dashboard">
@@ -207,14 +226,14 @@ const Dashboard = () => {
         {/* 第二列显示当前预定数量 */}
         <div className='second-column-booking'>
           <h5>My Bookings</h5>
-          <div className='booking-number'>1</div>
+          <div className='booking-number'>{pendingBookingsCount}</div>
           <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
         </div>
 
         {/* 第三列显示当前用户的车位数量 */}
         <div className='second-column-booking'>
           <h5>My Listings</h5>
-          <div className='listing-number'>1</div>
+          <div className='listing-number'>{receivedBookingsInfo.length}</div>
           <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
         </div>
       </div>
@@ -223,7 +242,6 @@ const Dashboard = () => {
       <div className="second-vouchers">
         <h3>Vouchers</h3>
         <div>You have no vouchers.</div>
-
       </div>
       
       {/* 充值弹窗 */}

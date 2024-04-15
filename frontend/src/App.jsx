@@ -9,10 +9,10 @@ import React, {
   useContext,
   ReactNode,
 } from 'react';
-import {HomePageLarge,HomePageAdminSmall,HomePageAdminLarge,HomePageSmall} from './HomePage';
+import {HomePageLarge, HomePageAdminSmall, HomePageAdminLarge, HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
 import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link,useParams, useLocation, useNavigate} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{
@@ -24,7 +24,8 @@ import{
   CarSpaceEdit
 } from './CarInfo';
 import {
-  HomeSpecificLarge
+  HomeSpecificLarge,
+  VisaPayment
 } from './SpecificSpot';
 // 导入Dashboard相关页面组件
 import DashboardTop from './components/DashboardTop';
@@ -36,15 +37,15 @@ import Messages from './components/Messages';
 import Vehicles from './components/Vehicles';
 import AdminDashboard from './components/AdminDashboard';
 import dayjs from 'dayjs';
-import {ManagerEditSpace,ManagerApproveEditSpace} from './CheckDetail';
+import {ManagerEditSpace, ManagerApproveEditSpace, ManagerProcessReport} from './CheckDetail';
 // 创建一个 Context 对象
 export const AppContext = React.createContext();
 
 export const AppProvider = ({ children }) => {
   // 保存信息的状态
   const [contextState, setContextState] = useState({
-    order_rank_way: true,
-    score_rank_way: true,
+    order_rank_way: 0,
+    score_rank_way: 0,
     maxPrise: '',
     minPrise: '',
     CarType: '',
@@ -115,6 +116,7 @@ function App() {
           <BrowserRouter>
             <Routes>
                 <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
+                <Route path='/:username/detail/:Spotid/Visa' element={<VisaPayment/>}/>
                 <Route path="/adminlogin"  element={<AdminLoginPage/>} />
                 <Route path="/adminregist" element={<AdminRegistPage/>} />
                 <Route path="/:username/choose" element={<CarSpaceChoice/>} />
@@ -127,6 +129,7 @@ function App() {
               <Route path="/admin/:adminid" element={<AdminDashboard/>} />
               <Route path = "/:username/:adminid/:Spotid" element = {<ManagerEditSpace/>} />
               <Route path = "/:username/:adminid/Approve/:Spotid" element = {<ManagerApproveEditSpace/>} />
+              <Route path = "/:username/:adminid/Report/:Reportid/:Spotid" element = {<ManagerProcessReport/>} />
               <Route path = "/:username" element={LayoutComponentHome} />
               <Route path = "/:username/createspace" element = {<CreateSpace/>} />
               <Route path = "/:username/editspace/:Spotid" element = {<EditSpace/>} />

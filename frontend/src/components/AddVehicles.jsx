@@ -5,7 +5,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { createCarInfo } from './API';
 import './Vehicles.css';
 
-const AddVehicleModal = ({ onClose, onAdded }) => {
+const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [vehicleBrand, setVehicleBrand] = useState('');
@@ -87,7 +87,10 @@ const AddVehicleModal = ({ onClose, onAdded }) => {
     <div>
         <div className='modal-overlay'>
             <div className='modal-content'>
-            <h3> Add a new Vehicle</h3>
+            <div className="orders-modal-header">
+              <div className='current-state-title'> Add a new Vehicle</div>
+              <button className="close-btn" onClick={closeAddModal}>✖</button>
+            </div>
             <form className='add-form' onSubmit={handleAddSubmit}> 
                 {/* 表单内容 */}
                 <div className="form-group">

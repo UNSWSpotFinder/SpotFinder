@@ -12,6 +12,9 @@ const Listings = () => {
   const [spotsInfo, setSpotsInfo] = useState([]); // 存储获取到的 spots 详细信息
   const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // 存储获取到的 received bookings 信息
 
+  const [selectedSpotId, setSelectedSpotId] = useState(null); // 新增状态：当前选中的车位ID
+  const [ordersForSelectedSpot, setOrdersForSelectedSpot] = useState([]); // 新增状态：选中车位的订单
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,17 +40,20 @@ const Listings = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getReceivedBookingsInfo();
-        console.log('Received bookings data:', data);
-        setReceivedBookingsInfo(data.message);
-      } catch (error) {
-        console.error('Error fetching received bookings info:', error);
-      }
+  // 更新订单信息的函数
+  const fetchOrders = async () => {
+    try {
+      const receivedBookingsData = await getReceivedBookingsInfo();
+      console.log('ReceivedBookingsInfo:', receivedBookingsData.orders);
+      setReceivedBookingsInfo(receivedBookingsData.orders);
+    } catch (error) {
+      console.error('Error fetching received bookings info:', error);
     }
-    fetchData();
+  };
+
+  // 确保你在useEffect里调用fetchOrders来初始化订单信息
+  useEffect(() => {
+    fetchOrders();
   }, []);
   
 
@@ -72,9 +78,13 @@ const Listings = () => {
     // setOpenSnackbar(true);
   };
 
-    // 打开订单详情弹窗
-  const openOrdersModal = () => {
-    setShowOrdersModal(true);
+  // 打开订单详情弹窗
+  const openOrdersModal = (spot) => {
+    console.log('receivedBookingsInfo:', receivedBookingsInfo);
+    const ordersForSpot = receivedBookingsInfo.filter(order => order.SpotID === spot.ID);
+    setSelectedSpotId(spot.ID); // 设置当前选中的车位ID
+    setOrdersForSelectedSpot(ordersForSpot); // 设置对应的订单
+    setShowOrdersModal(true); // 打开模态框
   };
   
   // 关闭订单详情弹窗
@@ -116,16 +126,17 @@ const Listings = () => {
             <div className='manipulation-link'>
               <div className='first-line-link'>
                 <button className='edit-btn' id={spot.message.ID} onClick={goesEdit}>Edit</button>
-                <button className='delete-btn' onClick={openDeleteConfirm}>Delete</button>
+                <button className='delete-btn' onClick={() => openDeleteConfirm(spot.message.ID)}>Delete</button>
               </div>
               <div className='second-line-btn'>
-                <button className='check-orders-button' onClick={openOrdersModal}>Check orders</button>
+              <button className='check-orders-button' onClick={() => openOrdersModal(spot.message)}>Check orders</button>
               </div>     
             </div>
             <div className='price'>
-              <div className='price-item1'>${spot.message.PricePerWeek} /WEEK</div>
+              <div className='price-item1'>${spot.message.PricePerHour} /Hour</div>
               <div className='price-item2'>${spot.message.PricePerDay} /DAY</div>
-              <div className='price-item3'>${spot.message.PricePerHour} /Hour</div>
+              <div className='price-item3'>${spot.message.PricePerWeek} /WEEK</div>
+
             </div>
           </div>
         );
@@ -149,7 +160,11 @@ const Listings = () => {
       {showDeleteConfirm && (
       <div className='modal-overlay'>
         <div className='modal-content'>
-          <h3>Are you sure you want to delete?</h3>
+        <div className="orders-modal-header">
+          <div className='delete-confirm-title'>Are you sure to delete this spot?</div>
+          <button onClick={closeDeleteConfirm} className="close-btn">✖</button>
+        </div>
+          
       <div className="form-buttons">
         <button onClick={handleDelete} className='delete-confirm-btn'>Delete</button>
         <button onClick={closeDeleteConfirm} className='delete-cancel-btn'>Cancel</button>
@@ -159,7 +174,12 @@ const Listings = () => {
 )}
       {/* 显示order弹窗 */}
       {showOrdersModal && (
-        <OrdersModal closeOrdersModal={closeOrdersModal} />
+        <OrdersModal
+          closeOrdersModal={closeOrdersModal}
+          spot={spotsInfo.find(spot => spot.message.ID === selectedSpotId)?.message}
+          orders={ordersForSelectedSpot}
+          fetchOrders={fetchOrders}
+        />
       )}
     </div>
   );

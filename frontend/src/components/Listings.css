@@ -247,3 +247,8 @@
   .delete-cancel-btn:hover {
     background-color: #f66;
   }
+
+  .delete-confirm-title{
+    font-size: 20px;
+    font-weight: bold;
+  }

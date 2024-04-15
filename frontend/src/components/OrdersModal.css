@@ -1,4 +1,4 @@
-.orders-modal-overlay {
+.orders-modal-overlay,.message-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,16 +11,18 @@
     z-index: 2;
   }
   
-  .orders-modal-content {
+  .orders-modal-content, .message-modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
     width: 90%;
     max-width: 800px;
-    overflow: auto; /* 内容太多，需要滚动 */
+    max-height: 80vh; 
+    overflow-y: auto;
+    padding: 20px;
   }
   
-  .orders-modal-header {
+  .orders-modal-, .messages-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -58,6 +60,20 @@
   .carousel-container {
     margin: 20px 0;
   }
+
+  .spot-details {
+    display: flex;
+    align-items: center;
+  }
+  .img-container {
+    margin-right: 10px;
+  }
+
+  .spot-details img {
+    width: 150px;
+    height: 150px;
+    border-radius: 5%;
+  }
   
   .order-info {
     display: flex;
@@ -78,8 +94,8 @@
   }
   
   .custome-info img {
-    width: 50px;
-    height: 50px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
   }
   
@@ -88,10 +104,19 @@
     padding: 0 20px;
   }
 
-  .order-info-spec {
-    font-size: 16px;
+  .order-info-spec1, .order-info-spec2, .order-info-spec3, .order-info-spec4 {
+    font-size: 14px;
     margin-bottom: 10px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif; */
+  }
+  .order-info-spec1 {
+    font-size: 15px;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+  }
+  
+  .order-info-spec4 {
+    font-weight: bold;
   }
 
   .order-hint-msg {
@@ -102,15 +127,15 @@
 
 
   
-  .send-msg-btn, .accept-btn {
+  .send-msg-btn, .accept-btn, .order-review-btn  {
     margin-right: 5px;
     border: none;
     padding: 5px 20px;
     border-radius: 5px;
     cursor: pointer;
     margin-bottom: 5px;
-    background-color: #e11e2c; 
     width: 140px;
+    background-color: #e11e2c; 
     color: white;
   }
 
@@ -135,8 +160,56 @@
   }
 
 
-
   .order-cancel-btn:hover {
     background-color:darkgray;
     color: black;
+  }
+
+  .order-review-btn {
+    background-color: black; 
+    color: white;
+    text-align: center;
+  }
+
+  .no-orders-message {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .send-to-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .message-input {
+    width: 80%;
+    height: 50px;
+    margin-bottom: 10px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+  }
+
+  .send-msg-confim-btn{
+    width: 100px;
+    margin-left: 15px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    color: white;
+    background-color: #e11e2c; 
+  }
+
+  .send-msg-confim-btn:hover {
+    background-color: #f66;
+  }
+
+  .cancel-confirm-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
   }
