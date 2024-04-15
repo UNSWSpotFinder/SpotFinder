@@ -47,6 +47,9 @@ definitions:
         type: string
       receiverId:
         type: integer
+      type:
+        description: '"message" 或 "notification"'
+        type: string
     type: object
   Models.TimeRange:
     properties:
@@ -83,6 +86,16 @@ definitions:
     - bookingTime
     - carID
     - cost
+    type: object
+  Review.reviewRequest:
+    properties:
+      content:
+        type: string
+      rating:
+        type: integer
+    required:
+    - content
+    - rating
     type: object
   Spots.CreateSpotRequestData:
     properties:
@@ -770,6 +783,72 @@ paths:
       summary: 退款订单
       tags:
       - Order
+  /order/{orderID}/reviews:
+    post:
+      consumes:
+      - application/json
+      description: Create a review
+      parameters:
+      - description: Order ID
+        in: path
+        name: orderID
+        required: true
+        type: integer
+      - description: Review
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/Review.reviewRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review created successfully
+          schema:
+            type: string
+        "400":
+          description: Order not found
+          schema:
+            type: string
+        "500":
+          description: Failed to create review
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a review
+      tags:
+      - Review
+  /reviews/{reviewID}:
+    get:
+      consumes:
+      - application/json
+      description: 获取单个评论的详情
+      parameters:
+      - description: Review ID
+        in: path
+        name: reviewID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review fetched successfully
+          schema:
+            type: string
+        "404":
+          description: Review not found
+          schema:
+            type: string
+        "500":
+          description: Failed to fetch review
+          schema:
+            type: string
+      summary: 获取单个评论的详情
+      tags:
+      - Review
   /spot/{spotId}:
     get:
       consumes:
@@ -961,6 +1040,31 @@ paths:
       summary: 创建举报
       tags:
       - Report
+  /spots/{spotID}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: 获取车位ID对应的评论
+      parameters:
+      - description: Spot ID
+        in: path
+        name: spotID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Reviews fetched successfully
+          schema:
+            type: string
+        "500":
+          description: Failed to fetch reviews
+          schema:
+            type: string
+      summary: 获取车位ID对应的评论
+      tags:
+      - Review
   /user/create:
     post:
       description: do ping

@@ -6,6 +6,7 @@ import (
 	"capstone-project-9900h14atiktokk/Service/Message"
 	"capstone-project-9900h14atiktokk/Service/Order"
 	"capstone-project-9900h14atiktokk/Service/Report"
+	"capstone-project-9900h14atiktokk/Service/Review"
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/Service/Vehicle"
@@ -58,6 +59,8 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	public.POST("/manager/login", Manager.LoginHandler)
 	public.GET("/spot/:spotId", Spots.GetSpotDetailsHandler)
 	public.GET("/user/simpleInfo/:id", User.GetSimpleUserInfoHandler)
+	public.GET("/spots/:spotID/reviews", Review.GetReviewsBySpotID)
+	public.GET("/reviews/:reviewID", Review.GetReviewByIDHandler)
 
 	// Private (authenticated) routes
 	private := r.Group("/")
@@ -74,7 +77,6 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.POST("car/modifyCarInfo/:carID", Vehicle.ModifyVehicleInfoHandler)
 	private.PUT("/manager/invisible/:spotId", Manager.InvisibleSpotHandler)
 	private.POST("/spots/:spotID/orders", Order.CreateOrderHandler)
-	//private.PUT("/order/:orderID/paid", Order.CompleteOrderHandler)
 	private.PUT("/order/:orderID/cancel", Order.CanceledOrderHandler)
 	private.PUT("/order/:orderID/refund", Order.RefundOrderHandler)
 	private.GET("/order/:orderID", Order.GetOrderInfoHandler)
@@ -83,6 +85,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	private.GET("/car/getCar/:carID", Vehicle.GetVehicleByCarIDHandler)
 	private.DELETE("/car/deleteCar/:carID", Vehicle.DeleteVehicleHandler)
 	private.POST("/spots/:spotID/report", Report.CreateReportHandler)
+	private.POST("/order/:orderID/reviews", Review.CreateReviewHandler)
 	manager := r.Group("/")
 	manager.Use(Service.AuthMiddleware(SecreteKey))
 	manager.POST("/manager/approve/:spotId", Manager.ApproveSpotHandler)

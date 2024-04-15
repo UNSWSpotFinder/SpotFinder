@@ -782,6 +782,108 @@ const docTemplate = `{
                 }
             }
         },
+        "/order/{orderID}/reviews": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a review",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Create a review",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "orderID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Review",
+                        "name": "review",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Review.reviewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Order not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{reviewID}": {
+            "get": {
+                "description": "获取单个评论的详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "获取单个评论的详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review fetched successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Review not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/spot/create": {
             "post": {
                 "security": [
@@ -1072,6 +1174,44 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "unable to create report",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/spots/{spotID}/reviews": {
+            "get": {
+                "description": "获取车位ID对应的评论",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "获取车位ID对应的评论",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "spotID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reviews fetched successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch reviews",
                         "schema": {
                             "type": "string"
                         }
@@ -1638,6 +1778,10 @@ const docTemplate = `{
                 },
                 "receiverId": {
                     "type": "integer"
+                },
+                "type": {
+                    "description": "\"message\" 或 \"notification\"",
+                    "type": "string"
                 }
             }
         },
@@ -1688,6 +1832,21 @@ const docTemplate = `{
                 },
                 "cost": {
                     "type": "number"
+                }
+            }
+        },
+        "Review.reviewRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "rating"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
                 }
             }
         },
