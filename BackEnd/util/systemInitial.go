@@ -195,6 +195,9 @@ func InitMySQL() *gorm.DB {
 	if err := db.AutoMigrate(&Models.ReportBasic{}); err != nil {
 		fmt.Println(err)
 	}
+	if err := db.AutoMigrate(&Models.Notification{}); err != nil {
+		fmt.Println(err)
+	}
 
 	return db
 }
