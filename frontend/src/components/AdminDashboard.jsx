@@ -1,57 +1,42 @@
-import React, { useEffect, useState,useContext,useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
-import { getAllSpots, getAllNotApprovedSpots, callAPIgetAllreport, callAPIsolved } from './API';
+import {
+  getAllSpots,
+  getAllNotApprovedSpots,
+  callAPIgetAllreport,
+  callAPIsolved,
+} from './API';
 import '../HomePage.css';
 import { useError } from '../API';
 import { AppContext } from '../App';
 
-
 const AdminDashboard = () => {
-  let pageA=1;
-  let pageB=1;
   const { contextState, updateContextState } = useContext(AppContext);
-  let handleLocation = (event)=>{
+  let handleLocation = (event) => {
     updateContextState({
-      Carlocation:event.target.value
+      Carlocation: event.target.value,
     });
-  }
+  };
+  const [pageA, setPageA] = useState(1);
+  const [pageB, setPageB] = useState(1);
   const [reports, setReports] = useState([]);
-  const [isLReport,setisreport] = useState(true);
-  const [finishedReport,setFinishedReport]=useState(false);
+  const [isLReport, setisreport] = useState(true);
+  const [finishedReport, setFinishedReport] = useState(false);
   const [spots, setSpots] = useState([]);
-  const [AppSpots,setAppSpots]=useState([]);
+  const [AppSpots, setAppSpots] = useState([]);
   const [filteredSpot, setfilrerSpot] = useState([]);
   const [filteredSpotApp, setfilrerSpotApp] = useState([]);
-  const [finishedApp,setfinishedApp]=useState(false);
-  const [finishedSpot,setfinishedSpot]=useState(false);
+  const [finishedApp, setfinishedApp] = useState(false);
+  const [finishedSpot, setfinishedSpot] = useState(false);
   const navigate = useNavigate();
-  const { _, setOpenSnackbar } = useError();
-  let isLoading = false;
-  let isLoadingApp = false;
-  const [isL,setL]=useState(true);
-  const [isLApp,setLApp]=useState(true);
+  const { setOpenSnackbar } = useError();
+  const [isL, setL] = useState(true);
+  const [isLApp, setLApp] = useState(true);
   const ApproveRef = useRef(null);
   const ReportRef = useRef(null);
   const PublishRef = useRef(null);
-  const getReport=()=>{
-    callAPIgetAllreport().then((data) => {
-      console.log('n');
-      console.log(data)
-      const datanow = data.report || [];
-      console.log(datanow);
-      setReports((prevSpots) => [...prevSpots, ...datanow]); 
-      setisreport(false);
-      if(data.report===null || data.report.length<=15){
-        setFinishedReport(true);
-      }
-    })
-    .catch((error) => {
-      console.error('Failed to fetch spots:', error);
-      isLoadingApp=false;
-      setisreport(false);
-    });
-  }
+  const [reportC, setC] = useState(false);
   let logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.clear();
@@ -63,7 +48,7 @@ const AdminDashboard = () => {
       });
     }
   };
-  useEffect(()=>{
+  useEffect(() => {
     let datas = spots;
     let datasApp = AppSpots;
     if (contextState.Carlocation !== '') {
@@ -76,112 +61,144 @@ const AdminDashboard = () => {
     }
     setfilrerSpot(datas);
     setfilrerSpotApp(datasApp);
-    console.log(isLoading);
-    console.log(isLoadingApp);
-  },[contextState.Carlocation, spots,AppSpots])
+  }, [contextState.Carlocation, spots, AppSpots]);
   useEffect(() => {
-    getNewSpot();
-    getNewApprove();
+    const getReport = () => {
+      callAPIgetAllreport()
+        .then((data) => {
+          console.log('n');
+          console.log(data);
+          const datanow = data.report || [];
+          console.log(datanow);
+          setReports(() => [...datanow]);
+          setisreport(false);
+          if (data.report === null || data.report.length <= 15) {
+            setFinishedReport(true);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+          setisreport(false);
+        });
+    };
     getReport();
-    const rpListener=()=>{
+  }, [reportC]);
+
+  useEffect(() => {
+    const getNewSpot = () => {
+      console.log('ty');
+      getAllSpots(pageB)
+        .then((data) => {
+          console.log('o');
+          console.log(data);
+          const datanow = data.message || [];
+          setSpots((prevSpots) => [...prevSpots, ...datanow]);
+          console.log(pageB);
+          console.log('Spots:', data.message);
+          if (data.message === null || data.message.length < 15) {
+            setfinishedSpot(true);
+          }
+          setL(false);
+          setPageB(pageB + 1);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+          setL(false);
+        });
+    };
+    if (isL) {
+      getNewSpot();
+    }
+  }, [isL, pageB]);
+
+  useEffect(() => {
+    const getNewApprove = () => {
+      getAllNotApprovedSpots(pageA)
+        .then((data) => {
+          console.log('n');
+          console.log(data);
+          const datanow2 = data.message || [];
+          setAppSpots((prevSpots) => [...prevSpots, ...datanow2]);
+          if (data.message === null || data.message.length < 15) {
+            setfinishedApp(true);
+          }
+          setLApp(false);
+          setPageA(pageA + 1);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+          setLApp(false);
+        });
+    };
+    if (isLApp) {
+      getNewApprove();
+    }
+  }, [isLApp, pageA]);
+
+  useEffect(() => {
+    const rpListener = () => {
       const rp = ReportRef.current;
       if (!isLReport && rp.scrollHeight - rp.scrollTop <= rp.clientHeight) {
         setisreport(true);
-        console.log("Reached the bottom");
-        getReport();
+        console.log('Reached the bottom');
       }
-    }
+    };
     const apListener = () => {
       const ap = ApproveRef.current;
-      if (!isLoadingApp && ap.scrollHeight - ap.scrollTop <= ap.clientHeight) {
-        isLoadingApp=true;
+      if (!isLApp && ap.scrollHeight - ap.scrollTop <= ap.clientHeight) {
         setLApp(true);
-        console.log("Reached the bottom");
-        getNewApprove();
+        console.log('Reached the bottom');
       }
     };
-    const scListener = (isLoading) => {
+    const scListener = () => {
       const sc = PublishRef.current;
-      // console.log(sc.scrollHeight - sc.scrollTop);
-      // console.log(sc.clientHeight);
-      console.log(isLoading);
-      if (!isLoading && (sc.scrollHeight - sc.scrollTop <= sc.clientHeight)) {
-        isLoading=true;
+      if (!isL && sc.scrollHeight - sc.scrollTop <= sc.clientHeight) {
         setL(true);
-        console.log(isLoading);
-        console.log("Reached the bottom");
-        getNewSpot();
+        console.log('Reached the bottom');
       }
     };
-    const element  = PublishRef.current;
+    const element = PublishRef.current;
     const element2 = ApproveRef.current;
     const element3 = ReportRef.current;
     console.log(element);
-    element.addEventListener('scroll', ()=>{scListener(isLoading)});
-    element2.addEventListener('scroll',apListener);
-    element3.addEventListener('scroll',rpListener);
+    element.addEventListener('scroll', scListener);
+    element2.addEventListener('scroll', apListener);
+    element3.addEventListener('scroll', rpListener);
 
     return () => {
       element.removeEventListener('scroll', scListener);
-      element2.removeEventListener('scroll',apListener);
+      element2.removeEventListener('scroll', apListener);
     };
-  }, []); 
-  const getNewSpot=() =>{
-    console.log('ty');
-    getAllSpots(pageB)
-    .then((data) => {
-      console.log('o');
-      console.log(data);
-      const datanow = data.message || [];
-      setSpots((prevSpots) => [...prevSpots, ...datanow]); 
-      pageB = pageB + 1;
-      console.log(pageB);
-      console.log('Spots:', data.message);
-      isLoading=false;
-      setL(false);
-      if(data.message===null || data.message.length<=15){
-        setfinishedSpot(true);
-      }
-    })
-    .catch((error) => {
-      console.error('Failed to fetch spots:', error);
-      isLoading=false;
-      setL(false);
-    });
-  }
-  const getNewApprove=()=>{
-    getAllNotApprovedSpots(pageA)
-    .then((data) => {
-      console.log('n');
-      console.log(data);
-      const datanow2 = data.message || [];
-      setAppSpots((prevSpots) => [...prevSpots, ...datanow2]); 
-      pageA+=1;
-      isLoadingApp=false;
-      setLApp(false);
-      if(data.message===null || data.message.length<=15){
-        setfinishedApp(true);
-      }
-    })
-    .catch((error) => {
-      console.error('Failed to fetch spots:', error);
-      isLoadingApp=false;
-      setLApp(false);
-    });
-  }
+  }, [isL, isLApp, isLReport]);
+
   const goToDetails = (spotId) => {
     navigate(`/admin/${localStorage.getItem('AdminId')}/${spotId}`);
   };
   const goToApprove = (spotId) => {
     navigate(`/admin/${localStorage.getItem('AdminId')}/Approve/${spotId}`);
-  }
-  const goToReport = (ReportId,spotId) => {
-    navigate(`/admin/${localStorage.getItem('AdminId')}/Report/${ReportId}/${spotId}`);
-  }
-  const Solved = (ReportId,rep) => {
-    rep.IsSolved=!rep.IsSolved;
-    callAPIsolved(ReportId);
-  }
+  };
+  const goToReport = (ReportId, spotId) => {
+    navigate(
+      `/admin/${localStorage.getItem('AdminId')}/Report/${ReportId}/${spotId}`
+    );
+  };
+  const Solved = (ReportId, rep) => {
+    callAPIsolved(ReportId).then(() => {
+      rep.IsSolved = !rep.IsSolved;
+      setC(!reportC);
+      setOpenSnackbar({
+        severity: 'success',
+        message: 'Solved successful',
+        timestamp: new Date().getTime()
+      })
+    }).catch((error) => {
+      setOpenSnackbar({
+        severity: 'error',
+        message: 'Solved failed',
+        timestamp: new Date().getTime()
+      })
+    });
+  };
   return (
     <div className='admin-dashboard'>
       {/* 顶部区域 */}
@@ -190,16 +207,20 @@ const AdminDashboard = () => {
           {/* Logo图像 */}
           <img src='/img/LOGO.svg' alt='logo' className='Applogo'></img>
           <div className='SearchPartsmall-m'>
-          {/* 搜索图标 */}
-          <img className='searchbtnsmall-m' src='/img/search.png'></img>
-          {/* 搜索输入框 */}
-          <input
-            className='Searchbar'
-            placeholder='Search by Spot name'
-            value={contextState.Carlocation}
-            onChange={handleLocation}
-          ></input>
-        </div>
+            {/* 搜索图标 */}
+            <img
+              className='searchbtnsmall-m'
+              src='/img/search.png'
+              alt=''
+            ></img>
+            {/* 搜索输入框 */}
+            <input
+              className='Searchbar'
+              placeholder='Search by Spot name'
+              value={contextState.Carlocation}
+              onChange={handleLocation}
+            ></input>
+          </div>
           {/* 管理员信息 */}
           <div className='hint-msg'></div>
           {/* 登出按钮 */}
@@ -262,66 +283,68 @@ const AdminDashboard = () => {
                   {rep.Reporter.Name + '  Reported this spot'}
                 </p>
               </div>
-              <p className='space-email'>
-                  {rep.Reporter.Email}
-                </p>
-              <p className='report-content'>
-                {rep.Reason}
-              </p>
-              <p className='spot-info-label'>
-              {'Spot Information'}
-              </p>
+              <p className='space-email'>{rep.Reporter.Email}</p>
+              <p className='report-content'>{rep.Reason}</p>
+              <p className='spot-info-label'>{'Spot Information'}</p>
               <div className='spot-info-details'>
-              <p className='spot-name-detail'>{rep.Spot.SpotName}</p>
-              <p className='space-location-report'>
-              {(() => {
-                  try {
-                    // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
-                    // For example, if it's an object like { "address": "123 Main St." }
-                    // you could return the address like so:
-                    const add = JSON.parse(rep.Spot.SpotAddr);
-                    return (
-                      'located in '+
-                      add.Street +
-                      ', ' +
-                      add.City +
-                      ', ' +
-                      add.State +
-                      ', ' +
-                      add.Country +
-                      ', ' +
-                      add.Postcode
-                    ); // replace 'address' with the actual property name you want to display
-                  } catch (e) {
-                    return rep.Spot.SpotAddr; // or return some default message or component
-                  }
-                })()}
-              </p>
+                <p className='spot-name-detail'>{rep.Spot.SpotName}</p>
+                <p className='space-location-report'>
+                  {(() => {
+                    try {
+                      // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
+                      // For example, if it's an object like { "address": "123 Main St." }
+                      // you could return the address like so:
+                      const add = JSON.parse(rep.Spot.SpotAddr);
+                      return (
+                        'located in ' +
+                        add.Street +
+                        ', ' +
+                        add.City +
+                        ', ' +
+                        add.State +
+                        ', ' +
+                        add.Country +
+                        ', ' +
+                        add.Postcode
+                      ); // replace 'address' with the actual property name you want to display
+                    } catch (e) {
+                      return rep.Spot.SpotAddr; // or return some default message or component
+                    }
+                  })()}
+                </p>
               </div>
 
               {/* <p className='space-type'>Fits a {spot.Size}</p> */}
               <div className='right-bottom-report'>
                 <button
                   className='specific-info-report'
-                  onClick={() => goToReport(rep.ID,rep.Spot.ID)}
+                  onClick={() => goToReport(rep.ID, rep.Spot.ID)}
                   disabled={rep.IsSolved}
                 >
                   Check Report
                 </button>
                 <button
                   className='specific-info-report solved'
-                  onClick={()=>{Solved(rep.ID,rep)}}
+                  onClick={() => {
+                    Solved(rep.ID, rep);
+                  }}
                   disabled={rep.IsSolved}
                 >
-                  {rep.IsSolved ?'Solved':'Mark as Sloved'}
+                  {rep.IsSolved ? 'Solved' : 'Mark as Sloved'}
                 </button>
               </div>
             </div>
           </div>
         ))}
-        {reports.length===0 && !isLReport &&(<p className='Appnull'>{"There aren't any report that need to be SOLVED at the moment."}</p>)}
-        {isLReport && !finishedReport && (<p className='Loading'>{"Loading..."}</p>)}
-        {finishedReport && (<p className='fin'>{"No more report"}</p>)}
+        {reports.length === 0 && !isLReport && (
+          <p className='Appnull'>
+            {"There aren't any report that need to be SOLVED at the moment."}
+          </p>
+        )}
+        {isLReport && !finishedReport && (
+          <p className='Loading'>{'Loading...'}</p>
+        )}
+        {finishedReport && <p className='fin'>{'No more report'}</p>}
       </div>
       <p className='title-for-spot border-given'>Spot to Approve</p>
       <div className='container-half' ref={ApproveRef}>
@@ -351,10 +374,15 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <p className='space-price'>
-                {'$' + spot.PricePerHour.toFixed(2) +'/Hour, '+'$' + spot.PricePerDay.toFixed(2) + '/Day'}
+                {'$' +
+                  spot.PricePerHour.toFixed(2) +
+                  '/Hour, ' +
+                  '$' +
+                  spot.PricePerDay.toFixed(2) +
+                  '/Day'}
               </p>
               <p className='space-price no-mg'>
-              {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
+                {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
               </p>
               <p className='space-location'>
                 {(() => {
@@ -399,9 +427,11 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpotApp.length===0 && !isLApp  && (<p className='Appnull'>{"Sorry, There aren't any such spots."}</p>)}
-        {isLApp && !finishedApp && (<p className='Loading'>{"Loading..."}</p>)}
-        {finishedApp && (<p className='fin'>{"No more spot"}</p>)}
+        {filteredSpotApp.length === 0 && !isLApp && (
+          <p className='Appnull'>{"Sorry, There aren't any such spots."}</p>
+        )}
+        {isLApp && !finishedApp && <p className='Loading'>{'Loading...'}</p>}
+        {finishedApp && <p className='fin'>{'No more spot'}</p>}
       </div>
       <p className='title-for-spot border-given'>Published Car Spot</p>
       <div className='container-all' ref={PublishRef}>
@@ -431,10 +461,15 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <p className='space-price'>
-                {'$' + spot.PricePerHour.toFixed(2) +'/Hour, '+'$' + spot.PricePerDay.toFixed(2) + '/Day'}
+                {'$' +
+                  spot.PricePerHour.toFixed(2) +
+                  '/Hour, ' +
+                  '$' +
+                  spot.PricePerDay.toFixed(2) +
+                  '/Day'}
               </p>
               <p className='space-price no-mg'>
-              {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
+                {'$' + spot.PricePerWeek.toFixed(2) + '/Week'}
               </p>
               <p className='space-location'>
                 {(() => {
@@ -479,9 +514,11 @@ const AdminDashboard = () => {
             </div>
           </div>
         ))}
-        {filteredSpot.length===0 && !isL  && (<p className='Appnull'>{"Sorry, There aren't any such spots."}</p>)}
-        {isL && !finishedSpot && (<p className='Loading'>{"Loading..."}</p>)}
-        {finishedSpot && (<p className='fin'>{"No more spot"}</p>)}
+        {filteredSpot.length === 0 && !isL && (
+          <p className='Appnull'>{"Sorry, There aren't any such spots."}</p>
+        )}
+        {isL && !finishedSpot && <p className='Loading'>{'Loading...'}</p>}
+        {finishedSpot && <p className='fin'>{'No more spot'}</p>}
       </div>
     </div>
   );

@@ -1,8 +1,5 @@
 import React, {
   useState,
-  ChangeEvent,
-  useContext,
-  LabelHTMLAttributes,
   useRef,
   useEffect,
 } from 'react';
@@ -13,23 +10,16 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
 import './CarSpaceOpearation.css';
 import {
   useNavigate,
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  useLocation,
   useParams,
 } from 'react-router-dom';
 import {
   useError,
   GetDistance,
   HoverImage,
-  callAPICreateSpot,
   callAPIGetSpecSpot,
   callAPIEditSpot,
   callAPIApproveSpot,
@@ -148,7 +138,7 @@ const ReserveConfirmgray = styled('button')({
 // 修改
 export const ApproveCheck = ({ data, isOpen, close }) => {
   // get the set open snackbar function
-  const { _ , setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -260,7 +250,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
     }
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const EditInfo = (id) => {
     callAPIEditSpot(
@@ -341,7 +331,7 @@ export const DeleteCheck = ({ isOpen, close }) => {
 
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const DeleteInfo = (id) => {
     callAPIBlockSpot(
@@ -414,7 +404,7 @@ export const HiddenCheck = ({ isOpen, close }) => {
 
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const HiddenInfo = (id) => {
     callAPIHiddenSpot(
@@ -464,32 +454,50 @@ export const HiddenCheck = ({ isOpen, close }) => {
 
 // EditHostingPage
 export const ManagerEditSpace = () => {
+  const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
   const { adminid, Spotid } = useParams();
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -497,46 +505,28 @@ export const ManagerEditSpace = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [Spotid,setOpenSnackbar]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -1114,7 +1104,7 @@ export const ManagerEditSpace = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -1173,7 +1163,7 @@ export const ManagerEditSpace = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -1882,32 +1872,50 @@ export const ManagerEditSpace = () => {
 };
 
 export const ManagerApproveEditSpace = () => {
+  const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [SpotData, setData] = useState({});
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -1915,46 +1923,28 @@ export const ManagerApproveEditSpace = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [setOpenSnackbar, Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -2531,7 +2521,7 @@ export const ManagerApproveEditSpace = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -2581,7 +2571,7 @@ export const ManagerApproveEditSpace = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -3282,32 +3272,50 @@ export const ManagerApproveEditSpace = () => {
 };
 
 export const ManagerProcessReport = () => {
+  const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
-  const { adminid, Reportid, Spotid } = useParams();
+  const { adminid, Spotid } = useParams();
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -3315,46 +3323,28 @@ export const ManagerProcessReport = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [Spotid,setOpenSnackbar]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -3932,7 +3922,7 @@ export const ManagerProcessReport = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -3991,7 +3981,7 @@ export const ManagerProcessReport = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>

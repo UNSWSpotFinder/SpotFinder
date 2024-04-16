@@ -1,8 +1,6 @@
 import React, {
   useState,
-  ChangeEvent,
   useContext,
-  LabelHTMLAttributes,
   useEffect,
 } from 'react';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -12,33 +10,20 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import dayjs from 'dayjs';
-import { DatePicker, dayCalendarSkeletonClasses } from '@mui/x-date-pickers';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
 import {
   useNavigate,
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
   useLocation,
   useParams,
 } from 'react-router-dom';
 import { getUserInfo } from './components/API';
 import {
-  AdminLoginPage,
-  UserLoginPage,
-  UserLoginPageForgetPassword,
-} from './Login';
-import { UserRegistPage, AdminRegistPage } from './Regist';
-import { motion, AnimatePresence, distance } from 'framer-motion';
-import {
   useError,
   callAPIGetSpecSpot,
-  GetDistance,
   callAPIGetSpecUserInfo,
   GetDistanceAll,
   CalculateAllTime,
@@ -46,10 +31,7 @@ import {
 } from './API';
 import { withdrawAccount } from './components/API';
 import './SpecificSpot.css';
-import { indigo } from '@mui/material/colors';
-import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
-import Typography from '@mui/material/Typography';
 import { AppContext } from './App';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -191,7 +173,7 @@ const CfmHead = styled('p')({
   textAlign: 'center',
   letterSpacing: '0.2px',
   color: 'rgb(48, 48, 48)',
-});
+}); 
 const ReserveConfirm = styled('button')({
   marginBottom: '15px',
   backgroundColor: '#E22229',
@@ -213,16 +195,30 @@ const ReserveConfirm = styled('button')({
     cursor: 'not-allowed',
   },
 });
+// This is the confirm page for the user to confirm the booking
 export const ConfirmBook = ({ data, isOpen, close }) => {
-  console.log(data.BookingDuration);
+  // get the set open snackbar function
+  const { setOpenSnackbar } = useError();
+  // initial the topup state to false
+  // when the user balance is not enough, the topup state will be true
   const [topup, settp] = useState(false);
+  // initial the canOrder state to false
+  // when the user balance is enough, the canOrder state will be true
+  // when the user click the confirm button, the canOrder state will be true
+  // when the query is success, the canOrder state will be false
   const [canOrder, setcanOrder] = useState(false);
   // inital the confirm state to false
+  // when the user pay the order, the confirm state will be true
   const [ConfirmState, setConfirmState] = useState(false);
-  const { contextState, updateContextState } = useContext(AppContext);
+  // set the context state
+  const { contextState } = useContext(AppContext);
   // use the navigate to go to the user page
   const [Balance, setBalance] = useState('');
+  // initial the selectedOption state to 0
+  // 0 means pay by balance
+  // 1 means pay by visa card
   const [selectedOption, setSelectedOption] = useState('0');
+  // when the payment method is selected, the selectedOption state will be changed
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
     // 根据选项执行相应的操作
@@ -236,59 +232,83 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // 在这里执行你的操作
     }
   };
+  // reload the page when the price or payment method is changed
   useEffect(() => {
+    // get the user balance
     getUserInfo()
       .then((response) => {
+        // when the query is success, the user balance will be set
         console.log(response.message.account);
         setBalance(response.message.account);
       })
+      // when the query is failed, the error will be catched
       .catch((error) => {});
+    // when the user balance is not enough and the payment method is SpotAccount, the topup state will be true
     if (selectedOption === '0' && Balance - data.TotalPrice < 0) {
+      // open the snackbar to remind the user to topup
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
         timestamp: new Date().getTime(),
       });
+      // set the topup state to true
       setcanOrder(true);
+      // set the topup state to true
       settp(true);
       return;
     } else {
+      // set the can order state to false
       setcanOrder(false);
+      // set the topup state to false
       settp(false);
     }
-  }, [Balance, data.TotalPrice, isOpen, selectedOption]);
-  useEffect(()=>{
-    if(localStorage.getItem('payed')){
-      let k_r = localStorage.getItem('payed')==='true' ? true : false;
+  }, [Balance, data.TotalPrice, isOpen, selectedOption,setOpenSnackbar]);
+  // when the user pay by visa card, waiting for payment
+  // when the payment state is changed, the confirm state will be changed
+  useEffect(() => {
+    // use the lodash library
+    const _lodash = require('lodash');
+    // when the payed has a value, the confirm state will be changed
+    if (localStorage.getItem('payed')) {
+      // get the payed value
+      let k_r = localStorage.getItem('payed') === 'true' ? true : false;
       console.log(k_r);
+      // set the can order state to false
       setcanOrder(false);
-      if(k_r){
+      // if payment is success
+      if (k_r) {
+        // convert the date format to JSON format
         let temp = _lodash.cloneDeep(data.BookingDuration);
         console.log(temp);
         temp.map((item) => {
           item.startDate = item.startDate.format().toString();
           item.endDate = item.endDate.format().toString();
+          return item;
         });
-        // change the conponment
+        // initial the data to be sent
         let tempdata = {
           bookingTime: temp,
           carID: Number(localStorage.getItem('carId')),
           cost: data.TotalPrice,
         };
+        // call the api to create the order
         callAPICreateOrder(
           'spots/' + localStorage.getItem('spotID') + '/orders',
           localStorage.getItem('token'),
           tempdata
         )
           .then((response) => {
+            // if the query is success, the snackbar will be opened
             setOpenSnackbar({
               severity: 'success',
               message: 'You successfully pay your order!Thank you.',
               timestamp: new Date().getTime(),
             });
+            // set the confirm state to true
             setConfirmState(k_r);
           })
           .catch((error) => {
+            // if the query is failed, the snackbar will be opened
             setOpenSnackbar({
               severity: 'warning',
               message: 'There exist some error, please try again.',
@@ -297,17 +317,19 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           });
       }
     }
+    // after the payment, the payed value will be removed
     localStorage.removeItem('payed');
-
-  },[localStorage.getItem('payed')]);
+  }, [localStorage.getItem('payed'), data, setOpenSnackbar]);
+  // initial the navigate function
   const navigate = useNavigate();
-  // get the hosting id from the url
+  // get the username and Spot id from the url
   const { username, Spotid } = useParams();
-  // go to the user page
+  // go to the main page
   const goesMain = () => {
     navigate('/' + localStorage.getItem('email') + '/dashboard/bookings');
     localStorage.removeItem('payed');
   };
+  // go to the topup page
   const goesTopUp = () => {
     navigate('/' + localStorage.getItem('email') + '/dashboard');
     localStorage.removeItem('payed');
@@ -318,11 +340,9 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     localStorage.removeItem('payed');
     close();
   };
-  // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
-  const _lodash = require('lodash');
   // this function used when the user click the confirm button
   const ReverseBook = () => {
+    // if the user balance is not enough and the payment method is SpotAccount, the snackbar will be opened
     if (selectedOption === 0 && Balance - data.TotalPrice < 0) {
       setOpenSnackbar({
         severity: 'warning',
@@ -331,53 +351,66 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       });
       return;
     }
+    // use the lodash library
+    const _lodash = require('lodash');
+    // convert the date format to JSON format
     let temp = _lodash.cloneDeep(data.BookingDuration);
-    console.log(temp);
     temp.map((item) => {
       item.startDate = item.startDate.format().toString();
       item.endDate = item.endDate.format().toString();
+      return item;
     });
-    // change the conponment
+    // initial the data to be sent
     let tempdata = {
       bookingTime: temp,
       carID: Number(localStorage.getItem('carId')),
       cost: data.TotalPrice,
     };
-    console.log(tempdata);
+    // set the can order state to true
     setcanOrder(true);
+    // if the payment method is Visa Card
     if (selectedOption === '1') {
-      localStorage.setItem('Payprice',data.TotalPrice);
+      // set the payprice to be the total price
+      localStorage.setItem('Payprice', data.TotalPrice);
+      // go to the visa payment page
       navigate('/' + username + '/detail/' + Spotid + '/Visa');
       return;
     }
+    // call the api to create the order
     callAPICreateOrder(
       'spots/' + localStorage.getItem('spotID') + '/orders',
       localStorage.getItem('token'),
       tempdata
     )
       .then((response) => {
+        // if the query is success, the snackbar will be opened
         setOpenSnackbar({
           severity: 'success',
           message: 'You successfully pay your order!Thank you.',
           timestamp: new Date().getTime(),
         });
+        // if the payment method is SpotAccount
+        // deduct the balance
         if (selectedOption === '0') {
           withdrawAccount(data.TotalPrice);
         }
+        // set the confirm state to true
         setConfirmState(true);
+        // set the can order state to false
         setcanOrder(false);
         return;
       })
       .catch((error) => {
+        // if the query is failed, the snackbar will be opened
         setOpenSnackbar({
           severity: 'warning',
           message: 'There exist some error, please try again.',
           timestamp: new Date().getTime(),
         });
+        // set the can order state to false
         setcanOrder(false);
         return;
       });
-    console.log(data);
   };
   let conponment = (
     <div className='CfmAll'>
@@ -527,116 +560,180 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   );
   return isOpen ? conponment : null;
 };
-
+//
 export const VisaPayment = () => {
-  const { _, setOpenSnackbar } = useError();
-  const [cardnumber,setnumber]=useState('');
-  const [Fname,setFname]=useState('');
-  const [Lname,setLname]=useState('');
-  const [CVC,setCVC]=useState('');
-  const [Expire,setexpire]=useState('');
-  let navigate=useNavigate();
+  // set the snackbar to tell the user some system message
+  const { setOpenSnackbar } = useError();
+  // initial the card number, first name, last name, cvc, expire date
+  const [cardnumber, setnumber] = useState('');
+  const [Fname, setFname] = useState('');
+  const [Lname, setLname] = useState('');
+  const [CVC, setCVC] = useState('');
+  const [Expire, setexpire] = useState('');
+  // initial the navigate function
+  let navigate = useNavigate();
+  // get the price from the local storage
   let Price = Number(localStorage.getItem('Payprice')).toFixed(2);
+  // go back to order confirm page, and set the payed to false
   const back = () => {
-    localStorage.setItem('payed','false');
+    localStorage.setItem('payed', 'false');
     navigate(-1);
-  }
-  // 验证函数
-function validateInput(cardnumber, Fname, Lname, CVC, Expire) {
-  // 正则表达式定义
-  const cardNumberPattern = /^\d{16}$/; // 16 位数字
-  const namePattern = /^[A-Z]+$/; // 纯大写字母
-  const cvcPattern = /^\d{3}$/; // 3 位数字
-  const expirePattern = /^(0[1-9]|1[0-2])\/(\d{2})$/; // 'XX/YY' 格式，XX 00-12, YY 00-99
-  
-  // 验证
-  const isCardNumberValid = cardNumberPattern.test(cardnumber);
-  const isFnameValid = namePattern.test(Fname);
-  const isLnameValid = namePattern.test(Lname);
-  const isCVCValid = cvcPattern.test(CVC);
-  const isExpireValid = expirePattern.test(Expire);
-  if(!isCardNumberValid){
-    setOpenSnackbar({
-      severity: 'warning',
-      message:
-        'Payment Wrong, card number incorrect.',
-      timestamp: new Date().getTime(),
-    });
-  }
-  else if (!isExpireValid || !isCVCValid || !isFnameValid || !isLnameValid){
-    setOpenSnackbar({
-      severity: 'warning',
-      message:
-        'Payment Wrong, card details incorrect.',
-      timestamp: new Date().getTime(),
-    });
-  }
+  };
+  // validate the card number, first name, last name, cvc, expire date
+  function validateInput(cardnumber, Fname, Lname, CVC, Expire) {
+    // use the regular expression to validate the input
+    const cardNumberPattern = /^\d{16}$/;
+    const namePattern = /^[A-Z]+$/;
+    const cvcPattern = /^\d{3}$/;
+    const expirePattern = /^(0[1-9]|1[0-2])\/(\d{2})$/;
 
-  // 返回布尔值，表示所有验证是否都通过
-  return isCardNumberValid && isFnameValid && isLnameValid && isCVCValid && isExpireValid;
-}
-
-  const pay =() => {
-    let confirm= validateInput(cardnumber, Fname, Lname, CVC, Expire);
-    if(confirm){
-      localStorage.setItem('payed','true');
+    // check the input is valid or not
+    const isCardNumberValid = cardNumberPattern.test(cardnumber);
+    const isFnameValid = namePattern.test(Fname);
+    const isLnameValid = namePattern.test(Lname);
+    const isCVCValid = cvcPattern.test(CVC);
+    const isExpireValid = expirePattern.test(Expire);
+    // if the card number is not valid, show the snackbar
+    if (!isCardNumberValid) {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Payment Wrong, card number incorrect.',
+        timestamp: new Date().getTime(),
+      });
+    }
+    // if other input is not valid, show the snackbar
+    else if (!isExpireValid || !isCVCValid || !isFnameValid || !isLnameValid) {
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'Payment Wrong, card details incorrect.',
+        timestamp: new Date().getTime(),
+      });
+    }
+    // the result only when all the input is valid is true
+    return (
+      isCardNumberValid &&
+      isFnameValid &&
+      isLnameValid &&
+      isCVCValid &&
+      isExpireValid
+    );
+  }
+  // when user try to pay, validate the input
+  const pay = () => {
+    // get the validate result
+    let confirm = validateInput(cardnumber, Fname, Lname, CVC, Expire);
+    // if card is correct
+    if (confirm) {
+      // set payed to true and return to the confirm page
+      localStorage.setItem('payed', 'true');
       navigate(-1);
     }
-  }
+  };
   return (
     <div className='payment'>
       <div className='payment-cont'>
         <div className='payment-header'>
-          <button className='payment-cancel' onClick={back}>Cancel Payment</button>
+          <button className='payment-cancel' onClick={back}>
+            Cancel Payment
+          </button>
         </div>
         <div className='payment-center'>
           <div className='CardName'>
             <div className='CardNum-payment'>
-              <label className='payment-title' >CARD NUMBER</label>
-              <input className='cardnuminput-payment' placeholder='0000 0000 0000 0000' value={cardnumber} onChange={(event)=>{setnumber(event.target.value)}}></input>
+              <label className='payment-title'>CARD NUMBER</label>
+              <input
+                className='cardnuminput-payment'
+                placeholder='0000 0000 0000 0000'
+                value={cardnumber}
+                onChange={(event) => {
+                  setnumber(event.target.value);
+                }}
+              ></input>
             </div>
             <div className='CardNum-payment'>
-              <label className='payment-title' >EXPIRY</label>
-              <input className='nameinput-payment' placeholder='MM/YY' value={Expire} onChange={(event)=>{setexpire(event.target.value)}}></input>
+              <label className='payment-title'>EXPIRY</label>
+              <input
+                className='nameinput-payment'
+                placeholder='MM/YY'
+                value={Expire}
+                onChange={(event) => {
+                  setexpire(event.target.value);
+                }}
+              ></input>
             </div>
           </div>
           <div className='CardName'>
             <div className='PartName'>
-              <label className='payment-title' >FIRST NAME</label>
-              <input className='nameinput-payment' placeholder='XXXX' value={Fname} onChange={(event)=>{setFname(event.target.value)}}></input>
+              <label className='payment-title'>FIRST NAME</label>
+              <input
+                className='nameinput-payment'
+                placeholder='XXXX'
+                value={Fname}
+                onChange={(event) => {
+                  setFname(event.target.value);
+                }}
+              ></input>
             </div>
             <div className='PartName'>
               <label className='payment-title'>FAMILY NAME</label>
-              <input className='nameinput-payment' placeholder='XXXX' value={Lname} onChange={(event)=>{setLname(event.target.value)}} ></input>
+              <input
+                className='nameinput-payment'
+                placeholder='XXXX'
+                value={Lname}
+                onChange={(event) => {
+                  setLname(event.target.value);
+                }}
+              ></input>
             </div>
             <div className='PartName'>
               <label className='payment-title'>CVC</label>
-              <input className='cvc-payment' placeholder='XXX' value={CVC} onChange={(event)=>{setCVC(event.target.value)}}></input>
+              <input
+                className='cvc-payment'
+                placeholder='XXX'
+                value={CVC}
+                onChange={(event) => {
+                  setCVC(event.target.value);
+                }}
+              ></input>
             </div>
           </div>
           <div className='Tot-part'>
             <p className='Tot-PAY'>Total Price</p>
             <p className='Tot-PAY'>${Price}</p>
           </div>
-          <button className='pay-button' onClick={pay}>Process payment</button>
+          <button className='pay-button' onClick={pay}>
+            Process payment
+          </button>
         </div>
       </div>
     </div>
   );
 };
+// this is the component for the user to browse a specific parking spot
 export function HomeSpecificLarge() {
-  const { _, setOpenSnackbar } = useError();
-  const { username, Spotid } = useParams();
-  const { contextState, updateContextState } = useContext(AppContext);
+  // set the snackbar to tell the user some system message
+  const { setOpenSnackbar } = useError();
+  // get the username and spot id from the url
+  const { username } = useParams();
+  // get the context state and update function
+  const { contextState } = useContext(AppContext);
+  // set the book way to the context state
   const [bookway, setbookway] = useState(contextState.BookWay);
+  // set the is booked to false
   const [isbook, setIsbook] = useState(false);
+  // initial the total price as 0
   const [TotalPrice, setTotalPrice] = useState(0);
+  // initial the owner not the same as the user
   const [sameOwner, setsameOwner] = useState(false);
+  // when close the book, set the isbook to false
   const closebook = () => {
     setIsbook(false);
   };
+  // when the user try to confirm the book
   const Confirm = () => {
+    // check whether the first duration is valid
     if (FirstStart === null || FirstEnd === null) {
+      // if not, show the snackbar
       setOpenSnackbar({
         severity: 'warning',
         message:
@@ -645,13 +742,14 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    // initial the temp object
     let temp = {
       Tid: Date.now().toString(), // unique id
       startDate: FirstStart,
       endDate: FirstEnd,
       distance: Firstdistance.toString(),
     };
-    console.log(FirstStart);
+    // if the car plate is empty, show the snackbar
     if (contextState.CarPlate === '') {
       setOpenSnackbar({
         severity: 'warning',
@@ -660,9 +758,11 @@ export function HomeSpecificLarge() {
       });
       return;
     }
+    // check whether all time intervals are valid
     let check_null = timeIntervals.find(
       (item) => item.startDate === null || item.endDate === null
     );
+    // if there exist some invalid time intervals, show the snackbar
     if (check_null) {
       setOpenSnackbar({
         severity: 'warning',
@@ -671,9 +771,9 @@ export function HomeSpecificLarge() {
       });
       return;
     }
-    console.log(timeIntervals);
+    // let the result intervals be the time intervals
     let resultIntervals = timeIntervals;
-    console.log(resultIntervals);
+    // update the data for creating the booking
     setdata((prevData) => ({
       ...prevData,
       BookingDuration: [temp, ...resultIntervals],
@@ -682,18 +782,17 @@ export function HomeSpecificLarge() {
         ? Number((TotalPrice * 0.15).toFixed(2))
         : TotalPrice,
     }));
-    console.log(timeIntervals);
-
+    // set the isbook to true
     setTimeout(() => {
       setIsbook(true);
       console.log(data);
     }, 300);
   };
-
+  // when the user change the book way
   const handlebookway = (event) => {
     setbookway(event.target.value);
   };
-
+  // setting the images for the slider
   var settings = {
     dots: true,
     infinite: true,
@@ -701,10 +800,12 @@ export function HomeSpecificLarge() {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-
+  // get all the pictures for the parking spot
   const [allpic, setallpic] = useState([]);
+  // get the token and current user
   let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
+  // initial the spot info
   const [info, setInfo] = useState({
     Pictures: '',
     Charge: 'None',
@@ -725,6 +826,7 @@ export function HomeSpecificLarge() {
     SpotType: '',
     AvailableTime: '',
   });
+  // initial the order information
   const [data, setdata] = useState({
     Street: '',
     City: '',
@@ -744,7 +846,10 @@ export function HomeSpecificLarge() {
     TotalPrice: 0,
     BookWay: '',
   });
+  // when the user try to select the car
   const CarSelect = () => {
+    // if the user is not logged in, go to the login page
+    // else, go to the car select page
     if (localStorage.token) {
       window.scrollTo(0, 0);
       let spotid = localStorage.getItem('spotID');
@@ -754,31 +859,163 @@ export function HomeSpecificLarge() {
       goesLoginUser();
     }
   };
+  // when the isbook changes, refresh the detail of the parking spot
   useEffect(() => {
+      // this function is used to calculate the total price
+  const getDetail = () => {
+    // get the current user
+    const currentname = localStorage.getItem('username') || null;
+    // get the spot id
+    const carId = localStorage.getItem('spotID');
+    // call the api to get the spot detail
+    callAPIGetSpecSpot('spot/' + carId)
+      .then((response) => {
+        // if the response is ok, set the info
+        console.log(response);
+        setInfo(response.message);
+        // phrase all the pictures for the slider
+        const res = JSON.parse(response.message.MorePictures);
+        // phrase the available time to the array
+        const avtime = JSON.parse(response.message.AvailableTime);
+        // set the data for the booking
+        setdata((prevData) => ({
+          ...prevData,
+          AvailableTime: avtime,
+          Charge: response.message.Charge,
+          Passway: response.message.PassWay,
+          SpotName: response.message.SpotName,
+          SpotType: response.message.SpotType,
+          Size: response.message.Size,
+          BookWay: bookway,
+        }));
+        // if the pictures is empty, set the pictures to the first picture
+        if (res.length === 0) {
+          res.unshift(response.message.Pictures);
+        }
+        // set the first picture to the main picture
+        res.unshift(response.message.Pictures);
+        // try to phrase the address
+        try {
+          // phrase the address
+          const ads = JSON.parse(response.message.SpotAddr);
+          // set the address to data
+          setdata((prevData) => ({
+            ...prevData,
+            Street: ads.Street,
+            City: ads.City,
+            Country: ads.Country,
+            State: ads.State,
+            Postcode: ads.Postcode,
+          }));
+        } catch (e) {
+          // if the address is not a json, set the address to the first address
+          // split the address
+          const ads = response.message.SpotAddr.split(',');
+          // set the address to data
+          setdata((prevData) => ({
+            ...prevData,
+            Street: ads[0],
+            City: ads[1],
+            Country: ads[0],
+            State: ads[1],
+            Postcode: ads[0],
+          }));
+        }
+        // set the pictures to show
+        setallpic(res);
+        // call the api to get the owner information
+        callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
+          .then((response) => {
+            // if the response is ok, set the owner information
+            console.log(response.message);
+            // if the owner is the current user, set the same owner to true
+            if (response.message.name === currentname) {
+              setsameOwner(true);
+            }
+            // set the owner information
+            setdata((prevData) => ({
+              ...prevData,
+              Profile: response.message.avatar,
+              Owner: response.message.name,
+            }));
+          })
+          // if the response is not ok, show the error
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        // tell the user that the spot is not found
+        setOpenSnackbar({
+          severity: 'warning',
+          message: error,
+          timestamp: new Date().getTime(),
+        });
+      });
+  };
     getDetail();
-    console.log(isbook);
-  }, [isbook]);
-  // 跳转车位选择页
-  // 调库
+  }, [isbook, bookway, username,setOpenSnackbar]);
+  // initial the navigation
   let navigate = useNavigate();
-  const location = useLocation(); // 获取当前的location对象
-  // 进入用户登录页面
+  // initial the location
+  // get current location
+  const location = useLocation();
+  // goes to the login page
   let goesLoginUser = () => {
     navigate(location.pathname + '/userlogin');
   };
-  // 进入用户注册页面
+  // goes to the register page
   let goesRegistUser = () => {
     navigate(location.pathname + '/userregist');
   };
+  // goes to the Home page
   let goesBack = () => {
+    // remove the spot id
     localStorage.removeItem('spotID');
+    // if the user is logged in, go to the user page
+    // else go to the home page
     if (localStorage.getItem('token')) {
       navigate('/' + localStorage.getItem('email'));
     } else {
       navigate('/');
     }
   };
+  // goes to the dashboard
+  let goesDashboard = () => {
+    navigate('/' + currentuser + '/dashboard');
+  };
+  // when the user click the logout button
+  let logout = () => {
+    // if the user is logged in, clear the local storage
+    if (localStorage.getItem('token')) {
+      localStorage.clear();
+      // if the user in the spot detail page, stay in the page
+      if (localStorage.getItem('spotID')) {
+        navigate('/tourists/detail/' + localStorage.getItem('spotID'));
+      } else {
+        // else, go to the home page
+        navigate('/');
+      }
+      // tell the user that the logout is successful
+      setOpenSnackbar({
+        severity: 'success',
+        message: 'Logout successful',
+        timestamp: new Date().getTime(),
+      });
+    }
+  };
+  // initialize the time intervals as empty
+  const [timeIntervals, setTimeIntervals] = useState([]);
+  // initialize the first start and end time as null
+  const [FirstStart, setFirstStart] = useState(null);
+  const [FirstEnd, setFirstEnd] = useState(null);
+  // initialize the distance as 0
+  const [Firstdistance, setDistance] = useState(0);
+  // when the time intervals change, calculate the total price
+  useEffect(() => {
+      // this function is used to calculate the total price
   const calculateTotalPrice = (distance) => {
+    // according to the book way, calculate the total price
     switch (bookway) {
       case 'H':
         return distance * info.PricePerHour;
@@ -790,100 +1027,7 @@ export function HomeSpecificLarge() {
         return 0; // Handle unexpected bookway values gracefully
     }
   };
-  let getDetail = () => {
-    const currentname = localStorage.getItem('username') || null;
-    const carId = localStorage.getItem('spotID');
-    callAPIGetSpecSpot('spot/' + carId)
-      .then((response) => {
-        console.log(response);
-        setInfo(response.message);
-        const res = JSON.parse(response.message.MorePictures);
-        const avtime = JSON.parse(response.message.AvailableTime);
-        setdata((prevData) => ({
-          ...prevData,
-          AvailableTime: avtime,
-          Charge: response.message.Charge,
-          Passway: response.message.PassWay,
-          SpotName: response.message.SpotName,
-          SpotType: response.message.SpotType,
-          Size: response.message.Size,
-          BookWay: bookway,
-        }));
-        if (res.length === 0) {
-          res.unshift(response.message.Pictures);
-        }
-        res.unshift(response.message.Pictures);
-        try {
-          const ads = JSON.parse(response.message.SpotAddr);
-          console.log(ads);
-          setdata((prevData) => ({
-            ...prevData,
-            Street: ads.Street,
-            City: ads.City,
-            Country: ads.Country,
-            State: ads.State,
-            Postcode: ads.Postcode,
-          }));
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setdata((prevData) => ({
-            ...prevData,
-            Street: ads[0],
-            City: ads[1],
-            Country: ads[0],
-            State: ads[1],
-            Postcode: ads[0],
-          }));
-        }
-        setallpic(res);
-        callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
-          .then((response) => {
-            console.log(response.message);
-            if (response.message.name === currentname) {
-              setsameOwner(true);
-            }
-            setdata((prevData) => ({
-              ...prevData,
-              Profile: response.message.avatar,
-              Owner: response.message.name,
-            }));
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
-        });
-      });
-  };
-  let goesDashboard = () => {
-    navigate('/' + currentuser + '/dashboard');
-  };
-  let logout = () => {
-    if (localStorage.getItem('token')) {
-      localStorage.clear();
-      if (localStorage.getItem('spotID')) {
-        navigate('/tourists/detail/' + localStorage.getItem('spotID'));
-      } else {
-        navigate('/');
-      }
-      setOpenSnackbar({
-        severity: 'success',
-        message: 'Logout successful',
-        timestamp: new Date().getTime(),
-      });
-    }
-  };
-  const [timeIntervals, setTimeIntervals] = useState([]);
-  const [FirstStart, setFirstStart] = useState(null);
-  const [FirstEnd, setFirstEnd] = useState(null);
-  const [Firstdistance, setDistance] = useState(0);
-  useEffect(() => {
+    // calculate the total time
     let res = CalculateAllTime(
       [
         {
@@ -897,10 +1041,13 @@ export function HomeSpecificLarge() {
       bookway
     );
     console.log(res);
+    // set the total distance as the sum of all the distance
     setDistance(GetDistanceAll(FirstStart, bookway, FirstEnd));
+    // set the total price for the booking
     setTotalPrice(calculateTotalPrice(res));
+    // set the total time for the booking
     console.log(timeIntervals);
-  }, [timeIntervals, FirstStart, FirstEnd, bookway]);
+  }, [timeIntervals, FirstStart, FirstEnd, bookway, info.PricePerHour, info.PricePerDay, info.PricePerWeek]);
   // change the first available date
   const FirstStartChange = (date) => {
     setFirstStart(date);
@@ -968,37 +1115,36 @@ export function HomeSpecificLarge() {
       prevIntervals.filter((interval) => interval.Tid !== id)
     );
   };
-
-  // 检查日期是否在任一可用时间段内
+  // check the interval is available or not
   const isInAvailableRange = (date) => {
+    // convert the date to dayjs
     const dateJS = dayjs(date);
+    // check the date is in one of the available range or not
     return data.AvailableTime.some((item) => {
+      // get the start and end date
       const start = dayjs(item.startDate).subtract(1, 'day');
       const end = dayjs(item.endDate).subtract(1, 'day');
       return dateJS.isSameOrAfter(start) && dateJS.isSameOrBefore(end);
     });
   };
-  // 开始日期的 shouldDisableDate 函数
+  // start date should be in the available range
   const DisabledStartDate = (date) => {
     return !isInAvailableRange(date);
   };
-
-  // 结束日期的 shouldDisableDate 函数，依赖于已选择的开始日期
+  // end date should be in the available range and after the start date
   const DisabledEndDate = (date, currentdate) => {
+    // if the start date is not selected, then return true
     if (!currentdate) return true;
+    // get the selected start range
     const selectedStartRange = data.AvailableTime.find(
       (item) =>
         currentdate.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
         currentdate.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
     );
-    data.AvailableTime.map((item) => {
-      // console.log(
-      //   FirstStart.isSameOrAfter(dayjs(item.startDate).subtract(1, 'day')) &&
-      //     FirstStart.isSameOrBefore(dayjs(item.endDate).subtract(1, 'day'))
-      // );
-    });
     // console.log(selectedStartRange);
+    // if the start date is not selected, then return true
     if (!selectedStartRange) return true;
+    // return the date is in the available range or not
     return (
       !dayjs(date).isSameOrAfter(currentdate) ||
       !dayjs(date).isSameOrBefore(
@@ -1019,7 +1165,7 @@ export function HomeSpecificLarge() {
         <button className='backgo' onClick={goesBack}>
           Back
         </button>
-        <img src='/img/LOGO.svg' className='Applogo'></img>
+        <img src='/img/LOGO.svg' className='Applogo' alt=''></img>
         {/* 登录注册按钮组 */}
         {token ? (
           <div className='signwarper'>
@@ -1109,7 +1255,7 @@ export function HomeSpecificLarge() {
       <div className='relevent-part'>
         <div className='relevent-left'>
           <div className='re-le-le'>
-            <img src={data.Profile} className='profile'></img>
+            <img src={data.Profile} className='profile' alt=''></img>
             <p className='user_name'>{data.Owner}</p>
           </div>
           <p className='provided'>Provided this car space</p>
@@ -1170,7 +1316,7 @@ export function HomeSpecificLarge() {
             <div className='TimeInterval-book'>
               <div className='IntervalContent-top'>
                 <div className='TimeBlock'>
-                  {bookway == 'H' ? (
+                  {bookway === 'H' ? (
                     <div className='timechoice-s-spec'>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
@@ -1202,7 +1348,7 @@ export function HomeSpecificLarge() {
                 </div>
                 <p className='TO'> - </p>
                 <div className='TimeBlock'>
-                  {bookway == 'H' ? (
+                  {bookway === 'H' ? (
                     <div className='timechoice-s-spec'>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
@@ -1242,7 +1388,7 @@ export function HomeSpecificLarge() {
               <div className='TimeInterval-book' key={interval.Tid}>
                 <div className='IntervalContent'>
                   <div className='TimeBlock'>
-                    {bookway == 'H' ? (
+                    {bookway === 'H' ? (
                       <div className='timechoice-s-spec'>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
@@ -1274,7 +1420,7 @@ export function HomeSpecificLarge() {
                   </div>
                   <p className='TO'> - </p>
                   <div className='TimeBlock'>
-                    {bookway == 'H' ? (
+                    {bookway === 'H' ? (
                       <div className='timechoice-s-spec'>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DateTimePicker
@@ -1361,7 +1507,7 @@ export function HomeSpecificLarge() {
               value={contextState.CarPlate}
             ></input>
 
-            <img src='/img/car.jpeg' className='carprofile'></img>
+            <img src='/img/car.jpeg' className='carprofile' alt=''></img>
             <button className='choose-car' onClick={CarSelect}>
               Select Your Car
             </button>
@@ -1371,7 +1517,7 @@ export function HomeSpecificLarge() {
       <div className='Review-part'>
         <p className='ReviewTitle'>Reviews</p>
         <div className='Review-row-odd'>
-          <img className='Review-left-img' src='/img/profile.png'></img>
+          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
           <div className='Review-right'>
             <div className='Review-top'>
               <p className='r-name'>boyang</p>
@@ -1389,7 +1535,7 @@ export function HomeSpecificLarge() {
           </div>
         </div>
         <div className='Review-row'>
-          <img className='Review-left-img' src='/img/profile.png'></img>
+          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
           <div className='Review-right'>
             <div className='Review-top'>
               <p className='r-name'>WangYun Fan</p>
@@ -1407,7 +1553,7 @@ export function HomeSpecificLarge() {
           </div>
         </div>
         <div className='Review-row-odd'>
-          <img className='Review-left-img' src='/img/profile.png'></img>
+          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
           <div className='Review-right'>
             <div className='Review-top'>
               <p className='r-name'>Guo Jia QI</p>
@@ -1423,7 +1569,7 @@ export function HomeSpecificLarge() {
           </div>
         </div>
         <div className='Review-row'>
-          <img className='Review-left-img' src='/img/profile.png'></img>
+          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
           <div className='Review-right'>
             <div className='Review-top'>
               <p className='r-name'>LongSi Zhuo</p>

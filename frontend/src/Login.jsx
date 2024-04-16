@@ -1,7 +1,7 @@
 import { useNavigate,useLocation } from 'react-router-dom';
 import './Login.css';
 import { useState,useEffect } from 'react';
-import { motion,AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { getUserInfo } from './components/API'
@@ -15,44 +15,47 @@ import {
     callAPILoginAdmin
   } from './API';
 
-  
-
-// 用户登录页面
+// user Login page
 export function UserLoginPage(){
-    const { _ , setOpenSnackbar } = useError();
+    // set the error message
+    const { setOpenSnackbar } = useError();
+    // location control
     let location = useLocation();
-    // 路由控制
+    // navigate control
     let navigate = useNavigate();
-    // 密码可见性
+    // initial password visibility to false
     const [passwordVisibility, setPasswordVisibility] = useState(false);
-    // 用户名密码状态记录
+    // initial the email and password
     const [Email,setEmail]=useState('');
     const [Password,setPassword]=useState('');
-    // 回到主页
+    // go back to the previous page
     let backhome = ()=>{
         navigate(-1);
     }
-    // 用户注册页
+    // go to the register page
     let goesRegist= ()=>{
+        // remove the last segment of the path
         const temp = removeLastSegment(location.pathname);
         console.log(temp);
         navigate(temp+'userregist');
     }
-    // 忘记密码页
+    // goes to the forget password page
     let forgetpassword = () => {
         navigate('/password');
     }
-    // 密码更改
+    // when the password is changed
     let passwordChange = (event) => {
         setPassword(event.target.value);
     }
-    // 邮箱更改
+    // when the email is changed
     let emailChange = (event) => {
         setEmail(event.target.value);
     }
-    // 检查登录
+    // when user try to login page
     function login(){
+        // if the email or password is empty or the password length is not between 6 and 16
         if(Password.length<6 || Password.length > 16 || Email===''){
+            // tell the user the email or password is invalid
             setOpenSnackbar({
                 severity: 'warning',
                 message:  'Invaild email or password.',
@@ -60,48 +63,59 @@ export function UserLoginPage(){
             });
         }
         else{
+            // initial the data
             const data={
                 email: Email,
                 password: Password
             }
+            // call the API to login the user
             callAPILoginUser('login',data)
             .then((response)=>{
+                // if the response is correct
                 console.log(response);
+                // tell the user the login is successful
                 setOpenSnackbar({
                     severity:'success',
                     message:'Welcome back SpotFinder ' + Email + '.',
                     timestamp:new Date().getTime()
                 });
+                // store the token, email and username in the local storage
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('email',Email);
+                // get the user information
                 getUserInfo().then((response)=>{
+                    // store the username in the local storage
                     localStorage.setItem('username',response.message.name);
                 }).catch((error)=>{
+                    // call the user can not get the user information
                     setOpenSnackbar({
                         severity:'error',
                         message:'Can not get user information.',
                         timestamp:new Date().getTime()
                     });
                 })
+                // if the spotID is stored in the local storage
                 if(localStorage.getItem('spotID')){
-                    navigate(`/${Email}` + '/detail/' + localStorage.getItem('spotID'));
+                    // goes to the spot detail page
+                    navigate('/' + Email + '/detail/' + localStorage.getItem('spotID'));
                 }
                 else{
+                    // goes to the Email page
                     navigate(`/${Email}`);
                 }
                 
             })
             .catch((error)=>{
+                // if the response is not correct
                 setOpenSnackbar({
                     severity:'warning',
                     message:error,
                     timestamp:new Date().getTime()
                 });
             })
-            console.log('not corect '+Password+' '+ Email);
         }
     }
-    // 登录页面设计
+    // login page design
     return(
         // 主体
         <div className='overall'>
@@ -126,7 +140,7 @@ export function UserLoginPage(){
                 {/* 其余内容 */}
                 <div className='contentmain'>
                     {/* logo */}
-                    <img src='/img/LOGO.svg' height={'100 px'} className='Logo'></img>
+                    <img src='/img/LOGO.svg' height={'100 px'} className='Logo' alt=''></img>
                     {/* 剩余内容 */}
                     <div className='LoginUser'>
                         {/* 欢迎语句 */}
@@ -153,7 +167,7 @@ export function UserLoginPage(){
                                     <label className="pwdsee" htmlFor="exampleCheck1">show password</label>
                                 </div>
                                 {/* 忘记密码 */}
-                                <a className='forget' onClick={forgetpassword}>Forget your password?</a>
+                                <p className='forget' onClick={forgetpassword}>Forget your password?</p>
                             </div>
                             {/* 登录按钮 */}
                             <button type="button" className="btn btn-primary logbtn" onClick={login}>SIGN IN</button>
@@ -161,7 +175,7 @@ export function UserLoginPage(){
                         {/* 尾部提示 */}
                         <div className='logbottom'>
                             <p className='welcomesub'>Do not have an account?</p>
-                            <a onClick={goesRegist} className='forget'>Click here to Sign up</a>
+                            <p onClick={goesRegist} className='forget'>Click here to Sign up</p>
                         </div>
                     </div>
                 </div>
@@ -169,56 +183,64 @@ export function UserLoginPage(){
         </div>
     )
 }
-// 用户忘记密码页面
+// forget password page
 export function UserLoginPageForgetPassword(){
+    // is button disabled
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     useEffect(() => {
-        let timeoutId;
-        // 在按钮可点击状态改变后，设置一个定时器来在 30 秒后将其重新设为可点击状态
+        // initialize a timeoutId
+        // when the button is disabled, set a timer to set it back to enabled after 30 seconds
         if (isButtonDisabled) {
-            timeoutId = setTimeout(() => {
+            // set the timeoutId
+            setTimeout(() => {
                 setIsButtonDisabled(false);
             }, 30000); // 30 秒
         }
     });
-    // 上下文错误
-    const { snackbarData, setOpenSnackbar } = useError();
+    // context error to notify the user
+    const { setOpenSnackbar } = useError();
     // 初始化路由切换器
+    // initialize the navigate
     let navigate = useNavigate();
-    // 验证器可见性，验证状态，是否验证错误
+    // verify visibility, verify status, is verify error
     const [verifyVisibility, setverifyVisibility] = useState(false);
     const [isverifyed, setisverifyed] = useState(false);
     const [isverifyError, setisverifyError] = useState(false);
-    // 两个密码可见性
+    // two password visibility
     const [passwordVisibility1, setPasswordVisibility1] = useState(false);
     const [passwordVisibility2, setPasswordVisibility2] = useState(false);
-    // 用户名
+    // initialize the username
     const [Email,setEmail]=useState('');
-    // 验证码
+    // initialize the code
     const [code,setCode]=useState('');
-    // 新密码和确认新密码
+    // initialize the new password and confirm new password
     const [Password1,setPassword1]=useState('');
     const [Password2,setPassword2]=useState('');
+    // handle the change of the email
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
       };
+    // handle the change of the code
     const handleCodeChange = (event) => {
-    setCode(event.target.value);
+        setCode(event.target.value);
     };
+    // handle the change of the password
     const handlePWD1Change = (event) => {
         setPassword1(event.target.value);
       };
+    // handle the change of the password
     const handlePWD2Change = (event) => {
         setPassword2(event.target.value);
     };
+    // back to the login page
     let backhome = ()=>{
         navigate(-1);
     }
-    let goesRegist= ()=>{
-        navigate('/userregist');
-    }
+    // when the user try to reset the password
     let resetPassword = () => {
+        // if the password is not between 6-16 characters
         if(Password1.length<6||Password1.length>16){
+            // open the snackbar to notify the user
             setOpenSnackbar({
                 severity:'warning',
                 message:'Password must be between 6-16 characters!',
@@ -226,7 +248,9 @@ export function UserLoginPageForgetPassword(){
             });
             return;
         }
+        // if the two passwords are inconsistent
         if (Password2 !== Password1) {
+            // open the snackbar to notify the user
             setOpenSnackbar({
                 severity:'warning',
                 message:'The two password inputs are inconsistent!',
@@ -234,14 +258,17 @@ export function UserLoginPageForgetPassword(){
             });
             return;
         }
+        // initialize the data
         const data={
             email: Email,
             password: Password1,
             repassword: Password2
         }
         console.log(data);
+        // call the api to reset the password
         callAPIResetPwdUser('user/modifyPasswd', data)
         .then((response)=>{
+            // when meet success
             console.log(response);
             // set open snackbar
             setOpenSnackbar({
@@ -249,11 +276,14 @@ export function UserLoginPageForgetPassword(){
               message: 'Password reset successful',
               timestamp: new Date().getTime()
             });
+            // navigate to the login page
             navigate(-1);
         })
+        // when meet error
         .catch((error)=>{
             // when meet error
             console.log(error);
+            // set open snackbar to notify the user
             setOpenSnackbar({
                 severity: 'error',
                 message: error,
@@ -261,8 +291,11 @@ export function UserLoginPageForgetPassword(){
             });
         })
     }
+    // when the user try to send the code
     function sendCode() {
+        // if the button is disabled
         if (isButtonDisabled) {
+            // open the snackbar to notify the user
             setOpenSnackbar({
                 severity:'info',
                 message:'Verification codes are sent too frequently',
@@ -270,13 +303,18 @@ export function UserLoginPageForgetPassword(){
             });
             return;
         }
+        // initialize the data
         const data = {
           to: Email,
         };
+        // call the api to send the email code
         callAPIsendEmailCode('user/create/sendEmail', data)
         .then((response)=>{
+            // when meet success
             console.log(response);
+            // set the visibility of the verify
             setverifyVisibility(true);
+            // set the button to disabled
             setIsButtonDisabled(true);
             // set open snackbar
             setOpenSnackbar({
@@ -295,20 +333,27 @@ export function UserLoginPageForgetPassword(){
             });
         })
       }
+    // when the user try to verify the email   
       function verifyEmail() {
+        // initialize the data
         const data = {
           code: code,
           email: Email,
         };
+        // log the data
         console.log(data);
         // call api to login
         callAPIverifyEmailCode('user/create/verifyEmail', data)
           .then((response) => {
+            // when meet success
             console.log(response);
             // set open snackbar
             setverifyVisibility(false);
+            // set the verify status
             setisverifyed(true);
+            // set the verify error to false
             setisverifyError(false);
+            // set open snackbar to notify the user
             setOpenSnackbar({
               severity: 'success',
               message: Email + ' has a been verifed!',
@@ -317,12 +362,12 @@ export function UserLoginPageForgetPassword(){
           })
           .catch((error) => {
             // when meet error
+            // tell the user the error
             setOpenSnackbar({
               severity: 'error',
               message: error,
               timestamp: new Date().getTime()
             });
-            console.log(error);
           });
       }
     return(
@@ -342,7 +387,7 @@ export function UserLoginPageForgetPassword(){
                     <button onClick={backhome} className='backbtn'>×</button>
                 </div>
                 <div className='contentmain'>
-                    <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+                    <img src='img/LOGO.svg' height={'100 px'} className='Logo' alt=''></img>
                     <div className='LoginUser'>
                         <p className='welcomemain'>We will reset your password for you</p>
                         <form className='w-100'>
@@ -408,66 +453,76 @@ export function UserLoginPageForgetPassword(){
     )
 }
 // 管理员登录页面
+// admin login page
 export function AdminLoginPage(){
-    const { _ , setOpenSnackbar } = useError();
-    // 路由控制
+    // initialize the snackbar
+    const { setOpenSnackbar } = useError();
+    // control the route
     let navigate = useNavigate();
-    // 密码可见性
+    // set the password visibility
     const [passwordVisibility, setPasswordVisibility] = useState(false);
     // 用户名密码状态记录
+    // record the email and password
     const [Email,setEmail]=useState('');
     const [Password,setPassword]=useState('');
-    // 回到主页
+    // go back to the home page
     let backhome = ()=>{
         navigate('/');
     }
-    // 管理员注册页
+    // goes to admin register page
     let goesRegistAdmin = () => {
         navigate('/adminregist');
     }
-    // 密码更改
+    // when the password changes
     let passwordChange = (event) => {
         setPassword(event.target.value);
     }
-    // 邮箱更改
+    // when the email changes
     let emailChange = (event) => {
         setEmail(event.target.value);
     }
-    // 检查登录
+    // check the login
     function login(){
+        // if the email or password length is not valid
         if(Password.length<6 || Password.length > 16 || Email===''){
+            // show the snackbar
             setOpenSnackbar({
                 severity: 'warning',
                 message:  'Invaild email or password.',
                 timestamp: new Date().getTime()
             });
         }
+        // if the email and password are valid
         else{
+            // initialize the data
             const data={
                 adminID: Email,
                 password: Password
             }
+            // call the api to login
             callAPILoginAdmin('manager/login',data)
             .then((response)=>{
+                // show the snackbar to welcome the user
                 console.log(response);
                 setOpenSnackbar({
                     severity:'success',
                     message:'Welcome to start your work for SpotFinder ' + Email + '.',
                     timestamp:new Date().getTime()
                 });
+                // store the token and admin id
                 localStorage.setItem('token',response.token);
                 localStorage.setItem('AdminId',Email);
-                
+                // navigate to the admin page
                 navigate(`/admin/${Email}`);
             })
             .catch((error)=>{
+                // show the snackbar to show the error
                 setOpenSnackbar({
                     severity:'warning',
                     message:error,
                     timestamp:new Date().getTime()
                 });
             })
-            console.log('not corect '+Password+' '+ Email);
         }
     }
     // 登录页面设计
@@ -495,7 +550,7 @@ export function AdminLoginPage(){
                 {/* 其余内容 */}
                 <div className='contentmain-admin'>
                     {/* logo */}
-                    <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+                    <img src='img/LOGO.svg' height={'100 px'} className='Logo' alt=''></img>
                     {/* 剩余内容 */}
                     <div className='LoginUser-admin'>
                         {/* 欢迎语句 */}
@@ -524,7 +579,7 @@ export function AdminLoginPage(){
                         {/* 尾部提示 */}
                         <div className='logbottom-admin'>
                             <p className='welcomesub'>Do not have an account?</p>
-                            <a onClick={goesRegistAdmin} className='forget'>Click here to Sign up</a>
+                            <p onClick={goesRegistAdmin} className='forget'>Click here to Sign up</p>
                         </div>
                     </div>
                 </div>

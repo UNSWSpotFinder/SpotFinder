@@ -1,33 +1,24 @@
-import logo from './logo.svg';
 import React, {
   useState,
   useEffect,
-  useRef,
-  ChangeEvent,
-  LabelHTMLAttributes,
-  createContext,
-  useContext,
-  ReactNode,
 } from 'react';
-import {HomePageLarge, HomePageAdminSmall, HomePageAdminLarge, HomePageSmall} from './HomePage';
+import {HomePageLarge, HomePageSmall} from './HomePage';
 import { UserRegistPage,AdminRegistPage } from './Regist';
-import { ErrorProvider, GlobalSnackbar, ErrorContext } from './API';
-import { BrowserRouter, Routes, Route, Link, useParams, useLocation, useNavigate } from 'react-router-dom';
+import { ErrorProvider, GlobalSnackbar } from './API';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import {AdminLoginPage,UserLoginPage,UserLoginPageForgetPassword } from './Login';
 import{
   CreateSpace, EditSpace
 } from './CarSpaceOperation';
 import{
-  CarSpaceChoice,
-  CarSpaceAdd,
-  CarSpaceEdit
+  CarSpaceChoice
 } from './CarInfo';
 import {
   HomeSpecificLarge,
   VisaPayment
 } from './SpecificSpot';
-// 导入Dashboard相关页面组件
+// import responding components for dashboard
 import DashboardTop from './components/DashboardTop';
 import Dashboard from './components/Dashboard';
 import Bookings from './components/Bookings';
@@ -36,13 +27,12 @@ import Profile from './components/Profile';
 import Messages from './components/Messages';
 import Vehicles from './components/Vehicles';
 import AdminDashboard from './components/AdminDashboard';
-import dayjs from 'dayjs';
 import {ManagerEditSpace, ManagerApproveEditSpace, ManagerProcessReport} from './CheckDetail';
-// 创建一个 Context 对象
+// create a context object
 export const AppContext = React.createContext();
-
+// define the App provider
 export const AppProvider = ({ children }) => {
-  // 保存信息的状态
+  // save the state of the information
   const [contextState, setContextState] = useState({
     order_rank_way: 0,
     score_rank_way: 0,
@@ -57,12 +47,11 @@ export const AppProvider = ({ children }) => {
     EndDay: null,
     Carlocation:''
   });
-
-  // 更新状态的方法
+  // refresh the state method
   const updateContextState = (newState) => {
     setContextState((prevState) => ({ ...prevState, ...newState }));
   };
-
+  // return the provider
   return (
     <AppContext.Provider value={{ contextState, updateContextState }}>
       {children}
@@ -70,43 +59,58 @@ export const AppProvider = ({ children }) => {
   );
 };
 
-
+// Main App component
 function App() {
+  // get the window width
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // use the effect to get the window width
   useEffect(() => {
-    // 添加一个事件监听器，以便在窗口大小改变时更新windowWidth状态
+    // add an event listener to update the windowWidth state when the window size changes
     const handleResize = () => {
+      // update the window width
       setWindowWidth(window.innerWidth);
     };
+    // add the event listener
     window.addEventListener('resize', handleResize);
-    // 清除事件监听器以避免内存泄漏
+    // clear the event listener to avoid memory leaks
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  let layoutComponentHost;
+  // define the layout components for Home page
+  // define the layout components for Host page
+  // define the layout components for Detail page
+  // let layoutComponentHost;
   let LayoutComponentHome;
   let LayoutDetail;
+  // if the window width is greater than 800px, use the large layout
   if (windowWidth > 800) {
-    layoutComponentHost = null;
+    // set all the layout components to large layout
+    // layoutComponentHost = null;
     LayoutComponentHome = <HomePageLarge/>;
     LayoutDetail = <HomeSpecificLarge/>;
-  } else {
-    layoutComponentHost = null;
+  } 
+  // if the window width is less than or equal to 800px, use the small layout
+  else {
+    // set all the layout components to small layout
+    // layoutComponentHost = null;
     LayoutComponentHome = <HomePageSmall/>;;
     LayoutDetail = <HomeSpecificLarge/>;
   }
+  // create a catch all route handler 
   const CatchAllRouteHandler = () => {
+    // get the current location
     let location = useLocation();
-    
+    // if the location is the user login page, render the user login page
     if (location.pathname.endsWith('/userlogin')) {
       return <UserLoginPage />;
     }
+    // if the location is the user registration page, render the user registration page
     if (location.pathname.endsWith('/userregist')) {
       return <UserRegistPage />;
     }
 
-    // Handle other cases or redirect
+    // Handle other cases or redirect to the home page
     return null;
   };
   return(
@@ -115,6 +119,7 @@ function App() {
         <GlobalSnackbar/>
           <BrowserRouter>
             <Routes>
+                {/* all module route */}
                 <Route path="/password" element={<UserLoginPageForgetPassword/>}/> 
                 <Route path='/:username/detail/:Spotid/Visa' element={<VisaPayment/>}/>
                 <Route path="/adminlogin"  element={<AdminLoginPage/>} />
@@ -126,6 +131,7 @@ function App() {
                 <Route path='/*' element={<CatchAllRouteHandler/>}/>
             </Routes>
             <Routes>
+              {/* all real route */}
               <Route path="/admin/:adminid" element={<AdminDashboard/>} />
               <Route path = "/:username/:adminid/:Spotid" element = {<ManagerEditSpace/>} />
               <Route path = "/:username/:adminid/Approve/:Spotid" element = {<ManagerApproveEditSpace/>} />
@@ -135,7 +141,7 @@ function App() {
               <Route path = "/:username/editspace/:Spotid" element = {<EditSpace/>} />
               <Route path = '/tourists/detail/*' element={LayoutDetail}/>
               <Route path = '/:username/detail/*' element={LayoutDetail}/>
-              {/* DashboardTop作为父路由 */}
+              {/* DashboardTop as father router */}
               <Route path="/:username/dashboard" element={<DashboardTop />}>
               <Route index element={<Dashboard />} />
               <Route path="bookings" element={<Bookings />} />

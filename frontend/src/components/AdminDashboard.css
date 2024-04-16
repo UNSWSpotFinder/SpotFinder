@@ -65,13 +65,13 @@ p.spot-name-detail{
     font-weight: 600;
     margin-left: 0px;
     color: #717171;
+    white-space: nowrap;    
 }
 p.space-location-report{
     padding: 0px;
     margin:  0px 0px 0px 8px;
     font-size: 12px;
     height: 34px;
-    max-width: 90%;
     margin-top: 0px;
     font-weight: 400;
     color: #404040;
