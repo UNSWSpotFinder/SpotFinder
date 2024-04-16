@@ -21,6 +21,8 @@ import {
   CalculateAllTime,
   callAPICreateOrder,
   callAPIGetAllreview,
+  callAPIGetSpecificVocher,
+  callAPIUseSpecificVocher,
 } from './API';
 import { withdrawAccount } from './components/API';
 import './SpecificSpot.css';
@@ -67,7 +69,7 @@ const CfmCenterContent = styled('div')({
   fontSize: '20px',
   margin: '0px',
   padding: '20px 0px 0px 0px',
-  height: '364px',
+  height: '310px',
   overflowY: 'scroll',
   textAlign: 'center',
   color: 'rgb(0, 0, 0)',
@@ -207,10 +209,18 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   const { contextState } = useContext(AppContext);
   // use the navigate to go to the user page
   const [Balance, setBalance] = useState('');
+  // store the discount
+  const [DisAccount, setDisAccount] = useState(0);
+  // whether use the discount
+  const [useDiscount,setUseDiscount]=useState(false);
   // initial the selectedOption state to 0
   // 0 means pay by balance
   // 1 means pay by visa card
   const [selectedOption, setSelectedOption] = useState('0');
+  // when the payment method is selected, the selectedOption state will be changed
+  const [theVocher, setTheVocher] = useState('');
+  // the final price
+  const [TotalPrice,setTotalPrice]=useState(0);
   // when the payment method is selected, the selectedOption state will be changed
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -225,19 +235,22 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // 在这里执行你的操作
     }
   };
+  // get token from the context
+  let token = localStorage.getItem('token') || null;
   // reload the page when the price or payment method is changed
   useEffect(() => {
+    setTotalPrice(data.TotalPrice-DisAccount<0?0:data.TotalPrice-DisAccount);
     // get the user balance
     getUserInfo()
       .then((response) => {
         // when the query is success, the user balance will be set
-        console.log(response.message.account);
-        setBalance(response.message.account);
+        console.log(response.message.Account);
+        setBalance(response.message.Account);
       })
       // when the query is failed, the error will be catched
       .catch((error) => {});
     // when the user balance is not enough and the payment method is SpotAccount, the topup state will be true
-    if (selectedOption === '0' && Balance - data.TotalPrice < 0) {
+    if (selectedOption === '0' && Balance - TotalPrice < 0) {
       // open the snackbar to remind the user to topup
       setOpenSnackbar({
         severity: 'warning',
@@ -255,7 +268,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // set the topup state to false
       settp(false);
     }
-  }, [Balance, data.TotalPrice, isOpen, selectedOption, setOpenSnackbar]);
+  }, [Balance, data.TotalPrice, isOpen, selectedOption, setOpenSnackbar, DisAccount,TotalPrice]);
   // when the user pay by visa card, waiting for payment
   // when the payment state is changed, the confirm state will be changed
   useEffect(() => {
@@ -282,7 +295,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         let tempdata = {
           bookingTime: temp,
           carID: Number(localStorage.getItem('carId')),
-          cost: data.TotalPrice,
+          cost: TotalPrice,
         };
         // call the api to create the order
         callAPICreateOrder(
@@ -312,7 +325,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     }
     // after the payment, the payed value will be removed
     localStorage.removeItem('payed');
-  }, [localStorage.getItem('payed'), data, setOpenSnackbar]);
+  }, [localStorage.getItem('payed'), data, setOpenSnackbar, TotalPrice]);
   // initial the navigate function
   const navigate = useNavigate();
   // get the username and Spot id from the url
@@ -322,6 +335,40 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     navigate('/' + localStorage.getItem('email') + '/dashboard/bookings');
     localStorage.removeItem('payed');
   };
+  // try to got the vocher
+  const VerifyVocher = () => {
+    console.log(token);
+    callAPIGetSpecificVocher('vouchers/info/' + theVocher, token)
+    .then((response)=>{
+      console.log(response);
+      if(response.value && response.used === false){
+        setOpenSnackbar({
+          severity: 'success',
+          message: 'Voucher is valid got discount $' + response.value + '.',
+          timestamp: new Date().getTime(),
+        });
+        if(response.value > data.TotalPrice){
+          response.value = data.TotalPrice-1;
+        }
+        setDisAccount(response.value);
+        setUseDiscount(true);
+      }
+      else{
+        setOpenSnackbar({
+          severity: 'warning',
+          message: 'Voucher is invalid.',
+          timestamp: new Date().getTime(),
+        });
+      }
+    })
+    .catch((error)=>{
+      setOpenSnackbar({
+        severity: 'warning',
+        message: error,
+        timestamp: new Date().getTime(),
+      });
+    })
+  }
   // go to the topup page
   const goesTopUp = () => {
     navigate('/' + localStorage.getItem('email') + '/dashboard');
@@ -336,7 +383,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   // this function used when the user click the confirm button
   const ReverseBook = () => {
     // if the user balance is not enough and the payment method is SpotAccount, the snackbar will be opened
-    if (selectedOption === 0 && Balance - data.TotalPrice < 0) {
+    if (selectedOption === 0 && Balance - TotalPrice < 0) {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Your available balance is not enough, please Topup',
@@ -357,14 +404,14 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     let tempdata = {
       bookingTime: temp,
       carID: Number(localStorage.getItem('carId')),
-      cost: data.TotalPrice,
+      cost: TotalPrice,
     };
     // set the can order state to true
     setcanOrder(true);
     // if the payment method is Visa Card
     if (selectedOption === '1') {
       // set the payprice to be the total price
-      localStorage.setItem('Payprice', data.TotalPrice);
+      localStorage.setItem('Payprice', TotalPrice);
       // go to the visa payment page
       navigate('/' + username + '/detail/' + Spotid + '/Visa');
       return;
@@ -375,35 +422,47 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       localStorage.getItem('token'),
       tempdata
     )
-      .then((response) => {
-        // if the query is success, the snackbar will be opened
-        setOpenSnackbar({
-          severity: 'success',
-          message: 'You successfully pay your order!Thank you.',
-          timestamp: new Date().getTime(),
-        });
-        // if the payment method is SpotAccount
-        // deduct the balance
-        if (selectedOption === '0') {
-          withdrawAccount(data.TotalPrice);
-        }
-        // set the confirm state to true
-        setConfirmState(true);
-        // set the can order state to false
-        setcanOrder(false);
-        return;
-      })
-      .catch((error) => {
-        // if the query is failed, the snackbar will be opened
-        setOpenSnackbar({
-          severity: 'warning',
-          message: 'There exist some error, please try again.',
-          timestamp: new Date().getTime(),
-        });
-        // set the can order state to false
-        setcanOrder(false);
-        return;
+    .then((response) => {
+      // if the query is success, the snackbar will be opened
+      setOpenSnackbar({
+        severity: 'success',
+        message: 'You successfully pay your order!Thank you.',
+        timestamp: new Date().getTime(),
       });
+      // if the payment method is SpotAccount
+      // deduct the balance
+      if (selectedOption === '0') {
+        withdrawAccount(TotalPrice);
+      }
+      if(useDiscount){
+        callAPIUseSpecificVocher('vouchers/use/' + theVocher, token)
+        .then((response)=>{
+          setDisAccount(0);
+          setUseDiscount(false);
+          setTheVocher('');
+          console.log(response);
+        })
+        .catch((error)=>{
+          console.log(error);
+        })
+      }
+      // set the confirm state to true
+      setConfirmState(true);
+      // set the can order state to false
+      setcanOrder(false);
+      return;
+    })
+    .catch((error) => {
+      // if the query is failed, the snackbar will be opened
+      setOpenSnackbar({
+        severity: 'warning',
+        message: 'There exist some error, please try again.',
+        timestamp: new Date().getTime(),
+      });
+      // set the can order state to false
+      setcanOrder(false);
+      return;
+    });
   };
   let conponment = (
     <div className='CfmAll'>
@@ -485,7 +544,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         </CfmCenterContent>
         <CfmRowP>
           <CfmLefttxt>Total Price</CfmLefttxt>
-          <CfmRightttxt>${String(data.TotalPrice)}</CfmRightttxt>
+          <CfmRightttxt>${String(TotalPrice)}</CfmRightttxt>
         </CfmRowP>
         <div className='payment-part'>
           <p className='payment_method'>Select your payment method</p>
@@ -506,10 +565,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           <div className='balance-part'>
             <CfmLefttxt>Your Available Balance</CfmLefttxt>
             <p className='balance-value'>
-              ${Number(Balance).toFixed(2) + ' - $' + data.TotalPrice}
+              ${Number(Balance).toFixed(2) + ' - $' + data.TotalPrice + ' - $' + DisAccount}
             </p>
             <p className='balance-value'>
-              ${Number(Balance).toFixed(2) - data.TotalPrice}
+              ${(Number(Balance) - TotalPrice).toFixed(2)}
             </p>
           </div>
         )}
@@ -521,6 +580,11 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             <p className='balance-value'>{'BPay'}</p>
           </div>
         )}
+        <div className='vochar-part'>
+          <CfmLefttxt>{'Vocher Code(if applicatable)'}</CfmLefttxt>
+          <input className='vorcher-inp' maxLength={8} value={theVocher} onChange={(event)=>{setTheVocher(event.target.value);setUseDiscount(false);setDisAccount(0);}}></input>
+          <button disabled={useDiscount} className='verify-vocher' onClick={VerifyVocher}>{useDiscount?'$'+DisAccount + ' Discount':'Verify'}</button>
+        </div>
         <CfmBottom>
           {(selectedOption === '1' || !topup) && (
             <ReserveConfirm
@@ -535,7 +599,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
             >
               {ConfirmState
                 ? 'Goes to view your Booking'
-                : 'Pay for $' + String(data.TotalPrice) + ' AUD'}
+                : 'Pay for $' + String(TotalPrice) + ' AUD'}
             </ReserveConfirm>
           )}
           {selectedOption === '0' && topup && (
@@ -544,7 +608,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
                 goesTopUp();
               }}
             >
-              {'Goes to TopUp'}
+            {'Goes to TopUp'}
             </ReserveConfirm>
           )}
         </CfmBottom>

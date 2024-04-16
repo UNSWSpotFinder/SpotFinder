@@ -849,3 +849,79 @@ export const callAPIGetAllreview = (path) => {
       });
   });
 };
+// the api to get a specific vocher
+export const callAPIGetSpecificVocher = (path, token) => {
+  return new Promise((resolve, reject) => {
+    console.log('http://localhost:' + String(port) + '/' + String(path));
+    fetch('http://localhost:' + String(port) + '/' + String(path), {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${String(token)}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          return response.json().then((data) => resolve(data));
+        } else if (response.status === 404) {
+          let errorReason = 'Voucher not found.';
+          reject(errorReason);
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response
+            .json()
+            .then((data) => {
+              console.log(data.error);
+              let errorReason = 'Voucher has been used.';
+              reject(errorReason);
+            })
+            .catch((error) => {
+              console.log(error);
+              reject(new Error('Error parsing response JSON.'));
+            });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+};
+// the api to use a specific vocher
+export const callAPIUseSpecificVocher = (path, token) => {
+  return new Promise((resolve, reject) => {
+    console.log('http://localhost:' + String(port) + '/' + String(path));
+    fetch('http://localhost:' + String(port) + '/' + String(path), {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${String(token)}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          return response.json().then((data) => resolve(data));
+        } else if (response.status === 404) {
+          let errorReason = 'Voucher not found.';
+          reject(errorReason);
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response
+            .json()
+            .then(() => {
+              let errorReason = 'Voucher has been used.';
+              reject(errorReason);
+            })
+            .catch(() => {
+              reject(new Error('Error parsing response JSON.'));
+            });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+};
