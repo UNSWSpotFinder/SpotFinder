@@ -5,7 +5,6 @@ import './Messages.css';
 
 const Messages = () => {
   const [ws, setWs] = useState(null);
-  const [content, setContent] = useState('');
   // const [receiverID, setReceiverID] = useState('');
   const [, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
 
@@ -157,10 +156,6 @@ const Messages = () => {
     }));
   };
 
-  // 生成对话框的唯一键
-  const getParticipantsKey = (message) => {
-    return [message.content.SenderID, message.content.ReceiverID].sort().join('-');
-  };
 
 
   const renderConversations = () => {

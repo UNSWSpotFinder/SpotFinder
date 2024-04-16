@@ -52,28 +52,25 @@
 
 .message-row {
   display: flex;
-  align-items: flex-start; /* 对齐到顶部 */
-  margin-bottom: 10px; /* 添加一些底部间隔 */
+  align-items: flex-start;
+  margin-bottom: 10px;
 }
 
-.receiver-info{
-  
-}
 
 .avatar {
-  width: 40px; /* 头像的宽度 */
-  height: 40px; /* 头像的高度 */
-  margin-right: 10px; /* 添加一些右侧间隔 */
-  border-radius: 20px; /* 圆形头像 */
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 20px;
 }
 
 .message-container {
   display: flex;
   justify-content: space-between;
-  flex: 1; /* 让消息容器填充剩余空间 */
+  flex: 1;
   padding: 8px;
-  background-color: #f4f4f4; /* 轻微的背景色 */
-  border-radius: 12px; /* 圆角边框 */
+  background-color: #f4f4f4;
+  border-radius: 12px;
 }
 
 .message-sent, .message-received {
