@@ -10,6 +10,7 @@ import (
 	"capstone-project-9900h14atiktokk/Service/Spots"
 	"capstone-project-9900h14atiktokk/Service/User"
 	"capstone-project-9900h14atiktokk/Service/Vehicle"
+	"capstone-project-9900h14atiktokk/Service/Voucher"
 	"capstone-project-9900h14atiktokk/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -99,6 +100,10 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	manager.GET("/manager/spots", Manager.GetLengthOfSpotsHandler)
 	manager.GET("/manager/orders", Manager.GetLengthOfOrdersHandler)
 	manager.GET("/manager/managers", Manager.GetLengthOfManagerHandler)
+	manager.POST("/vouchers/generate", Voucher.GenerateAndInsertVouchers)
+	manager.GET("/vouchers/random", Voucher.GetVoucherHandler)
+	manager.PUT("/vouchers/use/:code", Voucher.UseVoucherHandler)
+	manager.GET("/vouchers/info/:code", Voucher.GetInfoOfVoucherHandler)
 	return r
 
 }

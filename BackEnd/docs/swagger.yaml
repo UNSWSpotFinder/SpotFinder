@@ -759,6 +759,8 @@ paths:
           description: Failed to calculate total spots
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get the total number of spots
       tags:
       - Manager
@@ -1484,6 +1486,118 @@ paths:
       summary: 提现
       tags:
       - User
+  /vouchers/generate:
+    post:
+      consumes:
+      - application/json
+      description: GenerateAndInsertVouchers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vouchers generated and inserted successfully
+          schema:
+            type: string
+        "500":
+          description: Failed to generate and insert vouchers
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: GenerateAndInsertVouchers
+      tags:
+      - Voucher
+  /vouchers/info/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get information of a voucher
+      parameters:
+      - description: Voucher code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return the value and used status of the voucher
+          schema:
+            type: string
+        "404":
+          description: Voucher not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get information of a voucher
+      tags:
+      - Voucher
+  /vouchers/random:
+    get:
+      consumes:
+      - application/json
+      description: 从数据库中随机选择一个未发放且未使用的优惠券
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return a voucher
+          schema:
+            type: string
+        "404":
+          description: No available voucher found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 随机返回一个未发放且未使用的优惠券
+      tags:
+      - Voucher
+  /vouchers/use/{code}:
+    put:
+      consumes:
+      - application/json
+      description: 使用优惠券
+      parameters:
+      - description: Voucher code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Voucher used successfully
+          schema:
+            type: string
+        "403":
+          description: Voucher has been used
+          schema:
+            type: string
+        "404":
+          description: Voucher not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 使用优惠券
+      tags:
+      - Voucher
   /ws:
     get:
       consumes:

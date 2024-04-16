@@ -55,7 +55,7 @@ func CreateReviewHandler(c *gin.Context) {
 
 	// Get the order from the database
 	var order Models.OrderBasic
-	if err := Service.DB.First(&order, orderID).Error; err != nil {
+	if err := Service.DB.Preload("Spot").First(&order, orderID).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Order not found"})
 		return
 	}
@@ -69,6 +69,20 @@ func CreateReviewHandler(c *gin.Context) {
 		Comment: req.Content,
 	}
 
+	spot := order.Spot // 已预加载Spot
+
+	var totalReviews int64
+
+	// review中的评分将会影响车位的评分
+	if err := Service.DB.Model(&Models.Review{}).Where("spot_id = ?", order.SpotID).Count(&totalReviews).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count reviews"})
+		return
+	}
+	newRate := (spot.Rate*float64(spot.OrderNum) + float64(req.Rating)) / float64(spot.OrderNum+1)
+	if err := Service.DB.Model(&spot).Update("rate", newRate).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update spot rating"})
+		return
+	}
 	// Save the review to the database
 	if err := Service.DB.Create(&review).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
