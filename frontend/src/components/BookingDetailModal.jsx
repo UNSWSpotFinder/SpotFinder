@@ -9,7 +9,7 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
   const [carInfo, setCarInfo] = useState(null);
   const [loadingCarInfo, setLoadingCarInfo] = useState(true);
 
-  // 解析地址
+  // parse address
   function parseAddress(spotAddr) {
     try {
       const address = JSON.parse(spotAddr);
@@ -19,19 +19,18 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
     }
   }
 
-  // 解析时间
+  // parse booking time
   function formatBookingTime(bookingTimeJson) {
     try {
       const bookingTimeArray = JSON.parse(bookingTimeJson);
       if (bookingTimeArray.length > 0) {
         const { startDate, endDate } = bookingTimeArray[0];
-        // 为格式化函数指定时区选项
         const options = {
           day: '2-digit', month: '2-digit', year: 'numeric',
           hour: '2-digit', minute: '2-digit', hour12: false,
-          timeZone: 'UTC' // 指定时区为UTC
+          timeZone: 'UTC' // Time zone set to UTC
         };
-        // 转换并格式化时间
+        // format time to local time
         const formattedStart = new Date(startDate).toLocaleString('en-AU', options);
         const formattedEnd = new Date(endDate).toLocaleString('en-AU', options);
         return `${formattedStart} - ${formattedEnd}`;
@@ -55,7 +54,7 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
   }, [spotInfo]); 
 
 
-  // 获取车辆信息
+  // get vehicles info
   useEffect(() => {
     const fetchCarInfo = async () => {
       try {
@@ -64,7 +63,7 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
         console.log('Car Info:', response.car);
         setCarInfo(response.car);
       } catch (error) {
-        // 如果发生错误，则假设车辆已被删除
+        // If an error occurs, the vehicle has been deleted
         setCarInfo('This car has been deleted');
       } finally {
         setLoadingCarInfo(false);
@@ -80,15 +79,15 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
   return (
     <div className="orders-modal-overlay">
       <div className="orders-modal-content">
-        {/* 标题区域 */}
+        {/* title part */}
         <div className="orders-modal-header">
           <div className='booking-detail-title'>Booking Details</div>
           <button onClick={closeBookingDetailModal} className="close-btn">✖</button>
         </div>
-        {/* 车位信息区域 */}
+        {/* spot info part */}
         <div className='spot-info-container'>
           <div className="spot-info-top">
-            {/* 左侧的名称、地址、类型、缩略图、轮播图 */}
+            {/* left part:title,addr,type,thumbnail,carousel */}
             <div className="left-spot-details">
               <div className='spot-thumbnail'>
                 <img src={spotInfo.Pictures} alt="Thumbnail" />
@@ -97,10 +96,10 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
               <div className='spot-address'>{parseAddress(spotInfo.SpotAddr)}</div>
               <div className='spot-type'>Fit to {spotInfo.SpotType}</div>
               <div className='way-to-access'>{spotInfo.PassWay}</div>
-              {/* TODO:轮播图 */}
+              {/* TODO:carousel */}
               {/* <div className="carousel-container"></div> */}
             </div>         
-            {/* 右侧的provider信息 */}
+            {/* right part: provider info */}
             <div className="right-provider-info">
               <div className='provider-avatar'>
                 <img src={providerInfo.avatar} alt="Provider avatar" />
@@ -123,8 +122,6 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
           </div>
           </div>
           <div className='spot-info-bottom'>
-            {/* <div className='way-to-access'>Indoor lot</div>
-            <div className='way-to-access'>Keys</div> */}
           </div>
         </div>
       </div>

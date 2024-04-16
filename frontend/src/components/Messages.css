@@ -9,5 +9,30 @@
 .msg-header{
     display: flex;
     justify-content: space-between;
+}
 
+.toggle-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+.msg-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.notification-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    background-color: whitesmoke;
+    padding: 10px;
+}
+
+.conversation{
+    background-color: whitesmoke;
+    margin-bottom: 10px;
 }
