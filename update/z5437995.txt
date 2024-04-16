@@ -43,3 +43,7 @@ March 12, 2024
 
 April 14, 2024
 修改了Message的发送方式，现在是由manager发送给user，而不是user发送给user
+
+April 15, 2024
+创建了review的功能 #105
+添加了review的功能，现在可以对车位进行评价了

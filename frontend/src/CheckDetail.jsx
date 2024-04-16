@@ -24,7 +24,7 @@ import {
   callAPIEditSpot,
   callAPIApproveSpot,
   callAPIBlockSpot,
-  callAPIHiddenSpot,
+  callAPIHiddenSpot
 } from './API';
 import {callAPIsolved} from './components/API'
 const CfmContent = styled('div')({
@@ -168,7 +168,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
   // get the set open snackbar function
   const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
-  const [Feedback, setFeedback] = useState('');
+  const [Feedback, setFeedback] = useState('No change, Default Approval.');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -184,7 +184,8 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
-    SendAllKindFeedback(data.Owner,Feedback);
+    let WholeFeedback = 'Your Spot named ' + data.spotName +' has been edit and Published. Because ' + Feedback;
+    SendAllKindFeedback(data.Owner,WholeFeedback);
     navigate('/admin/' + adminid);
     
   };
@@ -256,7 +257,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
 };
 export const EditCheck = ({ data, isOpen, close }) => {
   console.log(data);
-  const [Feedback, setFeedback] = useState('No change, Default Approval.');
+  const [Feedback, setFeedback] = useState('No change.');
   const { adminid, Spotid, Reportid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -272,7 +273,8 @@ export const EditCheck = ({ data, isOpen, close }) => {
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
-    SendAllKindFeedback(data.Owner,Feedback);
+    let WholeFeedback = 'Your Spot named '+data.spotName +' has been Edited. Because ' + Feedback;
+    SendAllKindFeedback(data.Owner,WholeFeedback);
     if(Reportid){
       callAPIsolved(Reportid).then(()=>{
         navigate('/admin/' + adminid);
@@ -337,9 +339,9 @@ export const EditCheck = ({ data, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 // 删除
-export const DeleteCheck = ({ Owner, isOpen, close }) => {
+export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
   const { adminid, Spotid, Reportid } = useParams();
-  const [Feedback, setFeedback] = useState('No change, Default Approval.');
+  const [Feedback, setFeedback] = useState('The spot is not suitable for our platform.');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -354,7 +356,8 @@ export const DeleteCheck = ({ Owner, isOpen, close }) => {
       message: 'Spot has been Blocked! All user would never see it.',
       timestamp: new Date().getTime(),
     });
-    SendAllKindFeedback(Owner,Feedback);
+    let WholeFeedback = 'Your Spot named '+ spotName +' has been Blocked. Because ' + Feedback;
+    SendAllKindFeedback(Owner,WholeFeedback);
     if(Reportid){
       callAPIsolved(Reportid).then(()=>{
         navigate('/admin/' + adminid);
@@ -413,9 +416,9 @@ export const DeleteCheck = ({ Owner, isOpen, close }) => {
   );
   return isOpen ? conponment : null;
 };
-export const HiddenCheck = ({Owner, isOpen, close }) => {
+export const HiddenCheck = ({spotName, Owner, isOpen, close }) => {
   const { adminid, Spotid, Reportid } = useParams();
-  const [Feedback, setFeedback] = useState('Default Blocked.');
+  const [Feedback, setFeedback] = useState('The spot has many problems, please fix it. Thank you.');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -430,7 +433,8 @@ export const HiddenCheck = ({Owner, isOpen, close }) => {
       message: 'Spot has been Hidden! You can republish it later.',
       timestamp: new Date().getTime(),
     });
-    SendAllKindFeedback(Owner,Feedback);
+    let WholeFeedback = 'Your Spot named '+ spotName +' has been Hidden. Because ' + Feedback;
+    SendAllKindFeedback(Owner,WholeFeedback);
     if(Reportid){
       callAPIsolved(Reportid).then((response)=>{
         navigate('/admin/' + adminid);
@@ -474,7 +478,7 @@ export const HiddenCheck = ({Owner, isOpen, close }) => {
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
-          <textarea className='Feedback'></textarea>
+          <textarea className='Feedback' value={Feedback} onChange={(event)=>{setFeedback(event.target.value)}}></textarea>
         </CfmRowCol>
         <ReserveConfirmgray
           onClick={() => {

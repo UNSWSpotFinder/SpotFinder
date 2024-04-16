@@ -598,3 +598,211 @@ export const getReviews = (spotID) => {
     });
   });
 };
+
+// get number of spots of the platform(get)
+export const callAPIgetNumberSpots = () => {
+  const endpoint = `${baseUrl}/manager/spots`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get number of spots of the platform(get)
+export const callAPIgetNumberSpotsAv = () => {
+  const endpoint = `${baseUrl}/manager/spots?is_visible=1`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get number of spots of the platform(get)
+export const callAPIgetNumberSpotsHd = () => {
+  const endpoint = `${baseUrl}/manager/spots?is_visible=0`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the number of order of the platform(get)
+export const callAPIgetNumberOrdersComp = () => {
+  const endpoint = `${baseUrl}/manager/orders?status=Completed`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the number of order of the platform(get)
+export const callAPIgetNumberOrdersNow = () => {
+  const endpoint = `${baseUrl}/manager/orders?status=Pending`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the number of order of the platform(get)
+export const callAPIgetNumberOrders = () => {
+  const endpoint = `${baseUrl}/manager/orders`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the number of managers of the platform(get)
+export const callAPIgetNumberManager = () => {
+  const endpoint = `${baseUrl}/manager/managers`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the number of users of the platform(get)
+export const callAPIgetNumberUser = () => {
+  const endpoint = `${baseUrl}/manager/users`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+// get the total earning of the platform(get)
+export const callAPIgetTotalEarning = () => {
+  const endpoint = `${baseUrl}/manager/statistics`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};

@@ -610,6 +610,76 @@ paths:
       summary: 管理员登陆
       tags:
       - Manager
+  /manager/managers:
+    get:
+      consumes:
+      - application/json
+      description: Get the total number of managers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate total managers
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the total number of managers
+      tags:
+      - Manager
+  /manager/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get the total number of orders, with optional filtering based on
+        status
+      parameters:
+      - description: Filter orders by status (Pending, Completed, Cancelled, Refund)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate total orders
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the total number of orders
+      tags:
+      - Manager
+  /manager/populate-daily-costs:
+    post:
+      consumes:
+      - application/json
+      description: collect daily costs from order_basics table and populate them into
+        daily_order_costs table
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Daily order costs populated successfully
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate daily order costs
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: '!!!DO NOT USE THIS API DIRECTLY!!!'
+      tags:
+      - Manager
   /manager/report:
     get:
       consumes:
@@ -663,6 +733,58 @@ paths:
       summary: 处理举报
       tags:
       - Report
+  /manager/spots:
+    get:
+      consumes:
+      - application/json
+      description: Get the total number of spots, with optional filtering based on
+        visibility and block status
+      parameters:
+      - description: Filter spots by visibility
+        in: query
+        name: is_visible
+        type: string
+      - description: Filter spots by block status
+        in: query
+        name: is_blocked
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate total spots
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the total number of spots
+      tags:
+      - Manager
+  /manager/statistics:
+    get:
+      consumes:
+      - application/json
+      description: Get the total cost and daily cost of orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate total cost
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the total cost and daily cost of orders
+      tags:
+      - Manager
   /manager/unblock/{spotId}:
     put:
       consumes:
@@ -688,6 +810,27 @@ paths:
       security:
       - BearerAuth: []
       summary: 把车位unban掉
+      tags:
+      - Manager
+  /manager/users:
+    get:
+      consumes:
+      - application/json
+      description: Get the total number of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Failed to calculate total users
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the total number of users
       tags:
       - Manager
   /order/{orderID}:
@@ -1343,6 +1486,118 @@ paths:
       summary: 提现
       tags:
       - User
+  /vouchers/generate:
+    post:
+      consumes:
+      - application/json
+      description: GenerateAndInsertVouchers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vouchers generated and inserted successfully
+          schema:
+            type: string
+        "500":
+          description: Failed to generate and insert vouchers
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: GenerateAndInsertVouchers
+      tags:
+      - Voucher
+  /vouchers/info/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get information of a voucher
+      parameters:
+      - description: Voucher code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return the value and used status of the voucher
+          schema:
+            type: string
+        "404":
+          description: Voucher not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get information of a voucher
+      tags:
+      - Voucher
+  /vouchers/random:
+    get:
+      consumes:
+      - application/json
+      description: 从数据库中随机选择一个未发放且未使用的优惠券
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return a voucher
+          schema:
+            type: string
+        "404":
+          description: No available voucher found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 随机返回一个未发放且未使用的优惠券
+      tags:
+      - Voucher
+  /vouchers/use/{code}:
+    put:
+      consumes:
+      - application/json
+      description: 使用优惠券
+      parameters:
+      - description: Voucher code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Voucher used successfully
+          schema:
+            type: string
+        "403":
+          description: Voucher has been used
+          schema:
+            type: string
+        "404":
+          description: Voucher not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: 使用优惠券
+      tags:
+      - Voucher
   /ws:
     get:
       consumes:

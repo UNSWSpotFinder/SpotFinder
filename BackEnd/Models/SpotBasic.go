@@ -15,7 +15,7 @@ type SpotBasic struct {
 	IsVisible bool `gorm:"type:boolean;not null"`
 	IsBlocked bool `gorm:"type:boolean;default:false"`
 	// TODO: 改成float
-	Rate uint `gorm:"type:int"`
+	Rate float64 `gorm:"type:float;not null"`
 	//How to get here
 	PassWay string `gorm:"type:text;not null"`
 	// 可以被停车的车辆类型

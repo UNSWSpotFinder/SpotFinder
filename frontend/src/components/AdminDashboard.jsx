@@ -6,6 +6,15 @@ import {
   getAllNotApprovedSpots,
   callAPIgetAllreport,
   callAPIsolved,
+  callAPIgetNumberManager,
+  callAPIgetNumberSpots,
+  callAPIgetTotalEarning,
+  callAPIgetNumberUser,
+  callAPIgetNumberOrders,
+  callAPIgetNumberSpotsAv,
+  callAPIgetNumberSpotsHd,
+  callAPIgetNumberOrdersNow,
+  callAPIgetNumberOrdersComp
 } from './API';
 import '../HomePage.css';
 import { useError } from '../API';
@@ -37,6 +46,16 @@ const AdminDashboard = () => {
   const ReportRef = useRef(null);
   const PublishRef = useRef(null);
   const [reportC, setC] = useState(false);
+  const [totalUser,settotalUser]=useState(0);
+  const [totalOrder,setOrder]=useState(0);
+  const [totalCporder,setCpOrder]=useState(0);
+  const [totalNorder,setNOrder]=useState(0);
+  const [totalManager,setManager]=useState(0);
+  const [totalSpot,setSpot]=useState(0);
+  const [totalAvailSpot,setAvailSpot]=useState(0);
+  const [totalHdSpot,setHdSpot]=useState(0);
+  const [totalEarning,settotalEarning]=useState(0);
+  const [todayEarning,setTodayEarning]=useState(0);
   let logout = () => {
     if (localStorage.getItem('token')) {
       localStorage.clear();
@@ -48,6 +67,108 @@ const AdminDashboard = () => {
       });
     }
   };
+  useEffect(()=>{
+    const getNumberManager = () => {
+      callAPIgetNumberManager()
+        .then((data) => {
+          console.log(data);
+          setManager(data.totalManagers);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumberOrders = () => {
+      callAPIgetNumberOrders()
+        .then((data) => {
+          console.log(data);
+          setOrder(data.totalOrders);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumberOrdersComp = () => {
+      callAPIgetNumberOrdersComp()
+        .then((data) => {
+          console.log(data);
+          setCpOrder(data.totalOrders);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumberOrdersNow = () => {
+      callAPIgetNumberOrdersNow()
+        .then((data) => {
+          console.log(data);
+          setNOrder(data.totalOrders);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumberUser = () => {
+      callAPIgetNumberUser()
+        .then((data) => {
+          console.log(data);
+          settotalUser(data.totalUsers);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumberSpots = () => {
+      callAPIgetNumberSpots()
+        .then((data) => {
+          console.log(data);
+          setSpot(data.totalSpots);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch spots:', error);
+        });
+    }
+    const getNumAvSpot=()=>{
+      callAPIgetNumberSpotsAv()
+      .then((data) => {
+        console.log(data);
+        setAvailSpot(data.totalSpots)
+      })
+      .catch((error) => {
+        console.error('Failed to fetch spots:', error);
+      });
+    }
+    const getNumHdSpot=()=>{
+      callAPIgetNumberSpotsHd()
+      .then((data) => {
+        setHdSpot(data.totalSpots)
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch spots:', error);
+      });
+    }
+    const getTotalEarning=()=>{
+      callAPIgetTotalEarning()
+      .then((data) => {
+        console.log(data);
+        settotalEarning(data.totalProfit * 0.15);
+        setTodayEarning(data.dailyCost.TotalCost * 0.15);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch spots:', error);
+      });
+    }
+    getNumberManager();
+    getNumberOrders();
+    getNumberOrdersComp();
+    getNumberOrdersNow();
+    getNumberUser();
+    getNumberSpots();
+    getNumAvSpot();
+    getNumHdSpot();
+    getTotalEarning();
+  },[])
   useEffect(() => {
     let datas = spots;
     let datasApp = AppSpots;
@@ -66,9 +187,10 @@ const AdminDashboard = () => {
     const getReport = () => {
       callAPIgetAllreport()
         .then((data) => {
-          console.log('n');
-          console.log(data);
           const datanow = data.report || [];
+          datanow.sort((a, b) => {
+            return a.IsSolved - b.IsSolved;
+          });
           console.log(datanow);
           setReports(() => [...datanow]);
           setisreport(false);
@@ -238,40 +360,60 @@ const AdminDashboard = () => {
       <div className='Data-way'>
         <div className='Data'>
           <div className='circle blue'>
-            <p className='circle-text blue-c'>{298}</p>
+            <p className='circle-text blue-c'>{totalSpot}</p>
           </div>
           <p className='DataMeaning blue-c'>Total Spot</p>
         </div>
         <div className='Data'>
-          <div className='circle red'>
-            <p className='circle-text red-c'>{300}</p>
+          <div className='circle blue-heavy'>
+            <p className='circle-text blue-heavy-c'>{totalAvailSpot}</p>
           </div>
-          <p className='DataMeaning red-c'>Total User</p>
+          <p className='DataMeaning blue-heavy-c'>Available Spot</p>
+        </div>
+        <div className='Data'>
+          <div className='circle blue-small'>
+            <p className='circle-text blue-small-c'>{totalHdSpot}</p>
+          </div>
+          <p className='DataMeaning blue-small-c'>Hidden Spot</p>
         </div>
         <div className='Data'>
           <div className='circle green'>
-            <p className='circle-text green-c'>{20}</p>
+            <p className='circle-text green-c'>{totalOrder}</p>
           </div>
           <p className='DataMeaning green-c'>Total Order</p>
         </div>
         <div className='Data'>
-          <div className='circle yellow'>
-            <p className='circle-text yellow'>{5}</p>
+          <div className='circle green-heavy'>
+            <p className='circle-text green-heavy-c'>{totalCporder}</p>
           </div>
-          <p className='DataMeaning yellow-c'>Staff Number</p>
+          <p className='DataMeaning green-heavy-c'>Complete Order</p>
         </div>
         <div className='Data'>
-          <div className='circle purple'>
-            <p className='circle-text purple'>{992}</p>
+          <div className='circle green-small'>
+            <p className='circle-text green-small-c'>{totalNorder}</p>
           </div>
-          <p className='DataMeaning purple-c'>Total Viewer</p>
+          <p className='DataMeaning green-small-c'>Ongoing Order</p>
+        </div>
+      </div>
+      <div className='Data-way'>
+        <div className='Data'>
+            <div className='circle red'>
+              <p className='circle-text red-c'>{totalUser}</p>
+            </div>
+            <p className='DataMeaning red-c'>User Number</p>
+          </div>
+        <div className='Data'>
+          <div className='circle purple'>
+            <p className='circle-text purple-c'>{totalManager}</p>
+          </div>
+          <p className='DataMeaning purple-c'>Staff Number</p>
         </div>
       </div>
       <div className='Total-Earing'>
         <p className='Total-Earing-title'>Earned</p>
-        <p className='Total-Earing-content'>$9822.78</p>
+        <p className='Total-Earing-content'>${totalEarning.toFixed(2)}</p>
         <p className='Total-Earing-content-change'>today</p>
-        <p className='changes'>{'(+$243.57)'}</p>
+        <p className='changes'>{'(+$'+todayEarning.toFixed(2)+')'}</p>
       </div>
       <p className='title-for-spot'>Reported Information</p>
       <div className='container-half' ref={ReportRef}>
