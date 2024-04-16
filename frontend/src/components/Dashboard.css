@@ -1,4 +1,4 @@
-/* 整个容器 */
+/* total container */
 .dashboard {
     font-family: Arial, sans-serif;
     color: #333;
@@ -35,7 +35,6 @@
   display: block;
 }
 
-/* 链接的悬停效果 */
 .second-column-booking a:hover {
   color: #f66;
 }
@@ -43,13 +42,13 @@
 
 .avatar-plus-account-info {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
   margin-top: 10px;
-  gap: 15px; /* 根据需要调整间距 */
+  gap: 15px;
 }
 
-/* 左侧头像 */
+/* left: avatar */
 .left-avatar-container {
   display: flex;
   justify-content: center;
@@ -64,7 +63,7 @@
   object-fit: cover;
 }
 
-/* 右侧账户余额信息 */
+/* right: account info */
 .right-account-container {
   margin-left: 20px;
 }
@@ -75,11 +74,10 @@
 }
 
 .number {
-  text-align: right; /* 文本靠右 */
-  /* 如果.right-account-container是flex容器，则以下样式会使.number垂直居中 */
+  text-align: right;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* 靠右对齐 */
+  justify-content: flex-end;
   font-size: 22px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-weight: bolder;
@@ -131,7 +129,7 @@
 
 
 h3, h5 {
-  border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
+  border-bottom: 1px solid #d3d3d3;
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
@@ -149,30 +147,27 @@ h3 {
 }
 
 
-/* 中部和底部Bookings区域的通用样式 */
+/* middle and bottom of Bookings part */
 .second-bookings, .third-listings {
   text-align: center; 
   padding: 20px;
 }
 
-/* 提示消息的样式 */
+/* hit msg */
 .hint-msg .first-sentence,
 .hint-msg .second-sentence {
   margin: 10px 0;
 }
 
-/* 链接的样式 */
 .hint-msg .second-sentence a {
   color: #e11e2c;
 }
 
-/* 链接鼠标悬停的样式 */
 .hint-msg .second-sentence a:hover {
   color: #f66; 
 }
 
-
-/* 弹窗格式 */
+/* modal part*/
 .modal {
   display: block; 
   position: fixed; 

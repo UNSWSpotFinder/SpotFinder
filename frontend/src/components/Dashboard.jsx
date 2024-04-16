@@ -5,7 +5,7 @@ import { getUserInfo, topUpAccount, withdrawAccount, getReceivedBookingsInfo, ge
 import './Dashboard.css';
 
 const Dashboard = () => {
-  // 定义用户信息初始状态
+  // the initial state of userInfo
   const [userInfo, setUserInfo] = useState({
     name: '',
     account: 0,
@@ -13,7 +13,6 @@ const Dashboard = () => {
     avatar: 'https://via.placeholder.com/150'
   });
 
-  // 控制充值弹窗的显示与否以及充值金额
   const [isTopUpModalVisible, setIsTopUpModalVisible] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
@@ -21,22 +20,22 @@ const Dashboard = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
-  const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // 存储获取到的 received bookings 信息
-  const [myBookingsInfo, setMyBookingsInfo] = useState([]); // 存储获取到的 bookings 信息
+  const [receivedBookingsInfo, setReceivedBookingsInfo] = useState([]); // store the info of received bookings
+  const [myBookingsInfo, setMyBookingsInfo] = useState([]);
 
   const goesCreateSpot = (event)=>{
-    event.preventDefault(); // 阻止链接的默认行为
+    event.preventDefault();
     const user = localStorage.getItem('email');
     navigate('/'+user+'/createspace');
   }
 
-  // 进入 Dashboard 组件时获取用户信息
+  // get user Info when entering Dashboard
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
         // console.log('data:', data);
-        // 储存用户spotID
+        // store spotID
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
@@ -46,7 +45,7 @@ const Dashboard = () => {
           }
         }
 
-        // data对象中包含用户信息
+        // data contains user information
         setUserInfo({
           name: data.message.name,
           account: data.message.account,
@@ -54,6 +53,7 @@ const Dashboard = () => {
           avatar: data.message.avatar,
           ownedSpot: parsedOwnedSpot
         });
+        
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -61,7 +61,7 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // 关闭Snackbar
+  // close Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -69,12 +69,12 @@ const Dashboard = () => {
     setOpenSnackbar(false);
   };
 
-  // 用于点击链接时执行的函数
+  // click to link to dashboard
   const ClickToFindSpot = (event) => {
-    event.preventDefault(); // 阻止链接的默认行为
+    event.preventDefault();
     const email = localStorage.getItem('email');
     if (email) {
-      navigate(`/${email}`); // 使用email值进行导航
+      navigate(`/${email}`);
     }
   };
  
@@ -83,7 +83,7 @@ const Dashboard = () => {
   };
 
   const handleTopUpSubmit = () => {
-    // 验证输入是否为有效数字
+    // verify that the input is a valid number
     const amount = parseFloat(topUpAmount);
     if (isNaN(amount) || amount <= 0) {
       setSnackbarMessage('Please enter a valid amount to top up.');
@@ -91,13 +91,13 @@ const Dashboard = () => {
       return;
     }
     topUpAccount(amount).then(response => {
-      // 处理成功响应通知用户
+      // show message to user
       setSnackbarMessage('Top up successfully!');
       setOpenSnackbar(true);
 
-      setIsTopUpModalVisible(false); // 关闭弹窗
-      setTopUpAmount(''); // 重置充值金额
-      // 这里更新userInfo状态以反映新的账户余额
+      setIsTopUpModalVisible(false); // close the topup modal
+      setTopUpAmount(''); // reset the topup amount
+      // reset userInfo to update the account balance
       setUserInfo(prevState => ({
         ...prevState,
         account: prevState.account + amount,
@@ -109,7 +109,7 @@ const Dashboard = () => {
     });
   };
 
-  // 取消充值
+  // cancel top up
   const handleCancelTopUp = () => {
     setIsTopUpModalVisible(false);
     setTopUpAmount('');
@@ -119,12 +119,12 @@ const Dashboard = () => {
     setIsTopUpModalVisible(true);
   };
 
-  // 处理提现输入变化
+  // handle withdraw input change
   const handleWithdrawInputChange = (event) => {
     setWithdrawAmount(event.target.value);
   };
   
-  // 处理提现提交
+  // handle withdraw submit
   const handleWithdrawSubmit = () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
@@ -132,7 +132,7 @@ const Dashboard = () => {
       setOpenSnackbar(true);
       return;
     }
-      // 检查提现金额是否超过账户余额
+      // check whether the withdrawal amount exceeds the account balance
     if (amount > userInfo.account) {
       setSnackbarMessage('Cannot withdraw more than the account balance.');
       setOpenSnackbar(true); 
@@ -143,30 +143,30 @@ const Dashboard = () => {
       setOpenSnackbar(true);
       setIsWithdrawModalVisible(false);
       setWithdrawAmount('');
-      // 更新userInfo状态以反映新的账户余额
+      // to show undated account balance
       setUserInfo(prevState => ({
         ...prevState,
         account: prevState.account - amount,
       }));
     }).catch(error => {
       console.error('Withdraw failed:', error);
-      // TODO:使用snackbar或其他通知组件显示错误信息
-      alert('Withdraw failed, please try again.');
+      setSnackbarMessage('Withdraw failed, please try again.');
+      setOpenSnackbar(true);
     });
   };
   
-  // 处理提现取消
+  // handle cancel withdraw
   const handleCancelWithdraw = () => {
     setIsWithdrawModalVisible(false);
     setWithdrawAmount('');
   };
 
-  // 显示提现弹窗
+  // show withdraw modal
   const showWithdrawModal = () => {
     setIsWithdrawModalVisible(true);
   };
 
-  // 更新订单信息的函数
+  // get received bookings info
   const fetchOrders = async () => {
     try {
       const receivedBookingsData = await getReceivedBookingsInfo();
@@ -176,37 +176,38 @@ const Dashboard = () => {
     }
   };
 
-  // 初始化收到的订单信息
+  // initialize received order information
   useEffect(() => {
     fetchOrders();
   }, []);
 
-    // 获取orders和spots信息
-    const fetchBookings = async () => {
-      try {
-        // 获取预订信息
-        const bookingDataResult = await getMyBookingsInfo();
-        const bookingsArray = bookingDataResult.orders;
-        console.log('My Bookings array:', bookingsArray);     
-        // 设置状态
-        setMyBookingsInfo(bookingsArray);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  // get orders and spots info
+  const fetchBookings = async () => {
+    try {
+      // get user's bookings 
+      const bookingDataResult = await getMyBookingsInfo();
+      const bookingsArray = bookingDataResult.orders;
+      console.log('My Bookings array:', bookingsArray);     
+      setMyBookingsInfo(bookingsArray);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   
-    // 获取bookings信息并计算Current bookings数量
-    useEffect(() => {
-      fetchBookings();
-    }, []);
+  // get bookingsinfo
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
-    const pendingBookingsCount = myBookingsInfo.filter(booking => booking.Status === 'Pending').length;
+  // caculate the number of current bookings
+  const pendingBookingsCount = myBookingsInfo.filter(booking => booking.Status === 'Pending').length;
 
   return (
     <div className="dashboard">
-      {/* 顶部区域 */}
+      {/* top */}
       <div className='top-info-part'>
         {/* 第一列显示用户头像及账户余额 */}
+        {/* first column: user avatar and account balance */}
         <div className="first-column-account">
           <h5>Welcome back, {userInfo.name}</h5>
           <div className='avatar-plus-account-info'>
@@ -224,6 +225,7 @@ const Dashboard = () => {
           </div>
         </div>
         {/* 第二列显示当前预定数量 */}
+        {/* second column: number of current bookings */}
         <div className='second-column-booking'>
           <h5>My Bookings</h5>
           <div className='booking-number'>{pendingBookingsCount}</div>
@@ -231,6 +233,7 @@ const Dashboard = () => {
         </div>
 
         {/* 第三列显示当前用户的车位数量 */}
+        {/* third column: number of user's spots */}
         <div className='second-column-booking'>
           <h5>My Listings</h5>
           <div className='listing-number'>{receivedBookingsInfo.length}</div>
@@ -238,13 +241,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* 底部Voucher区域 */}
+      {/* Bottom: Voucher */}
       <div className="second-vouchers">
         <h3>Vouchers</h3>
         <div>You have no vouchers.</div>
       </div>
       
-      {/* 充值弹窗 */}
+      {/* top up modal */}
       {isTopUpModalVisible && (
       <div className="modal">
           <div className="modal-content">
@@ -263,7 +266,7 @@ const Dashboard = () => {
           </div>
       </div>
   )}
-        {/* 提现弹窗 */}
+        {/* modal of withdraw */}
         {isWithdrawModalVisible && (
         <div className="modal">
           <div className="modal-content">

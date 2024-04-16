@@ -1,6 +1,6 @@
 const baseUrl = 'http://localhost:8080';
 
-// 获取用户信息（get）
+// get user info（get）
 export const getUserInfo = () => {
     return new Promise((resolve, reject) => {      
       const endpoint = `${baseUrl}/user/info`;
@@ -32,7 +32,7 @@ export const getUserInfo = () => {
     });
   };
 
-// 获取用户简单信息（get）
+// get user simple info（get）
 export const getUserSimpleInfo = (id) => {
   return new Promise((resolve, reject) => {      
     const endpoint = `${baseUrl}/user/simpleInfo/${id}`;
@@ -64,7 +64,7 @@ export const getUserSimpleInfo = (id) => {
   });
 };
 
-// 修改用户信息（post）
+// modify user info（post）
 export const updateUserInfo = (userInfo) => {
     const endpoint = `${baseUrl}/user/modifyUserInfo`;
     const token = localStorage.getItem('token');
@@ -91,7 +91,7 @@ export const updateUserInfo = (userInfo) => {
   
   
 
-// 获取用户的 spot 列表（get）
+// get user's spots list（get）
 export const getSpotDetails = (spotId) => {
   return new Promise((resolve, reject) => {
     const endpoint = `${baseUrl}/spot/${spotId}`;
@@ -125,7 +125,7 @@ export const getSpotDetails = (spotId) => {
 };
 
 
-// 获取车位列表（get）
+// get all spots（get）
 export const getAllSpots = (page) => {
   return new Promise((resolve, reject) => {
     const endpoint = `${baseUrl}/spot/list/?isVisible=true&page=${page}&pageSize=15`; 
@@ -140,8 +140,8 @@ export const getAllSpots = (page) => {
           return response.json().then(data => resolve(data));
       } else {
         response.json().then(data => {
-          console.log(errorReason);
           const errorReason = data.message;
+          console.log(errorReason);
           reject(errorReason);
         }).catch(() => {
           reject(new Error('Error parsing response JSON.'));
@@ -184,7 +184,7 @@ export const getAllNotApprovedSpots = (page) => {
 };
 
 
-// 用户充值（post）
+// users top up（post）
 export const topUpAccount = (amount) => {
   const endpoint = `${baseUrl}/user/topUp`;
   const token = localStorage.getItem('token');
@@ -210,7 +210,7 @@ export const topUpAccount = (amount) => {
 };
 
 
-// 用户提现（post）
+// users withdraw（post）
 export const withdrawAccount = (amount) => {
   const endpoint = `${baseUrl}/user/withdraw`;
   const token = localStorage.getItem('token');
@@ -235,7 +235,7 @@ export const withdrawAccount = (amount) => {
   });
 };
 
-// 用户创建车辆(post)
+// users create vehicles(post)
 export const createCarInfo = (carInfo) => {
   const endpoint = `${baseUrl}/car/create`;
   const token = localStorage.getItem('token');
@@ -259,7 +259,7 @@ export const createCarInfo = (carInfo) => {
   });
 };
 
-// 获取用户车辆信息(get)
+// get user's vehicles list and info(get)
 export const getCarInfo = () => {
   return new Promise((resolve, reject) => {      
     const endpoint = `${baseUrl}/car/getMyCar`;
@@ -292,7 +292,7 @@ export const getCarInfo = () => {
 };
 
 
-// 用户修改车辆(post)
+// modify user's vehicles info (post)
 export const updateCarInfo = (carID, carInfo) => {
   const endpoint = `${baseUrl}/car/modifyCarInfo/${carID}`;
   const token = localStorage.getItem('token');
@@ -317,7 +317,7 @@ export const updateCarInfo = (carID, carInfo) => {
   });
 };
 
-// 用户删除车辆(delete)
+// users delete vehicles(delete)
 export const deleteCar = (carID) => {
   const endpoint = `${baseUrl}/car/deleteCar/${carID}`;
   const token = localStorage.getItem('token');
@@ -341,7 +341,7 @@ export const deleteCar = (carID) => {
   });
 };
 
-// 用户获取某辆车信息(get)
+// users get info of specific car(get)
 export const getSpecificCarInfo = (carID) => {
   return new Promise((resolve, reject) => {      
     const endpoint = `${baseUrl}/car/getCar/${carID}`;
@@ -373,7 +373,7 @@ export const getSpecificCarInfo = (carID) => {
   });
 };
 
-// 获取用户的下单信息(get)
+// get users orders info
 export const getMyBookingsInfo = () => {
   return new Promise((resolve, reject) => {      
     const endpoint = `${baseUrl}/user/orders/asUser`;
@@ -405,7 +405,7 @@ export const getMyBookingsInfo = () => {
   });
 };
 
-// 获取用户作为provider的订单信息(get)
+// get users orders info as provider(get)
 export const getReceivedBookingsInfo = () => {
   return new Promise((resolve, reject) => {      
     const endpoint = `${baseUrl}/user/orders/asOwner`;
@@ -437,7 +437,7 @@ export const getReceivedBookingsInfo = () => {
   });
 };
 
-// 删除订单(put)
+// cancel orders(put)
 export const cancelBooking = (orderID) => {
   const endpoint = `${baseUrl}/order/${orderID}/cancel`;
   const token = localStorage.getItem('token');
@@ -461,7 +461,7 @@ export const cancelBooking = (orderID) => {
   });
 };
 
-// 用户创建举报(post)
+// create report of spots (post)
 export const createReport = (spotID, reportMessage) => {
   const endpoint = `${baseUrl}/spots/${spotID}/report`;
   const token = localStorage.getItem('token');
@@ -478,7 +478,6 @@ export const createReport = (spotID, reportMessage) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    // 如果没有返回内容，
     return null;
   })
   .catch(error => {
@@ -533,5 +532,69 @@ export const callAPIsolved = (reportid) => {
   .catch(error => {
     console.error('There has been a problem with your fetch operation:', error);
     throw error;
+  });
+};
+
+// create a review of order(post)
+export const createReview = (orderID, reviewContent, reviewRating) => {
+  const endpoint = `${baseUrl}/order/${orderID}/reviews`;
+  const token = localStorage.getItem('token');
+
+  if (typeof reviewContent !== 'string' || typeof reviewRating !== 'number') {
+    throw new Error('Invalid input: Content must be a string and rating must be a number.');
+  }
+
+  const review = {
+    content: reviewContent,
+    rating: reviewRating
+  };
+
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(review),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`);
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+    throw error;
+  });
+};
+
+// get reviews of a spot(get)
+export const getReviews = (spotID) => {
+  return new Promise((resolve, reject) => {
+    const endpoint = `${baseUrl}/spots/${spotID}/reviews`;
+    fetch(endpoint, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(data => resolve(data));
+      } else {
+        response.json().then(data => {
+          const errorReason = data.message;
+          console.log(errorReason);
+          reject(errorReason);
+        }).catch(() => {
+          reject(new Error('Error parsing response JSON.'));
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      reject(new Error('Network error! Please try again.'));
+    });
   });
 };

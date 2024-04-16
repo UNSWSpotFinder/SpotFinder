@@ -42,8 +42,6 @@
     align-items: center; 
     margin: 20px;
   }
-
- 
   
   .close-btn {
     background: none;
@@ -56,7 +54,6 @@
     justify-content: space-between;
   }
   
-  /* 具体的轮播图样式 */
   .carousel-container {
     margin: 20px 0;
   }
@@ -123,9 +120,6 @@
     margin-top: 10px;
     font-weight: bold;
   }
-  
-
-
   
   .send-msg-btn, .accept-btn, .order-review-btn  {
     margin-right: 5px;

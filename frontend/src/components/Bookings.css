@@ -1,4 +1,4 @@
-  /* 最上方title部分 */
+  /* title part at the top */
   .button-part {
     display: flex;
     justify-content: space-between;
@@ -26,15 +26,15 @@
   }
   
   .current-booking-title:not(.active):hover, .past-booking-title:not(.active):hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66; /* outer shadow on mouseover */
   }
 
   .current-booking-title:hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66; 
   }
 
   .past-booking-title:hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66;
   }
 
   .add-a-new-booking-btn {
@@ -52,7 +52,7 @@
     background-color: #f66;
   }
 
-  /* Booking部分 */
+  /* Booking part */
   .booking-part {
     display: flex;
     flex-direction: column;
@@ -74,12 +74,17 @@
     border-radius: 10px;
   }
 
-  .picture, .right-btn-part {
-    flex: 0 0 20%; /* 基础宽度是父容器宽度的20% */
+  .picture  {
+    flex: 0 0 20%; /* The base width is 20% of the width of the parent container */
+  }
+
+  .right-btn-part {
+    flex: 0 0 20%;
+    flex-direction: column;
   }
 
   .space-information {
-    flex: 0 0 60%; /* 基础宽度是父容器宽度的60% */
+    flex: 0 0 60%;
   }
 
 
@@ -94,12 +99,6 @@
     flex-direction: column;
     justify-content: space-around;
   }
-
-  /* .space-info-first-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  } */
 
   .right-btn-part {
     display: flex;
@@ -185,7 +184,7 @@
 
 
 
-   /* 取消booking弹窗 */
+   /* modal of cancelling booking */
    .cancel-confirm-btn {
     width: 200px;
     color: darkgray;

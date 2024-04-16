@@ -31,12 +31,11 @@ const DashboardTop = () => {
     name: '',
   });
 
-    // 进入 Dashboard 组件时获取用户信息
+    // get user info when entering Dashboard
     useEffect(() => {
       const fetchData = async () => {
         try {
           const data = await getUserInfo();  
-          // data对象中包含用户信息
           setUserInfo({
             name: data.message.name,
           });
@@ -50,28 +49,28 @@ const DashboardTop = () => {
   return (
     <div className="dashboard-top">
       <div className="Navbar">
-        {/* Logo图像 */}
+        {/* Logo image */}
         <img src='/img/LOGO.svg' alt='logo' className='Applogo' onClick={goesHome}></img>
-        {/* 搜索区域 */}
+        {/* search part */}
         <div className='SearchPart'>
           <img className='searchbtn' alt='search btn' src='/img/search.png'></img>
           <input className='Searchbar' placeholder='Search by location'></input>
         </div>
-        {/* 搜索车位/出租车位 */}
+        {/* buttons for creating spots and finding spots */}
         <button className='top-button' onClick={goesCreateSpot} >Lease my spots</button>
         <button className='top-button' onClick={goesHome}>Find a spot</button>
-        {/* 用户信息 */}
+        {/* user name */}
         <span> Hi,</span>
         <span>{userInfo.name}</span>
-        {/* 登出按钮 */}
+        {/* logout button */}
         <button className="button-with-image">
           <img src='/img/SignOut.svg' alt='Sign Out' className='sign-out-img' onClick={logout}/>
         </button>
       </div>
 
-      {/* Top以下区域 */}
+      {/* areas below top part */}
       <div className="content-area">
-        {/* 侧边栏 */}
+        {/* side bar */}
         <div className="side-nav">
           <NavLink to={`/${currentuser}/dashboard`} className={({ isActive }) => isActive ? 'side-nav-spcific active' : 'side-nav-spcific'} end>Dashboard</NavLink>
           <NavLink to={`/${currentuser}/dashboard/bookings`}className={({ isActive }) => isActive ? 'side-nav-spcific active' : 'side-nav-spcific'}>Bookings</NavLink>
@@ -80,7 +79,7 @@ const DashboardTop = () => {
           <NavLink to={`/${currentuser}/dashboard/profile`} className={({ isActive }) => isActive ? 'side-nav-spcific active' : 'side-nav-spcific'}>Profile</NavLink>
           <NavLink to={`/${currentuser}/dashboard/vehicles`} className={({ isActive }) => isActive ? 'side-nav-spcific active' : 'side-nav-spcific'}>Vehicles</NavLink>
         </div>
-        {/* 主要内容区域 */}
+        {/* main content */}
         <div className="main-content">
           <Outlet />
         </div>

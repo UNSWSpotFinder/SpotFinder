@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Snackbar, IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { createCarInfo } from './API';
@@ -15,7 +14,8 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
     const [vehicleCharge, setVehicleCharge] = useState('');
     const [avatar, setAvatar] = useState('');
 
-    // 点击add按钮，设置model为add模式 打开模态框时，重置所有表单字段
+    // Click the add button to set the model to add mode. 
+    // When the modal box is opened, all form fields are reset.
     const handleAddSubmit = async (event) => {
         event.preventDefault();
         const vehicleInfo = {
@@ -36,7 +36,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
             }
     }
 
-    // 添加处理表单字段变化的函数
+    // handle the change of the form field
     const handleBrandChange = (event) => {
         setVehicleBrand(event.target.value);
     };
@@ -45,7 +45,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
         setVehiclePlate(event.target.value);
     };
 
-    // 处理下拉选项改变的事件
+    // handle the change of the select field
     const handleTypeChange = (event) => {
     setVehicleType(event.target.value);
     };
@@ -58,7 +58,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
     setVehicleCharge(event.target.value);
     }
 
-    // 处理文件上传
+    // handle file upload
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -70,12 +70,13 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
         }
     };
         
-    // 在每个表单控件的事件处理器中设置自定义的验证消息
+    // 设置自定义的验证消息
+    // Validate that input cannot be empty
     const handleInvalid = (event) => {
     event.target.setCustomValidity('This field cannot be left blank');
     };
 
-    // 关闭Snackbar
+    // close Snackbar
     const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
         return;
@@ -92,7 +93,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
               <button className="close-btn" onClick={closeAddModal}>✖</button>
             </div>
             <form className='add-form' onSubmit={handleAddSubmit}> 
-                {/* 表单内容 */}
+                {/* form content */}
                 <div className="form-group">
                 <label htmlFor="brand">Brand of your vehicle</label>
                 <input required 
