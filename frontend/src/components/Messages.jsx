@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MdExpandMore, MdExpandLess } from 'react-icons/md'; 
+import { getUserSimpleInfo } from './API'
 import './Messages.css';
 
 const Messages = () => {
   const [ws, setWs] = useState(null);
   const [content, setContent] = useState('');
-  const [receiverID, setReceiverID] = useState('');
+  // const [receiverID, setReceiverID] = useState('');
   const [, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
 
   const [notifications, setNotifications] = useState([]); // 用于存储通知
@@ -14,7 +15,7 @@ const Messages = () => {
   const [showNotifications, setShowNotifications] = useState(true); // 控制显示或隐藏通知
   const [showMessages, setShowMessages] = useState(true); // 控制显示或隐藏消息
 
-  const [userID, setUserID] = useState(localStorage.getItem('userID') || '');
+  const [userID, setUserID] = useState(localStorage.getItem('userID') || 0);
 
   // 对话映射，键是参与者对组合，值是消息数组
   const [conversations, setConversations] = useState({});
@@ -26,8 +27,8 @@ const Messages = () => {
             const token = localStorage.getItem('token');
             const jwtParts = token.split(".");
             const payload = JSON.parse(atob(jwtParts[1]));
-            console.log("userID",payload.userID);
-            setUserID(payload.userID);
+            // console.log("userID",payload.userID);
+            setUserID(Number(payload.userID));
             websocket = new WebSocket(`ws://localhost:8080/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
                 // 当WebSocket连接打开时的回调函数
@@ -48,19 +49,15 @@ const Messages = () => {
                           [participants]: (prev[participants] !== undefined) ? prev[participants] : true // 默认为true
                         }));
                         const updatedConversations = {...prevConversations};
-                        const messagesForParticipants = updatedConversations[participants] || [];
-                        messagesForParticipants.push(data);
+                        const conversation = updatedConversations[participants] || { messages: [], content: '' };
+                        conversation.messages.push(data);
                     
-                        updatedConversations[participants] = messagesForParticipants.sort((a, b) => new Date(a.content.SentAt) - new Date(b.content.SentAt));
+                        conversation.messages = conversation.messages.sort((a, b) => new Date(a.content.SentAt) - new Date(b.content.SentAt));
                     
-                        // 同时初始化对话可见性状态
-                        // setConversationVisibility(prevVisibility => ({
-                        //   ...prevVisibility,
-                        //   [participants]: (prevVisibility[participants] !== undefined) ? prevVisibility[participants] : true
-                        // }));
+                        updatedConversations[participants] = conversation;
                     
                         return updatedConversations;
-                      });           
+                      });          
                       } else if (data.type === 'notification') {
                         setNotifications(prevNotifications => [data, ...prevNotifications].sort((a, b) => new Date(b.content.SentAt) - new Date(a.content.SentAt))); // 将最新的通知放在顶部
                       }
@@ -86,23 +83,42 @@ const Messages = () => {
     }, []);
 
 
-    // 发送消息
-    const handleSendMessage = () => {
-        // 检查WebSocket连接状态是否为OPEN
-        if (ws && ws.readyState === WebSocket.OPEN && receiverID) {
-            const message = {
-                Type: 'message',
-                receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
-                content: content,
-            };
-            ws.send(JSON.stringify(message));
-            setContent(''); // 清空输入框
-            // TODO: 更新对话框
-        } else {
-            console.error('WebSocket is not open.', ws);
-            // 可以在此处处理重新连接逻辑或通知用户
-        }
-    };
+  // 发送消息
+  const handleSendMessage = (participantsKey) => {
+    const receiverId = participantsKey.split('-').map(Number).find(id => id !== userID);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const newMessage = {
+            content: {
+                SenderID: userID, // 发送者ID
+                ReceiverID: receiverId, // 接收者ID
+                Content: conversations[participantsKey].content, // 消息内容
+                SentAt: new Date().toISOString() // 发送时间
+            },
+            type: 'message' // 消息类型
+        };
+
+        ws.send(JSON.stringify({
+            Type: 'message',
+            receiverId: receiverId,
+            content: conversations[participantsKey].content,
+        }));
+
+        // 更新对话以包括新消息
+        setConversations(prevConversations => {
+            const updatedConversations = { ...prevConversations };
+            const conversation = updatedConversations[participantsKey] || { messages: [], content: '' };
+            conversation.messages.push(newMessage);
+            conversation.messages = conversation.messages.sort((a, b) => new Date(a.content.SentAt) - new Date(b.content.SentAt));
+            conversation.content = ''; // 清空输入框内容
+            updatedConversations[participantsKey] = conversation;
+            return updatedConversations;
+        });
+    } else {
+        console.error('WebSocket is not open.', ws);
+    }
+  };
+
+  
 
   // 切换显示/隐藏通知
   const toggleNotifications = () => {
@@ -123,55 +139,55 @@ const Messages = () => {
   };
 
 
-  // 渲染每个对话
   const renderConversations = () => {
-    return Object.entries(conversations).map(([participantsKey, conversation], index) => {
+    return Object.entries(conversations).map(([participantsKey, { messages, content }], index) => {
       const isConversationVisible = conversationVisibility[participantsKey] !== false;
-  
+
       return (
         <div key={index} className='conversation'>
           <div className='conversation-title'>
-            <span>Conversation between {participantsKey.replace('-', ' and ')}</span>
+            <div>Conversation with {participantsKey.split('-').map(Number).find(id => id !== userID)}</div>
             <button onClick={() => toggleConversationVisibility(participantsKey)} className="toggle-button">
               {isConversationVisible ? <MdExpandLess /> : <MdExpandMore />}
             </button>
           </div>
           <div className='conversation-messages' style={{ display: isConversationVisible ? 'block' : 'none' }}>
-            {conversation.map((message, msgIndex) => (
-              <div key={msgIndex} className='message'>
-                <p><strong>From:</strong> {message.content.SenderID} <strong>To:</strong> {message.content.ReceiverID}</p>
-                <p>{message.content.Content}</p>
-                <p><small>Sent at: {new Date(message.content.SentAt).toLocaleString()}</small></p>
-              </div>
-            ))}
-          </div>
-          <div>
-                <input
-                    type="text"
-                    value={receiverID}
-                    placeholder="Receiver ID"
-                    onChange={e => setReceiverID(e.target.value)}
-                />
-            </div>
+            {messages.map((message, msgIndex) => {
+              const messageClass = message.content.SenderID === userID ? 'message-sent' : 'message-received';
+
+              return (
+                <div key={msgIndex} className={messageClass}>
+                  <div className='message-container'>
+                    <div>{message.content.Content}</div>
+                    <div>{new Date(message.content.SentAt).toLocaleString()}</div>
+                  </div>
+                </div>
+              );
+            })}
             <div>
-                <input
-                    type="text"
-                    value={content}
-                    placeholder="Enter message"
-                    onChange={e => setContent(e.target.value)}
-                />
+              <input
+                  type="text"
+                  value={content}
+                  placeholder="Enter message"
+                  onChange={e => setConversations(prevConversations => ({
+                      ...prevConversations,
+                      [participantsKey]: { ...prevConversations[participantsKey], content: e.target.value }
+                  }))}
+              />
+              <button onClick={() => handleSendMessage(participantsKey)}>Send</button>
             </div>
-            <button onClick={handleSendMessage}>Send</button> 
+          </div>
         </div>
       );
     });
   };
-  
 
+
+  
 
     return (
         <div className='DashboardMessages'>
-          <p>Your ID: {userID}</p>
+          <p>My ID: {userID}</p>
             <div className='msg-title'>
                 Notifications
                 <button onClick={toggleNotifications} className="toggle-button">
@@ -195,17 +211,15 @@ const Messages = () => {
             </div>
             <div id="messages" style={{ display: showMessages ? 'block' : 'none' }}>
                 {messages.map((message, index) => (
-                <div key={index} className='received-message'>
-                    <p><strong>From:</strong> {message.content.SenderID} <strong>To:</strong> {message.content.ReceiverID}</p>
-                    <p>{message.content.Content}</p>
-                    <p><small>Sent at: {new Date(message.content.SentAt).toLocaleString()}</small></p>
-                </div>
+                  <div>
+                    <div key={index} className='received-message'>
+                      <p><strong>From:</strong> {message.content.SenderID} <strong>To:</strong> {message.content.ReceiverID}</p>
+                      <p>{message.content.Content}</p>
+                      <p><small>Sent at: {new Date(message.content.SentAt).toLocaleString()}</small></p>
+                    </div>
+                  </div>              
                 ))}
             </div>
-
-
- 
-
         </div>
     );
 }
