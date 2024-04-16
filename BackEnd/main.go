@@ -7,9 +7,11 @@ package main
 import (
 	"capstone-project-9900h14atiktokk/Router"
 	"capstone-project-9900h14atiktokk/Service"
+	"capstone-project-9900h14atiktokk/Service/Manager"
 	"capstone-project-9900h14atiktokk/Service/Message"
 	pb "capstone-project-9900h14atiktokk/Service/Message/proto"
 	"capstone-project-9900h14atiktokk/util"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/rand"
 	"google.golang.org/grpc"
@@ -22,15 +24,15 @@ import (
 var log = logrus.New()
 
 func setupLogger() {
-	// 创建日志文件
+	// create a log file
 	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		logrus.Fatal("Failed to log to file, using default stderr")
 	}
 
-	// 设置输出
+	// set log output
 	logrus.SetOutput(file)
-	// 也可以同时输出到文件和控制台
+	// add log output to stdout
 	logrus.SetOutput(io.MultiWriter(file, os.Stdout))
 }
 
@@ -52,21 +54,33 @@ func setupLogger() {
 func main() {
 	setupLogger()
 	logrus.Info("Starting the application...")
-	// 设置日志格式为JSON，便于后期处理和查询
+	// set log level
 	log.Formatter = new(logrus.JSONFormatter)
-	log.Level = logrus.DebugLevel // 可配置为InfoLevel或其他级别
+	log.Level = logrus.DebugLevel // InfoLevel elsewhere
 
 	rand.Seed(uint64(time.Now().UnixNano()))
 	srv := util.InitConfig()
 	db := util.InitMySQL()
 	redisCli := util.InitRedis()
-	// 全局数据库链接
+	// database connection
 	Service.DB = db
 	r := Router.Router(srv, redisCli)
-	// 启动HTTP服务在新的goroutine中
+	// open a goroutine to run the HTTP server
 	go func() {
 		if err := r.Run(":8080"); err != nil {
 			logrus.Fatalf("failed to run HTTP server: %v", err)
+		}
+	}()
+	// Schedule daily cost calculation
+	ticker := time.NewTicker(24 * time.Hour) // calculate daily cost every 24 hours
+	go func() {
+		// calculate daily cost
+		fmt.Println("Calculating daily cost...")
+		for range ticker.C {
+			err := Manager.CalculateDailyCost()
+			if err != nil {
+				fmt.Println("Error calculating daily cost:", err)
+			}
 		}
 	}()
 
