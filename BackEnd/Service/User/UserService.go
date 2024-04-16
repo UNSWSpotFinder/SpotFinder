@@ -257,26 +257,9 @@ func GetUserInfoHandler(c *gin.Context) {
 	} else {
 		// 使用确定的邮箱来查询用户信息
 		user := User.GetUserByEmail(Service.DB, targetEmail)
-		// 填充InfoDetail实例
-		infoDetail := InfoDetail{
-			Name:       user.Name,
-			Email:      user.Email,
-			Phone:      user.Phone,
-			Avatar:     user.Avatar,
-			CreateTime: user.CreateTime,
-			DeleteTime: user.DeleteTime,
-			DateBirth:  user.DateBirth,
-			CarInfo:    user.CarID,
-			LeasedSpot: user.LeasedSpot,
-			Addr:       user.Addr,
-			Account:    user.Account,
-			Earning:    user.Earning,
-			TopUp:      user.TopUp,
-			OwnedSpot:  user.OwnedSpot,
-		}
 
 		// 返回用户信息
-		c.JSON(http.StatusOK, gin.H{"message": infoDetail})
+		c.JSON(http.StatusOK, gin.H{"message": user})
 	}
 }
 

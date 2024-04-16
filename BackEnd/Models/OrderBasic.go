@@ -18,6 +18,7 @@ type OrderBasic struct {
 	Status string `gorm:"type:varchar(255);not null"`
 
 	Booker UserBasic `gorm:"foreignKey:BookerID"`
+	Spot   SpotBasic `gorm:"foreignKey:SpotID"`
 }
 
 type TimeRange struct {
