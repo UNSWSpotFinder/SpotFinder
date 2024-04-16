@@ -93,6 +93,12 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 	manager.PUT("/manager/unblock/:spotId", Manager.UnblockSpotHandler)
 	manager.GET("/manager/report", Report.GetReportInfoHandler)
 	manager.POST("/manager/report/solve", Report.SolveReportHandler)
+	manager.GET("/manager/statistics", Manager.GetMoneyOfOrdersHandler)
+	manager.POST("/manager/populate-daily-costs", Manager.PopulateDailyOrderCosts)
+	manager.GET("/manager/users", Manager.GetLengthOfUsersHandler)
+	manager.GET("/manager/spots", Manager.GetLengthOfSpotsHandler)
+	manager.GET("/manager/orders", Manager.GetLengthOfOrdersHandler)
+	manager.GET("/manager/managers", Manager.GetLengthOfManagerHandler)
 	return r
 
 }
