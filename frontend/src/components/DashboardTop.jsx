@@ -7,9 +7,8 @@ import {
 } from '../API';
 
 const DashboardTop = () => {
-  let { _ , setOpenSnackbar }=useError();
+  let { setOpenSnackbar }=useError();
   let navigate=useNavigate();
-  let token = localStorage.getItem('token') || null;
   let currentuser = localStorage.getItem('email') || null;
   let goesHome=()=>{
     navigate('/'+currentuser);

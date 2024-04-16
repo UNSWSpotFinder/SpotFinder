@@ -187,7 +187,8 @@ label.pwdsee{
     padding: 0px;
     color: #880010;
 }
-a.forget{
+p.forget{
+    text-decoration: underline;
     color:#ad0014;
     font-size: 12px;
     cursor: pointer;

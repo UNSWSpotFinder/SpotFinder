@@ -560,6 +560,10 @@ div.right-top{
     justify-content: space-between;
     max-width: 100%;
 }
+p.Lod{
+    width: 100%;
+    text-align: center;
+}
 div.right-bottom{
     display: flex;
     flex-direction: row;

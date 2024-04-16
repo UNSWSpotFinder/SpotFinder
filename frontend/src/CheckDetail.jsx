@@ -1,8 +1,5 @@
 import React, {
   useState,
-  ChangeEvent,
-  useContext,
-  LabelHTMLAttributes,
   useRef,
   useEffect,
 } from 'react';
@@ -13,23 +10,16 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
 import './CarSpaceOpearation.css';
 import {
   useNavigate,
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  useLocation,
   useParams,
 } from 'react-router-dom';
 import {
   useError,
   GetDistance,
   HoverImage,
-  callAPICreateSpot,
   callAPIGetSpecSpot,
   callAPIEditSpot,
   callAPIApproveSpot,
@@ -145,11 +135,40 @@ const ReserveConfirmgray = styled('button')({
     backgroundColor: 'rgb(235, 235, 235)',
   },
 });
+
+export const SendAllKindFeedback = (receiverID, Content) => {
+  console.log('Connecting to WebSocket...');
+  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  const token = localStorage.getItem('token');
+  websocket.onopen = () => {
+    // 当WebSocket连接打开时的回调函数
+    console.log('WebSocket Connected');
+    websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // 发送认证信息
+    const message = {
+      Type: 'notification',
+      receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
+      content: Content,
+    };
+    console.log(message);
+    websocket.send(JSON.stringify(message));
+  };
+  websocket.onerror = (error) => {
+    console.error('WebSocket Error:', error);
+  };
+
+
+  return () => {
+    if (websocket) {
+          websocket.close();
+    }
+  };
+}
 // 修改
 export const ApproveCheck = ({ data, isOpen, close }) => {
   // get the set open snackbar function
-  const { _ , setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
+  const [Feedback, setFeedback] = useState('');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -165,8 +184,9 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
-    callAPIsolved();
+    SendAllKindFeedback(data.Owner,Feedback);
     navigate('/admin/' + adminid);
+    
   };
   const Approve = (id) => {
     callAPIApproveSpot(
@@ -220,7 +240,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
-          <textarea defaultValue={'No change, Default Approval.'} className='Feedback'></textarea>
+          <textarea className='Feedback' value={Feedback} onChange={(event)=>{setFeedback(event.target.value)}}></textarea>
         </CfmRowCol>
         <ReserveConfirm
           onClick={() => {
@@ -235,6 +255,8 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 export const EditCheck = ({ data, isOpen, close }) => {
+  console.log(data);
+  const [Feedback, setFeedback] = useState('No change, Default Approval.');
   const { adminid, Spotid, Reportid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -250,6 +272,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
+    SendAllKindFeedback(data.Owner,Feedback);
     if(Reportid){
       callAPIsolved(Reportid).then(()=>{
         navigate('/admin/' + adminid);
@@ -260,7 +283,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
     }
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const EditInfo = (id) => {
     callAPIEditSpot(
@@ -299,7 +322,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
-          <textarea className='Feedback'></textarea>
+          <textarea className='Feedback' value={Feedback} onChange={(event)=>{setFeedback(event.target.value)}}></textarea>
         </CfmRowCol>
         <ReserveConfirm
           onClick={() => {
@@ -314,8 +337,9 @@ export const EditCheck = ({ data, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 // 删除
-export const DeleteCheck = ({ isOpen, close }) => {
+export const DeleteCheck = ({ Owner, isOpen, close }) => {
   const { adminid, Spotid, Reportid } = useParams();
+  const [Feedback, setFeedback] = useState('No change, Default Approval.');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -330,6 +354,7 @@ export const DeleteCheck = ({ isOpen, close }) => {
       message: 'Spot has been Blocked! All user would never see it.',
       timestamp: new Date().getTime(),
     });
+    SendAllKindFeedback(Owner,Feedback);
     if(Reportid){
       callAPIsolved(Reportid).then(()=>{
         navigate('/admin/' + adminid);
@@ -341,7 +366,7 @@ export const DeleteCheck = ({ isOpen, close }) => {
 
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const DeleteInfo = (id) => {
     callAPIBlockSpot(
@@ -374,22 +399,23 @@ export const DeleteCheck = ({ isOpen, close }) => {
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
-          <textarea className='Feedback'></textarea>
+          <textarea className='Feedback'  value={Feedback} onChange={(event)=>{setFeedback(event.target.value)}}></textarea>
         </CfmRowCol>
         <ReserveConfirmblack
           onClick={() => {
             DeleteInfo(Spotid);
           }}
         >
-          {'Send Feedback  &  (Delete/Reject)'}
+        {'Send Feedback  &  (Delete/Reject)'}
         </ReserveConfirmblack>
       </CfmContent>
     </div>
   );
   return isOpen ? conponment : null;
 };
-export const HiddenCheck = ({ isOpen, close }) => {
+export const HiddenCheck = ({Owner, isOpen, close }) => {
   const { adminid, Spotid, Reportid } = useParams();
+  const [Feedback, setFeedback] = useState('Default Blocked.');
   // use the navigate to go to the user page
   const navigate = useNavigate();
   // get the hosting id from the url
@@ -404,6 +430,7 @@ export const HiddenCheck = ({ isOpen, close }) => {
       message: 'Spot has been Hidden! You can republish it later.',
       timestamp: new Date().getTime(),
     });
+    SendAllKindFeedback(Owner,Feedback);
     if(Reportid){
       callAPIsolved(Reportid).then((response)=>{
         navigate('/admin/' + adminid);
@@ -414,7 +441,7 @@ export const HiddenCheck = ({ isOpen, close }) => {
 
   };
   // get the set open snackbar function
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const HiddenInfo = (id) => {
     callAPIHiddenSpot(
@@ -464,32 +491,52 @@ export const HiddenCheck = ({ isOpen, close }) => {
 
 // EditHostingPage
 export const ManagerEditSpace = () => {
+  const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
+  const [OwnerId,setOwnerId]=useState(null);
   const { adminid, Spotid } = useParams();
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setOwnerId(response.message.OwnerID);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -497,46 +544,28 @@ export const ManagerEditSpace = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [Spotid,setOpenSnackbar]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -972,6 +1001,7 @@ export const ManagerEditSpace = () => {
         Postcode: Postcode,
         Street: Street,
       }),
+      Owner:OwnerId,
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
@@ -1114,7 +1144,7 @@ export const ManagerEditSpace = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -1160,12 +1190,14 @@ export const ManagerEditSpace = () => {
         }}
       />
       <HiddenCheck
+        Owner={OwnerId}
         isOpen={isOpenHidden}
         close={() => {
           setOpenHidden(false);
         }}
       />
       <DeleteCheck
+        Owner={OwnerId}
         isOpen={isOpenDelete}
         close={() => {
           setOpenDelete(false);
@@ -1173,7 +1205,7 @@ export const ManagerEditSpace = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -1882,32 +1914,52 @@ export const ManagerEditSpace = () => {
 };
 
 export const ManagerApproveEditSpace = () => {
+  const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [SpotData, setData] = useState({});
+  const [OwnerId,setOwnerId] = useState(null);
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setOwnerId(response.message.OwnerID);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -1915,46 +1967,28 @@ export const ManagerApproveEditSpace = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [setOpenSnackbar, Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -2389,6 +2423,7 @@ export const ManagerApproveEditSpace = () => {
         Postcode: Postcode,
         Street: Street,
       }),
+      Owner: OwnerId,
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
@@ -2531,7 +2566,7 @@ export const ManagerApproveEditSpace = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -2574,6 +2609,7 @@ export const ManagerApproveEditSpace = () => {
         }}
       />
       <DeleteCheck
+        Owner={OwnerId}
         isOpen={isOpenDelete}
         close={() => {
           setOpenDelete(false);
@@ -2581,7 +2617,7 @@ export const ManagerApproveEditSpace = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -3282,32 +3318,52 @@ export const ManagerApproveEditSpace = () => {
 };
 
 export const ManagerProcessReport = () => {
+  const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
-  const { adminid, Reportid, Spotid } = useParams();
+  const { adminid, Spotid } = useParams();
+  const [OwnerId, setOwnerId] = useState(null);
   console.log(adminid);
   console.log(Spotid);
-  let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/' + Spotid)
-      .then((response) => {
-        console.log(response);
-        setCarType(response.message.Size);
-        setCharge(response.message.Charge);
-        setPassWay(response.message.PassWay);
-        setType(response.message.SpotType);
-        setTitle(response.message.SpotName);
-        setisDay(response.message.IsDayRent);
-        setPriceDay(response.message.PricePerDay);
-        setisHour(response.message.IsHourRent);
-        setPriceHour(response.message.PricePerHour);
-        setWeek(response.message.IsWeekRent);
-        setPriceWeek(response.message.PricePerWeek);
-        setThumbil(response.message.Pictures);
-        const res = JSON.parse(response.message.MorePictures);
-        setSelectedImageString(res);
-        console.log(res);
-        try {
+  useEffect(() => {
+    let getDetail = (Spotid) => {
+      callAPIGetSpecSpot('spot/' + Spotid)
+        .then((response) => {
+          console.log(response);
+          setCarType(response.message.Size);
+          setOwnerId(response.message.OwnerID);
+          setCharge(response.message.Charge);
+          setPassWay(response.message.PassWay);
+          setType(response.message.SpotType);
+          setTitle(response.message.SpotName);
+          setisDay(response.message.IsDayRent);
+          setPriceDay(response.message.PricePerDay);
+          setisHour(response.message.IsHourRent);
+          setPriceHour(response.message.PricePerHour);
+          setWeek(response.message.IsWeekRent);
+          setPriceWeek(response.message.PricePerWeek);
+          setThumbil(response.message.Pictures);
+          const res = JSON.parse(response.message.MorePictures);
+          setSelectedImageString(res);
+          console.log(res);
+          try {
+            const ads = JSON.parse(response.message.SpotAddr);
+            console.log(ads);
+            setState(ads.State);
+            setStreet(ads.Street);
+            setCity(ads.City);
+            setCountry(ads.Country);
+            setPostcode(ads.Postcode);
+          } catch (e) {
+            const ads = response.message.SpotAddr.split(',');
+            console.log(ads);
+            setState(ads[0]);
+            setStreet(ads[0]);
+            setCity(ads.City[1]);
+            setCountry(ads[2]);
+            setPostcode(ads.Postcode[2]);
+          }
           const ads = JSON.parse(response.message.SpotAddr);
           console.log(ads);
           setState(ads.State);
@@ -3315,46 +3371,28 @@ export const ManagerProcessReport = () => {
           setCity(ads.City);
           setCountry(ads.Country);
           setPostcode(ads.Postcode);
-        } catch (e) {
-          const ads = response.message.SpotAddr.split(',');
-          console.log(ads);
-          setState(ads[0]);
-          setStreet(ads[0]);
-          setCity(ads.City[1]);
-          setCountry(ads[2]);
-          setPostcode(ads.Postcode[2]);
-        }
-        const ads = JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
-        let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map((item) => ({
-          ...item,
-          startDate: dayjs(item.startDate),
-          endDate: dayjs(item.endDate),
-        }));
-        console.log(all_time);
-        setFirstStart(all_time[0].startDate);
-        setFirstEnd(all_time[0].endDate);
-        setDistance(all_time[0].distance);
-        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
-      })
-      .catch((error) => {
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
+          let all_time = JSON.parse(response.message.AvailableTime);
+          all_time = all_time.map((item) => ({
+            ...item,
+            startDate: dayjs(item.startDate),
+            endDate: dayjs(item.endDate),
+          }));
+          console.log(all_time);
+          setFirstStart(all_time[0].startDate);
+          setFirstEnd(all_time[0].endDate);
+          setDistance(all_time[0].distance);
+          setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
+        })
+        .catch((error) => {
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
+          });
         });
-      });
-  };
-  useEffect(() => {
+    };
     getDetail(Spotid);
-  }, []);
-  const { _, setOpenSnackbar } = useError();
+  }, [Spotid,setOpenSnackbar]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -3790,6 +3828,7 @@ export const ManagerProcessReport = () => {
         Postcode: Postcode,
         Street: Street,
       }),
+      Owner: OwnerId,
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
@@ -3932,7 +3971,7 @@ export const ManagerProcessReport = () => {
         const res = data.availableTime.filter((value) => {
           return value.startDate === null || value.endDate === null;
         });
-        if (res.length != 0) {
+        if (res.length !== 0) {
           setAllfalse();
           setErrorContent('Your all of the time choice can not be null.');
           setErrorText8(true);
@@ -3978,12 +4017,14 @@ export const ManagerProcessReport = () => {
         }}
       />
       <HiddenCheck
+        Owner={OwnerId}
         isOpen={isOpenHidden}
         close={() => {
           setOpenHidden(false);
         }}
       />
       <DeleteCheck
+        Owner={OwnerId}
         isOpen={isOpenDelete}
         close={() => {
           setOpenDelete(false);
@@ -3991,7 +4032,7 @@ export const ManagerProcessReport = () => {
       />
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>

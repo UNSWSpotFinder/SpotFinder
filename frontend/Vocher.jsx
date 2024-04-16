@@ -10,7 +10,7 @@ import './CarInfo.css';
 export function VocherChoice() {
   const { contextState, updateContextState } = useContext(AppContext);
   const {username, Spotid} = useParams(); 
-  const { _, setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // 路由控制
   let navigate = useNavigate();
   // 回到主页
@@ -95,7 +95,7 @@ export function VocherChoice() {
         <div className='contentmain-car'>
           {/* logo */}
           <div className={contextState.CarPlate==='WDS234'?'Onecar selected':'Onecar'} onClick={choose}>
-            <img src='/img/car.jpeg' className='carthumb'></img>
+            <img src='/img/car.jpeg' className='carthumb' alt=''></img>
             <div className='carinfo-right'>
               <div className='carinfo-right-top'>
                 <p className='carinfo-brand'>4WD/SUV</p>
@@ -106,7 +106,7 @@ export function VocherChoice() {
             </div>
           </div>
           <div className='addcar' onClick={goesCreatCar}>
-            <img src='/img/addusr.png' height={'30px'} className='addimg'></img>
+            <img alt='' src='/img/addusr.png' height={'30px'} className='addimg'></img>
             <p className='addtxt'>Add car here</p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export function VocherChoice() {
 }
 // 车位新增页面
 export function CarSpaceAdd() {
-  const { _ , setOpenSnackbar } = useError();
+  const { setOpenSnackbar } = useError();
   // 路由控制
   let navigate = useNavigate();
   // 回到主页
