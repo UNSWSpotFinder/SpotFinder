@@ -44,15 +44,18 @@ const Dashboard = () => {
             // console.log('parsedOwnedSpot:', parsedOwnedSpot);
           }
         }
+        if(data.message){
+          // data contains user information
+          console.log('data:', data.message);
+          setUserInfo({
+            name: data.message.Name,
+            account: data.message.Account,
+            earning: data.message.Earning,
+            avatar: data.message.Avatar,
+            ownedSpot: parsedOwnedSpot
+          });
+        }
 
-        // data contains user information
-        setUserInfo({
-          name: data.message.name,
-          account: data.message.account,
-          earning: data.message.earning,
-          avatar: data.message.avatar,
-          ownedSpot: parsedOwnedSpot
-        });
         
       } catch (error) {
         console.error('Error fetching user info:', error);

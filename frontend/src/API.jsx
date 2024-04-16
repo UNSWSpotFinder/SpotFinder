@@ -811,3 +811,41 @@ export const callAPICreateOrder = (path, token, input) => {
       });
   });
 };
+
+// the api to get all review
+export const callAPIGetAllreview = (path) => {
+  return new Promise((resolve, reject) => {
+    console.log('http://localhost:' + String(port) + '/' + String(path));
+    fetch('http://localhost:' + String(port) + '/' + String(path), {
+      method: 'GET',
+      headers: {},
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log('success');
+          console.log(response);
+          return response.json().then((data) => resolve(data));
+        } else {
+          // 如果状态码不是200，我们要解析JSON来找出错误原因
+          response
+            .json()
+            .then((data) => {
+              console.log(data.error);
+              let errorReason = 'An unknown error occurred.';
+              if (data.error === '') {
+                errorReason = '';
+              } else if (data.error) {
+                errorReason = '';
+              }
+              reject(errorReason);
+            })
+            .catch(() => {
+              reject(new Error('Error parsing response JSON.'));
+            });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+};

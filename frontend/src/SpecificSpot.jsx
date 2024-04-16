@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { styled } from '@mui/material';
@@ -15,11 +11,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
-import {
-  useNavigate,
-  useLocation,
-  useParams,
-} from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { getUserInfo } from './components/API';
 import {
   useError,
@@ -28,6 +20,7 @@ import {
   GetDistanceAll,
   CalculateAllTime,
   callAPICreateOrder,
+  callAPIGetAllreview,
 } from './API';
 import { withdrawAccount } from './components/API';
 import './SpecificSpot.css';
@@ -173,7 +166,7 @@ const CfmHead = styled('p')({
   textAlign: 'center',
   letterSpacing: '0.2px',
   color: 'rgb(48, 48, 48)',
-}); 
+});
 const ReserveConfirm = styled('button')({
   marginBottom: '15px',
   backgroundColor: '#E22229',
@@ -262,7 +255,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // set the topup state to false
       settp(false);
     }
-  }, [Balance, data.TotalPrice, isOpen, selectedOption,setOpenSnackbar]);
+  }, [Balance, data.TotalPrice, isOpen, selectedOption, setOpenSnackbar]);
   // when the user pay by visa card, waiting for payment
   // when the payment state is changed, the confirm state will be changed
   useEffect(() => {
@@ -725,6 +718,7 @@ export function HomeSpecificLarge() {
   const [TotalPrice, setTotalPrice] = useState(0);
   // initial the owner not the same as the user
   const [sameOwner, setsameOwner] = useState(false);
+  const [allReview, setAllReview] = useState([]);
   // when close the book, set the isbook to false
   const closebook = () => {
     setIsbook(false);
@@ -861,100 +855,114 @@ export function HomeSpecificLarge() {
   };
   // when the isbook changes, refresh the detail of the parking spot
   useEffect(() => {
-      // this function is used to calculate the total price
-  const getDetail = () => {
-    // get the current user
-    const currentname = localStorage.getItem('username') || null;
-    // get the spot id
-    const carId = localStorage.getItem('spotID');
-    // call the api to get the spot detail
-    callAPIGetSpecSpot('spot/' + carId)
-      .then((response) => {
-        // if the response is ok, set the info
-        console.log(response);
-        setInfo(response.message);
-        // phrase all the pictures for the slider
-        const res = JSON.parse(response.message.MorePictures);
-        // phrase the available time to the array
-        const avtime = JSON.parse(response.message.AvailableTime);
-        // set the data for the booking
-        setdata((prevData) => ({
-          ...prevData,
-          AvailableTime: avtime,
-          Charge: response.message.Charge,
-          Passway: response.message.PassWay,
-          SpotName: response.message.SpotName,
-          SpotType: response.message.SpotType,
-          Size: response.message.Size,
-          BookWay: bookway,
-        }));
-        // if the pictures is empty, set the pictures to the first picture
-        if (res.length === 0) {
+    // this function is used to calculate the total price
+    const getDetail = () => {
+      // get the current user
+      const currentname = localStorage.getItem('username') || null;
+      // get the spot id
+      const carId = localStorage.getItem('spotID') || null;
+      // call the api to get the spot detail
+      callAPIGetSpecSpot('spot/' + carId)
+        .then((response) => {
+          // if the response is ok, set the info
+          console.log(response);
+          setInfo(response.message);
+          // phrase all the pictures for the slider
+          const res = JSON.parse(response.message.MorePictures);
+          // phrase the available time to the array
+          const avtime = JSON.parse(response.message.AvailableTime);
+          // set the data for the booking
+          setdata((prevData) => ({
+            ...prevData,
+            AvailableTime: avtime,
+            Charge: response.message.Charge,
+            Passway: response.message.PassWay,
+            SpotName: response.message.SpotName,
+            SpotType: response.message.SpotType,
+            Size: response.message.Size,
+            BookWay: bookway,
+          }));
+          // if the pictures is empty, set the pictures to the first picture
+          if (res.length === 0) {
+            res.unshift(response.message.Pictures);
+          }
+          // set the first picture to the main picture
           res.unshift(response.message.Pictures);
-        }
-        // set the first picture to the main picture
-        res.unshift(response.message.Pictures);
-        // try to phrase the address
-        try {
-          // phrase the address
-          const ads = JSON.parse(response.message.SpotAddr);
-          // set the address to data
-          setdata((prevData) => ({
-            ...prevData,
-            Street: ads.Street,
-            City: ads.City,
-            Country: ads.Country,
-            State: ads.State,
-            Postcode: ads.Postcode,
-          }));
-        } catch (e) {
-          // if the address is not a json, set the address to the first address
-          // split the address
-          const ads = response.message.SpotAddr.split(',');
-          // set the address to data
-          setdata((prevData) => ({
-            ...prevData,
-            Street: ads[0],
-            City: ads[1],
-            Country: ads[0],
-            State: ads[1],
-            Postcode: ads[0],
-          }));
-        }
-        // set the pictures to show
-        setallpic(res);
-        // call the api to get the owner information
-        callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
-          .then((response) => {
-            // if the response is ok, set the owner information
-            console.log(response.message);
-            // if the owner is the current user, set the same owner to true
-            if (response.message.name === currentname) {
-              setsameOwner(true);
-            }
-            // set the owner information
+          // try to phrase the address
+          try {
+            // phrase the address
+            const ads = JSON.parse(response.message.SpotAddr);
+            // set the address to data
             setdata((prevData) => ({
               ...prevData,
-              Profile: response.message.avatar,
-              Owner: response.message.name,
+              Street: ads.Street,
+              City: ads.City,
+              Country: ads.Country,
+              State: ads.State,
+              Postcode: ads.Postcode,
             }));
-          })
-          // if the response is not ok, show the error
-          .catch((error) => {
-            console.log(error);
+          } catch (e) {
+            // if the address is not a json, set the address to the first address
+            // split the address
+            const ads = response.message.SpotAddr.split(',');
+            // set the address to data
+            setdata((prevData) => ({
+              ...prevData,
+              Street: ads[0],
+              City: ads[1],
+              Country: ads[0],
+              State: ads[1],
+              Postcode: ads[0],
+            }));
+          }
+          // set the pictures to show
+          setallpic(res);
+          // call the api to get the owner information
+          callAPIGetSpecUserInfo('user/simpleInfo/' + response.message.OwnerID)
+            .then((response) => {
+              // if the response is ok, set the owner information
+              console.log(response.message);
+              // if the owner is the current user, set the same owner to true
+              if (response.message.name === currentname) {
+                setsameOwner(true);
+              }
+              // set the owner information
+              setdata((prevData) => ({
+                ...prevData,
+                Profile: response.message.avatar,
+                Owner: response.message.name,
+              }));
+            })
+            // if the response is not ok, show the error
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          // tell the user that the spot is not found
+          setOpenSnackbar({
+            severity: 'warning',
+            message: error,
+            timestamp: new Date().getTime(),
           });
-      })
-      .catch((error) => {
-        // tell the user that the spot is not found
-        setOpenSnackbar({
-          severity: 'warning',
-          message: error,
-          timestamp: new Date().getTime(),
         });
-      });
-  };
+    };
     getDetail();
-  }, [isbook, bookway, username,setOpenSnackbar]);
+    const getReview = () => {
+      const carId = localStorage.getItem('spotID') || null;
+      callAPIGetAllreview('spots/' + carId + '/reviews')
+        .then((response) => {
+          console.log(response);
+          if (response && response.reviews) {
+            setAllReview(response.reviews);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    getReview();
+  }, [isbook, bookway, username, setOpenSnackbar]);
   // initial the navigation
   let navigate = useNavigate();
   // initial the location
@@ -1013,20 +1021,20 @@ export function HomeSpecificLarge() {
   const [Firstdistance, setDistance] = useState(0);
   // when the time intervals change, calculate the total price
   useEffect(() => {
-      // this function is used to calculate the total price
-  const calculateTotalPrice = (distance) => {
-    // according to the book way, calculate the total price
-    switch (bookway) {
-      case 'H':
-        return distance * info.PricePerHour;
-      case 'D':
-        return distance * info.PricePerDay;
-      case 'W':
-        return distance * info.PricePerWeek;
-      default:
-        return 0; // Handle unexpected bookway values gracefully
-    }
-  };
+    // this function is used to calculate the total price
+    const calculateTotalPrice = (distance) => {
+      // according to the book way, calculate the total price
+      switch (bookway) {
+        case 'H':
+          return distance * info.PricePerHour;
+        case 'D':
+          return distance * info.PricePerDay;
+        case 'W':
+          return distance * info.PricePerWeek;
+        default:
+          return 0; // Handle unexpected bookway values gracefully
+      }
+    };
     // calculate the total time
     let res = CalculateAllTime(
       [
@@ -1047,7 +1055,15 @@ export function HomeSpecificLarge() {
     setTotalPrice(calculateTotalPrice(res));
     // set the total time for the booking
     console.log(timeIntervals);
-  }, [timeIntervals, FirstStart, FirstEnd, bookway, info.PricePerHour, info.PricePerDay, info.PricePerWeek]);
+  }, [
+    timeIntervals,
+    FirstStart,
+    FirstEnd,
+    bookway,
+    info.PricePerHour,
+    info.PricePerDay,
+    info.PricePerWeek,
+  ]);
   // change the first available date
   const FirstStartChange = (date) => {
     setFirstStart(date);
@@ -1516,75 +1532,30 @@ export function HomeSpecificLarge() {
       </div>
       <div className='Review-part'>
         <p className='ReviewTitle'>Reviews</p>
-        <div className='Review-row-odd'>
-          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
-          <div className='Review-right'>
-            <div className='Review-top'>
-              <p className='r-name'>boyang</p>
-              <Rating
-                name='read-only '
-                className='black-star'
-                value={info.Rate}
-                readOnly
-              />
-              <p className='r-name'>5.0</p>
+        {allReview.map((info, index) => (
+          <div
+            key={info.ID}
+            className={index % 2 === 0 ? 'Review-row-odd' : 'Review-row'}
+          >
+            <img
+              className='Review-left-img'
+              src={info.Rater.Avatar}
+              alt=''
+            ></img>
+            <div className='Review-right'>
+              <div className='Review-top'>
+                <p className='r-name'>{info.Rater.Name}</p>
+                <div className='black-star'>
+                  <Rating name='read-only' value={info.Rating} readOnly />
+                  <p className='r-rating'>{info.Rating + ' Marks'}</p>
+                </div>
+              </div>
+              <p className='Review-bottom'>{info.Comment}</p>
             </div>
-            <p className='Review-bottom'>
-              This car space is good, and provider is very nice.
-            </p>
           </div>
-        </div>
-        <div className='Review-row'>
-          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
-          <div className='Review-right'>
-            <div className='Review-top'>
-              <p className='r-name'>WangYun Fan</p>
-              <Rating
-                name='read-only '
-                className='black-star'
-                value={3.3}
-                readOnly
-              />
-              <p className='r-name'>3.2</p>
-            </div>
-            <p className='Review-bottom'>
-              just can parking the space is hard to find.
-            </p>
-          </div>
-        </div>
-        <div className='Review-row-odd'>
-          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
-          <div className='Review-right'>
-            <div className='Review-top'>
-              <p className='r-name'>Guo Jia QI</p>
-              <Rating
-                name='read-only '
-                className='black-star'
-                value={0}
-                readOnly
-              />
-              <p className='r-name'>0.0</p>
-            </div>
-            <p className='Review-bottom'>This car space can not be found!.</p>
-          </div>
-        </div>
-        <div className='Review-row'>
-          <img className='Review-left-img' src='/img/profile.png' alt=''></img>
-          <div className='Review-right'>
-            <div className='Review-top'>
-              <p className='r-name'>LongSi Zhuo</p>
-              <Rating
-                name='read-only '
-                className='black-star'
-                value={info.Rate}
-                readOnly
-              />
-              <p className='r-name'>5.0</p>
-            </div>
-            <p className='Review-bottom'>
-              This car space is good, and provider is very nice.
-            </p>
-          </div>
+        ))}
+        <div className={allReview.length % 2 === 0 ? 'Review-row-odd' : 'Review-row'} >
+            <p className='Review-bottom-N'>{'No more Reviews'}</p>
         </div>
       </div>
     </div>
