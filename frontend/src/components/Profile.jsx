@@ -24,22 +24,22 @@ const Profile = () => {
   useEffect(() => {
     setIsLoading(true); // 开始获取数据时设置头像加载状态为true
     getUserInfo().then(data => {
-      // console.log('User info:', data);
+      console.log('User info:', data);
       // 填充用户信息
       const userInfo = data.message;
 
-      setName(userInfo.name);
-      setEmail(userInfo.email);
-      setPhone(userInfo.phone);
+      setName(userInfo.Name);
+      setEmail(userInfo.Email);
+      setPhone(userInfo.Phone);
       // 格式化日期
-      const dateParts = userInfo.dateBirth.split('/');
+      const dateParts = userInfo.DateBirth.split('/');
       const convertedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       setDateOfBirth(convertedDate);
     // 解析地址信息
-      if (userInfo.addr) {
+      if (userInfo.Addr) {
         try {
           // 构建一个完整的JSON字符串
-          const jsonString = `{${userInfo.addr}}`;
+          const jsonString = `{${userInfo.Addr}}`;
           const addrObject = JSON.parse(jsonString);
           // 设置地址相关状态
           setAddress(addrObject.address);
@@ -52,7 +52,7 @@ const Profile = () => {
         }
       }
       // 将获取到的头像（base64）变为可显示的URL
-      const avatarData = userInfo.avatar;
+      const avatarData = userInfo.Avatar;
       if (avatarData) {
         // 检查 avatar data 是否 starts with 'data:image/jpeg;base64,'
         // const base64Prefix = 'data:image/jpeg;base64,';

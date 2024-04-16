@@ -12,10 +12,11 @@ const Messages = () => {
   const [notifications, setNotifications] = useState([]); // 用于存储通知
   const [messages, setMessages] = useState([]); // 用于存储消息
 
-  const [showNotifications, setShowNotifications] = useState(true); // 控制显示或隐藏通知
+  const [showNotifications, setShowNotifications] = useState(false); // 控制显示或隐藏通知
   const [showMessages, setShowMessages] = useState(true); // 控制显示或隐藏消息
 
   const [userID, setUserID] = useState(localStorage.getItem('userID') || 0);
+  const [userAvatar, setUserAvatar] = useState('');
 
   // 对话映射，键是参与者对组合，值是消息数组
   const [conversations, setConversations] = useState({});
@@ -29,6 +30,11 @@ const Messages = () => {
             const payload = JSON.parse(atob(jwtParts[1]));
             // console.log("userID",payload.userID);
             setUserID(Number(payload.userID));
+             // 获取用户自己的头像信息
+            getUserSimpleInfo(Number(payload.userID)).then(info => {
+              setUserAvatar(info.message.avatar);
+            }).catch(error => console.error('Failed to fetch user info:', error));
+            
             websocket = new WebSocket(`ws://localhost:8080/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
                 // 当WebSocket连接打开时的回调函数
@@ -44,20 +50,38 @@ const Messages = () => {
                     if (data.type === 'message') {
                       setConversations(prevConversations => {
                         const participants = [data.content.SenderID, data.content.ReceiverID].sort().join('-');
+                        const receiverId = [data.content.SenderID, data.content.ReceiverID].find(id => id !== userID);
+                    
                         setConversationVisibility(prev => ({
                           ...prev,
-                          [participants]: (prev[participants] !== undefined) ? prev[participants] : true // 默认为true
+                          [participants]: (prev[participants] !== undefined) ? prev[participants] : false
                         }));
+                        
                         const updatedConversations = {...prevConversations};
-                        const conversation = updatedConversations[participants] || { messages: [], content: '' };
+                        const conversation = updatedConversations[participants] || { messages: [], content: '', userInfo: {} };
                         conversation.messages.push(data);
-                    
                         conversation.messages = conversation.messages.sort((a, b) => new Date(a.content.SentAt) - new Date(b.content.SentAt));
+                        
+                        if (!conversation.userInfo[receiverId]) {
+                          getUserSimpleInfo(receiverId).then(info => {
+                            // console.log('Fetched user info:', info);
+                            setConversations(prev => ({
+                              ...prev,
+                              [participants]: {
+                                ...prev[participants],
+                                userInfo: {
+                                  ...prev[participants].userInfo,
+                                  [receiverId]: info.message  // 存储用户信息
+                                }
+                              }
+                            }));
+                          }).catch(error => console.error('Failed to fetch user info:', error));
+                        }
                     
                         updatedConversations[participants] = conversation;
-                    
+                        
                         return updatedConversations;
-                      });          
+                      });         
                       } else if (data.type === 'notification') {
                         setNotifications(prevNotifications => [data, ...prevNotifications].sort((a, b) => new Date(b.content.SentAt) - new Date(a.content.SentAt))); // 将最新的通知放在顶部
                       }
@@ -140,13 +164,17 @@ const Messages = () => {
 
 
   const renderConversations = () => {
-    return Object.entries(conversations).map(([participantsKey, { messages, content }], index) => {
+    return Object.entries(conversations).map(([participantsKey, { messages, content, userInfo }], index) => {
       const isConversationVisible = conversationVisibility[participantsKey] !== false;
-
+      const participantIDs = participantsKey.split('-').map(Number);
+      const receiverId = participantIDs.find(id => id !== userID);
+  
+      const otherUserInfo = userInfo[receiverId] || {};  // 默认空对象防止未定义错误
+  
       return (
         <div key={index} className='conversation'>
           <div className='conversation-title'>
-            <div>Conversation with {participantsKey.split('-').map(Number).find(id => id !== userID)}</div>
+            <div>{otherUserInfo.name || 'Loading...'}</div>
             <button onClick={() => toggleConversationVisibility(participantsKey)} className="toggle-button">
               {isConversationVisible ? <MdExpandLess /> : <MdExpandMore />}
             </button>
@@ -154,17 +182,28 @@ const Messages = () => {
           <div className='conversation-messages' style={{ display: isConversationVisible ? 'block' : 'none' }}>
             {messages.map((message, msgIndex) => {
               const messageClass = message.content.SenderID === userID ? 'message-sent' : 'message-received';
-
+  
               return (
-                <div key={msgIndex} className={messageClass}>
-                  <div className='message-container'>
-                    <div>{message.content.Content}</div>
-                    <div>{new Date(message.content.SentAt).toLocaleString()}</div>
+                <div className='receiver-info'>                
+                  <div key={msgIndex} className={`message-row ${messageClass}`}>
+                    {message.content.SenderID !== userID && otherUserInfo.avatar && (
+                      <img src={otherUserInfo.avatar} alt="Avatar" className="avatar" />
+                      
+                    )}
+                    {/* <div>{otherUserInfo.name}</div> */}
+                    <div className='message-container'>
+                      <div>{message.content.Content}</div>
+                      <div>{new Date(message.content.SentAt).toLocaleString()}</div>
+                    </div>
+                    {message.content.SenderID === userID && userAvatar && (
+                     <img src={userAvatar} alt="Avatar" className="avatar" />
+                      )}                    
                   </div>
-                </div>
+              </div>
+
               );
             })}
-            <div>
+            <div className='input-and-send-btn'>
               <input
                   type="text"
                   value={content}
@@ -181,13 +220,13 @@ const Messages = () => {
       );
     });
   };
-
-
   
+  
+
+
 
     return (
         <div className='DashboardMessages'>
-          <p>My ID: {userID}</p>
             <div className='msg-title'>
                 Notifications
                 <button onClick={toggleNotifications} className="toggle-button">
