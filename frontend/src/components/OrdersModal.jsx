@@ -84,31 +84,30 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
           (data) => ({ id: order.BookerID, data: data.message })
         )
       );
-      // 等待所有用户信息的Promise完成
+      // wait for all promises to complete
       const bookers = await Promise.all(bookersPromises);
-      // 创建一个新的对象来存储用户信息
+      // create a new object to store the user information
       const bookersData = bookers.reduce((acc, current) => {
         acc[current.id] = current.data;
         return acc;
       }, {});
-      setBookersInfo(bookersData); // 更新状态
+      setBookersInfo(bookersData);
     };
 
-    // 获取停在某spot的vehicle信息
+    // get the vehicle information parked at some spot
     const loadCarsInfo = async () => {
       const carsInfoUpdates = {};
       const carRequests = orders.map(order => getSpecificCarInfo(order.CarID)
         .then(info => {
           console.log('Car info:', info.car);
-          carsInfoUpdates[order.CarID] = info.car; // 如果成功获取，则存储车辆信息
+          carsInfoUpdates[order.CarID] = info.car;
         })
         .catch(error => {
-          carsInfoUpdates[order.CarID] = 'This car has been deleted'; // 如果获取失败，则设置提示信息
+          carsInfoUpdates[order.CarID] = 'This car has been deleted';
         })
-      );
-  
+      ); 
       await Promise.all(carRequests);
-      setCarsInfo(carsInfoUpdates); // 更新状态，存储每个车辆的信息或错误提示
+      setCarsInfo(carsInfoUpdates);
     };
 
     // 调用该函数
