@@ -224,16 +224,6 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   // when the payment method is selected, the selectedOption state will be changed
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-    // 根据选项执行相应的操作
-    if (event.target.value === '0') {
-      // 如果选中了 SpotAccount，则执行相关操作
-      console.log('Spot Account 被选中');
-      // 在这里执行你的操作
-    } else if (event.target.value === '1') {
-      // 如果选中了 VisaCard，则执行相关操作
-      console.log('Visa Card 被选中');
-      // 在这里执行你的操作
-    }
   };
   // get token from the context
   let token = localStorage.getItem('token') || null;
@@ -337,9 +327,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   };
   // try to got the vocher
   const VerifyVocher = () => {
-    console.log(token);
+    // call the api to get the specific vocher
     callAPIGetSpecificVocher('vouchers/info/' + theVocher, token)
     .then((response)=>{
+      // if the vocher is valid and not used, the snackbar will be opened
       console.log(response);
       if(response.value && response.used === false){
         setOpenSnackbar({
@@ -347,10 +338,13 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           message: 'Voucher is valid got discount $' + response.value + '.',
           timestamp: new Date().getTime(),
         });
+        // if the discount is more than the total price, the discount will be set to total price - 1
         if(response.value > data.TotalPrice){
           response.value = data.TotalPrice-1;
         }
+        // set the discount account
         setDisAccount(response.value);
+        // set the use discount state to true
         setUseDiscount(true);
       }
       else{
@@ -434,9 +428,12 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       if (selectedOption === '0') {
         withdrawAccount(TotalPrice);
       }
+      // if the user use the vocher
       if(useDiscount){
+        // call the api to use the vocher
         callAPIUseSpecificVocher('vouchers/use/' + theVocher, token)
         .then((response)=>{
+          // reset the discount
           setDisAccount(0);
           setUseDiscount(false);
           setTheVocher('');
