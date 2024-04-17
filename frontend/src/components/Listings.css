@@ -58,7 +58,7 @@
 
   .listing-info {
     display: grid;
-    grid-template-columns: 150px auto auto auto;
+    grid-template-columns: 1fr 2.3fr 1.5fr 1.5fr; 
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
@@ -246,4 +246,10 @@
   .delete-confirm-title{
     font-size: 20px;
     font-weight: bold;
+  }
+
+  .no-spots-message a {
+    color: #e11e2c;
+    margin-left: 10px;
+
   }

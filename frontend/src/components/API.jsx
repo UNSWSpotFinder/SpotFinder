@@ -806,3 +806,26 @@ export const callAPIgetTotalEarning = () => {
     throw error;
   });
 };
+
+// get a random voucher(get)
+export const getVoucher = () => {
+  const endpoint = `${baseUrl}/vouchers/random`;
+  const token = localStorage.getItem('token');
+
+  return fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => { throw err; });
+    }
+    return response.json();
+  })
+  .catch(error => {
+    console.error('Error during fetch operation:', error);
+  });
+};

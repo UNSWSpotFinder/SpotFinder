@@ -229,26 +229,29 @@ const Dashboard = () => {
         </div>
         {/* 第二列显示当前预定数量 */}
         {/* second column: number of current bookings */}
-        <div className='second-column-booking'>
-          <h5>My Bookings</h5>
-          <div className='booking-number'>{pendingBookingsCount}</div>
-          <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
-        </div>
 
-        {/* 第三列显示当前用户的车位数量 */}
-        {/* third column: number of user's spots */}
-        <div className='second-column-booking'>
-          <h5>My Listings</h5>
-          <div className='listing-number'>{receivedBookingsInfo.length}</div>
-          <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
-        </div>
       </div>
+      <div className='book-list-info'>
+        <div className='second-column-booking'>
+            <h5>My Bookings</h5>
+            <div className='booking-number'>{pendingBookingsCount}</div>
+            <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
+          </div>
+
+          {/* 第三列显示当前用户的车位数量 */}
+          {/* third column: number of user's spots */}
+          <div className='second-column-booking'>
+            <h5>My Listings</h5>
+            <div className='listing-number'>{receivedBookingsInfo.length}</div>
+            <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
+          </div>
+        </div>
 
       {/* Bottom: Voucher */}
-      <div className="second-vouchers">
+      {/* <div className="second-vouchers">
         <h3>Vouchers</h3>
         <div>You have no vouchers.</div>
-      </div>
+      </div> */}
       
       {/* top up modal */}
       {isTopUpModalVisible && (

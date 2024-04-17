@@ -35,9 +35,9 @@ const DashboardTop = () => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const data = await getUserInfo();  
+          const data = await getUserInfo(); 
           setUserInfo({
-            name: data.message.name,
+            name: data.message.Name,
           });
         } catch (error) {
           console.error('Error fetching user info:', error);
