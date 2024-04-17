@@ -1,11 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState, useContext, useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import './Regist.css';
 import { motion } from 'framer-motion';
 import * as React from 'react';
 
-import dayjs, { Dayjs } from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -17,67 +16,78 @@ import {
   callAPIRegistAdmin,
   removeLastSegment,
 } from './API';
-// 用户注册页面
+// User registration page
 export function UserRegistPage() {
-  // 上下文错误
+  // initialize the location
   const location = useLocation();
-  const { snackbarData, setOpenSnackbar } = useError();
-  //  按钮不可用性
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  //  初始化路由选择器
+  // initialize the navigate
   let navigate = useNavigate();
-  // 两个密码可见性
+  // get the error message
+  const { setOpenSnackbar } = useError();
+  // initialize the state of the button
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  // initialize the state of the password visibility
   const [passwordVisibility1, setPasswordVisibility1] = useState(false);
   const [passwordVisibility2, setPasswordVisibility2] = useState(false);
-  // 生日
+  // initialize the state of the birthday
   const [BirthDate, setBirthDate] = useState(dayjs(new Date()));
-  // 验证码可见性 验证状态 是否出现验证错误
+  // initialize the state of the verify visibility
   const [verifyVisibility, setverifyVisibility] = useState(false);
+  // initialize the state of the verifyed for email verification
   const [isverifyed, setisverifyed] = useState(false);
+  // initialize the verify has no error
   const [isverifyError, setisverifyError] = useState(false);
-  // 邮箱
+  // initialize the email
   const [Email, setEmail] = useState('');
-  // 密码
+  // initialize the password
   const [Password, setPassword] = useState('');
+  // confirm the password
+  const [Password1, setPassword1] = useState('');
+  // the password change
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-  // 确认密码
-  const [Password1, setPassword1] = useState('');
+  // the password1 change
   const handlePassword1Change = (event) => {
     setPassword1(event.target.value);
   };
-  // 验证码
+  // verify code
   const [code, setCode] = useState('');
+  // verify code change
   const handleCodeChange = (event) => {
     setCode(event.target.value);
   };
-  // 手机号
+  // phone
   const [phone, setPhone] = useState('');
   const handlePhoneChange = (event) => {
     setPhone(event.target.value);
   };
-  // 姓名
+  // name
   const [name, setName] = useState('');
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
-  // 选择目的
+  // target for register the APP
   const [target, setTarget] = useState(null);
   const handleOptionChange = (option) => {
     setTarget(option);
   };
-  // 选择头像
+  // choose the thumbil
   const [Thumbil, setThumbil] = useState('');
+  // the birthday change
   const handleBirthdayChange = (date) => {
     console.log(dayjs(date));
     setBirthDate(dayjs(date));
   };
+  // open the file chooser
   const EditPhoto = () => {
     document.getElementById('fileInput').click();
   };
+  // function to change the thumbil
   const AddThumbil = (event) => {
+    // get the files
     const files = event.target.files;
+    // if the files is not null
     if (files && files.length > 0) {
       // get the first element
       const file = files[0];
@@ -104,35 +114,42 @@ export function UserRegistPage() {
         reader.readAsDataURL(file);
       }
       else{
+        // if the file is null then read the default image
         reader.readAsDataURL('/img/LOGO.svg');
       }
     }
   };
+  // handle the email change
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
+  // go back to the previous page
   let backhome = () => {
     navigate(-1);
   };
+  // go to the login page
   let goeslogin = () => {
     const temp = removeLastSegment(location.pathname);
     console.log(temp);
     navigate(temp + 'userlogin');
   };
+  // set the button to clickable state after 30 seconds
   useEffect(() => {
     let timeoutId;
-    // 在按钮可点击状态改变后，设置一个定时器来在 30 秒后将其重新设为可点击状态
+    // set a timer to reset the button to clickable state after 30 seconds
     if (isButtonDisabled) {
       timeoutId = setTimeout(() => {
         setIsButtonDisabled(false);
       }, 30000); // 30 秒
     }
-
-    // 清除定时器以避免内存泄漏
+    // clear the timeout to avoid memory leak
     return () => clearTimeout(timeoutId);
   }, [isButtonDisabled]);
+  // send the verification code
   function sendCode() {
+    // if the button is disabled then prompt the user
     if (isButtonDisabled) {
+      // set a snackbar to prompt the user
       setOpenSnackbar({
         severity: 'info',
         message: 'Verification codes are sent too frequently',
@@ -140,22 +157,22 @@ export function UserRegistPage() {
       });
       return;
     }
+    // define the data
     const data = {
       to: Email,
     };
+    // set the button to disabled state
     setIsButtonDisabled(true);
-    console.log(isButtonDisabled);
+    // call the API to send the code to user
     callAPIsendEmailCode('user/create/sendEmail', data)
       .then((response) => {
+        // when meet success
+        // set verify visibility to true
         setverifyVisibility(true);
+        // set the button to disabled state to avoid user click it again
         setIsButtonDisabled(true);
         console.log(response);
-        setOpenSnackbar({
-          severity: 'warning',
-          message: 'Please fill in your mobile phone number.',
-          timestamp: new Date().getTime(),
-        });
-        // set open snackbar
+        // set open snackbar to prompt the user
         setOpenSnackbar({
           severity: 'success',
           message: 'We have send to ' + Email + ' a code.',
@@ -173,20 +190,25 @@ export function UserRegistPage() {
         });
       });
   }
+  // this function is used to verify the email
   function verifyEmail() {
+    // define the data
     const data = {
       code: code,
       email: Email,
     };
-    console.log(data);
-    // call api to login
+    // call api to verify the email code
     callAPIverifyEmailCode('user/create/verifyEmail', data)
       .then((response) => {
         console.log(response);
-        // set open snackbar
+        // when meet success
+        // close the verify dialog
         setverifyVisibility(false);
+        // set the isverifyed to true
         setisverifyed(true);
+        // set the isverifyError to false
         setisverifyError(false);
+        // set the open snackbar to prompt the user
         setOpenSnackbar({
           severity: 'success',
           message: Email + ' has a been verifed!',
@@ -195,6 +217,7 @@ export function UserRegistPage() {
       })
       .catch((error) => {
         // when meet error
+        // set open snackbar to prompt the user
         setOpenSnackbar({
           severity: 'error',
           message: error,
@@ -203,7 +226,9 @@ export function UserRegistPage() {
         console.log(error);
       });
   }
+  // this function is used to register the user
   function Regist() {
+    // if the email is not verified then prompt the user
     if (!isverifyed) {
       setOpenSnackbar({
         severity: 'info',
@@ -212,7 +237,8 @@ export function UserRegistPage() {
       });
       return;
     }
-    if (phone == '') {
+    // if the phone is null then prompt the user
+    if (phone === '') {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Please fill in your mobile phone number.',
@@ -220,7 +246,8 @@ export function UserRegistPage() {
       });
       return;
     }
-    if (name == '') {
+    // if the name is null then prompt the user
+    if (name === '') {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Please fill in a name so we know how to call you.',
@@ -228,6 +255,7 @@ export function UserRegistPage() {
       });
       return;
     }
+    // if the password length is not between 6-16 then prompt the user
     if (Password.length < 6 || Password.length > 16) {
       setOpenSnackbar({
         severity: 'warning',
@@ -236,6 +264,7 @@ export function UserRegistPage() {
       });
       return;
     }
+    // if the password is not the same as the rePassword then prompt the user
     if (Password !== Password1) {
       setOpenSnackbar({
         severity: 'warning',
@@ -244,6 +273,7 @@ export function UserRegistPage() {
       });
       return;
     }
+    // if the thumbil is null then prompt the user
     if(AddThumbil===''){
       setOpenSnackbar({
         severity: 'warning',
@@ -252,9 +282,9 @@ export function UserRegistPage() {
       });
       return;
     }
-    console.log(BirthDate);
+    // format the birth date
     const formattedDate = dayjs(BirthDate).format('DD/MM/YYYY');
-    console.log(formattedDate);
+    // define the data to register the user
     const data = {
       avatar: Thumbil,
       dateBirth: formattedDate,
@@ -264,20 +294,26 @@ export function UserRegistPage() {
       phone: phone,
       rePassword: Password1,
     };
+    // call the api to register the user
     callAPIRegistUser('user/create', data)
       .then((response) => {
+        // when meet success
         console.log(response);
+        // set the open snackbar to prompt the user
         setOpenSnackbar({
           severity: 'success',
           message: 'Welcome join SpotFinder ' + name + '.',
           timestamp: new Date().getTime(),
         });
+        // redirect the user to the login page
         const temp = removeLastSegment(location.pathname);
         console.log(temp);
         navigate(temp + 'userlogin');
       })
       .catch((error) => {
+        // when meet error
         console.log(error);
+        // set the open snackbar to prompt the user
         setOpenSnackbar({
           severity: 'warning',
           message: error,
@@ -307,7 +343,7 @@ export function UserRegistPage() {
           </button>
         </div>
         <div className='contentmain'>
-          <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+          <img src='img/LOGO.svg' height={'100 px'} className='Logo' alt=''></img>
           <div className='LoginUser'>
             <p className='welcomemain'>Welcome to Join SpotFinder</p>
             <p className='welcomesub'>
@@ -346,7 +382,7 @@ export function UserRegistPage() {
                 <div className='emailverify'>
                   <input
                     type='email'
-                    className='form-control rightcontrol-r setmargin'
+                    className='form-control rightcontrol-r '
                     disabled={isverifyed}
                     onChange={handleEmailChange}
                     value={Email}
@@ -481,6 +517,7 @@ export function UserRegistPage() {
                   className='profilephoto'
                   width='100 px'
                   height='100px'
+                  alt=''
                 ></img>
                 <input
                   type='file'
@@ -506,9 +543,9 @@ export function UserRegistPage() {
             </form>
             <div className='logbottom'>
               <p className='welcomesub'>Already have an account?</p>
-              <a className='forget' onClick={goeslogin}>
+              <p className='forget' onClick={goeslogin}>
                 Click here to Sign in
-              </a>
+              </p>
             </div>
           </div>
         </div>
@@ -516,48 +553,57 @@ export function UserRegistPage() {
     </div>
   );
 }
-// 管理员注册页面
+// admin regist page
 export function AdminRegistPage() {
-  // 上下文错误
-  const { snackbarData, setOpenSnackbar } = useError();
-  //  初始化路由选择器
+  // set error to provide error message
+  const { setOpenSnackbar } = useError();
+  // initial the link to navigate
   let navigate = useNavigate();
-  // 两个密码可见性
+  // initial the password visibility
   const [passwordVisibility1, setPasswordVisibility1] = useState(false);
   const [passwordVisibility2, setPasswordVisibility2] = useState(false);
-  // 邮箱
+  // initial the email
   const [Email, setEmail] = useState('');
-  // 密码
+  // initial the password
   const [Password, setPassword] = useState('');
+  // when the password is changed, set the password
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-  // 确认密码
+  // initial the password1
   const [Password1, setPassword1] = useState('');
+  // when the password1 is changed, set the password1
   const handlePassword1Change = (event) => {
     setPassword1(event.target.value);
   };
-  // 手机号
+  // initial the phone number
   const [phone, setPhone] = useState('');
+  // when the phone number is changed, set the phone number
   const handlePhoneChange = (event) => {
     setPhone(event.target.value);
   };
-  // 姓名
+  // initial the name
   const [name, setName] = useState('');
+  // when the name is changed, set the name
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
+  // initial the birth date
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
+  // go back to the home page
   let backhome = () => {
     navigate('/');
   };
+  // go to the login page
   let goeslogin = () => {
     navigate('/adminlogin');
   };
+  // when the user click the register button, check the input and register
   function Regist() {
-    if (phone == '') {
+    // if the phone number is empty, provide a warning
+    if (phone ==='') {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Please fill in your mobile phone number.',
@@ -565,7 +611,8 @@ export function AdminRegistPage() {
       });
       return;
     }
-    if (name == '') {
+    // if the name is empty, provide a warning
+    if (name === '') {
       setOpenSnackbar({
         severity: 'warning',
         message: 'Please fill in a name so we know how to call you.',
@@ -573,6 +620,7 @@ export function AdminRegistPage() {
       });
       return;
     }
+    // if the password not between 6-16 characters, provide a warning
     if (Password.length < 6 || Password.length > 16) {
       setOpenSnackbar({
         severity: 'warning',
@@ -581,6 +629,7 @@ export function AdminRegistPage() {
       });
       return;
     }
+    // if the password1 not match the password, provide a warning
     if (Password !== Password1) {
       setOpenSnackbar({
         severity: 'warning',
@@ -589,6 +638,7 @@ export function AdminRegistPage() {
       });
       return;
     }
+    // initial the data to regist
     const data = {
       adminID: Email,
       name: name,
@@ -596,16 +646,20 @@ export function AdminRegistPage() {
       phone: phone,
       rePassword: Password1,
     };
+    // call the api to register the admin
     callAPIRegistAdmin('manager/create', data)
       .then((response) => {
+        // if the response is success, provide a success message
         setOpenSnackbar({
           severity: 'success',
           message: 'Admin ' + name + ' registed.',
           timestamp: new Date().getTime(),
         });
+        // navigate to the login page
         navigate('/adminlogin');
       })
       .catch((error) => {
+        // if the response is error, provide a warning message
         console.log(error);
         setOpenSnackbar({
           severity: 'warning',
@@ -636,7 +690,7 @@ export function AdminRegistPage() {
           </button>
         </div>
         <div className='contentmain'>
-          <img src='img/LOGO.svg' height={'100 px'} className='Logo'></img>
+          <img src='img/LOGO.svg' height={'100 px'} className='Logo' alt=''></img>
           <div className='LoginUser-admin'>
             <p className='welcomemain-admin'>Welcome to Join SpotFinder</p>
             <form className='w-100'>
@@ -724,9 +778,9 @@ export function AdminRegistPage() {
             </form>
             <div className='logbottom'>
               <p className='welcomesub'>Already have an account?</p>
-              <a className='forget' onClick={goeslogin}>
+              <p className='forget' onClick={goeslogin}>
                 Click here to Sign in
-              </a>
+              </p>
             </div>
           </div>
         </div>

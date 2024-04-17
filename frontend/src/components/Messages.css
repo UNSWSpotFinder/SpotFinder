@@ -9,5 +9,69 @@
 .msg-header{
     display: flex;
     justify-content: space-between;
-
 }
+
+.toggle-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+.msg-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.notification-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    background-color: whitesmoke;
+    padding: 10px;
+}
+
+.conversation{
+    background-color: whitesmoke;
+    margin-bottom: 10px;
+}
+
+.conversation-title {
+  display: flex;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.conversation-messages{
+    padding: 5px;
+}
+
+.message-container {
+  display: flex;
+
+  justify-content: space-between;
+}
+
+.message-sent, .message-received{
+    padding: 8px;
+    margin: 5px;
+    border-radius: 10px;
+    max-width: 80%;
+  }
+  
+  .message-sent {
+    background-color: #dcf8c6;  /* 浅绿色背景，标示发送的消息 */
+    margin-left: auto;  /* 推到右侧 */
+    text-align: right;
+  }
+  
+  .message-received {
+      /* 白色背景，标示接收的消息 */
+    
+    background-color: #ffffff;
+    margin-right: auto;  /* 推到左侧 */
+    text-align: left;
+  }
+  

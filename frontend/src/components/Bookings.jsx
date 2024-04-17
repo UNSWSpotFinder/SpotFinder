@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Rating from '@mui/material/Rating';
 import Snackbar from '@mui/material/Snackbar';
 import BookingDetailModal from './BookingDetailModal'
-import { getMyBookingsInfo, getSpotDetails, cancelBooking, createReport } from './API';
+import { getMyBookingsInfo, getSpotDetails, cancelBooking, createReport, createReview } from './API';
 import './Bookings.css';
 
 const Bookings = () => {
@@ -29,9 +29,9 @@ const Bookings = () => {
   const [showBookingReviewModal, setShowBookingReviewModal] = useState(false);
   const [reviewContent, setReviewContent] = useState('');
 
-  const [selectedSpotID, setSelectedSpotID] = useState(null); // 保存选中的 Spot ID
+  const [selectedSpotID, setSelectedSpotID] = useState(null); // save the ID of chosen Spot
 
-  // 切换视图的函数
+  // switch to current/past bookings
   const switchToCurrent = () => {
     setCurrentView('Current');
   };
@@ -127,7 +127,9 @@ const Bookings = () => {
   }
 
   // 打开订单Review弹窗
-  const openReviewModal=()=>{
+  const openReviewModal=(bookingID)=>{
+    setSelectedBookingID(bookingID);
+    console.log('Cancel Booking ID:', bookingID);
     setShowBookingReviewModal(true);
   }
   // 关闭订单Review弹窗
@@ -198,12 +200,35 @@ const Bookings = () => {
       setOpenSnackbar(true);
     }
   };
+
+  // 新建spot review
+  const handleReviewSubmit = () => {
+    if (selectedBookingID && reviewContent.trim()) {
+      createReview(selectedBookingID, reviewContent, rating)
+        .then(result => {
+            setSnackbarMessage('Review submitted successfully.');
+            setOpenSnackbar(true);
+        })
+        .catch(error => {
+          console.error("Error submitting the review:", error);
+          setSnackbarMessage('Failed to submit the review: ' + (error.message || "Unknown error"));
+          setOpenSnackbar(true);
+        })
+        .finally(() => {
+          // 无论请求成功还是失败，最后都会执行的代码
+          setShowBookingReviewModal(false); 
+          setReviewContent(''); 
+          setSelectedBookingID(null);
+        });
+    } else {
+      // 如果报告内容为空，则直接通知用户
+      console.log("Missing Booking ID or review content is empty.");
+      setSnackbarMessage('Review cannot be empty.');
+      setOpenSnackbar(true);
+    }
+  }
   
-  
-
-
-
-  // 用于点击链接时执行的函数
+  // 点击链接跳转到dashboard页面
   const ClickToFindSpot = (event) => {
     event.preventDefault(); // 阻止链接的默认行为
     const email = localStorage.getItem('email');
@@ -211,8 +236,6 @@ const Bookings = () => {
       navigate(`/${email}`); // 使用email值进行导航
     }
   };
-
-
 
   return (
     <div className='dashboard-bookings'>
@@ -256,18 +279,23 @@ const Bookings = () => {
                   <div className='way-to-access'>{spotInfo.PassWay}</div>
                 </div>
                 <div className='right-btn-part'>
-                <button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotsInfo.find(spot => spot.ID === booking.SpotID))}>Details</button>
+                <div><button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotsInfo.find(spot => spot.ID === booking.SpotID))}>Details</button></div>
                   {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
                   {booking.Status === 'Pending' && (
                     <div>
                       <button className='booking-report-btn' onClick={() => openReportModal(spotInfo.ID)}>Report</button>
+                    </div>
+                  )}
+                  {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
+                  {booking.Status === 'Pending' && (
+                    <div>  
                       <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
                     </div>
                   )}
                   {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
                   {booking.Status === 'Completed' && (
                     <div>
-                      <button className='booking-review-btn' onClick={openReviewModal}>Review</button>
+                      <button className='booking-review-btn' onClick={() =>openReviewModal(booking.ID)}>Review</button>
                     </div>  
                   )}
                 </div>
@@ -350,7 +378,7 @@ const Bookings = () => {
             onChange={(e) => setReviewContent(e.target.value)}
             className='reason-input'
             />
-            <button onClick={handleReportSubmit} className='report-submit-btn'>Submit</button>
+            <button onClick={handleReviewSubmit} className='report-submit-btn'>Submit</button>
           </div>
         </div>
       )}

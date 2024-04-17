@@ -1,34 +1,26 @@
-import React, {
-  useState,
-  ChangeEvent,
-  useContext,
-  LabelHTMLAttributes,
-  useRef,
-  useEffect
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './HomePage.css';
 import './CarSpaceOpearation.css';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
-  useNavigate,
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-  useParams
-} from 'react-router-dom';
-import { useError, GetDistance,HoverImage,callAPICreateSpot,callAPIGetSpecSpot,callAPIEditSpot } from './API';
+  useError,
+  GetDistance,
+  HoverImage,
+  callAPICreateSpot,
+  callAPIGetSpecSpot,
+  callAPIEditSpot,
+} from './API';
 
 // CreatHostingPage
 export const CreateSpace = () => {
-  const [Useable,setUseable]=useState(false);
-  const { _, setOpenSnackbar } = useError();
+  //
+  const [Useable, setUseable] = useState(false);
+  const { setOpenSnackbar } = useError();
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -51,19 +43,23 @@ export const CreateSpace = () => {
   const [SpaceType, setType] = useState('');
   // set charge empty;
   const [charge, setCharge] = useState('');
+  // when the charge change
   const ChangeCharge = (event) => {
     const target = event.target;
     if (target.id) {
       setCharge(target.id);
     }
   };
-  const [PassWay,setPassWay]=useState('');
-  const ChangePassWay=(event)=>{
-    const target=event.target;
-    if(target.id){
-        setPassWay(target.id);
+  // set passway empty;
+  const [PassWay, setPassWay] = useState('');
+  // when the passway change
+  const ChangePassWay = (event) => {
+    const target = event.target;
+    if (target.id) {
+      setPassWay(target.id);
     }
-  }
+  };
+  // set all booking type false
   const [isHour, setisHour] = useState(false);
   const [isDay, setisDay] = useState(false);
   const [isWeek, setWeek] = useState(false);
@@ -124,6 +120,7 @@ export const CreateSpace = () => {
       setType(target.id);
     }
   };
+  // when the car type is changed
   const ChangeCarType = (event) => {
     const target = event.target;
     if (target.id) {
@@ -144,6 +141,7 @@ export const CreateSpace = () => {
   const [ErrorText7, setErrorText7] = useState(false);
   const [ErrorText8, setErrorText8] = useState(false);
   const [ErrorText9, setErrorText9] = useState(false);
+  // set all errorText shown false
   const setAllfalse = () => {
     setErrorText1(false);
     setErrorText2(false);
@@ -157,6 +155,7 @@ export const CreateSpace = () => {
   };
   // set all scroll position empty
   const [errorContent, setErrorContent] = useState('');
+  // set all scroll position empty
   const scrollToQ1 = useRef(null);
   const scrollToQ2 = useRef(null);
   const scrollToQ3 = useRef(null);
@@ -378,7 +377,7 @@ export const CreateSpace = () => {
       ref.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-  // 时间区间设置
+  // set the time interval
   const [timeIntervals, setTimeIntervals] = useState([]);
   const [FirstStart, setFirstStart] = useState(null);
   const [FirstEnd, setFirstEnd] = useState(null);
@@ -454,26 +453,28 @@ export const CreateSpace = () => {
   };
   // creat a new hosting
   const CreateNow = () => {
+    // set the useable to true
     setUseable(true);
+    // init the data
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
       Size: String(CarType),
       charge: String(charge),
-      passWay:String(PassWay),
-      spotAddr:JSON.stringify({
+      passWay: String(PassWay),
+      spotAddr: JSON.stringify({
         Country: Country,
         City: City,
-        State:State,
+        State: State,
         Postcode: Postcode,
         Street: Street,
       }),
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
-      pricePerDay: parseFloat(PriseDay)||0,
-      pricePerHour: parseFloat(PriseHour)||0,
-      pricePerWeek: parseFloat(PriseWeek)||0,
+      pricePerDay: parseFloat(PriseDay) || 0,
+      pricePerHour: parseFloat(PriseHour) || 0,
+      pricePerWeek: parseFloat(PriseWeek) || 0,
       pictures: Thumbil,
       morePictures: AllImaegsString,
       availableTime: timeIntervals,
@@ -485,7 +486,7 @@ export const CreateSpace = () => {
     console.log(data);
     if (data) {
       // inital the data
-      // if the title is empty
+      // if the spot type is empty
       if (data.spotType.length === 0) {
         console.log('no type');
         Confirmflag = false;
@@ -495,6 +496,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ1);
         setUseable(false);
       }
+      // if the spot size is empty
       if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
@@ -543,7 +545,7 @@ export const CreateSpace = () => {
         }
         setUseable(false);
       }
-      // if the title is empty
+      // if the spot passway is empty
       if (Confirmflag && data.passWay.length === 0) {
         console.log('no Passway');
         setAllfalse();
@@ -553,6 +555,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
         setUseable(false);
       }
+      // if the spot charge is empty
       if (Confirmflag && data.charge.length === 0) {
         console.log('no title');
         setAllfalse();
@@ -562,7 +565,7 @@ export const CreateSpace = () => {
         Confirmflag = false;
         setUseable(false);
       }
-      // if the title is empty
+      // if the spot title is empty
       if (Confirmflag && data.spotName.length === 0) {
         console.log('no title');
         setAllfalse();
@@ -572,9 +575,10 @@ export const CreateSpace = () => {
         Confirmflag = false;
         setUseable(false);
       }
-      // if the price is empty
+      // if the available booking way is empty
       if (Confirmflag && !(isDay || isHour || isWeek)) {
         console.log('No price');
+        // set the error text
         setAllfalse();
         setErrorContent('Your must accept one kind of rent way');
         setErrorText7(true);
@@ -582,6 +586,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ7);
         setUseable(false);
       }
+      // if the booking way allow the day rent
       if (Confirmflag && isDay && !pricePattern.test(PriseDay)) {
         console.log('No price');
         setAllfalse();
@@ -591,6 +596,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ7);
         setUseable(false);
       }
+      // if the booking way allow the hour rent
       if (Confirmflag && isHour && !pricePattern.test(PriseHour)) {
         console.log('No price');
         setAllfalse();
@@ -600,6 +606,7 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ7);
         setUseable(false);
       }
+      // if the booking way allow the week rent
       if (Confirmflag && isWeek && !pricePattern.test(PriseWeek)) {
         console.log('No price');
         setAllfalse();
@@ -609,29 +616,31 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ7);
         setUseable(false);
       }
-      if(Confirmflag && (FirstStart===null || FirstEnd===null)){
+      // if the available time is not empty
+      if (Confirmflag && (FirstStart === null || FirstEnd === null)) {
+        // set all the error text false
         setAllfalse();
-        setErrorContent(
-            'Your all of the time choice can not be null.'
-        );
+        setErrorContent('Your all of the time choice can not be null.');
         setErrorText8(true);
         Confirmflag = false;
         scrollToElement(scrollToQ8);
         setUseable(false);
       }
+      // if all the available time is not empty
       if (Confirmflag) {
+        // filter the invalid time
         const res = data.availableTime.filter((value) => {
-            return value.startDate === null || value.endDate === null;
-          });
-        if(res.length!=0){
-            setAllfalse();
-            setErrorContent(
-              'Your all of the time choice can not be null.'
-            );
-            setErrorText8(true);
-            Confirmflag = false;
-            scrollToElement(scrollToQ8);
-            setUseable(false);
+          return value.startDate === null || value.endDate === null;
+        });
+        // if the result is not empty
+        if (res.length !== 0) {
+          // tell the user the error
+          setAllfalse();
+          setErrorContent('Your all of the time choice can not be null.');
+          setErrorText8(true);
+          Confirmflag = false;
+          scrollToElement(scrollToQ8);
+          setUseable(false);
         }
       }
       // if the image is empty
@@ -643,47 +652,57 @@ export const CreateSpace = () => {
         scrollToElement(scrollToQ9);
         setUseable(false);
       }
-      if(Confirmflag){
+      // if the confirm flag is true
+      if (Confirmflag) {
+        // add the first time to the available time
         data.availableTime.unshift({
-            id: Date.now(), // unique id
-            startDate: FirstStart,
-            endDate: FirstEnd,
-            distance: GetDistance(FirstStart,FirstEnd),
+          id: Date.now(), // unique id
+          startDate: FirstStart,
+          endDate: FirstEnd,
+          distance: GetDistance(FirstStart, FirstEnd),
         });
-        data.availableTime=JSON.stringify(data.availableTime);
-        data.morePictures=JSON.stringify(data.morePictures);
-        callAPICreateSpot('spot/create',data,localStorage.getItem('token'))
-        .then((response)=>{
+        // convert the available time to string
+        data.availableTime = JSON.stringify(data.availableTime);
+        // convert the more pictures to string
+        data.morePictures = JSON.stringify(data.morePictures);
+        // call the api to create the spot
+        callAPICreateSpot('spot/create', data, localStorage.getItem('token'))
+          .then((response) => {
+            // if the response is ok
             console.log(response);
+            // set the open snackbar to show the success message
             setOpenSnackbar({
-                severity:'success',
-                message:'Create Spot Successful!',
-                timestamp:new Date().getTime()
-            })
-            navigate(-1);
-        })
-        .catch((error)=>{
-              console.log('np');
-              console.log(data);
-            setOpenSnackbar({
-                severity:'warning',
-                message:error,
-                timestamp:new Date().getTime()
+              severity: 'success',
+              message: 'Create Spot Successful!',
+              timestamp: new Date().getTime(),
             });
+            // navigate to the previous page
+            navigate(-1);
+          })
+          // if the response is not ok
+          .catch((error) => {
+            // set the open snackbar to show the error message
+            console.log(data);
+            // call the snackbar to show the error message
+            setOpenSnackbar({
+              severity: 'warning',
+              message: error,
+              timestamp: new Date().getTime(),
+            });
+            // set the useable to false
             setUseable(false);
-        });
+          });
       }
-    }
-    else{
+    } else {
+      // set the useable to false
       setUseable(false);
     }
-
   };
   return (
     <div className='CreatChannelOverall'>
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -832,9 +851,7 @@ export const CreateSpace = () => {
           />
           <label
             className={
-              CarType === '4WD/SUV'
-                ? 'QfourShowSelected'
-                : 'QfourShowSelect'
+              CarType === '4WD/SUV' ? 'QfourShowSelected' : 'QfourShowSelect'
             }
             htmlFor='4WD/SUV'
             id='Hot'
@@ -916,11 +933,9 @@ export const CreateSpace = () => {
         {ErrorText3 && <p className='CreateError'>{errorContent}</p>}
       </div>
       <div className='Q' ref={scrollToQ4} id='Q4'>
-        <p className='Q4q'>
-            Tell customers how to park in your space ?
-        </p>
+        <p className='Q4q'>Tell customers how to park in your space ?</p>
         <p className='QtwoQsub'>
-            Make sure your parking space is accessible to customers.
+          Make sure your parking space is accessible to customers.
         </p>
         <div className='QoneAnswerPart'>
           <input
@@ -943,12 +958,14 @@ export const CreateSpace = () => {
             className='QoneSelect'
             type='checkbox'
             name='passway'
-            id = 'Physical key'
+            id='Physical key'
             onChange={ChangePassWay}
           />
           <label
             className={
-              PassWay === 'Physical key' ? 'QfourShowSelected' : 'QfourShowSelect'
+              PassWay === 'Physical key'
+                ? 'QfourShowSelected'
+                : 'QfourShowSelect'
             }
             htmlFor='Physical key'
             id='tv'
@@ -980,7 +997,9 @@ export const CreateSpace = () => {
           />
           <label
             className={
-              PassWay === 'Digital Card' ? 'QfourShowSelected' : 'QfourShowSelect'
+              PassWay === 'Digital Card'
+                ? 'QfourShowSelected'
+                : 'QfourShowSelect'
             }
             htmlFor='Digital Card'
             id='washing-machine'
@@ -1001,10 +1020,10 @@ export const CreateSpace = () => {
         </p>
         <div className='QoneAnswerPart'>
           <input
-            className = 'QoneSelect'
-            type = 'checkbox'
-            name = 'charge'
-            id = 'None'
+            className='QoneSelect'
+            type='checkbox'
+            name='charge'
+            id='None'
             onChange={ChangeCharge}
           />
           <label
@@ -1017,11 +1036,11 @@ export const CreateSpace = () => {
             None
           </label>
           <input
-            className = 'QoneSelect'
-            type = 'checkbox'
-            name = 'charge'
-            id = 'Wall(AU/NZ)'
-            onChange = {ChangeCharge}
+            className='QoneSelect'
+            type='checkbox'
+            name='charge'
+            id='Wall(AU/NZ)'
+            onChange={ChangeCharge}
           />
           <label
             className={
@@ -1111,7 +1130,10 @@ export const CreateSpace = () => {
       </div>
       <div className='Q' ref={scrollToQ7} id='Q7'>
         <p className='Q4q'>Next we'll help you set up your parking revenue.</p>
-        <p className='QtwoQsub'>You can change it anytime and 15% of the fee your earned would be deducted by the platform as the service fee.</p>
+        <p className='QtwoQsub'>
+          You can change it anytime and 15% of the fee your earned would be
+          deducted by the platform as the service fee.
+        </p>
         <div className='Q6aDiv'>
           <div className='Q6-row'>
             <div className='row-left'>
@@ -1313,7 +1335,8 @@ export const CreateSpace = () => {
             ref={RefT}
             accept='image/*'
           ></input>
-            <img className='UploadIMG'
+          <img
+            className='UploadIMG'
             id='callupload'
             onClick={HandleT}
             src={Thumbil || '/img/addusr.png'}
@@ -1354,7 +1377,12 @@ export const CreateSpace = () => {
         ))}
       </div>
       <div className='QButton'>
-        <button className='CreatButton' onClick={CreateNow} disabled={Useable} type='button'>
+        <button
+          className='CreatButton'
+          onClick={CreateNow}
+          disabled={Useable}
+          type='button'
+        >
           Create your hosting
         </button>
       </div>
@@ -1364,11 +1392,20 @@ export const CreateSpace = () => {
 
 // EditHostingPage
 export const EditSpace = () => {
-  const { email, Spotid } = useParams();
+  // get the snackbar to show the error
+  const { setOpenSnackbar } = useError();
+  // get the spot id from the url
+  const { Spotid } = useParams();
+  // when load the page get the details of the spot
+  useEffect(() => {
+      // get the details of the spot
   let getDetail = (Spotid) => {
-    callAPIGetSpecSpot('spot/'+Spotid)
+    // call the api to get the details of the spot
+    callAPIGetSpecSpot('spot/' + Spotid)
       .then((response) => {
+        // if the response is successful
         console.log(response);
+        // set the details of the spot
         setCarType(response.message.Size);
         setCharge(response.message.Charge);
         setPassWay(response.message.PassWay);
@@ -1381,47 +1418,62 @@ export const EditSpace = () => {
         setWeek(response.message.IsWeekRent);
         setPriceWeek(response.message.PricePerWeek);
         setThumbil(response.message.Pictures);
-
+        // phrse the string to get the array of images
         const res = JSON.parse(response.message.MorePictures);
+        // set the selected images
         setSelectedImageString(res);
         console.log(res);
+        // try to parse the address
         try {
-            const ads=JSON.parse(response.message.SpotAddr);
-            console.log(ads);
-            setState(ads.State);
-            setStreet(ads.Street);
-            setCity(ads.City);
-            setCountry(ads.Country);
-            setPostcode(ads.Postcode);
+          // parse the address
+          // set all the address details
+          const ads = JSON.parse(response.message.SpotAddr);
+          console.log(ads);
+          setState(ads.State);
+          setStreet(ads.Street);
+          setCity(ads.City);
+          setCountry(ads.Country);
+          setPostcode(ads.Postcode);
         } catch (e) {
-            const ads=response.message.SpotAddr.split(',');
-            console.log(ads);
-            setState(ads[0]);
-            setStreet(ads[0]);
-            setCity(ads.City[1]);
-            setCountry(ads[2]);
-            setPostcode(ads.Postcode[2]);
+          // set the address details
+          const ads = response.message.SpotAddr.split(',');
+          console.log(ads);
+          setState(ads[0]);
+          setStreet(ads[0]);
+          setCity(ads.City[1]);
+          setCountry(ads[2]);
+          setPostcode(ads.Postcode[2]);
         }
-        const ads=JSON.parse(response.message.SpotAddr);
-        console.log(ads);
-        setState(ads.State);
-        setStreet(ads.Street);
-        setCity(ads.City);
-        setCountry(ads.Country);
-        setPostcode(ads.Postcode);
+        // phrse the string to get the array of time intervals
+        // const ads = JSON.parse(response.message.SpotAddr);
+        // console.log(ads);
+        // setState(ads.State);
+        // setStreet(ads.Street);
+        // setCity(ads.City);
+        // setCountry(ads.Country);
+        // setPostcode(ads.Postcode);
+        // phase all the time intervals
         let all_time = JSON.parse(response.message.AvailableTime);
-        all_time = all_time.map(item => ({
+        // set all the time intervals
+        all_time = all_time.map((item) => ({
           ...item,
           startDate: dayjs(item.startDate),
           endDate: dayjs(item.endDate),
         }));
+        // print the time intervals
         console.log(all_time);
+        // set the first time interval
         setFirstStart(all_time[0].startDate);
+        // set the first end time interval
         setFirstEnd(all_time[0].endDate);
+        // set the first distance
         setDistance(all_time[0].distance);
-        setTimeIntervals(timeIntervals => [...all_time.slice(1)]);
+        // update the time intervals
+        setTimeIntervals((timeIntervals) => [...all_time.slice(1)]);
       })
       .catch((error) => {
+        // if the response is not successful
+        // tell the user that the spot is not found
         setOpenSnackbar({
           severity: 'warning',
           message: error,
@@ -1429,10 +1481,8 @@ export const EditSpace = () => {
         });
       });
   };
-  useEffect(() => {
     getDetail(Spotid);
-  },[]);
-  const { _, setOpenSnackbar } = useError();
+  }, [Spotid,setOpenSnackbar]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -1455,19 +1505,23 @@ export const EditSpace = () => {
   const [SpaceType, setType] = useState('');
   // set charge empty;
   const [charge, setCharge] = useState('');
+  // when the charge change
   const ChangeCharge = (event) => {
     const target = event.target;
     if (target.id) {
       setCharge(target.id);
     }
   };
-  const [PassWay,setPassWay]=useState('');
-  const ChangePassWay=(event)=>{
-    const target=event.target;
-    if(target.id){
-        setPassWay(target.id);
+  // when the passway change
+  const [PassWay, setPassWay] = useState('');
+  // when the passway change
+  const ChangePassWay = (event) => {
+    const target = event.target;
+    if (target.id) {
+      setPassWay(target.id);
     }
-  }
+  };
+  // set the isHour, isDay, isWeek all false
   const [isHour, setisHour] = useState(false);
   const [isDay, setisDay] = useState(false);
   const [isWeek, setWeek] = useState(false);
@@ -1475,26 +1529,31 @@ export const EditSpace = () => {
   const [CarType, setCarType] = useState('');
   // set contry empty
   const [Country, setCountry] = useState('');
+  // when the country change
   const handleCountryChange = (event) => {
     setCountry(event.target.value);
   };
   // set street empty
   const [Street, setStreet] = useState('');
+  // when the street change
   const handleStreetChange = (event) => {
     setStreet(event.target.value);
   };
   // set city empty
   const [City, setCity] = useState('');
+  // when the city change
   const handleCityChange = (event) => {
     setCity(event.target.value);
   };
   // set state empty
   const [State, setState] = useState('');
+  // when the state change
   const handleStateChange = (event) => {
     setState(event.target.value);
   };
   // set postcode empty
   const [Postcode, setPostcode] = useState('');
+  // when the postcode change
   const handlePostcodeChange = (event) => {
     setPostcode(event.target.value);
   };
@@ -1502,22 +1561,26 @@ export const EditSpace = () => {
   const [Thumbil, setThumbil] = useState('');
   // set all facility false
   const [Title, setTitle] = useState('');
+  // when the title change
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
     setlength(event.target.value.length);
   };
   // set price for daily
   const [PriseDay, setPriceDay] = useState('');
+  // when the price change
   const handlePriceDayChange = (event) => {
     setPriceDay(event.target.value);
   };
   // set price for daily
   const [PriseWeek, setPriceWeek] = useState('');
+  // when the price change
   const handlePriceWeekChange = (event) => {
     setPriceWeek(event.target.value);
   };
   // set price for daily
   const [PriseHour, setPriceHour] = useState('');
+  // when the price change
   const handlePriceHourChange = (event) => {
     setPriceHour(event.target.value);
   };
@@ -1528,6 +1591,7 @@ export const EditSpace = () => {
       setType(target.id);
     }
   };
+  // when the car type is changed
   const ChangeCarType = (event) => {
     const target = event.target;
     if (target.id) {
@@ -1548,6 +1612,7 @@ export const EditSpace = () => {
   const [ErrorText7, setErrorText7] = useState(false);
   const [ErrorText8, setErrorText8] = useState(false);
   const [ErrorText9, setErrorText9] = useState(false);
+  // set all errorText shown false
   const setAllfalse = () => {
     setErrorText1(false);
     setErrorText2(false);
@@ -1561,6 +1626,7 @@ export const EditSpace = () => {
   };
   // set all scroll position empty
   const [errorContent, setErrorContent] = useState('');
+  // set all scroll position empty
   const scrollToQ1 = useRef(null);
   const scrollToQ2 = useRef(null);
   const scrollToQ3 = useRef(null);
@@ -1782,7 +1848,7 @@ export const EditSpace = () => {
       ref.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-  // 时间区间设置
+  // set the time interval
   const [timeIntervals, setTimeIntervals] = useState([]);
   const [FirstStart, setFirstStart] = useState(null);
   const [FirstEnd, setFirstEnd] = useState(null);
@@ -1858,25 +1924,26 @@ export const EditSpace = () => {
   };
   // creat a new hosting
   const EditNow = (id) => {
+    // init the data
     const data = {
       spotName: String(Title),
       spotType: String(SpaceType),
       Size: String(CarType),
       charge: String(charge),
-      passWay:String(PassWay),
-      spotAddr:JSON.stringify({
+      passWay: String(PassWay),
+      spotAddr: JSON.stringify({
         Country: Country,
         City: City,
-        State:State,
+        State: State,
         Postcode: Postcode,
         Street: Street,
       }),
       isDayRent: isDay,
       isOurRent: isHour,
       isWeekRent: isWeek,
-      pricePerDay: parseFloat(PriseDay)||0,
-      pricePerHour: parseFloat(PriseHour)||0,
-      pricePerWeek: parseFloat(PriseWeek)||0,
+      pricePerDay: parseFloat(PriseDay) || 0,
+      pricePerHour: parseFloat(PriseHour) || 0,
+      pricePerWeek: parseFloat(PriseWeek) || 0,
       pictures: Thumbil,
       morePictures: AllImaegsString,
       availableTime: timeIntervals,
@@ -1897,6 +1964,7 @@ export const EditSpace = () => {
         setErrorText1(true);
         scrollToElement(scrollToQ1);
       }
+      // if the space size is empty
       if (Confirmflag && data.Size.length === 0) {
         console.log('no type');
         Confirmflag = false;
@@ -1943,7 +2011,7 @@ export const EditSpace = () => {
           scrollToElement(scrollToQ3);
         }
       }
-      // if the title is empty
+      // if the spot passway is empty
       if (Confirmflag && data.passWay.length === 0) {
         console.log('no Passway');
         setAllfalse();
@@ -1952,6 +2020,7 @@ export const EditSpace = () => {
         scrollToElement(scrollToQ4);
         Confirmflag = false;
       }
+      // if the spot charge is empty
       if (Confirmflag && data.charge.length === 0) {
         console.log('no title');
         setAllfalse();
@@ -1960,7 +2029,7 @@ export const EditSpace = () => {
         scrollToElement(scrollToQ5);
         Confirmflag = false;
       }
-      // if the title is empty
+      // if the spot name is empty
       if (Confirmflag && data.spotName.length === 0) {
         console.log('no title');
         setAllfalse();
@@ -1969,7 +2038,7 @@ export const EditSpace = () => {
         scrollToElement(scrollToQ6);
         Confirmflag = false;
       }
-      // if the price is empty
+      // if all the rent way is false
       if (Confirmflag && !(isDay || isHour || isWeek)) {
         console.log('No price');
         setAllfalse();
@@ -1978,6 +2047,7 @@ export const EditSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
+      // if the rent way is day and the price is not valid
       if (Confirmflag && isDay && !pricePattern.test(PriseDay)) {
         console.log('No price');
         setAllfalse();
@@ -1986,6 +2056,7 @@ export const EditSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
+      // if the rent way is hour and the price is not valid
       if (Confirmflag && isHour && !pricePattern.test(PriseHour)) {
         console.log('No price');
         setAllfalse();
@@ -1994,6 +2065,7 @@ export const EditSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
+      // if the rent way is week and the price is not valid
       if (Confirmflag && isWeek && !pricePattern.test(PriseWeek)) {
         console.log('No price');
         setAllfalse();
@@ -2002,27 +2074,29 @@ export const EditSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ7);
       }
-      if(Confirmflag && (FirstStart===null || FirstEnd===null)){
+      // if the first duration is null
+      if (Confirmflag && (FirstStart === null || FirstEnd === null)) {
         setAllfalse();
-        setErrorContent(
-            'Your all of the time choice can not be null.'
-        );
+        setErrorContent('Your all of the time choice can not be null.');
         setErrorText8(true);
         Confirmflag = false;
         scrollToElement(scrollToQ8);
       }
+      // if the confirmflag is true
       if (Confirmflag) {
+        // filter the invalid time choice
         const res = data.availableTime.filter((value) => {
-            return value.startDate === null || value.endDate === null;
-          });
-        if(res.length!=0){
-            setAllfalse();
-            setErrorContent(
-              'Your all of the time choice can not be null.'
-            );
-            setErrorText8(true);
-            Confirmflag = false;
-            scrollToElement(scrollToQ8);
+          return value.startDate === null || value.endDate === null;
+        });
+        // if there exist invalid time choice
+        if (res.length !== 0) {
+          // set the error message
+          setAllfalse();
+          setErrorContent('Your all of the time choice can not be null.');
+          // set the error text
+          setErrorText8(true);
+          Confirmflag = false;
+          scrollToElement(scrollToQ8);
         }
       }
       // if the image is empty
@@ -2033,34 +2107,46 @@ export const EditSpace = () => {
         Confirmflag = false;
         scrollToElement(scrollToQ9);
       }
-      if(Confirmflag){
+      // if the confirmflag is true
+      if (Confirmflag) {
+        // add the new available time
         data.availableTime.unshift({
-            id: Date.now(), // unique id
-            startDate: FirstStart,
-            endDate: FirstEnd,
-            distance: GetDistance(FirstStart,FirstEnd),
+          id: Date.now(), // unique id
+          startDate: FirstStart,
+          endDate: FirstEnd,
+          distance: GetDistance(FirstStart, FirstEnd),
         });
-        data.availableTime=JSON.stringify(data.availableTime);
-        data.morePictures=JSON.stringify(data.morePictures);
-        callAPIEditSpot('spot/modifySpotInfo/'+id,data,localStorage.getItem('token'))
-        .then((response)=>{
+        // phase the time choice
+        data.availableTime = JSON.stringify(data.availableTime);
+        // phase the more pictures
+        data.morePictures = JSON.stringify(data.morePictures);
+        // call the api to edit the spot
+        callAPIEditSpot(
+          'spot/modifySpotInfo/' + id,
+          data,
+          localStorage.getItem('token')
+        )
+          .then((response) => {
+            // if the response is success
             console.log(response);
+            // set the open snackbar message
             setOpenSnackbar({
-                severity:'success',
-                message:'Edit Spot Successful!',
-                timestamp:new Date().getTime()
-            })
-            navigate(-1);
-        })
-        .catch((error)=>{
-              console.log('np');
-              console.log(data);
-            setOpenSnackbar({
-                severity:'warning',
-                message:error,
-                timestamp:new Date().getTime()
+              severity: 'success',
+              message: 'Edit Spot Successful!',
+              timestamp: new Date().getTime(),
             });
-        });
+            // navigate to the previous page
+            navigate(-1);
+          })
+          .catch((error) => {
+            // if the response is error
+            // set the open snackbar message
+            setOpenSnackbar({
+              severity: 'warning',
+              message: error,
+              timestamp: new Date().getTime(),
+            });
+          });
       }
     }
   };
@@ -2068,7 +2154,7 @@ export const EditSpace = () => {
     <div className='CreatChannelOverall'>
       <div className='CreatNewHeader'>
         <div className='CreateLogo'>
-          <img className='ct-logo' src='/img/LOGO.svg'></img>
+          <img className='ct-logo' src='/img/LOGO.svg' alt=''></img>
         </div>
         <div className='HeaderRightButtonPart'>
           <p className='HeaderRightButtonself' onClick={goesHost}>
@@ -2217,9 +2303,7 @@ export const EditSpace = () => {
           />
           <label
             className={
-              CarType === '4WD/SUV'
-                ? 'QfourShowSelected'
-                : 'QfourShowSelect'
+              CarType === '4WD/SUV' ? 'QfourShowSelected' : 'QfourShowSelect'
             }
             htmlFor='4WD/SUV'
             id='Hot'
@@ -2301,11 +2385,9 @@ export const EditSpace = () => {
         {ErrorText3 && <p className='CreateError'>{errorContent}</p>}
       </div>
       <div className='Q' ref={scrollToQ4} id='Q4'>
-        <p className='Q4q'>
-            Tell customers how to park in your space ?
-        </p>
+        <p className='Q4q'>Tell customers how to park in your space ?</p>
         <p className='QtwoQsub'>
-            Make sure your parking space is accessible to customers.
+          Make sure your parking space is accessible to customers.
         </p>
         <div className='QoneAnswerPart'>
           <input
@@ -2328,12 +2410,14 @@ export const EditSpace = () => {
             className='QoneSelect'
             type='checkbox'
             name='passway'
-            id = 'Physical key'
+            id='Physical key'
             onChange={ChangePassWay}
           />
           <label
             className={
-              PassWay === 'Physical key' ? 'QfourShowSelected' : 'QfourShowSelect'
+              PassWay === 'Physical key'
+                ? 'QfourShowSelected'
+                : 'QfourShowSelect'
             }
             htmlFor='Physical key'
             id='tv'
@@ -2365,7 +2449,9 @@ export const EditSpace = () => {
           />
           <label
             className={
-              PassWay === 'Digital Card' ? 'QfourShowSelected' : 'QfourShowSelect'
+              PassWay === 'Digital Card'
+                ? 'QfourShowSelected'
+                : 'QfourShowSelect'
             }
             htmlFor='Digital Card'
             id='washing-machine'
@@ -2386,10 +2472,10 @@ export const EditSpace = () => {
         </p>
         <div className='QoneAnswerPart'>
           <input
-            className = 'QoneSelect'
-            type = 'checkbox'
-            name = 'charge'
-            id = 'None'
+            className='QoneSelect'
+            type='checkbox'
+            name='charge'
+            id='None'
             onChange={ChangeCharge}
           />
           <label
@@ -2402,11 +2488,11 @@ export const EditSpace = () => {
             None
           </label>
           <input
-            className = 'QoneSelect'
-            type = 'checkbox'
-            name = 'charge'
-            id = 'Wall(AU/NZ)'
-            onChange = {ChangeCharge}
+            className='QoneSelect'
+            type='checkbox'
+            name='charge'
+            id='Wall(AU/NZ)'
+            onChange={ChangeCharge}
           />
           <label
             className={
@@ -2496,7 +2582,10 @@ export const EditSpace = () => {
       </div>
       <div className='Q' ref={scrollToQ7} id='Q7'>
         <p className='Q4q'>Next we'll help you set up your parking revenue.</p>
-        <p className='QtwoQsub'>You can change it anytime and 15% of the fee your earned would be deducted by the platform as the service fee.</p>
+        <p className='QtwoQsub'>
+          You can change it anytime and 15% of the fee your earned would be
+          deducted by the platform as the service fee.
+        </p>
         <div className='Q6aDiv'>
           <div className='Q6-row'>
             <div className='row-left'>
@@ -2702,7 +2791,8 @@ export const EditSpace = () => {
             ref={RefT}
             accept='image/*'
           ></input>
-            <img className='UploadIMG'
+          <img
+            className='UploadIMG'
             id='callupload'
             onClick={HandleT}
             src={Thumbil || '/img/addusr.png'}
@@ -2743,13 +2833,14 @@ export const EditSpace = () => {
         ))}
       </div>
       <div className='QButton'>
-        <button className='CreatButton' onClick={()=>EditNow(Spotid)} type='button'>
+        <button
+          className='CreatButton'
+          onClick={() => EditNow(Spotid)}
+          type='button'
+        >
           Edit your hosting
         </button>
       </div>
     </div>
   );
 };
-
-
-

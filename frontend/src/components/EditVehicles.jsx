@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
@@ -9,7 +8,6 @@ import './Vehicles.css';
 const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, VehicleBrand, VehiclePlate, VehicleType, VehicleSize, VehicleCharge, Avatar  }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
   const [vehicleBrand, setVehicleBrand] = useState(VehicleBrand);
   const [vehiclePlate, setVehiclePlate] = useState(VehiclePlate);
   const [vehicleType, setVehicleType] = useState(VehicleType);
@@ -31,17 +29,16 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
         await updateCarInfo(EditingCarId.toString(), vehicleInfo); 
         onEdited();
         onClose(); 
-        // setSnackbarMessage('Vehicle information updated successfully!');
-        // setOpenSnackbar(true);
+        setSnackbarMessage('Vehicle information updated successfully!');
+        setOpenSnackbar(true);
       } catch (error) {
-        // 错误处理
         setSnackbarMessage('Failed to update vehicle: ' + error.message); 
         setOpenSnackbar(true);
       }
     }
 
 
-  // 添加处理表单字段变化的函数
+  // handle the change of the brand input
   const handleBrandChange = (event) => {
       setVehicleBrand(event.target.value);
   };
@@ -50,7 +47,7 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
       setVehiclePlate(event.target.value);
   };
 
-    // 处理下拉选项改变的事件
+  // handle the change of the type input
   const handleTypeChange = (event) => {
     setVehicleType(event.target.value);
     };
@@ -63,7 +60,6 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
     setVehicleCharge(event.target.value);
     }
 
-  // 处理文件上传
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -75,19 +71,18 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
     }
     };
     
-  // 在每个表单控件的事件处理器中设置自定义的验证消息
+  // handle invalid input
   const handleInvalid = (event) => {
     event.target.setCustomValidity('This field cannot be left blank');
     };
 
-  // 关闭Snackbar
+  // close Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
         return;
     }
     setOpenSnackbar(false);
     };
-
 
   return (
   <div>
@@ -99,7 +94,7 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
             </div>
   
           <form className='edit-form' onSubmit={handleEditSubmit}> 
-              {/* 表单内容 */}
+              {/* form content */}
               <div className="form-group">
               <label htmlFor="brand">Brand of your vehicle</label>
               <input required 
@@ -121,8 +116,7 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
                   <option value="Hatchback">Hatchback</option>
                   <option value="Sedan">Sedan</option>
                   <option value="4WD/SUV">4WD/SUV</option>
-                  <option value="VAN">VAN</option>
-                  
+                  <option value="VAN">VAN</option>                  
               </select>
               </div>
               <div className="form-group">              

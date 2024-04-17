@@ -7,46 +7,41 @@ import './Listings.css';
 const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [bookersInfo, setBookersInfo] = useState({}); 
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [selectedOrderID, setSelectedOrderID] = useState(null); // 用于存储要cancel的order的ID
+  const [selectedOrderID, setSelectedOrderID] = useState(null); // store the orderID of cancel order
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageContent, setMessageContent] = useState('');
   const [selectedBookerID, setSelectedBookerID] = useState(null);
-  const [selectedBooker, setSelectedBooker] = useState(null);
+  const [ setSelectedBooker] = useState(null);
   const [carsInfo, setCarsInfo] = useState({});
-
   const [ws, setWs] = useState(null);
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
-    // 关闭Snackbar
   const handleSnackbarClose = () => setOpenSnackbar(false);
 
   useEffect(() => {
-    // 定义创建WebSocket连接的函数
+    // create a WebSocket connection
     const createWebSocketConnection = () => {
       const webSocket = new WebSocket('ws://localhost:8080/ws');
 
       webSocket.onopen = () => {
         console.log('WebSocket connection established');
-        // WebSocket连接建立后的操作，例如发送认证信息等
+        // send authentication information
         webSocket.send(JSON.stringify({ type: 'authenticate', token: localStorage.getItem('token') })); // 发送认证信息
       };
-
       webSocket.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
-
-      // 管理WebSocket实例
+      // store the WebSocket connection in the state
       setWs(webSocket);
     };
 
-    // 只在组件挂载时创建WebSocket连接
+    // create a WebSocket connection when the component is mounted
+    // 
     if (!ws) {
       createWebSocketConnection();
     }
 
-    // 组件卸载时关闭WebSocket连接
+    // close WebSocket connection when component is unloaded
     return () => {
       if (ws) {
         ws.close();
@@ -54,69 +49,65 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     };
   }, [ws]);
 
-    // 取消订单列表项
+  // handle cancel order
   const handleCancel = () => {
     console.log('Cancelling order ID:', selectedOrderID);
     cancelBooking(selectedOrderID).then(() => {
-      // 成功取消后的操作，例如提示用户，更新状态等
+      // prompt user that the updated state
       setSnackbarMessage('Order cancelled successfully.');
       setOpenSnackbar(true);
-      fetchOrders(); // 
-      // 关闭确认框
+      fetchOrders();
       setShowCancelConfirm(false);
-      // 清除选中的预订 ID
       setSelectedOrderID(null);
     }).catch(error => {
-      // 处理错误，提示用户取消失败
       console.error("Error cancelling the booking:", error);
     });
   };
 
-  // 打开“取消订单”详情弹窗
+  // open the cancel order confirm modal
   const openCancelModal = (orderID) => {
-    setSelectedOrderID(orderID); // 存储当前要取消的预订 ID
+    setSelectedOrderID(orderID);
     console.log('Cancel order ID:', orderID);
     setShowCancelConfirm(true);
   };
 
-  // 关闭“取消订单”确认框
+  // close the cancel order confirm modal
   const closeCancelConfirm = () => {
     setShowCancelConfirm(false);
   };
 
   useEffect(() => {
-    // 定义一个加载所有用户信息的异步函数
+    // get all bookers simple info
     const loadBookersInfo = async () => {
       const bookersPromises = orders.map(order =>
         getUserSimpleInfo(order.BookerID).then(
           (data) => ({ id: order.BookerID, data: data.message })
         )
       );
-      // 等待所有用户信息的Promise完成
+      // wait for all promises to complete
       const bookers = await Promise.all(bookersPromises);
-      // 创建一个新的对象来存储用户信息
+      // create a new object to store the user information
       const bookersData = bookers.reduce((acc, current) => {
         acc[current.id] = current.data;
         return acc;
       }, {});
-      setBookersInfo(bookersData); // 更新状态
+      setBookersInfo(bookersData);
     };
 
-    // 获取停在某spot的vehicle信息
+    // get the vehicle information parked at some spot
     const loadCarsInfo = async () => {
       const carsInfoUpdates = {};
       const carRequests = orders.map(order => getSpecificCarInfo(order.CarID)
         .then(info => {
           console.log('Car info:', info.car);
-          carsInfoUpdates[order.CarID] = info.car; // 如果成功获取，则存储车辆信息
+          carsInfoUpdates[order.CarID] = info.car;
         })
         .catch(error => {
-          carsInfoUpdates[order.CarID] = 'This car has been deleted'; // 如果获取失败，则设置提示信息
+          carsInfoUpdates[order.CarID] = 'This car has been deleted';
         })
-      );
-  
+      ); 
       await Promise.all(carRequests);
-      setCarsInfo(carsInfoUpdates); // 更新状态，存储每个车辆的信息或错误提示
+      setCarsInfo(carsInfoUpdates);
     };
 
     // 调用该函数

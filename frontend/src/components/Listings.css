@@ -1,11 +1,11 @@
 .listings-title {
-    border-bottom: 1px solid #d3d3d3; /* 修改为淡灰色下划线 */
+    border-bottom: 1px solid #d3d3d3;
     padding-bottom: 10px;
     margin-bottom: 20px;
     text-align: left;
   }
 
-  /* 最上方title部分 */
+  /* top: title part */
   .button-part {
     display: flex;
     justify-content: space-between;
@@ -23,7 +23,7 @@
   }
 
   .listing-title:hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66; 
 
   }
 
@@ -43,7 +43,7 @@
   }
 
 
-  /* Listings部分 */
+  /* Listings part */
   .list-part {
     display: flex;
     flex-direction: column;
@@ -56,7 +56,6 @@
     margin:20px 20px;
   }
 
-  
   .listing-info {
     display: grid;
     grid-template-columns: 150px auto auto auto;
@@ -75,8 +74,6 @@
     border-radius: 5px;
     margin: 5px;
   }
-
-
 
   .space-information {
     display: flex;
@@ -121,7 +118,7 @@
 
   .manipulation-link a:hover {
     color: #f66;
-    text-decoration: underline; /* 添加下划线 */
+    text-decoration: underline;
   }
 
   .first-line-link {
@@ -132,8 +129,6 @@
   .edit-link {
     margin-right: 15px;
   }
-
-
 
   .first-line-btn button, .second-line-btn button {
     margin-right: 5px;
@@ -215,7 +210,7 @@
   }
 
 
-  /* 删除弹窗 */
+  /* delete modal */
   .delete-confirm-btn {
     width: 200px;
     color: darkgray;

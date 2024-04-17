@@ -39,7 +39,7 @@
 }
 .emailverify{
     display: flex;
-    margin-bottom: 10px;
+    margin: 0px 30px 0px 0px;
 }
 button:disabled {
     background-color: #ff9797; 

@@ -65,13 +65,13 @@ p.spot-name-detail{
     font-weight: 600;
     margin-left: 0px;
     color: #717171;
+    white-space: nowrap;    
 }
 p.space-location-report{
     padding: 0px;
     margin:  0px 0px 0px 8px;
     font-size: 12px;
     height: 34px;
-    max-width: 90%;
     margin-top: 0px;
     font-weight: 400;
     color: #404040;
@@ -125,6 +125,20 @@ div.circle{
     font-size: 20px;
     border-radius: 50px;
 }
+div.blue-heavy{
+    color: rgb(0, 99, 192);
+    border: 5px solid rgb(0, 99, 192);
+}
+p.blue-heavy-c{
+    color: rgb(0, 99, 192);
+}
+div.blue-small{
+    color: rgb(33, 148, 255);
+    border: 5px solid rgb(33, 148, 255);
+}
+p.blue-small-c{
+    color: rgb(33, 148, 255);
+}
 div.blue{
     color: rgb(0, 132, 255);
     border: 5px solid rgb(0, 132, 255);
@@ -143,8 +157,22 @@ div.green{
     color: rgb(0, 157, 126);
     border: 5px solid rgb(0, 157, 126);
 }
+div.green-heavy{
+    color:  rgb(0, 108, 86);
+    border: 5px solid rgb(0, 108, 86);
+}
+div.green-small{
+    color: rgb(75, 147, 133);
+    border: 5px solid  rgb(75, 147, 133);
+}
 p.green-c{
     color: rgb(0, 157, 126);
+}
+p.green-heavy-c{
+    color: rgb(0, 108, 86);
+}
+p.green-small-c{
+    color:  rgb(75, 147, 133);
 }
 div.yellow{
     color: rgb(255, 191, 0);
@@ -154,11 +182,11 @@ p.yellow-c{
     color:  rgb(255, 191, 0);
 }
 div.purple{
-    color: rgb(166, 0, 255);
-    border: 5px solid rgb(166, 0, 255);
+    color: rgb(234, 0, 255);
+    border: 5px solid rgb(234, 0, 255);
 }
 p.purple-c{
-    color: rgb(166, 0, 255);
+    color:rgb(234, 0, 255);
 }
 div.Data-way{
     width: 100%;
