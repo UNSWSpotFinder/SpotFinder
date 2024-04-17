@@ -59,7 +59,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 			SpotName:     spot.SpotName,
 			SpotAddr:     spot.SpotAddr,
 			SpotType:     spot.SpotType,
-			Rate:         float64(spot.Rate),
+			Rate:         spot.Rate,
 			Size:         spot.Size,
 			IsBlocked:    spot.IsBlocked,
 			IsDayRent:    spot.IsDayRent,
