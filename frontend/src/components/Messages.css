@@ -24,8 +24,9 @@
 }
 
 .notification-container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    gap: 10px;
     align-items: center;
     margin-bottom: 8px;
     background-color: whitesmoke;
@@ -48,6 +49,8 @@
 
 .conversation-messages{
     padding: 5px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .message-row {

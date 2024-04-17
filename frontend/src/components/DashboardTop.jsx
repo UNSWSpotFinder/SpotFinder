@@ -36,8 +36,6 @@ const DashboardTop = () => {
       const fetchData = async () => {
         try {
           const data = await getUserInfo(); 
-          console.log('data:', data); 
-          console.log('data.message:', data.message.Name);
           setUserInfo({
             name: data.message.Name,
           });

@@ -11,7 +11,7 @@ const Messages = () => {
   const [notifications, setNotifications] = useState([]); // 用于存储通知
   const [messages, setMessages] = useState([]); // 用于存储消息
 
-  const [showNotifications, setShowNotifications] = useState(false); // 控制显示或隐藏通知
+  const [showNotifications, setShowNotifications] = useState(true); // 控制显示或隐藏通知
   const [showMessages, setShowMessages] = useState(true); // 控制显示或隐藏消息
 
   const [userID, setUserID] = useState(localStorage.getItem('userID') || 0);
@@ -232,8 +232,8 @@ const Messages = () => {
                 {notifications.map((notification, index) => (
                 <div key={index} className='received-notification'>
                     <div className='notification-container'>
-                        <div>{notification.content.Content}</div>
-                        <div>{new Date(notification.content.SentAt).toLocaleString()}</div>
+                        <div className='notification-content'>{notification.content.Content}</div>
+                        <div className='notification-time'>{new Date(notification.content.SentAt).toLocaleString()}</div>
                     </div>
                 </div>
                 ))}

@@ -10,6 +10,13 @@
   margin-bottom: 20px;
 }
 
+.book-list-info
+{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
 .first-column-account, .second-column-booking {
   border: 1px solid #d3d3d3;
   border-radius: 10px;

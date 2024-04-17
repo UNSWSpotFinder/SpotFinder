@@ -246,3 +246,26 @@
   .report-submit-btn:hover {
     background-color: #f66;
   }
+
+
+
+
+/* Add a media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .single-booking-info {
+    flex-wrap: wrap; /* Allow items to wrap to the next line on small screens */
+  }
+
+  .picture, .right-btn-part, .space-information {
+    flex: 1 1 100%; /* On small screens, take full width */
+  }
+}
+
+/* Add another media query for medium screens */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .picture, .right-btn-part, .space-information {
+    flex: 1 1 auto; /* Allow these items to grow and shrink as needed, but not smaller than content */
+  }
+}
+
+/* ... additional responsive styling as needed ... */
