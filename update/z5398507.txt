@@ -42,7 +42,7 @@ Week6
 1.Complete the Car selection Page
 2.Complete the Order that can contains more than one duration
 3.Can auto calculate the pric
-4.
+4.The Admin can shown the 
 Week7
 
 Week8
