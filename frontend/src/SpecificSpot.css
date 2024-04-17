@@ -273,6 +273,7 @@ div.car-select-left {
 }
 img.carprofile {
   width: 90%;
+  max-height: 100px;
   margin: 10px 0px;
   padding: 0px;
   border-radius: 5px;
