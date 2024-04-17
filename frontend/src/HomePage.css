@@ -531,6 +531,7 @@ p.space-location{
     max-width: 90%;
     margin-top: 2px;
     color: #7F7F7F;
+    overflow: hidden; /* 隐藏溢出的内容 */
 }
 p.space-type{
     padding: 0px;
