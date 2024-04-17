@@ -562,7 +562,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           <div className='balance-part'>
             <CfmLefttxt>Your Available Balance</CfmLefttxt>
             <p className='balance-value'>
-              ${Number(Balance).toFixed(2) + ' - $' + data.TotalPrice + ' - $' + DisAccount}
+              ${Number(Balance).toFixed(2) + ' - ($' + data.TotalPrice + ' - $' + DisAccount+')'}
             </p>
             <p className='balance-value'>
               ${(Number(Balance) - TotalPrice).toFixed(2)}

@@ -19,18 +19,25 @@ import {
 import '../HomePage.css';
 import { useError } from '../API';
 import { AppContext } from '../App';
-
+// this is the admin dashboard
 const AdminDashboard = () => {
+  // get the context state
   const { contextState, updateContextState } = useContext(AppContext);
+  // when the location is changed
   let handleLocation = (event) => {
     updateContextState({
       Carlocation: event.target.value,
     });
   };
+  // the page number of approved spots
   const [pageA, setPageA] = useState(1);
+  // the page number of all spots
   const [pageB, setPageB] = useState(1);
+  // all reports
   const [reports, setReports] = useState([]);
+  // the report is done or not
   const [isLReport, setisreport] = useState(true);
+  // 
   const [finishedReport, setFinishedReport] = useState(false);
   const [spots, setSpots] = useState([]);
   const [AppSpots, setAppSpots] = useState([]);
