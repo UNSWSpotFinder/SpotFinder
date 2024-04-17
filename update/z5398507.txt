@@ -1,0 +1,52 @@
+Week1
+1.choose the teammember of this course
+2. initial an empty frontend react project
+3. choose the project topic with my teammate
+4. start to design the HomePage of our project
+5. write the project proposal PART 4
+Week2
+1. Design the HomePage
+2. Design the Login Page for user admin
+3. Design the Regist Page for user admin
+4. Design the Specific Spot Page for user
+5. Design the Car selection Page
+6. Choose the logo for our website
+7. Looking the exist Spot Renter website
+8. Write the proposal part4 for already designed
+Week3
+1. Write the proposal part4 all content and designed all web site Page.
+2. Finished the user Login Page
+3. Finished the user email verification code function
+3. Finished the Home Page dashboard part and welcome part
+4. Cooperation with the backend to test some API spereately
+5. Finish a spereate Creat Spot Page with out any function
+6. review our proposal and submit it.
+Week4
+1. Finished all the user Regist Page
+2. Finished all the Password Forget Page
+3. Finished the logout function
+4. Make sure the user can regist,login,logout,reset password
+5. Finished all the Create Spot Page and the Spot can be Create
+6. Can get all the spot in the HomePage but UI is not correct
+7. Implement all the filter but cannot use to filter
+8. Finished the Admin Login Page
+Week5
+1. Finished the Admin Regist Page
+2. Finished the Home page Get all published Spoting
+3. For all filters the RANK, Bookway, price range, location can be filtered correctly
+4. Complete the Specific Spot Page with can Order
+5. Complete the Admin HomePage with all the spot can be shown and a serch bar can work
+6. Complete the Edit Spot Page
+7. Complete the Review and the score can be shown
+Week6
+1.Complete the Car selection Page
+2.Complete the Order that can contains more than one duration
+3.Can auto calculate the pric
+4.
+Week7
+
+Week8
+
+Week9
+
+Week10
