@@ -9,9 +9,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/gmail/v1"
-	"google.golang.org/api/option"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -24,57 +21,55 @@ import (
 
 var BasePath = "./"
 
-func InitConfig() *gmail.Service {
+func InitConfig() {
 	if basePath := os.Getenv("BASE_PATH"); basePath != "" {
 		BasePath = basePath
 	}
 	configPath := filepath.Join(BasePath, "Config", "app.yml")
-	tokenPath := filepath.Join(BasePath, "util", "credentials.json")
 	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configPath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println(err)
-		return nil
 	}
 	fmt.Println("config app", viper.Get("app"))
 	fmt.Println("config mysql", viper.Get("mysql"))
-
-	// google API, if you cant use this, use the Python version.
-	ctx := context.Background()
-	b, err := os.ReadFile(tokenPath)
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, gmail.GmailReadonlyScope, gmail.GmailSendScope, gmail.GmailComposeScope)
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-	//fmt.Println("config", config)
-	client := GetClient(config, nil)
-
-	srv, err := gmail.NewService(ctx, option.WithHTTPClient(client))
-	if err != nil {
-		log.Fatalf("Unable to retrieve Gmail client: %v", err)
-	}
-
-	user := "me"
-	r, err := srv.Users.Labels.List(user).Do()
-	if err != nil {
-		log.Fatalf("Unable to retrieve labels: %v", err)
-	}
-	if len(r.Labels) == 0 {
-		fmt.Println("No labels found.")
-		return nil
-	}
-	fmt.Println("Labels:")
-	for _, l := range r.Labels {
-		fmt.Printf("- %s\n", l.Name)
-	}
-	return srv
+	//
+	//// google API, if you cant use this, use the Python version.
+	//ctx := context.Background()
+	//b, err := os.ReadFile(tokenPath)
+	//if err != nil {
+	//	log.Fatalf("Unable to read client secret file: %v", err)
+	//}
+	//
+	//// If modifying these scopes, delete your previously saved token.json.
+	//config, err := google.ConfigFromJSON(b, gmail.GmailReadonlyScope, gmail.GmailSendScope, gmail.GmailComposeScope)
+	//if err != nil {
+	//	log.Fatalf("Unable to parse client secret file to config: %v", err)
+	//}
+	////fmt.Println("config", config)
+	//client := GetClient(config, nil)
+	//
+	//srv, err := gmail.NewService(ctx, option.WithHTTPClient(client))
+	//if err != nil {
+	//	log.Fatalf("Unable to retrieve Gmail client: %v", err)
+	//}
+	//
+	//user := "me"
+	//r, err := srv.Users.Labels.List(user).Do()
+	//if err != nil {
+	//	log.Fatalf("Unable to retrieve labels: %v", err)
+	//}
+	//if len(r.Labels) == 0 {
+	//	fmt.Println("No labels found.")
+	//	return nil
+	//}
+	//fmt.Println("Labels:")
+	//for _, l := range r.Labels {
+	//	fmt.Printf("- %s\n", l.Name)
+	//}
+	//return srv
 }
 
 // GetClient Retrieve a token, saves the token, then returns the generated client.
