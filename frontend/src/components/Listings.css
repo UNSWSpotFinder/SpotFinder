@@ -1,3 +1,4 @@
+
 .listings-title {
     border-bottom: 1px solid #d3d3d3;
     padding-bottom: 10px;
@@ -54,23 +55,28 @@
     border-radius: 10px;
     padding: 20px;
     margin:20px 20px;
-  }
+    max-height: 700px;
+    overflow-y: auto; 
+    
 
+  }
   .listing-info {
     display: grid;
-    grid-template-columns: 1fr 2.3fr 1.5fr 1.5fr; 
-    align-items: center;
+    grid-template-columns: 150px 2fr 1fr 1fr;  /* 调整为具体的宽度和比例 */
+    align-items: start;  /* 从顶部对齐，确保内容可见 */
     gap: 10px;
     margin-bottom: 20px;
     border: 1px solid #d3d3d3;
-    border-radius: 10px; /* rounded corners */
-    overflow: hidden; 
+    border-radius: 10px;
+    padding: 10px; /* 确保有足够的内边距 */
+    min-height: 180px; /* 最小高度设置，保持视觉一致性 */
+    overflow: hidden;
   }
 
   .picture img {
     background-color: #d3d3d3; /* Placeholder color for the thumbnail */
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     border-radius: 5px;
     margin: 5px;
   }
@@ -79,6 +85,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    
   }
 
   .spot-title {
@@ -109,6 +116,7 @@
     display: flex;
     flex-direction: column;
     padding-left: 15px;
+    margin-top: 50px;
     
   }
 
@@ -252,4 +260,15 @@
     color: #e11e2c;
     margin-left: 10px;
 
+  }
+
+  @media (max-width: 768px) {
+    .listing-info {
+      grid-template-columns: 1fr; /* 小屏幕上堆叠布局 */
+      text-align: center; /* 居中对齐文本 */
+    }
+  
+    .price, .manipulation-link {
+      order: -1; /* 调整显示顺序 */
+    }
   }
