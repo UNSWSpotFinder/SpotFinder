@@ -18,6 +18,11 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
     // When the modal box is opened, all form fields are reset.
     const handleAddSubmit = async (event) => {
         event.preventDefault();
+        if (!avatar) {
+            setSnackbarMessage('Please upload a vehicle picture.');
+            setOpenSnackbar(true);
+            return; // 不继续执行提交
+        }
         const vehicleInfo = {
             brand: vehicleBrand,
             charge: vehicleCharge,
@@ -26,6 +31,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
             size: vehicleSize,
             type: vehicleType
         };
+        console.log(vehicleInfo);
         try {
             await createCarInfo(vehicleInfo);
             onAdded();
@@ -67,13 +73,14 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
                 setAvatar(reader.result);
             };
             reader.readAsDataURL(file);
+            event.target.setCustomValidity('');
         }
     };
         
     // 设置自定义的验证消息
     // Validate that input cannot be empty
     const handleInvalid = (event) => {
-    event.target.setCustomValidity('This field cannot be left blank');
+    event.target.setCustomValidity('Please upload your vehicle picture.');
     };
 
     // close Snackbar
@@ -138,22 +145,22 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
                 </select>
                 </div>
                 <div className="form-group">
-                <input
-                    required
-                    onInvalid={handleInvalid}
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    id="upload-avatar"
-                    type="file"
-                    onChange={handleFileChange}
-                />
-                <label htmlFor="upload-avatar">
-                <span className='upload-hint'>Click to upload your vehicle picture</span> 
-                    <IconButton color="primary" aria-label="upload picture" component="span">
-                    <PhotoCamera />
-                    </IconButton>
-                </label>
-                {avatar && <img src={avatar} alt="Avatar Preview" style={{ width: '100px', height: '100px' }} />}
+                    <input
+                        required
+                        onInvalid={handleInvalid}
+                        accept="image/*"
+                        id="upload-avatar"
+                        type="file"
+                        onChange={handleFileChange}
+                        style={{ opacity: 0, position: 'absolute', zIndex: -1, width: '1px', height: '1px' }}
+                    />
+                    <label htmlFor="upload-avatar">
+                        <span className='upload-hint'>Click to upload your vehicle picture</span> 
+                        <IconButton color="primary" aria-label="upload picture" component="span">
+                        <PhotoCamera />
+                        </IconButton>
+                    </label>
+                    {avatar && <img src={avatar} alt="Avatar Preview" style={{ width: '100px', height: '100px' }} />}
                 </div>
                 <div className="form-buttons">
                     <button type='submit' className='submit-btn'>Submit</button>

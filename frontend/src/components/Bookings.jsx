@@ -255,7 +255,7 @@ const Bookings = () => {
             Past Bookings: {pastBookings.length}
           </button>
         </div>
-        <button className='add-a-new-booking-btn'> Add a new booking</button>
+        <button className='add-a-new-booking-btn' onClick={ClickToFindSpot}> Add a new booking</button>
       </div>
       <div className='booking-part'>
   <h3 className='bookings-title'>{currentView === 'Current' ? 'Current bookings' : 'Past bookings'}</h3>
