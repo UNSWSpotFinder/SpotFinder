@@ -3,7 +3,6 @@
 # 变量
 DOCKER_COMPOSE_CMD = docker-compose
 DOCKER_COMPOSE_FILE = BackEnd/Docker-compose.yml
-SERVICE_NAME = backend  # 如果你有不同的服务名，请更改这里
 
 # 定义 'run' 目标
 run:
