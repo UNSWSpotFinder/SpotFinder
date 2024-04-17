@@ -47,7 +47,6 @@ var clientConnections = make(map[uint]*websocket.Conn)
 // @Failure 500 {string} string "Internal server error."
 // @Security BearerAuth
 func WebsocketHandler(c *gin.Context) {
-
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Printf("Failed to set websocket upgrade: %+v", err)
