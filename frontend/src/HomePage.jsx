@@ -288,9 +288,7 @@ function AllSpoting() {
             className='spaceimg'
             alt=''
             src={
-              (spot.Picture.includes('data:image/jpeg;base64,')
-                ? spot.Picture
-                : 'data:image/jpeg;base64,' + spot.Picture) || 'img/sample.jpeg'
+              spot.Picture || 'img/sample.jpeg'
             }
           ></img>
           <div className='info'>
