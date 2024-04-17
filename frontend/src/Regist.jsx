@@ -530,7 +530,7 @@ export function UserRegistPage() {
                   type='button'
                   className='changeprofile'
                 >
-                  Select your profile photo
+                  Select Your Avator
                 </button>
               </div>
               <button
