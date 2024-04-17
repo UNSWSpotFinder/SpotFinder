@@ -258,56 +258,56 @@ const Bookings = () => {
         <button className='add-a-new-booking-btn'> Add a new booking</button>
       </div>
       <div className='booking-part'>
-        <h3 className='bookings-title'>{currentView === 'Current' ? 'Current Bookings' : 'Past Bookings'}</h3>
-          {/* 单个booking */}    
-          {myBookingsInfo.length > 0 ? (currentView === 'Current' ? currentBookings : pastBookings).map((booking, index) => {
-            // 根据booking的SpotID找到对应的spot信息
-            const spotInfo = spotsInfo.find(spot => spot.ID === booking.SpotID);
-            // console.log('Spot Info:', spotInfo);
-            return (
-              <div key={booking.ID} className='single-booking-info'>
-                <div className='picture'>
-                  <img src={spotInfo.Pictures} alt="Thumbnail" />
-                </div>
-                <div className='space-information'>
-                  <div className='space-title'>{spotInfo.SpotName}</div>
-                  {/* 格式化日期、地址 */}
-                  <div className='space-park-time'>{formatBookingTime(booking.BookingTime)}</div>
-                  <div className='total-cost'>Total cost:${booking.Cost}</div>
-                  <div className='space-address'>{parseAddress(spotInfo?.SpotAddr)}</div>
-                  <div className='space-type'>{spotInfo.SpotType}</div>
-                  <div className='way-to-access'>{spotInfo.PassWay}</div>
-                </div>
-                <div className='right-btn-part'>
-                <div><button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotsInfo.find(spot => spot.ID === booking.SpotID))}>Details</button></div>
-                  {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
-                  {booking.Status === 'Pending' && (
-                    <div>
-                      <button className='booking-report-btn' onClick={() => openReportModal(spotInfo.ID)}>Report</button>
-                    </div>
-                  )}
-                  {/* 只有当booking.Status为'Pending'时，才显示Cancel按钮 */}
-                  {booking.Status === 'Pending' && (
-                    <div>  
-                      <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
-                    </div>
-                  )}
-                  {/* 只有当booking.Status为'Completed'时，才显示Review按钮 */}
-                  {booking.Status === 'Completed' && (
-                    <div>
-                      <button className='booking-review-btn' onClick={() =>openReviewModal(booking.ID)}>Review</button>
-                    </div>  
-                  )}
-                </div>
-              </div>
-            );
-          }) : (          
-        <div className="no-bookings-message">
-          <div>You haven't placed any bookings yet.  
-            <Link to="#" onClick={ClickToFindSpot}>Find your first spot!</Link>
-          </div>
-        </div>)}
+  <h3 className='bookings-title'>{currentView === 'Current' ? 'Current bookings' : 'Past bookings'}</h3>
+  {/* 当currentView为'Current'时，检查currentBookings是否为空 */}
+  {currentView === 'Current' && currentBookings.length === 0 ? (
+    <div className="no-bookings-message">
+      <div>Current, you have no bookings yet.
+        <Link to="#" onClick={ClickToFindSpot}>Find your first spot!</Link>
       </div>
+    </div>
+  ) : currentView === 'Past' && pastBookings.length === 0 ? (
+    // 当currentView为'Past'时，检查pastBookings是否为空
+    <div className="no-bookings-message">
+      <div>Current, you have no bookings yet.
+        <Link to="#" onClick={ClickToFindSpot}>Find your first spot!</Link>
+      </div>
+    </div>
+  ) : (
+    // 显示当前或过去的预订列表
+    (currentView === 'Current' ? currentBookings : pastBookings).map((booking, index) => {
+      const spotInfo = spotsInfo.find(spot => spot.ID === booking.SpotID);
+      return (
+        <div key={booking.ID} className='single-booking-info'>
+          <div className='picture'>
+            <img src={spotInfo.Pictures} alt="Thumbnail" />
+          </div>
+          <div className='space-information'>
+            <div className='space-title'>{spotInfo.SpotName}</div>
+            <div className='space-park-time'>{formatBookingTime(booking.BookingTime)}</div>
+            <div className='total-cost'>Total cost: ${booking.Cost}</div>
+            <div className='space-address'>{parseAddress(spotInfo?.SpotAddr)}</div>
+            <div className='space-type'>{spotInfo.SpotType}</div>
+            <div className='way-to-access'>{spotInfo.PassWay}</div>
+          </div>
+          <div className='right-btn-part'>
+            <button className='booking-detail-btn' onClick={() => openBookingDetailModal(booking, spotInfo)}>Detail</button>
+            {booking.Status === 'Pending' && (
+              <>
+                <button className='booking-report-btn' onClick={() => openReportModal(spotInfo.ID)}>Report</button>
+                <button className='booking-cancel-btn' onClick={() => openCancelModal(booking.ID)}>Cancel</button>
+              </>
+            )}
+            {booking.Status === 'Completed' && (
+              <button className='booking-review-btn' onClick={() => openReviewModal(booking.ID)}>Review</button>
+            )}
+          </div>
+        </div>
+      );
+    })
+  )}
+</div>
+
       {/* 显示cancel弹窗 */}
       {showCancelConfirm && (
       <div className='modal-overlay'>

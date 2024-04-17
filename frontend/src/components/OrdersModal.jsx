@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getUserSimpleInfo, cancelBooking, getSpecificCarInfo } from './API';
+import { getUserSimpleInfo, cancelBooking, getSpecificCarInfo, getVoucher } from './API';
 import Snackbar from '@mui/material/Snackbar';
 import './OrdersModal.css';
 import './Listings.css';
@@ -10,15 +10,19 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [selectedOrderID, setSelectedOrderID] = useState(null); // store the orderID of cancel order
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageContent, setMessageContent] = useState('');
+  const [notificationContent, setNotificationContent] = useState('');
+
   const [selectedBookerID, setSelectedBookerID] = useState(null);
-  const [ setSelectedBooker] = useState(null);
+  const [selectedBooker,setSelectedBooker] = useState(null);
   const [carsInfo, setCarsInfo] = useState({});
   const [ws, setWs] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const handleSnackbarClose = () => setOpenSnackbar(false);
+  const [voucher, setVoucher] = useState(null);
 
   useEffect(() => {
+    let webSocket;
     // create a WebSocket connection
     const createWebSocketConnection = () => {
       const webSocket = new WebSocket('ws://localhost:8080/ws');
@@ -28,6 +32,14 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
         // send authentication information
         webSocket.send(JSON.stringify({ type: 'authenticate', token: localStorage.getItem('token') })); // 发送认证信息
       };
+
+      webSocket.onclose = (event) => {
+        if (!event.wasClean) {
+          console.log('WebSocket disconnected unexpectedly, attempting to reconnect...');
+          setTimeout(createWebSocketConnection, 5000); // 尝试在5秒后重连
+        }
+      };
+
       webSocket.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
@@ -41,31 +53,74 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       createWebSocketConnection();
     }
 
-    // close WebSocket connection when component is unloaded
-    return () => {
-      if (ws) {
-        ws.close();
-      }
-    };
-  }, [ws]);
+  // Cleanup on unmount
+  return () => {
+    if (webSocket) {
+      webSocket.onclose = () => {}; // Disable onclose handler to prevent reconnection after unmount
+      webSocket.close();
+    }
+  };
+}, [ws]); // 依赖于 ws 变量，以便当 ws 改变时重新运行 effect
+
+  // 直接获取优惠券
+  // useEffect(() => {
+  //   getVoucher().then(voucherCode => {
+  //     const voucher = voucherCode; // 响应中优惠券的字段为Code
+  //     // console.log('Voucher code:', voucher);
+  //     // console.log('Voucher code:', voucher.Code)
+  //     setVoucher(voucher);
+  //   }).catch(voucherError => {
+  //     console.error("Failed to fetch voucher:", voucherError);
+  //   });
+  // }, []);
+
+
+
 
   // handle cancel order
   const handleCancel = () => {
-    console.log('Cancelling order ID:', selectedOrderID);
     cancelBooking(selectedOrderID).then(() => {
+      // 生成优惠券
+      getVoucher().then(voucherCode => {
+        const voucher = voucherCode.Code; // 响应中优惠券的字段为Code
+
+
+        // 设置通知内容，包括优惠券信息
+        const notificationMessage = `Your order has been cancelled. As a compensation, here is a voucher code for you: ${voucher}`;
+        // setNotificationContent(notificationMessage);
+        console.log('Notification content:', notificationContent);
+
+        // 发送通知
+        console.log('Selected booker ID:', selectedBookerID);
+        handleSendNotification(notificationMessage,selectedBookerID);
+
+        // 用户界面反馈
+        setSnackbarMessage('Order cancelled and voucher sent.');
+        setOpenSnackbar(true);
+      }).catch(voucherError => {
+        console.error("Failed to fetch voucher:", voucherError);
+        setSnackbarMessage('Order cancelled, but failed to send voucher.');
+        setOpenSnackbar(true);
+      });      
+
+
       // prompt user that the updated state
+      setShowCancelConfirm(false);
+      setSelectedOrderID(null);
+      closeOrdersModal();
       setSnackbarMessage('Order cancelled successfully.');
       setOpenSnackbar(true);
       fetchOrders();
-      setShowCancelConfirm(false);
-      setSelectedOrderID(null);
     }).catch(error => {
       console.error("Error cancelling the booking:", error);
     });
   };
 
   // open the cancel order confirm modal
-  const openCancelModal = (orderID) => {
+  const openCancelModal = (orderID,BookerID) => {
+    console.log('Booker ID:', BookerID);
+    setSelectedBookerID(BookerID);
+    
     setSelectedOrderID(orderID);
     console.log('Cancel order ID:', orderID);
     setShowCancelConfirm(true);
@@ -171,10 +226,30 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
 
       ws.send(JSON.stringify(message));
 
-      // console.log(`Message sent to ${selectedBookerID}: ${messageContent}`);
+      console.log(`Message sent to ${selectedBookerID}: ${message}`);
       // 清理操作
       setMessageContent('');
       closeMessageModal();
+    } else {
+      console.error('WebSocket is not open or no message content.');
+    }
+  };
+
+  const handleSendNotification = (notificationMessage,selectedBookerID) => {
+    console.log('Notification content:', notificationMessage);
+    console.log('Selected booker ID:', selectedBookerID);
+    console.log('ws.readyState:', ws.readyState === WebSocket.OPEN);
+    if (ws && ws.readyState === WebSocket.OPEN && selectedBookerID && notificationMessage) {
+      // 服务器期待的消息格式如下
+      const message = {
+        type: 'notification',
+        receiverId: parseInt(selectedBookerID, 10),
+        content: notificationMessage,
+      };
+
+      ws.send(JSON.stringify(message));
+
+      console.log(`Message sent to ${selectedBookerID}: ${notificationMessage}`);
     } else {
       console.error('WebSocket is not open or no message content.');
     }
@@ -242,7 +317,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
                 <div className="modal-button-part">
                   <button className='send-msg-btn' onClick={() => openMessageModal(order.BookerID, booker)}>Send a msg</button>
                   {order.Status === 'Pending' && (
-                    <button className='order-cancel-btn' onClick={() => openCancelModal(order.ID)}>Cancel</button>
+                    <button className='order-cancel-btn' onClick={() => openCancelModal(order.ID, order.BookerID)}>Cancel</button>
                   )}
                   {/* {order.Status === 'Completed' &&(<btn className='order-review-btn'>Review</btn>)} */}
                 </div>
