@@ -18,10 +18,9 @@ import (
 	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"google.golang.org/api/gmail/v1"
 )
 
-func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
+func Router(redisCli *redis.Client) *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"}, // 允许前端应用的源
@@ -53,7 +52,7 @@ func Router(srv *gmail.Service, redisCli *redis.Client) *gin.Engine {
 		User.VerifiedCodeHandler(c, redisCli)
 	})
 	public.POST("/user/create/sendEmail", func(c *gin.Context) {
-		User.SendCodeHandler(srv, c, redisCli)
+		User.SendCodeHandler(c, redisCli)
 	})
 	public.POST("/login", User.LoginHandler) // Login might typically be public
 	public.POST("/manager/create", Manager.CreateManagerHandler)

@@ -59,12 +59,12 @@ func main() {
 	log.Level = logrus.DebugLevel // InfoLevel elsewhere
 
 	rand.Seed(uint64(time.Now().UnixNano()))
-	srv := util.InitConfig()
+	util.InitConfig()
 	db := util.InitMySQL()
 	redisCli := util.InitRedis()
 	// database connection
 	Service.DB = db
-	r := Router.Router(srv, redisCli)
+	r := Router.Router(redisCli)
 	// open a goroutine to run the HTTP server
 	go func() {
 		if err := r.Run(":8080"); err != nil {
