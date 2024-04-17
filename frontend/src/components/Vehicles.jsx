@@ -140,7 +140,7 @@ const Vehicles = () => {
   };
 
   // 关闭edit弹窗
-  const closeEditModal = () => setIsEditModalOpen(false);;
+  const closeEditModal = () => setIsEditModalOpen(false);
 
     
 
@@ -181,11 +181,11 @@ const Vehicles = () => {
 
       {/* add/edit spot弹窗 */}
       {isAddModalOpen && 
-        <AddVehicleModal 
+        (<AddVehicleModal 
           onClose={closeAddModal} 
           onAdded={handleVehicleAdded} 
           closeAddModal={closeAddModal}
-          />}
+          />)}
       {isEditModalOpen && (
         <EditVehicleModal
           onClose={closeEditModal}

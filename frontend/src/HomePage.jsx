@@ -15,6 +15,7 @@ function AllSpoting() {
   const { contextState } = useContext(AppContext);
   // use the navigate function to navigate to the detail page
   const navigate = useNavigate();
+  const [isBottom, setIsBottom] = useState(false);
   // when user want to see the detail of the spot
   const goesSpecific = (event) => {
     // get the target spot id
@@ -54,9 +55,13 @@ function AllSpoting() {
           // if the response is not null, then update the spot list
           if (response && response.message) {
             // update the spot list
+            
             setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
             // page number plus 1
             setPage(page+1);
+          }
+          if(!response.message){
+            setIsBottom(true);
           }
           setIsLoading(false); // 完成加载后设置为 false
         })
@@ -196,7 +201,6 @@ function AllSpoting() {
         else{
           return false;
         }
-
       });
     }
     // get the order method
@@ -352,7 +356,8 @@ function AllSpoting() {
           </div>
         </div>
       ))}
-      {isLoading && <p className='Lod'>Loading...</p>}
+      { !isBottom && isLoading && <p className='Lod'>Loading...</p>}
+      { (isBottom || (filteredSpot.length===0 && !isLoading)) && <p className='Lod'>No more Spots</p>}
     </div>
   );
 }
