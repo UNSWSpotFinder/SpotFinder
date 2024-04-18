@@ -61,11 +61,11 @@ func Router(redisCli *redis.Client) *gin.Engine {
 	public.GET("/user/simpleInfo/:id", User.GetSimpleUserInfoHandler)
 	public.GET("/spots/:spotID/reviews", Review.GetReviewsBySpotID)
 	public.GET("/reviews/:reviewID", Review.GetReviewByIDHandler)
+	public.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 
 	// Private (authenticated) routes
 	private := r.Group("/")
 	private.Use(Service.AuthMiddleware(SecreteKey)) // Use your actual secret key here, not "BearerAuth"
-	private.POST("/user/modifyPasswd", User.ModifyPasswdHandler)
 	private.POST("/user/modifyUserInfo", User.ModifyUserInfoHandler)
 	private.GET("/user/info", User.GetUserInfoHandler)
 	private.POST("/spot/create", Spots.CreateSpotController)
