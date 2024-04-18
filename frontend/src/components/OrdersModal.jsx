@@ -24,7 +24,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     let webSocket;
     // create a WebSocket connection
     const createWebSocketConnection = () => {
-      const webSocket = new WebSocket('ws://localhost:8080/ws');
+      const webSocket = new WebSocket('ws://longsizhuo.com/ws');
 
       webSocket.onopen = () => {
         console.log('WebSocket connection established');

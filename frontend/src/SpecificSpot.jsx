@@ -192,7 +192,7 @@ const ReserveConfirm = styled('button')({
 });
 export const SendWelcomeMessage = (receiverID, Content) => {
   console.log('Connecting to WebSocket...');
-  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  let websocket =  new WebSocket('ws://longsizhuo.com/ws');
   const token = localStorage.getItem('token') || null;
   websocket.onopen = () => {
     // 当WebSocket连接打开时的回调函数

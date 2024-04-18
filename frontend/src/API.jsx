@@ -623,7 +623,7 @@ export const callAPIGetSpecUserInfo = (path) => {
 export const callAPIApproveSpot = (path, SpotId, token) => {
   return new Promise((resolve, reject) => {
     fetch(
-      '/api/' +
+      '/api/' + String(path) + '/' +
         String(SpotId),
       {
         method: 'POST',
