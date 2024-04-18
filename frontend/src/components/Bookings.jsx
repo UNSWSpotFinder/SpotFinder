@@ -41,24 +41,21 @@ const Bookings = () => {
   };
   
 
-  // 获取orders和spots信息
+  // get bookings and spots information
   const fetchBookingsAndSpots = async () => {
     try {
-      // 获取预订信息
+      // get bookings info
       const bookingDataResult = await getMyBookingsInfo();
-      const bookingsArray = bookingDataResult.orders;
-      console.log('My Bookings array:', bookingsArray);
-      
-      // 获取所有bookings相关的spots信息
+      const bookingsArray = bookingDataResult.orders;   
+
+      // get all spots info related to bookings
       const spotsInfoPromises = bookingsArray.map(booking => {
         return getSpotDetails(booking.SpotID);
       });
 
       const spotsDetails = await Promise.all(spotsInfoPromises);
       const structuredSpotsInfo = spotsDetails.map(detail => detail.message || {});
-      // console.log('Structured Spots Info:', structuredSpotsInfo);
       
-      // 设置状态
       setMyBookingsInfo(bookingsArray);
       setSpotsInfo(structuredSpotsInfo);
     } catch (error) {
@@ -66,12 +63,12 @@ const Bookings = () => {
     }
   };
 
-  // 获取orders和spots信息
+  // get bookings and spots information
   useEffect(() => {
     fetchBookingsAndSpots();
   }, []);
 
-  // 解析地址
+  // parse address
   function parseAddress(spotAddr) {
     try {
       const address = JSON.parse(spotAddr);
@@ -80,19 +77,18 @@ const Bookings = () => {
       return 'Default Address';
     }}
 
-  // 解析时间
+  // format booking time
   function formatBookingTime(bookingTimeJson) {
     try {
       const bookingTimeArray = JSON.parse(bookingTimeJson);
       if (bookingTimeArray.length > 0) {
         const { startDate, endDate } = bookingTimeArray[0];
-        // 为格式化函数指定时区选项
         const options = {
           day: '2-digit', month: '2-digit', year: 'numeric',
           hour: '2-digit', minute: '2-digit', hour12: false,
-          timeZone: 'UTC' // 指定时区为UTC
+          timeZone: 'UTC' // set UTC time zone
         };
-        // 转换并格式化时间
+        // format start and end date
         const formattedStart = new Date(startDate).toLocaleString('en-AU', options);
         const formattedEnd = new Date(endDate).toLocaleString('en-AU', options);
         return `${formattedStart} - ${formattedEnd}`;
@@ -103,74 +99,68 @@ const Bookings = () => {
     return 'No booking time available';
   } 
 
-  // 打开“取消订单”详情弹窗
+  // open cancel modal
   const openCancelModal = (bookingID) => {
-    setSelectedBookingID(bookingID); // 存储当前要取消的预订 ID
-    // console.log('Cancel Booking ID:', bookingID);
+    setSelectedBookingID(bookingID);
     setShowCancelConfirm(true);
   };
 
-  // 关闭“取消订单”确认框
+  // Close the "Cancel Booking" confirmation dialog
   const closeCancelConfirm = () => {
     setShowCancelConfirm(false);
   };
   
-  // 打开订单report弹窗
+  // open report modal
   const openReportModal = (spotID) => {
-    setSelectedSpotID(spotID);  // 保存 Spot ID
-    console.log("Opening report modal for Spot ID:", spotID);
+    setSelectedSpotID(spotID);
     setShowBookingReportModal(true);
   };
-  // 关闭订单report弹窗
+
+  // Close the "Report Booking" dialog
   const closeReportModal=()=>{
     setShowBookingReportModal(false);
   }
 
-  // 打开订单Review弹窗
+  // open review modal
   const openReviewModal=(bookingID)=>{
     setSelectedBookingID(bookingID);
-    console.log('Cancel Booking ID:', bookingID);
     setShowBookingReviewModal(true);
   }
-  // 关闭订单Review弹窗
+
+  // close the "Review Booking" modal
   const closeReviewModal=()=>{
     setShowBookingReviewModal(false);
   }
 
-  // 取消订单列表项
+  // handle cancel booking
   const handleCancel = () => {
       cancelBooking(selectedBookingID).then(() => {
-        // 成功取消后的操作，例如提示用户，更新状态等
         setSnackbarMessage('Booking cancelled successfully.');
         setOpenSnackbar(true);
-        fetchBookingsAndSpots(); // 重新获取预订信息来更新 UI
+        fetchBookingsAndSpots();
         setShowCancelConfirm(false);
-        setSelectedBookingID(null);// 清除选中的预订 ID
+        setSelectedBookingID(null);
       }).catch(error => {
-        // 处理错误，提示用户取消失败
         console.error("Error cancelling the booking:", error);
         setSnackbarMessage('Failed to cancel the booking.');
         setOpenSnackbar(true);
       });
   };
 
-  // 打开订单详情弹窗
+  // Open the booking detail modal
   const openBookingDetailModal = (booking, spot) => {
-    // 保存选中的booking和spot信息
     setSelectedBookingDetails(booking); 
     setSelectedSpotInfo(spot);
     setShowBookingDetailModal(true);
   };
   
-  // 关闭订单详情弹窗
+  // close the booking detail modal
   const closeBookingDetailModal = () => {
     setShowBookingDetailModal(false);
   };
 
-  // 上传举报信息
+  // Submit the report
   const handleReportSubmit = () => {
-    // console.log('Report Content:', reportContent);
-    // console.log('Selected Spot ID:', selectedSpotID);
     if (selectedSpotID && reportContent.trim()) {
       createReport(selectedSpotID, reportContent)
         .then(result => {
@@ -178,7 +168,6 @@ const Bookings = () => {
             setSnackbarMessage('Report submitted successfully.');
             setOpenSnackbar(true);
           } else {
-            // 如果结果不为 null，则抛错误
             throw new Error('Unexpected result: ' + result);
           }
         })
@@ -188,20 +177,18 @@ const Bookings = () => {
           setOpenSnackbar(true);
         })
         .finally(() => {
-          // 无论请求成功还是失败，最后都会执行的代码
-          setShowBookingReportModal(false); // 关闭模态框
-          setReportContent(''); // 清空报告内容
-          setSelectedSpotID(null); // 清空选中的 Spot ID
+          setShowBookingReportModal(false);
+          setReportContent('');
+          setSelectedSpotID(null);
         });
     } else {
-      // 如果报告内容为空，则直接通知用户
       console.log("Missing Spot ID or report content is empty.");
       setSnackbarMessage('Report cannot be empty.');
       setOpenSnackbar(true);
     }
   };
 
-  // 新建spot review
+  // Submit the review
   const handleReviewSubmit = () => {
     if (selectedBookingID && reviewContent.trim()) {
       createReview(selectedBookingID, reviewContent, rating)
@@ -215,31 +202,28 @@ const Bookings = () => {
           setOpenSnackbar(true);
         })
         .finally(() => {
-          // 无论请求成功还是失败，最后都会执行的代码
           setShowBookingReviewModal(false); 
           setReviewContent(''); 
           setSelectedBookingID(null);
         });
     } else {
-      // 如果报告内容为空，则直接通知用户
       console.log("Missing Booking ID or review content is empty.");
       setSnackbarMessage('Review cannot be empty.');
       setOpenSnackbar(true);
     }
   }
   
-  // 点击链接跳转到dashboard页面
+  // click to find spot
   const ClickToFindSpot = (event) => {
-    event.preventDefault(); // 阻止链接的默认行为
+    event.preventDefault();
     const email = localStorage.getItem('email');
     if (email) {
-      navigate(`/${email}`); // 使用email值进行导航
+      navigate(`/${email}`);
     }
   };
 
   return (
     <div className='dashboard-bookings'>
-      {/* 组件的JSX结构 */}
       <div className="button-part">
         <div className='booking-btn'>
           <button
@@ -259,7 +243,7 @@ const Bookings = () => {
       </div>
       <div className='booking-part'>
   <h3 className='bookings-title'>{currentView === 'Current' ? 'Current bookings' : 'Past bookings'}</h3>
-  {/* 当currentView为'Current'时，检查currentBookings是否为空 */}
+  {/* when currentView is 'Current'，check whether currentBookings is empty */}
   {currentView === 'Current' && currentBookings.length === 0 ? (
     <div className="no-bookings-message">
       <div>Current, you have no bookings yet.
@@ -267,14 +251,14 @@ const Bookings = () => {
       </div>
     </div>
   ) : currentView === 'Past' && pastBookings.length === 0 ? (
-    // 当currentView为'Past'时，检查pastBookings是否为空
+    // when currentView is 'Past'，check whether pastBookings is empty
     <div className="no-bookings-message">
       <div>Current, you have no bookings yet.
         <Link to="#" onClick={ClickToFindSpot}>Find your first spot!</Link>
       </div>
     </div>
   ) : (
-    // 显示当前或过去的预订列表
+    // show the current or past booking list
     (currentView === 'Current' ? currentBookings : pastBookings).map((booking, index) => {
       const spotInfo = spotsInfo.find(spot => spot.ID === booking.SpotID);
       return (
@@ -308,7 +292,7 @@ const Bookings = () => {
   )}
 </div>
 
-      {/* 显示cancel弹窗 */}
+      {/* show cancel modal */}
       {showCancelConfirm && (
       <div className='modal-overlay'>
         <div className='modal-content'>
@@ -324,7 +308,7 @@ const Bookings = () => {
       </div>
       )}
 
-      {/* 显示booking details 弹窗 */}
+      {/* show booking details modal */}
       {showBookingDetailModal && (
           <BookingDetailModal
             closeBookingDetailModal={closeBookingDetailModal}
@@ -333,7 +317,7 @@ const Bookings = () => {
           />
         )}
 
-      {/* 显示 Booking Report 弹窗 */}
+      {/* show Booking Report modal */}
       {showBookingReportModal && (
         <div className='modal-overlay'>
           <div className='modal-content'>
@@ -353,7 +337,7 @@ const Bookings = () => {
         </div>
       )}
 
-      {/* 显示 Booking Review 弹窗 */}
+      {/* show Booking Review modal */}
       {showBookingReviewModal && (
         <div className='modal-overlay'>
           <div className='modal-content'>
@@ -369,7 +353,6 @@ const Bookings = () => {
               value={rating}
               onChange={(event, newValue) => {
                 setRating(newValue);
-                // TODO:处理评分变化，例如保存评分到服务器
               }}
             />
             <textarea required

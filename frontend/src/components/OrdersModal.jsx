@@ -36,7 +36,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       webSocket.onclose = (event) => {
         if (!event.wasClean) {
           console.log('WebSocket disconnected unexpectedly, attempting to reconnect...');
-          setTimeout(createWebSocketConnection, 5000); // 尝试在5秒后重连
+          setTimeout(createWebSocketConnection, 5000); // try to reconnect after 5 secs
         }
       };
 
@@ -48,7 +48,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     };
 
     // create a WebSocket connection when the component is mounted
-    // 
     if (!ws) {
       createWebSocketConnection();
     }
@@ -60,12 +59,12 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       webSocket.close();
     }
   };
-}, [ws]); // 依赖于 ws 变量，以便当 ws 改变时重新运行 effect
+}, [ws]);
 
-  // 直接获取优惠券
+  // get voucher code directly
   // useEffect(() => {
   //   getVoucher().then(voucherCode => {
-  //     const voucher = voucherCode; // 响应中优惠券的字段为Code
+  //     const voucher = voucherCode;
   //     // console.log('Voucher code:', voucher);
   //     // console.log('Voucher code:', voucher.Code)
   //     setVoucher(voucher);
@@ -74,27 +73,17 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   //   });
   // }, []);
 
-
-
-
   // handle cancel order
   const handleCancel = () => {
     cancelBooking(selectedOrderID).then(() => {
-      // 生成优惠券
+      // generate a voucher code for the user
       getVoucher().then(voucherCode => {
-        const voucher = voucherCode.Code; // 响应中优惠券的字段为Code
-
-
-        // 设置通知内容，包括优惠券信息
+        const voucher = voucherCode.Code;
+        // set the notification content including the voucher information
         const notificationMessage = `Your order has been cancelled. As a compensation, here is a voucher code for you: ${voucher}`;
-        // setNotificationContent(notificationMessage);
-        console.log('Notification content:', notificationContent);
-
-        // 发送通知
-        console.log('Selected booker ID:', selectedBookerID);
         handleSendNotification(notificationMessage,selectedBookerID);
 
-        // 用户界面反馈
+        // User interface feedback
         setSnackbarMessage('Order cancelled and voucher sent.');
         setOpenSnackbar(true);
       }).catch(voucherError => {
@@ -118,11 +107,9 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
 
   // open the cancel order confirm modal
   const openCancelModal = (orderID,BookerID) => {
-    console.log('Booker ID:', BookerID);
     setSelectedBookerID(BookerID);
     
     setSelectedOrderID(orderID);
-    console.log('Cancel order ID:', orderID);
     setShowCancelConfirm(true);
   };
 
@@ -154,7 +141,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       const carsInfoUpdates = {};
       const carRequests = orders.map(order => getSpecificCarInfo(order.CarID)
         .then(info => {
-          console.log('Car info:', info.car);
           carsInfoUpdates[order.CarID] = info.car;
         })
         .catch(error => {
@@ -165,7 +151,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       setCarsInfo(carsInfoUpdates);
     };
 
-    // 调用该函数
     loadBookersInfo();
 
     if (orders.length > 0) {
@@ -173,25 +158,24 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     }
 
     
-  }, [orders]); // 当orders更新时触发
+  }, [orders]); // triggered when orders are updated
 
-  // 重设地址格式
+  // parse the address
   const addr = JSON.parse(spot.SpotAddr);
   const formattedAddr = `${addr.Street}, ${addr.City}, ${addr.State}, ${addr.Postcode}, ${addr.Country}`;
 
-  // 解析时间
+  // parse the booking time
   function formatBookingTime(bookingTimeJson) {
     try {
       const bookingTimeArray = JSON.parse(bookingTimeJson);
       if (bookingTimeArray.length > 0) {
         const { startDate, endDate } = bookingTimeArray[0];
-        // 为格式化函数指定时区选项
         const options = {
           day: '2-digit', month: '2-digit', year: 'numeric',
           hour: '2-digit', minute: '2-digit', hour12: false,
-          timeZone: 'UTC' // 指定时区为UTC
+          timeZone: 'UTC' // set UTC time zone
         };
-        // 转换并格式化时间
+        // Convert and format the time
         const formattedStart = new Date(startDate).toLocaleString('en-AU', options);
         const formattedEnd = new Date(endDate).toLocaleString('en-AU', options);
         return { start: formattedStart, end: formattedEnd };
@@ -202,14 +186,14 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
     return 'No booking time available';
   }
 
-  // 打开发送消息的弹窗
+  // open the message modal
   const openMessageModal = (bookerID,booker) => {
     setSelectedBookerID(bookerID);
     setSelectedBooker(booker);
     setShowMessageModal(true);
   };
 
-  // 关闭发送消息的弹窗
+  // close the message modal
   const closeMessageModal = () => {
     setShowMessageModal(false);
     setMessageContent('');
@@ -217,7 +201,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
 
   const handleSendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN && messageContent && selectedBookerID) {
-      // 服务器期待的消息格式如下
+      // the message format expected by the server
       const message = {
         type: 'message',
         receiverId: parseInt(selectedBookerID,10),
@@ -225,9 +209,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       };
 
       ws.send(JSON.stringify(message));
-
-      console.log(`Message sent to ${selectedBookerID}: ${message}`);
-      // 清理操作
       setMessageContent('');
       closeMessageModal();
     } else {
@@ -236,20 +217,14 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   };
 
   const handleSendNotification = (notificationMessage,selectedBookerID) => {
-    console.log('Notification content:', notificationMessage);
-    console.log('Selected booker ID:', selectedBookerID);
-    console.log('ws.readyState:', ws.readyState === WebSocket.OPEN);
     if (ws && ws.readyState === WebSocket.OPEN && selectedBookerID && notificationMessage) {
-      // 服务器期待的消息格式如下
+      // the message format expected by the server
       const message = {
         type: 'notification',
         receiverId: parseInt(selectedBookerID, 10),
         content: notificationMessage,
       };
-
       ws.send(JSON.stringify(message));
-
-      console.log(`Message sent to ${selectedBookerID}: ${notificationMessage}`);
     } else {
       console.error('WebSocket is not open or no message content.');
     }
@@ -258,15 +233,14 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   return (
     <div className="orders-modal-overlay">
       <div className="orders-modal-content">
-        {/* 标题区域 */}
+        {/* title part */}
         <div className="orders-modal-header">
           <div className='current-state-title'>Current Orders</div>
           <button onClick={closeOrdersModal} className="close-btn">✖</button>
         </div>
-
-        {/* 车位信息区域 */}
+        {/* spot info area */}
         <div className="spot-info">
-          {/* 左侧的名称、地址和大小信息 */}
+          {/* left part: title, addr, info  */}
           <div className="spot-details">
             <div className='img-container'><img src={spot.Pictures} alt="Spot" className='spot-img'/></div>
             <div>
@@ -276,20 +250,18 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
             </div>
           </div>
         
-          {/* 右侧的通行方式和电费信息 */}
+          {/* right part: wat to access and spot type */}
           <div className="spot-access">
             <div className='way-to-access'>{spot.SpotType}</div>
             <div className='way-to-access'>{spot.PassWay}</div>
           </div>
         </div>
 
-        {/* TODO:轮播图 */}
         <div className="carousel-container"></div>
-        {/* 遍历orders数组来展示所有相关订单 */}
+        {/* traverse the orders array to display all related orders */}
         {orders.length === 0 ? (
           <div className="no-orders-message">There are no orders yet.</div>
         ) : (
-          // 遍历orders数组来展示所有相关订单
           orders.map(order =>{
             const { start, end } = formatBookingTime(order.BookingTime); 
             const booker = bookersInfo[order.BookerID];
@@ -326,7 +298,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
           })
         )}
       </div>
-      {/* 显示cancel弹窗 */}
+      {/* show cancel modal */}
       {showCancelConfirm && (
       <div className='modal-overlay'>
         <div className='modal-content'>
@@ -342,7 +314,7 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
       </div>
       )}
 
-      {/* 发送消息的弹窗 */}
+      {/* send msg modal */}
       {showMessageModal && (
         <div className="message-modal-overlay">
           <div className="message-modal-content">
