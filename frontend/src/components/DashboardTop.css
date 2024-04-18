@@ -6,6 +6,16 @@
   }
   
 /* 顶部导航部分 */
+.Navbar {
+  justify-content: space-between;
+}
+
+.btn-part{
+  display: flex;
+  justify-content: space-between;
+}
+
+
 /* 搜索框 */
 div.SearchPart{
   width: calc(100% - 520px);
@@ -42,11 +52,13 @@ img.searchbtn{
 
 /* 顶部按钮 */
 .top-button {
-    padding: 7px 10px;
-    margin: 0 5px;
+    padding: 10px 10px;
+    /* margin:  5px; */
+    margin-left: 10px;
+    margin-right: 10px;
     border: 1px solid #e11e2c;
     border-radius: 25px;
-    width: 130px;
+    width: 180px;
     outline: none;
     background-color: #fff;
     cursor: pointer;
@@ -55,6 +67,7 @@ img.searchbtn{
     font-size: 11px;
     color: #e11e2c;
     font-weight: bold;
+
   }
 
 .top-button:hover {
