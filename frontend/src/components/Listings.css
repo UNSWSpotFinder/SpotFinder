@@ -57,19 +57,18 @@
     margin:20px 20px;
     max-height: 700px;
     overflow-y: auto; 
-    
-
   }
+
   .listing-info {
     display: grid;
-    grid-template-columns: 150px 2fr 1fr 1fr;  /* 调整为具体的宽度和比例 */
-    align-items: start;  /* 从顶部对齐，确保内容可见 */
+    grid-template-columns: 150px 2fr 1fr 1fr;
+    align-items: start;
     gap: 10px;
     margin-bottom: 20px;
     border: 1px solid #d3d3d3;
     border-radius: 10px;
-    padding: 10px; /* 确保有足够的内边距 */
-    min-height: 180px; /* 最小高度设置，保持视觉一致性 */
+    padding: 10px;
+    min-height: 180px;
     overflow: hidden;
   }
 
@@ -84,8 +83,7 @@
   .space-information {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    
+    justify-content: space-around;   
   }
 
   .spot-title {
@@ -116,8 +114,7 @@
     display: flex;
     flex-direction: column;
     padding-left: 15px;
-    margin-top: 50px;
-    
+    margin-top: 50px;   
   }
 
   .manipulation-link a {
@@ -217,7 +214,6 @@
     color: #f66;
   }
 
-
   /* delete modal */
   .delete-confirm-btn {
     width: 200px;
@@ -259,16 +255,15 @@
   .no-spots-message a {
     color: #e11e2c;
     margin-left: 10px;
-
   }
 
   @media (max-width: 768px) {
     .listing-info {
-      grid-template-columns: 1fr; /* 小屏幕上堆叠布局 */
-      text-align: center; /* 居中对齐文本 */
+      grid-template-columns: 1fr;
+      text-align: center;
     }
   
     .price, .manipulation-link {
-      order: -1; /* 调整显示顺序 */
+      order: -1;
     }
   }

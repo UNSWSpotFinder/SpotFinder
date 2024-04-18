@@ -15,33 +15,31 @@ const Profile = () => {
   const [postcode, setPostcode] = useState('');
   const [country, setCountry] = useState('');
   const [avatar, setAvatar] = useState('/img/ProfilePhoto.svg'); 
-  const [isLoading, setIsLoading] = useState(true);  // 跟踪头像加载情况
+  const [isLoading, setIsLoading] = useState(true);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
   useEffect(() => {
-    setIsLoading(true); // 开始获取数据时设置头像加载状态为true
+    setIsLoading(true);
     getUserInfo().then(data => {
-      console.log('User info:', data);
-      // 填充用户信息
+      // fill in user information
       const userInfo = data.message;
 
       setName(userInfo.Name);
       setEmail(userInfo.Email);
       setPhone(userInfo.Phone);
-      // 格式化日期
+      // format the date
       const dateParts = userInfo.DateBirth.split('/');
       const convertedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       setDateOfBirth(convertedDate);
-    // 解析地址信息
+    // parse address information
       if (userInfo.Addr) {
         try {
-          // 构建一个完整的JSON字符串
+          // set the whole JSON string
           const jsonString = `{${userInfo.Addr}}`;
           const addrObject = JSON.parse(jsonString);
-          // 设置地址相关状态
           setAddress(addrObject.address);
           setCity(addrObject.city);
           setState(addrObject.state);
@@ -51,13 +49,9 @@ const Profile = () => {
           console.error('Error parsing address:', error);
         }
       }
-      // 将获取到的头像（base64）变为可显示的URL
+      // set the avatar image
       const avatarData = userInfo.Avatar;
       if (avatarData) {
-        // 检查 avatar data 是否 starts with 'data:image/jpeg;base64,'
-        // const base64Prefix = 'data:image/jpeg;base64,';
-        // const updatedAvatar = avatarData.startsWith(base64Prefix) ? avatarData : base64Prefix + avatarData;
-        // setAvatar(updatedAvatar);
         setAvatar(avatarData);
       }
       setIsLoading(false); // Set loading to false after data is processed
@@ -68,27 +62,26 @@ const Profile = () => {
     });
   }, []);
 
-  // 处理日期变更，转换成后端能识别的格式
+  // Convert the date to a format that the backend can understand
   const convertDateToBackendFormat = (date) => {
     const [year, month, day] = date.split('-');
     return `${day}/${month}/${year}`;
   };
 
-  // 将用户新上传的图片变为Base64格式
+  // set the uploaded image into base64 format
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setAvatar(reader.result); // 将结果设置为avatar状态
+        setAvatar(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // 验证用户填写的表单信息格式是否正确
+  // Validate the form information entered by the user
   const validateForm = () => {
-    // 姓名，邮箱，电话和生日不能为空
     if (!name.trim() || !email.trim() || !phone.trim() || !dateOfBirth.trim()) {
       setSnackbarMessage('Name, Email, Phone Number, and Date of Birth are required.');
       setSnackbarSeverity('error');
@@ -96,7 +89,7 @@ const Profile = () => {
       return false; 
     }
   
-    // 验证邮箱格式
+    // validate email format
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!emailRegex.test(email.toLowerCase())) {
       setSnackbarMessage('Please enter a valid email address.');
@@ -107,15 +100,14 @@ const Profile = () => {
     return true;
   };
   
-
-  // 用于提交表单的函数
+  // handleSave function to send the user information to the API
   const handleSave = () => {
     if (!validateForm()) {
       return;
     }
-    // 如果验证通过，则继续执行
+
+    // build the information object to send
     const fullAddress = `"country":"${country}", "address":"${address}", "city":"${city}", "state":"${state}", "postcode":"${postcode}"`;
-    // 构建要发送的用户信息对象
     const userInfo = {
       address: fullAddress,
       avata: avatar,
@@ -124,19 +116,13 @@ const Profile = () => {
       name: name,
       phone: phone,
     };
-  
-    // 查看封装数据
-    console.log("Sending the following info to the API:", userInfo);
-    // 调用API函数更新用户信息
+
+    // update user information
     updateUserInfo(userInfo).then(() => {
-      console.log('修改成功');
-      // 弹出消息框提示用户或更新状态
       setSnackbarMessage('Successfully modified your profile!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
     }).catch(error => {
-      console.error('更新失败:', error);
-      // 处理错误，显示错误消息
       setSnackbarMessage('Something went wrong, please try again.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -146,7 +132,7 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <div className="info-avatar-container">
-        {/* 左侧个人信息部分 */}
+        {/* left part: user info */}
         <div className="personal-info">   
           <form>
             <div className="form-group">
@@ -190,15 +176,14 @@ const Profile = () => {
 
           </form>
         </div>
-        {/* 右侧头像部分 */}
+        {/* right part:avatar */}
         <div className="avatar-section">
           <div className="avatar-container">
             {isLoading ? (             
-              <div>Loading...</div>  // 当正在加载时，显示一个加载指示器
+              <div>Loading...</div>  // loading state
             ) : (
-              <img src={avatar} alt="Profile Avatar" className="profile-avatar" />  // 当加载完成时，显示头像
+              <img src={avatar} alt="Profile Avatar" className="profile-avatar" />
             )}
-            {/* 使用label模拟按钮 */}
             <div className='choose file '>
             <label htmlFor="file-upload" className="custom-file-upload">Choose File</label>
             <input type="file" id="file-upload" name="avatar" accept="image/*" onChange={handleAvatarChange} style={{display: "none"}}/>
@@ -206,7 +191,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      {/* 取消/保存按钮 */}
       <div className="action-buttons-container">
         <div className="action-buttons">
           {/* <button type="button" className="cancel-button">Cancel</button> */}

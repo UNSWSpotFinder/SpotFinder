@@ -4,7 +4,6 @@
     justify-content: space-between;
     align-items: center;
     margin: 10px;
-    
   }
   .booking-btn {
     margin:10px, 
@@ -67,13 +66,11 @@
     overflow-y: auto; 
   }
 
-
   .single-booking-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid #d3d3d3;
-    
+    border: 1px solid #d3d3d3;   
   }
 
   .picture  {
@@ -88,7 +85,6 @@
   .space-information {
     flex: 0 0 60%;
   }
-
 
   .picture img {
     background-color: #d3d3d3; 
@@ -184,8 +180,6 @@
     color: black;
   }
 
-
-
    /* modal of cancelling booking */
    .cancel-confirm-btn {
     width: 200px;
@@ -249,9 +243,6 @@
     background-color: #f66;
   }
 
-
-
-
 /* Add a media query for smaller screens */
 @media screen and (max-width: 768px) {
   .single-booking-info {
@@ -263,11 +254,8 @@
   }
 }
 
-/* Add another media query for medium screens */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
   .picture, .right-btn-part, .space-information {
     flex: 1 1 auto; /* Allow these items to grow and shrink as needed, but not smaller than content */
   }
 }
-
-/* ... additional responsive styling as needed ... */

@@ -21,7 +21,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
         if (!avatar) {
             setSnackbarMessage('Please upload a vehicle picture.');
             setOpenSnackbar(true);
-            return; // 不继续执行提交
+            return;
         }
         const vehicleInfo = {
             brand: vehicleBrand,
@@ -31,7 +31,7 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
             size: vehicleSize,
             type: vehicleType
         };
-        console.log(vehicleInfo);
+        // console.log(vehicleInfo);
         try {
             await createCarInfo(vehicleInfo);
             onAdded();
@@ -77,7 +77,6 @@ const AddVehicleModal = ({ onClose, onAdded, closeAddModal }) => {
         }
     };
         
-    // 设置自定义的验证消息
     // Validate that input cannot be empty
     const handleInvalid = (event) => {
     event.target.setCustomValidity('Please upload your vehicle picture.');

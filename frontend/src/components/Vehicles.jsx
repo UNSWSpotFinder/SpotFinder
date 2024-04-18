@@ -6,14 +6,11 @@ import AddVehicleModal from './AddVehicles';
 import EditVehicleModal from './EditVehicles';
 
 const Vehicles = () => {
-  const [carsInfo, setCarsInfo] = useState([]); // 存储获取到的 cars 详细信息
-
+  const [carsInfo, setCarsInfo] = useState([]); 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
   const [vehicleBrand, setVehicleBrand] = useState('');
   const [vehiclePlate, setVehiclePlate] = useState('');
   const [vehicleType, setVehicleType] = useState('');
@@ -24,9 +21,7 @@ const Vehicles = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteCarId, setDeleteCarId] = useState('');
 
-
-
-  // 获取车辆信息
+  // get vehicles info
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -40,7 +35,7 @@ const Vehicles = () => {
     fetchData();
   }, []);
 
-  // 车辆添加后刷新页面
+  // add vehicle and fresh the page
   const handleVehicleAdded = async () => {
     setIsAddModalOpen(false);
     try {
@@ -53,7 +48,7 @@ const Vehicles = () => {
     }
   };
 
-  // 车辆修改后刷新页面
+  // edit vehicle and fresh the page
   const handleVehicleEdited = async () => {
     setIsEditModalOpen(false);
     try {
@@ -66,23 +61,18 @@ const Vehicles = () => {
     }
   };
 
-
-
-  // 打开删除确认弹窗
+  // Open the delete confirmation modal
   const openDeleteConfirm = (car) => {
     setShowDeleteConfirm(true);
     setDeleteCarId(car.ID);
   };
   
-  // 关闭删除确认弹窗
+  // close the delete confirmation modal
   const closeDeleteConfirm = () => {
     setShowDeleteConfirm(false);
   };
 
-
-
-
-  // 关闭Snackbar
+  // close Snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -90,9 +80,7 @@ const Vehicles = () => {
     setOpenSnackbar(false);
   };
 
-
-
-  // 处理删除车辆信息
+  // handle delete car info
   const handleDelete = async () => {
     try {
       await deleteCar(deleteCarId);
@@ -100,19 +88,17 @@ const Vehicles = () => {
       setOpenSnackbar(true);
       closeDeleteConfirm();
   
-      // 重新获取更新后的车辆信息列表
+      // Get the updated list of cars
       const updatedCars = await getCarInfo();
       setCarsInfo(updatedCars.cars);
     } catch (error) {
       console.error('Error deleting car:', error);
       setSnackbarMessage('Vehicle deleted unsuccessfully. Please try again.');
       setOpenSnackbar(true);
-
     }
   };
-  
 
-  // 点击add按钮，设置model为add模式 打开模态框时，重置所有表单字段
+  // click the add button and set the model to add mode
   const openAddModal = () => {
     setIsAddModalOpen(true);
     setVehicleBrand('');
@@ -121,13 +107,11 @@ const Vehicles = () => {
     setVehicleSize('');
     setVehicleCharge('');
     setAvatar(''); 
-
   };
 
   const closeAddModal = () => setIsAddModalOpen(false);
 
-
-  // 点击edit按钮
+  // open edit modal
   const openEditModal = (car) => {
     setIsEditModalOpen(true);
     setEditingCarId(car.ID);
@@ -139,22 +123,20 @@ const Vehicles = () => {
     setAvatar(car.Picture);
   };
 
-  // 关闭edit弹窗
+  // colse edit modal
   const closeEditModal = () => setIsEditModalOpen(false);
-
-    
 
   return (
     <div className='dashboard-vehicles'>
-      {/* 上方按钮部分 */}
+      {/* top button part */}
       <div className="button-part">
         <button className='vehicle-title'>Current Vehicles: {carsInfo.length}</button>
         <button onClick={openAddModal} className='add-a-car-btn'>Add a new vehicle</button>
       </div>
-      {/* 下方车辆部分 */}
+      {/* vehicle part */}
       <div className='vehicle-part'>
         <h3 className='my-vehicle-title'>My vehicles</h3>
-        {/* 某个具体车辆部分 */}
+        {/* specific car info */}
         {carsInfo.map((car) => (
            <div key={car.ID} className='specific-vehicle'>
            <div className='left-picture'>
@@ -179,7 +161,7 @@ const Vehicles = () => {
        ))}
       </div>
 
-      {/* add/edit spot弹窗 */}
+      {/* add/edit spot modal */}
       {isAddModalOpen && 
         (<AddVehicleModal 
           onClose={closeAddModal} 
@@ -201,9 +183,7 @@ const Vehicles = () => {
         />
       )}
 
-
-
-      {/* 删除确认弹窗 */}
+      {/* delete confirmation modal */}
       {showDeleteConfirm && (
       <div className='modal-overlay'>
         <div className='modal-content'>
@@ -221,8 +201,7 @@ const Vehicles = () => {
         onClose={handleSnackbarClose}
         message={snackbarMessage}
       />
-    </div>
-    
+    </div>    
   );
 }
 
