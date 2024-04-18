@@ -52,16 +52,22 @@ const DashboardTop = () => {
         {/* Logo image */}
         <img src='/img/LOGO.svg' alt='logo' className='Applogo' onClick={goesHome}></img>
         {/* search part */}
-        <div className='SearchPart'>
+        {/* <div className='SearchPart'>
           <img className='searchbtn' alt='search btn' src='/img/search.png'></img>
           <input className='Searchbar' placeholder='Search by location'></input>
-        </div>
+        </div> */}
         {/* buttons for creating spots and finding spots */}
-        <button className='top-button' onClick={goesCreateSpot} >Lease my spots</button>
-        <button className='top-button' onClick={goesHome}>Find a spot</button>
+        <div className='btn-part'>
+          <button className='top-button' onClick={goesCreateSpot} >Lease my spots</button>
+          <button className='top-button' onClick={goesHome}>Find a spot</button>
+        </div>
+        <div>
+          <span> Hi,</span>
+          <span>{userInfo.name}</span>
+        </div>
+
         {/* user name */}
-        <span> Hi,</span>
-        <span>{userInfo.name}</span>
+       
         {/* logout button */}
         <button className="button-with-image">
           <img src='/img/SignOut.svg' alt='Sign Out' className='sign-out-img' onClick={logout}/>
