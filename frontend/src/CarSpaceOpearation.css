@@ -174,9 +174,7 @@ p.CreateError {
   padding-left: 10%;
 }
 p.QtwoQ {
-  margin: 0px;
-  padding: 0px;
-  margin-left: 10%;
+  padding: 0px 5% 0px 10%;
   margin-top: 20px;
   width: 100%;
   font-size: 20px;
@@ -312,6 +310,7 @@ input.Q6aInput {
   margin: 0px;
   padding: 0px;
   width: 20%;
+  min-width: 90px;
   height: 40px;
   margin-right: 10px;
   padding-left: 10px;
@@ -322,7 +321,7 @@ div.Q6aDiv {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 0px 10%;
+  padding: 0px 8%;
 }
 div.Q6-row {
   display: flex;
@@ -340,10 +339,13 @@ div.Q7-row {
 div.row-left {
   display: flex;
   width: 300px;
+  min-width: 100px;
 }
 div.row-right {
   display: flex;
+  align-items: center;
   width: calc(100%-300px);
+  min-width: 200px;
 }
 div.Q7aDiv {
   display: flex;
@@ -426,8 +428,8 @@ button.CreatButton-b {
   font-size: 17px;
   width: 40%;
   letter-spacing: 0.5px;
-  min-height: 40px;
-  height: 40px;
+  min-height: 60px;
+  height: 60px;
   border: 0px;
   border-radius: 5px;
   color: white;
@@ -489,6 +491,7 @@ div.IntervalHeader {
 button.ClearInterval {
   background-color: white;
   color: black;
+  font-size: 14px;
   border: 1px solid black;
   border-radius: 5px;
 }
@@ -501,7 +504,8 @@ button.AddInterval {
   margin: 0px 50px 0px 0px;
   border: 1px solid black;
   height: 40px;
-  width: 180px;
+  width: 190px;
+  font-size: 14px;
   border-radius: 5px;
 }
 button.AddInterval:hover {
@@ -541,6 +545,7 @@ div.Pricetxt {
 }
 div.Avtxt {
   text-align: left;
+  padding: 0px 6px;
   margin: 0px;
   font-size: 18px;
   color: rgb(0, 0, 0);
