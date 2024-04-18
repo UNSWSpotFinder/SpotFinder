@@ -9,29 +9,29 @@ import (
 func TopUp(db *gorm.DB, userID string, amount float64) error {
 	var user Models.UserBasic
 
-	// 查询该用户的信息
+	// Query the user's information
 	if err := db.First(&user, userID).Error; err != nil {
 		fmt.Println("Error finding user:", err)
 		return err
 	}
 
-	// 打印该用户的原始信息
-	fmt.Printf("Original user data: %+v\n", user)
+	// Print the original user information
+	//fmt.Printf("Original user data: %+v\n", user)
 
-	// 更新用户的账户余额和充值金额
+	// Update the user's account balance and top-up amount
 	user.Account += amount
 	user.TopUp += amount
 
-	// 打印更新后的用户信息
-	fmt.Printf("Updated user data: %+v\n", user)
+	// Print the updated user information
+	//fmt.Printf("Updated user data: %+v\n", user)
 
-	// 更新数据库中的用户信息
+	// Update the user information in the database
 	if err := db.Model(&user).Where("id=?", userID).Updates(Models.UserBasic{Account: user.Account, TopUp: user.TopUp}).Error; err != nil {
 		fmt.Println("Error updating user:", err)
 		return err
 	}
 
-	// 打印更新后从数据库中查询的用户信息
+	// Print the updated user information queried from the database
 	var updatedUser Models.UserBasic
 	if err := db.First(&updatedUser, userID).Error; err != nil {
 		fmt.Println("Error finding updated user:", err)
@@ -45,34 +45,32 @@ func TopUp(db *gorm.DB, userID string, amount float64) error {
 func Withdraw(db *gorm.DB, userID string, amount float64) error {
 	var user Models.UserBasic
 
-	// 查询该用户的信息
+	// Query the user's information
 	if err := db.First(&user, userID).Error; err != nil {
 		fmt.Println("Error finding user:", err)
 		return err
 	}
 
-	// 打印该用户的原始信息
-	fmt.Printf("Original user data: %+v\n", user)
+	//fmt.Printf("Original user data: %+v\n", user)
 
-	// 更新用户的账户余额和提现金额
+	// Update the user's account balance and withdrawal amount
 	user.Account += amount
 
-	// 打印更新后的用户信息
-	fmt.Printf("Updated user data: %+v\n", user)
+	//fmt.Printf("Updated user data: %+v\n", user)
 
-	// 更新数据库中的用户信息
+	// Update the user information in the database
 	if err := db.Model(&user).Where("id=?", userID).Updates(Models.UserBasic{Account: user.Account}).Error; err != nil {
 		fmt.Println("Error updating user:", err)
 		return err
 	}
 
-	// 打印更新后从数据库中查询的用户信息
+	// Print the updated user information queried from the database
 	var updatedUser Models.UserBasic
 	if err := db.First(&updatedUser, userID).Error; err != nil {
 		fmt.Println("Error finding updated user:", err)
 		return err
 	}
-	fmt.Printf("Updated user data from database: %+v\n", updatedUser)
+	//fmt.Printf("Updated user data from database: %+v\n", updatedUser)
 
 	return nil
 }

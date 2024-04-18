@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-// AuthMiddleware 是用于JWT验证的中间件
+// AuthMiddleware Middleware for JWT
 func AuthMiddleware(secretKey string) gin.HandlerFunc {
 	//println("123:", secretKey)
 	return func(c *gin.Context) {
-		// 从请求头中获取token（通常在"Authorization"头中）
+		// Get the Authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
@@ -20,7 +20,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 			return
 		}
 
-		// 按空格分割"Bearer token"
+		// split " " from "Bearer token"
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is invalid"})
@@ -28,10 +28,10 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 			return
 		}
 
-		// 解析token
+		// parse token
 		tokenString := parts[1]
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// 确保token的方法是你所期望的
+			// Make sure that the token method conform to "SigningMethodHMAC"
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
@@ -45,7 +45,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			// 将用户信息设置到Gin的Context中
+			// Set the userID in the context
 			c.Set("userID", claims["userID"])
 			c.Set("email", claims["email"])
 			c.Set("exp", claims["exp"])
@@ -56,6 +56,6 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 			return
 		}
 
-		c.Next() // 处理下一个请求
+		c.Next() // Continue down the middleware stack
 	}
 }

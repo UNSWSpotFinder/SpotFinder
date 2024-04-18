@@ -41,7 +41,7 @@ func GetMoneyOfOrdersHandler(c *gin.Context) {
 	})
 }
 
-// CalculateDailyCost 定时任务或单独调用的函数，不应该在API调用中直接使用
+// CalculateDailyCost Timer function to calculate daily cost
 func CalculateDailyCost() error {
 	db := Service.DB
 	var todayCost, yesterdayCost float64
@@ -49,18 +49,18 @@ func CalculateDailyCost() error {
 	today := time.Now()
 	yesterday := today.AddDate(0, 0, -1)
 
-	// 获取今天的总成本
+	// Get today's total cost
 	if err := db.Model(&Models.OrderBasic{}).Where("created_at >= ? AND created_at < ?", today.Format("2006-01-02"), today.AddDate(0, 0, 1).Format("2006-01-02")).Select("sum(cost)").Row().Scan(&todayCost); err != nil {
 		todayCost = 0
 	}
 
-	// 获取昨天的总成本
+	// Get yesterday's total cost
 	if err := db.Model(&Models.OrderBasic{}).Where("created_at >= ? AND created_at < ?", yesterday.Format("2006-01-02"), today.Format("2006-01-02")).Select("sum(cost)").Row().Scan(&yesterdayCost); err != nil {
 		// 如果昨天没有成本记录，则昨天的成本为0
 		yesterdayCost = 0
 	}
 
-	// 创建或更新每日成本记录
+	// Calculate the daily cost
 	dailyCost := Models.DailyOrderCost{
 		Date:      today,
 		TotalCost: todayCost,

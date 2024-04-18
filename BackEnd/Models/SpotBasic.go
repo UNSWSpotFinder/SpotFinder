@@ -4,21 +4,19 @@ import "gorm.io/gorm"
 
 type SpotBasic struct {
 	gorm.Model
-	ID uint `gorm:"primaryKey; autoIncrement"`
-	// 一个车位只能属于一个用户
+	ID       uint   `gorm:"primaryKey; autoIncrement"`
 	OwnerID  uint   `gorm:"type:uint;not null"`
 	SpotName string `gorm:"type:varchar(255);not null"`
 	SpotAddr string `gorm:"type:text;not null"`
 	SpotType string `gorm:"type:varchar(255);not null"`
 	//IsOccupy  bool   `gorm:"type:boolean;not null"`
-	// 先是 true
-	IsVisible bool `gorm:"type:boolean;not null"`
-	IsBlocked bool `gorm:"type:boolean;default:false"`
-	// TODO: 改成float
-	Rate float64 `gorm:"type:float;not null"`
+	// default true
+	IsVisible bool    `gorm:"type:boolean;not null"`
+	IsBlocked bool    `gorm:"type:boolean;default:false"`
+	Rate      float64 `gorm:"type:float;not null"`
 	//How to get here
 	PassWay string `gorm:"type:text;not null"`
-	// 可以被停车的车辆类型
+	// Size of the parking space
 	Size         string `gorm:"type:text;not null"`
 	Charge       string `gorm:"type:text;"`
 	Pictures     string `gorm:"type:mediumtext;not null"`
@@ -31,7 +29,7 @@ type SpotBasic struct {
 	PricePerWeek float64 `gorm:"type:float"`
 	PricePerHour float64 `gorm:"type:float"`
 
-	// 车位被占用的时间，从久远到现在，方便用二分查找算法
+	// The time when the parking space is available
 	AvailableTime string `gorm:"type:text"`
 	OccupiedTime  string `gorm:"type:text"`
 

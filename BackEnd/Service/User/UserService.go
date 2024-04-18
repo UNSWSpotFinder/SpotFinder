@@ -15,12 +15,12 @@ import (
 	"time"
 )
 
-// RequestData 从前端传回来的数据存储到这个结构体中
+// RequestData Request data struct for sending email code
 type RequestData struct {
 	Email string `json:"to" example:"longsizhuo@gmail.com" format:"emailconfigs" binding:"required"`
 }
 
-// InfoDetail 用户详情
+// InfoDetail Detailed user information
 type InfoDetail struct {
 	Name       string     `json:"name" example:"longsizhuo" binding:"required"`
 	Email      string     `json:"email" example:"longsizhuo@gmail.com"`
@@ -42,8 +42,8 @@ type SimpleProfileRequest struct {
 	Name   string `json:"name"`
 }
 
-// GetUserList
-// @Summary 获取用户列表
+// GetUserList Get user list
+// @Summary Get user list
 // @Schemes
 // @Description do ping
 // @Tags User
@@ -64,7 +64,7 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
-// CreateUserRequest 从前端传回来的数据存储到这个结构体中
+// CreateUserRequest Save user request
 type CreateUserRequest struct {
 	Name       string `json:"name" binding:"required"`
 	Password   string `json:"password" binding:"required"`
@@ -79,13 +79,13 @@ type TopUpRequest struct {
 	Amount float64 `json:"amount" binding:"required"`
 }
 
-// CreateUser
-// @Summary 创建用户
+// CreateUser Create user
+// @Summary Create user
 // @Schemes
 // @Tags User
 // @Consumes application/x-www-form-urlencoded
 // @Description do ping
-// @Param user body CreateUserRequest true "用户信息"
+// @Param user body CreateUserRequest true "User Info"
 // @Success 200 {string} json{"code", "message"}
 // @Fail
 // @Router /user/create [post]
@@ -108,7 +108,7 @@ func CreateUser(c *gin.Context) {
 	user.Avatar = request.Avatar
 	user.DateBirth = request.DateBirth
 
-	// 判断日期是否合法 DD/MM/YYYY
+	// Check DD/MM/YYYY
 	_, err := time.Parse("02/01/2006", request.DateBirth)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -124,7 +124,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	// 密码加密
+	// Crypt password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -134,7 +134,7 @@ func CreateUser(c *gin.Context) {
 	}
 	user.Password = string(hashedPassword)
 
-	// 判断邮箱是否已经注册过
+	// Check if email is already registered
 	isRegistry, err := User.CheckEmailAlreadyIn(Service.DB, &user)
 	if isRegistry {
 		c.JSON(http.StatusExpectationFailed, gin.H{
@@ -161,10 +161,10 @@ func CreateUser(c *gin.Context) {
 
 }
 
-// SendCodeHandler 处理发送验证码的请求
+// SendCodeHandler Process the request to send email
 //
 //	@Summary		Send code
-//	@Description	发送验证码到指定邮箱，并存储验证码到Redis
+//	@Description	Send code and store it in Redis
 //	@Tags			User
 //	@Accept			json
 //	@Produce		json
@@ -197,23 +197,23 @@ func SendCodeHandler(c *gin.Context, redisCli *redis.Client) {
 
 }
 
-// GetUserInfoHandler 获取用户信息
+// GetUserInfoHandler Get user information
 //
 // @Summary Get user information
-// @Description 获取用户信息。如果未提供email查询参数，则返回当前用户的信息。如果提供了email查询参数，只有管理员可以查询其他用户的信息。
+// @Description Get user information. If the email query parameter is not provided, the current user's information is returned. If the email query parameter is provided, only administrators can query other users' information.
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param email query string false "要查询的用户邮箱"
-// @Success 200 {object} InfoDetail "成功获取用户信息"
-// @Success 200 {object} Manager.AdminInfo "成功获取管理员信息"
-// @Failure 400 {object} nil "错误的请求"
-// @Failure 401 {object} nil "未授权或无权限"
-// @Failure 500 {object} nil "内部服务器错误"
+// @Param email query string false "Email of the user to query"
+// @Success 200 {object} InfoDetail "Successfully get user information"
+// @Success 200 {object} Manager.AdminInfo "Successfully get admin information"
+// @Failure 400 {object} nil "Failed to get user information"
+// @Failure 401 {object} nil "Unauthorized"
+// @Failure 500 {object} nil "Failed to get admin information"
 // @Router /user/info [get]
 // @Security BearerAuth
 func GetUserInfoHandler(c *gin.Context) {
-	// 从JWT中获取的email和role
+	// Get email and role from JWT
 	emailFromToken, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -221,14 +221,14 @@ func GetUserInfoHandler(c *gin.Context) {
 	}
 	role, roleExists := c.Get("role")
 
-	// 确定要查询的邮箱：默认为JWT中的邮箱
+	// Query the user information
 	targetEmail := emailFromToken.(string)
 
-	// 获取查询参数中的邮箱（如果有）
+	// Get the email query parameter
 	queryEmail := c.Query("email")
 	// AdminID 在这里也是email的key
 	if queryEmail != "" {
-		// 如果提供了查询参数，则需要验证当前用户是否为管理员
+		// Authorization check
 		if roleExists && role == "admin" {
 			targetEmail = queryEmail
 		} else {
@@ -237,7 +237,7 @@ func GetUserInfoHandler(c *gin.Context) {
 		}
 	}
 	if queryEmail == "" && role == "admin" {
-		// 查询管理员自己的信息
+		// Query admin information
 		queryAdminID := targetEmail
 		admin, err := controller.GetManagerByAdminID(Service.DB, queryAdminID)
 		if err != nil {
@@ -254,29 +254,29 @@ func GetUserInfoHandler(c *gin.Context) {
 		})
 		return
 	} else {
-		// 使用确定的邮箱来查询用户信息
+		// Use email to query user information
 		user := User.GetUserByEmail(Service.DB, targetEmail)
 
-		// 返回用户信息
+		// Return user information
 		c.JSON(http.StatusOK, gin.H{"message": user})
 	}
 }
 
-// TopUpHandler 充值
+// TopUpHandler Top up
 //
-// @Summary 充值
-// @Description 充值
+// @Summary Top up
+// @Description Top up
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user body TopUpRequest true "充值金额"
+// @Param user body TopUpRequest true "Top up amount"
 // @Success 200 {string} string "User information updated"
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
 // @Router /user/topUp [post]
 // @Security BearerAuth
 func TopUpHandler(c *gin.Context) {
-	// 从JWT中获取的email和role
+	// Get email from JWT
 	userID := c.GetString("userID")
 
 	var req TopUpRequest
@@ -285,7 +285,7 @@ func TopUpHandler(c *gin.Context) {
 		return
 	}
 
-	// 更新用户信息
+	// Update user information
 	err := controller.TopUp(Service.DB, userID, req.Amount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -295,21 +295,21 @@ func TopUpHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, "User information updated")
 }
 
-// WithdrawHandler 提现
+// WithdrawHandler Withdraw
 //
-// @Summary 提现
-// @Description 提现
+// @Summary Withdraw
+// @Description Withdraw
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user body TopUpRequest true "提现金额"
+// @Param user body TopUpRequest true "Withdraw amount"
 // @Success 200 {string} string "User information updated"
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"
 // @Router /user/withdraw [post]
 // @Security BearerAuth
 func WithdrawHandler(c *gin.Context) {
-	// 从JWT中获取的email和role
+	// Get email from JWT
 	userID := c.GetString("userID")
 
 	var req TopUpRequest
@@ -321,7 +321,7 @@ func WithdrawHandler(c *gin.Context) {
 		req.Amount = -req.Amount
 	}
 
-	// 更新用户信息
+	// Update user information
 	err := controller.Withdraw(Service.DB, userID, req.Amount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -331,14 +331,14 @@ func WithdrawHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, "User information updated")
 }
 
-// GetSimpleUserInfoHandler 获取用户简单信息
+// GetSimpleUserInfoHandler Get user simple information
 //
-// @Summary 获取用户简单信息
-// @Description 获取用户简单信息
+// @Summary Get user simple information
+// @Description Get user simple information
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param id path string true "用户ID"
+// @Param id path string true "user ID"
 // @Success 200 {string} string "User information updated"
 // @Error 400 {string} string "Data binding error"
 // @Error 500 {string} string "SQL error message"

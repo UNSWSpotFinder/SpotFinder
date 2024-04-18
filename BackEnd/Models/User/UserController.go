@@ -3,7 +3,6 @@ package User
 import (
 	"capstone-project-9900h14atiktokk/Models"
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
@@ -12,20 +11,20 @@ import (
 	"time"
 )
 
-// GetUserList 获取用户列表 db用Init获取
+// GetUserList Get a list of users
 func GetUserList(db *gorm.DB) ([]*Models.UserBasic, error) {
 	if db == nil {
 		return nil, errors.New("db is nil")
 	}
 	var users []*Models.UserBasic
-	// 随机获取10个用户
+	// Randomly select 10 users
 	if err := db.Order("RAND()").Limit(10).Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil
 }
 
-// CreateUser 创建用户
+// CreateUser Create a user
 func CreateUser(db *gorm.DB, user *Models.UserBasic) error {
 	if err := db.Create(&user).Error; err != nil {
 		return err
@@ -33,24 +32,23 @@ func CreateUser(db *gorm.DB, user *Models.UserBasic) error {
 	return nil
 }
 
-// CheckEmailAlreadyIn  检查邮箱是否已被注册
+// CheckEmailAlreadyIn  Check if the email is already in the database
 func CheckEmailAlreadyIn(db *gorm.DB, user *Models.UserBasic) (bool, error) {
 	var tempUser Models.UserBasic
-	fmt.Println(tempUser)
 	err := db.Where("email = ?", user.Email).Take(&tempUser).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 没有找到记录，电子邮件未被注册
 			return false, nil
 		}
-		// 查询过程中发生错误
+		// Query error
 		return false, err
 	}
-	// 找到了记录，电子邮件已被注册
+	// Found the record
 	return true, nil
 }
 
-// ModifyPasswd 修改密码
+// ModifyPasswd Modify password
 func ModifyPasswd(db *gorm.DB, user *Models.UserBasic) error {
 	if err := db.Model(&user).Where("email=?", user.Email).Update("password", user.Password).Error; err != nil {
 		return err
@@ -58,8 +56,7 @@ func ModifyPasswd(db *gorm.DB, user *Models.UserBasic) error {
 	return nil
 }
 
-// Login 登录
-// 返回JWT
+// Login Login return JWT
 func Login(db *gorm.DB, user *Models.UserBasic) (string, error) {
 	var tempUser Models.UserBasic
 	err := db.Where("email = ?", user.Email).Take(&tempUser).Error
@@ -68,7 +65,7 @@ func Login(db *gorm.DB, user *Models.UserBasic) (string, error) {
 			// 没有找到记录，电子邮件未被注册
 			return "", errors.New("user not found")
 		}
-		// 查询过程中发生错误
+		// Query error
 		return "", err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(tempUser.Password), []byte(user.Password))
@@ -76,8 +73,6 @@ func Login(db *gorm.DB, user *Models.UserBasic) (string, error) {
 		return "", errors.New("password mismatch")
 	}
 	user.ID = GetUserByEmail(db, user.Email).ID
-	fmt.Println(user.ID) // 打印出来是1021
-	// 登录成功，返回JWT
 	return GenerateToken(user.ID, user.Email, "user")
 }
 

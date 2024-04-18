@@ -23,21 +23,21 @@ import (
 // @Security BearerAuth
 func GenerateAndInsertVouchers(c *gin.Context) {
 	db := Service.DB
-	rand.Seed(uint64(time.Now().UnixNano())) // 初始化随机数生成器
+	rand.Seed(uint64(time.Now().UnixNano())) // Generate random seed
 
 	vouchers := make([]Models.Voucher, 1000)
-	fixedValues := []float64{50, 60, 70, 80, 90} // 固定的价值选项
+	fixedValues := []float64{50, 60, 70, 80, 90} // Fixed values for vouchers
 
 	for i := 0; i < 1000; i++ {
 		vouchers[i] = Models.Voucher{
 			Code:  generateRandomCode(8),
 			Used:  false,
-			Value: fixedValues[rand.Intn(len(fixedValues))], // 从固定值中随机选择一个
+			Value: fixedValues[rand.Intn(len(fixedValues))], // Select a random value from fixedValues
 			Sent:  false,
 		}
 	}
 
-	// 批量插入数据到数据库
+	// Insert vouchers in batches
 	if err := db.CreateInBatches(vouchers, 100).Error; err != nil {
 		c.JSON(500, gin.H{
 			"message": "Failed to generate and insert vouchers",
@@ -49,7 +49,7 @@ func GenerateAndInsertVouchers(c *gin.Context) {
 
 }
 
-// generateRandomCode 生成指定长度的随机数作为Code
+// generateRandomCode Generate a random code with a given length
 func generateRandomCode(length int) string {
 	digits := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	result := make([]byte, length)
@@ -59,9 +59,9 @@ func generateRandomCode(length int) string {
 	return string(result)
 }
 
-// GetVoucherHandler 随机返回一个未发放且未使用的优惠券
-// @Summary 随机返回一个未发放且未使用的优惠券
-// @Description 从数据库中随机选择一个未发放且未使用的优惠券
+// GetVoucherHandler Randomly return an unissued and unused voucher
+// @Summary Randomly return an unissued and unused voucher
+// @Description Randomly return an unissued and unused voucher
 // @Tags Voucher
 // @Accept json
 // @Produce json
@@ -74,7 +74,7 @@ func GetVoucherHandler(c *gin.Context) {
 	db := Service.DB
 	var voucher Models.Voucher
 
-	// 随机选择一个未发放且未使用的优惠券
+	// Randomly select an unissued and unused voucher
 	result := db.Where("sent = ? AND used = ?", false, false).Order("RAND()").First(&voucher)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -85,16 +85,16 @@ func GetVoucherHandler(c *gin.Context) {
 		return
 	}
 
-	// 标记为已发放（可选）
+	// Mark the voucher as sent
 	db.Model(&voucher).Update("sent", true)
 
-	// 返回找到的优惠券
+	// Return the voucher
 	c.JSON(http.StatusOK, voucher)
 }
 
-// UseVoucherHandler 使用优惠券
-// @Summary 使用优惠券
-// @Description 使用优惠券
+// UseVoucherHandler Use a voucher
+// @Summary Use a voucher
+// @Description Use a voucher
 // @Tags Voucher
 // @Accept json
 // @Produce json
@@ -124,7 +124,7 @@ func UseVoucherHandler(c *gin.Context) {
 		return
 	}
 
-	// 标记为已使用
+	// Mark the voucher as used
 	db.Model(&voucher).Update("used", true)
 
 	c.JSON(http.StatusOK, gin.H{"value": voucher.Value})

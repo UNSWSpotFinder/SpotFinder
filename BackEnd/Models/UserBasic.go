@@ -16,12 +16,12 @@ type UserBasic struct {
 	CreateTime time.Time  `gorm:"type:datetime;null"`
 	DeleteTime *time.Time `gorm:"type:datetime;null"`
 
-	// 用户可以有多个车辆信息，租多个车位
-	CarID      string `gorm:"type:text"` // JSON 编码的字符串
+	// User can have multiple cars
+	CarID      string `gorm:"type:text"` // JSON string
 	LeasedSpot string `gorm:"type:text"`
 	Addr       string `gorm:"type:text;"`
 
-	// 账户余额
+	// The account balance left of the user
 	Account float64 `gorm:"type:float;not null"`
 	Earning float64 `gorm:"type:float;not null"`
 	TopUp   float64 `gorm:"type:float;not null"`

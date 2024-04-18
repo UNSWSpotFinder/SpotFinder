@@ -11,7 +11,7 @@ type Notification struct {
 	Content    string     `gorm:"type:text;not null"`
 	SentAt     time.Time  `gorm:"type:datetime;not null"`
 	ReadAt     *time.Time `gorm:"type:datetime;null"`
-	Delivered  bool       `gorm:"type:boolean;default:false"` // 新增字段表示消息是否已送达
+	Delivered  bool       `gorm:"type:boolean;default:false"` // Whether the message has been delivered
 
 	Receiver UserBasic `gorm:"foreignKey:ReceiverID;"`
 }

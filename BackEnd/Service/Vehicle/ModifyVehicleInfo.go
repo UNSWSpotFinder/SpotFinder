@@ -8,21 +8,21 @@ import (
 	"strconv"
 )
 
-// ModifyVehicleInfoHandler 修改车辆信息
-// @Summary 修改车辆信息
-// @Description 修改车辆信息
+// ModifyVehicleInfoHandler Modify vehicle information
+// @Summary Modify vehicle information
+// @Description Modify vehicle information
 // @Tags Cars
 // @Accept json
 // @Produce json
 // @Param carID path string true "CarID"
-// @Param car body controller.CreateCarRequestData true "车辆信息"
+// @Param car body controller.CreateCarRequestData true "Information of the car"
 // @Success 200 {string} string "Vehicle information updated"
 // @Failure 400 {string} string "Data binding error"
 // @Failure 500 {string} string "SQL error message"
 // @Router /car/modifyCarInfo/{carID} [post]
 // @Security BearerAuth
 func ModifyVehicleInfoHandler(c *gin.Context) {
-	// 传入修改的数据
+	// The user must be the owner of the car or an admin to modify the car
 	var car controller.CreateCarRequestData
 	userRole := c.GetString("role")
 	userID := c.GetString("userID")
@@ -54,9 +54,9 @@ func ModifyVehicleInfoHandler(c *gin.Context) {
 
 }
 
-// DeleteVehicleHandler 删除车辆
-// @Summary 删除车辆
-// @Description 删除车辆
+// DeleteVehicleHandler Delete a vehicle
+// @Summary Delete a vehicle
+// @Description Delete a vehicle
 // @Tags Cars
 // @Accept json
 // @Produce json

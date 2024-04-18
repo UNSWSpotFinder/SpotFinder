@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetReportInfoHandler 获取举报信息
-// @Summary 获取举报信息
-// @Description 获取举报信息
+// GetReportInfoHandler Get report information
+// @Summary Get report information
+// @Description Get report information
 // @Tags Report
 // @Accept json
 // @Produce json
