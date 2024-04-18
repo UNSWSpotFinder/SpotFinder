@@ -51,7 +51,9 @@ const Dashboard = () => {
             avatar: data.message.Avatar,
             ownedSpot: parsedOwnedSpot
           });
-        }       
+        }
+
+        
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -184,7 +186,7 @@ const Dashboard = () => {
     try {
       // get user's bookings 
       const bookingDataResult = await getMyBookingsInfo();
-      const bookingsArray = bookingDataResult.orders;   
+      const bookingsArray = bookingDataResult.orders;    
       setMyBookingsInfo(bookingsArray);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -237,6 +239,12 @@ const Dashboard = () => {
             <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
           </div>
         </div>
+
+      {/* Bottom: Voucher */}
+      {/* <div className="second-vouchers">
+        <h3>Vouchers</h3>
+        <div>You have no vouchers.</div>
+      </div> */}
       
       {/* top up modal */}
       {isTopUpModalVisible && (
