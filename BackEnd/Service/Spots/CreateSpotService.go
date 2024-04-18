@@ -48,10 +48,10 @@ func CreateSpotController(c *gin.Context) {
 		})
 		return
 	}
-	// 从请求中获取用户的ID
+	// Get user email from JWT
 	userEmail := c.GetString("email")
 	user := User.GetUserByEmail(Service.DB, userEmail)
-	// 将请求数据转换为模型
+	// transform request to spot
 	spot = &Models.SpotBasic{
 		OwnerID:       user.ID,
 		SpotName:      request.SpotName,
@@ -74,7 +74,7 @@ func CreateSpotController(c *gin.Context) {
 	err := controller.CreateSpot(spot, userEmail, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "失败" + err.Error(),
+			"error": "Fail" + err.Error(),
 		})
 		return
 	}

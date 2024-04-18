@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-// GetSpotListHandler 获取车位列表
-// @Summary 获取车位列表
-// @Description 获取车位列表
+// GetSpotListHandler Get spot list
+// @Summary Get spot list
+// @Description Get spot list
 // @Tags Spots
 // @Accept json
 // @Produce json
@@ -27,8 +27,8 @@ func GetSpotListHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'page' parameter"})
 		return
 	}
-	// 从查询参数中获取 pageSize 参数
-	pageSizeParam := c.DefaultQuery("pageSize", "15") // 如果没有提供，默认大小为 15
+	// Get the page size
+	pageSizeParam := c.DefaultQuery("pageSize", "15") // If no pageSize is provided, default to 15
 	pageSize, err := strconv.Atoi(pageSizeParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'pageSize' parameter"})
@@ -53,9 +53,9 @@ func GetSpotListHandler(c *gin.Context) {
 	})
 }
 
-// GetSpotDetailsHandler 获取车位详情
-// @Summary 获取车位详情
-// @Description 获取车位详情
+// GetSpotDetailsHandler Get spot details
+// @Summary Get spot details
+// @Description Get spot details
 // @Tags Spots
 // @Accept json
 // @Produce json

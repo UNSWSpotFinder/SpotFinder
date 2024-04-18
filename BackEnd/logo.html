@@ -3,7 +3,7 @@
 <head>
     <style>
         @keyframes combinedAnimation {
-            0%, 20% { /* 调整为动画前 80% 完成 */
+            0%, 20% {
                 transform: rotate(0deg) scale(1);
                 color: darkslategray;
                 text-shadow: 4px 4px 10px rgba(0,0,0,0.5);
@@ -54,12 +54,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: backgroundChange 2s linear infinite; /* 调整为整个周期包括静止时间 */
+            animation: backgroundChange 2s linear infinite;
         }
 
         .rotating-text {
             display: inline-block;
-            animation: combinedAnimation 8s infinite; /* 调整动画周期以包括停顿时间 */
+            animation: combinedAnimation 8s infinite;
             font-size: calc(2vw + 2vh + 2vmin);
             font-weight: bold;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.5);

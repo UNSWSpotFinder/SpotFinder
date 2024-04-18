@@ -69,11 +69,11 @@ func CreateReviewHandler(c *gin.Context) {
 		Comment: req.Content,
 	}
 
-	spot := order.Spot // 已预加载Spot
+	spot := order.Spot // Preload the spot
 
 	var totalReviews int64
 
-	// review中的评分将会影响车位的评分
+	// review count
 	if err := Service.DB.Model(&Models.Review{}).Where("spot_id = ?", order.SpotID).Count(&totalReviews).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count reviews"})
 		return

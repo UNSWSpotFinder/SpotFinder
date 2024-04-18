@@ -9,9 +9,9 @@ import (
 	"strconv"
 )
 
-// ModifySpotInfoHandler 修改车位信息
-// @Summary 修改车位信息
-// @Description 修改车位信息
+// ModifySpotInfoHandler Modify spot information
+// @Summary Modify spot information
+// @Description Modify spot information
 // @Tags Spots
 // @Accept json
 // @Produce json

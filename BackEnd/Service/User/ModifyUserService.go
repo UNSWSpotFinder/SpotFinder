@@ -16,7 +16,7 @@ type modifyPasswordData struct {
 }
 
 type ModifyUserInfoData struct {
-	// Email 不能被修改，不能在这里修改，是主键
+	// Email cannot be modified
 	Email     string `json:"email" example:"longsizhuo@gmail.com"`
 	Name      string `json:"name" example:"longsizhuo"`
 	Phone     string `json:"phone" example:"123456"`
@@ -25,9 +25,9 @@ type ModifyUserInfoData struct {
 	Address   string `json:"address" example:"address"`
 }
 
-// ModifyPasswdHandler 修改密码
-// @Summary 修改密码
-// @Description 修改密码
+// ModifyPasswdHandler Modify password
+// @Summary Modify password
+// @Description Modify password
 // @Tags User
 // @Accept json
 // @Produce json
@@ -44,13 +44,13 @@ func ModifyPasswdHandler(c *gin.Context) {
 		return
 	}
 
-	// 检查新密码和确认密码是否一致
+	// Check if the password and repassword are the same
 	if request.Password != request.Repasswd {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Password not same"})
 		return
 	}
 
-	// 生成新的哈希密码
+	// Generate hashed password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -59,7 +59,7 @@ func ModifyPasswdHandler(c *gin.Context) {
 		return
 	}
 
-	// 更新密码
+	// Update password
 	newUserData := Models.UserBasic{Email: request.Email, Password: string(hashedPassword)}
 	err = User.ModifyPasswd(Service.DB, &newUserData)
 	if err != nil {
@@ -70,9 +70,9 @@ func ModifyPasswdHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password updated"})
 }
 
-// ModifyUserInfoHandler 修改用户信息
-// @Summary 修改用户信息
-// @Description 修改用户信息
+// ModifyUserInfoHandler Modify user information
+// @Summary Modify user information
+// @Description modify user information
 // @Tags User
 // @Accept json
 // @Produce json
@@ -83,7 +83,7 @@ func ModifyPasswdHandler(c *gin.Context) {
 // @Router /user/modifyUserInfo [post]
 // @Security BearerAuth
 func ModifyUserInfoHandler(c *gin.Context) {
-	// 从JWT中获取的email和role
+	// Get user email and role from JWT
 	emailFromToken, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -106,13 +106,13 @@ func ModifyUserInfoHandler(c *gin.Context) {
 	user.Avatar = request.Avatar
 	user.Addr = request.Address
 
-	// 如果用户不是管理员，并且请求的邮箱与令牌的邮箱不匹配，则拒绝请求
+	// If the user is not an admin, they can only modify their own information
 	if role != "admin" && emailFromToken != request.Email {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden to change other user's information"})
 		return
 
 	}
-	// 更新用户信息
+	// Update user information
 	err = User.ModifyUserInfo(Service.DB, &user)
 	if err != nil {
 		c.JSON(500, err)

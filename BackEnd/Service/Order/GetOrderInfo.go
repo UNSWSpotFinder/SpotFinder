@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-// GetOrderInfoHandler 获取订单信息
-// @Summary 获取订单信息
-// @Description 获取订单信息
+// GetOrderInfoHandler Get order information
+// @Summary Get order information
+// @Description Get order information
 // @Tags Order
 // @Accept json
 // @Produce json
@@ -34,7 +34,7 @@ func GetOrderInfoHandler(c *gin.Context) {
 		return
 	}
 
-	// 查找订单
+	// Find the order
 	if err := Service.DB.First(&order, orderID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return
@@ -44,9 +44,9 @@ func GetOrderInfoHandler(c *gin.Context) {
 
 }
 
-// GetUserAllOrdersHandler 获取用户所有订单
-// @Summary 获取用户所有订单
-// @Description 获取用户所有订单
+// GetUserAllOrdersHandler Get all orders of a user
+// @Summary Get user all orders
+// @Description Get all orders of a user
 // @Tags Order
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	var orders []Models.OrderBasic
 
-	// 查找订单
+	// find all orders of the user
 	if err := Service.DB.Where("booker_id = ?", userID).Find(&orders).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusOK, gin.H{"orders": orders})
@@ -73,8 +73,8 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 }
 
 // GetOwnerAllOrdersHandler godoc
-// @Summary 获取车位主所有订单
-// @Description 获取指定车位主的所有订单
+// @Summary Find all orders of a owner
+// @Description Find all orders of a owner
 // @Tags Order
 // @Accept json
 // @Produce json
@@ -84,10 +84,10 @@ func GetUserAllOrdersHandler(c *gin.Context) {
 // @Router /user/orders/asOwner [get]
 // @Security BearerAuth
 func GetOwnerAllOrdersHandler(c *gin.Context) {
-	ownerID := c.GetString("userID") // 从 URL 路径中获取车位主的 Owner ID
+	ownerID := c.GetString("userID") // Get owner ID from JWT
 	var orders []Models.OrderBasic
 
-	// 查询所有该车位主的订单
+	// query all orders of the owner
 	if err := Service.DB.Joins("JOIN spot ON spot.id = order.spot_id").
 		Where("spot.owner_id = ?", ownerID).
 		Find(&orders).Error; err != nil {
@@ -99,6 +99,6 @@ func GetOwnerAllOrdersHandler(c *gin.Context) {
 		return
 	}
 
-	// 返回所有找到的订单
+	// Return orders
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
 }

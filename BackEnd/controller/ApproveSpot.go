@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// ApproveSpotOrNot 审核车位
+// ApproveSpotOrNot Approve or not approve the spot
 func ApproveSpotOrNot(spotId string, db *gorm.DB, isVisible bool) error {
 	var spot Models.SpotBasic
 	err := db.Where("id = ?", spotId).First(&spot).Error
@@ -15,13 +15,13 @@ func ApproveSpotOrNot(spotId string, db *gorm.DB, isVisible bool) error {
 			// 处理未找到记录的情况
 			return nil // 或返回一个自定义错误
 		}
-		// 处理查询过程中的其他错误
+		// process other errors
 		return err
 	}
 	if spot.IsVisible == isVisible {
 		return nil
 	}
-	// 审核车位
+	// approve or not approve the spot
 	result := db.Model(&spot).Update("is_visible", isVisible)
 	if result.Error != nil {
 		return result.Error
@@ -29,19 +29,18 @@ func ApproveSpotOrNot(spotId string, db *gorm.DB, isVisible bool) error {
 	return nil
 }
 
-// BlockSpot ban掉车位
+// BlockSpot ban the spot
 func BlockSpot(spotId string, db *gorm.DB) error {
 	var spot Models.SpotBasic
 	if err := db.Where("id = ?", spotId).First(&spot).Error; err != nil {
 		return err
 	}
 
-	// 如果车位已经被ban过了
+	// if the spot has been banned
 	if !spot.IsVisible && spot.IsBlocked {
 		return nil
 	}
 
-	// ban掉车位
 	if err := db.Model(&spot).Updates(map[string]interface{}{
 		"is_visible": false,
 		"is_blocked": true,
@@ -51,19 +50,19 @@ func BlockSpot(spotId string, db *gorm.DB) error {
 	return nil
 }
 
-// UnBlockSpot 解除ban车位
+// UnBlockSpot unban the spot
 func UnBlockSpot(spotId string, db *gorm.DB) error {
 	var spot Models.SpotBasic
 	if err := db.Where("id = ?", spotId).First(&spot).Error; err != nil {
 		return err
 	}
 
-	// 如果车位没有被ban过
+	// If the spot is not banned
 	if !spot.IsBlocked {
 		return nil
 	}
 
-	// 解除ban车位
+	// unban the spot
 	if err := db.Model(&spot).Updates(map[string]interface{}{
 		"is_blocked": false,
 	}).Error; err != nil {

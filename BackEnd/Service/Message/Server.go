@@ -17,7 +17,7 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	// 注意：这里的CheckOrigin函数要根据你的安全需求来修改，下面的设置是允许所有CORS请求
+	// Attention: This is a security risk, and should not be used in production.
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
@@ -118,10 +118,10 @@ func WebsocketHandler(c *gin.Context) {
 
 		switch msg.Type {
 		case "message":
-			// 处理发送消息逻辑
+			// process user to user message
 			handleMessage(conn, uint(userId), msg)
 		case "notification":
-			// 处理发送通知逻辑
+			// Process notification
 			if err := SendNotification(msg.ReceiverID, msg.Content); err != nil {
 				SendErrorMessage(conn, "Failed to send notification")
 				fmt.Printf("Failed to send notification: %v\n", err)
@@ -167,7 +167,7 @@ func SendErrorMessage(conn *websocket.Conn, errorMsg string) {
 // handleMessage Processes a message received from a WebSocket connection user to user.
 func handleMessage(conn *websocket.Conn, senderID uint, msg WSMessage) {
 	fmt.Println(senderID, msg.ReceiverID, msg.Content)
-	// 创建数据库消息实例
+	// Create a message object
 	dbMessage := Models.Message{
 		SenderID:   senderID,
 		ReceiverID: msg.ReceiverID,
@@ -175,7 +175,7 @@ func handleMessage(conn *websocket.Conn, senderID uint, msg WSMessage) {
 		SentAt:     time.Now(),
 	}
 
-	// 存储到数据库
+	// Save the message to the database
 	result := Service.DB.Preload("Receiver").Create(&dbMessage)
 	if result.Error != nil {
 		SendErrorMessage(conn, "Failed to save message")
@@ -190,7 +190,7 @@ func handleMessage(conn *websocket.Conn, senderID uint, msg WSMessage) {
 		"content": dbMessage,
 	}
 
-	// 尝试找到接收者的连接，如果在线，则发送消息
+	// Try to send the message to the receiver
 	receiverConn, found := clientConnections[msg.ReceiverID]
 	if found {
 		message, err := json.Marshal(dataToSend)
@@ -199,7 +199,7 @@ func handleMessage(conn *websocket.Conn, senderID uint, msg WSMessage) {
 			fmt.Printf("Error marshalling message: %v\n", err)
 			return
 		}
-		// 发送消息给接收端
+		// Send the message to the receiver
 		if err := receiverConn.WriteMessage(websocket.TextMessage, message); err != nil {
 			SendErrorMessage(conn, "Error sending message to receiver")
 			fmt.Printf("Error sending message to receiver: %v\n", err)

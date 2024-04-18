@@ -7,13 +7,13 @@ import (
 	"net/http"
 )
 
-// AddVehicleHandler 创建车辆
-// @Summary 创建车辆
+// AddVehicleHandler Create a vehicle
+// @Summary Create a vehicle
 // @Schemes
 // @Description do ping
 // @Tags Cars
 // @Accept json
-// @Param carInfo body controller.CreateCarRequestData true "车辆信息"
+// @Param carInfo body controller.CreateCarRequestData true "Information of the car"
 // @Produce json
 // @Success 200 {string} json{"code", "message"}
 // @Fail 400 {string} json{"code", "message"}
@@ -42,10 +42,10 @@ func AddVehicleHandler(c *gin.Context) {
 	return
 }
 
-// GetVehicleOfUserHandler 获取用户的车辆
-// @Summary 获取用户的车辆
+// GetVehicleOfUserHandler Get the vehicle of the user
+// @Summary Get the vehicle of the user
 // @Schemes
-// @Description 从car的表中获取用户的车辆，而不是从user的表中获取
+// @Description Get the user's vehicle from the car's table, not from the user's table
 // @Tags Cars
 // @Accept json
 // @Produce json
@@ -68,10 +68,10 @@ func GetVehicleOfUserHandler(c *gin.Context) {
 	return
 }
 
-// GetVehicleByCarIDHandler 获取车辆
-// @Summary 获取车辆
+// GetVehicleByCarIDHandler Get the vehicle by carID
+// @Summary Get the vehicle by carID
 // @Schemes
-// @Description 通过车辆ID获取车辆
+// @Description Get the vehicle by carID
 // @Tags Cars
 // @Accept json
 // @Produce json

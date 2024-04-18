@@ -9,11 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateManager 创建管理员
+// CreateManager Create a manager
 func CreateManager(admin *Models.ManagerBasic, db *gorm.DB) error {
 	invalidManager := viper.Get("managers.manager")
 	found := false
-	// 如果管理员 in invalidManager列表中,则创建管理员
+	// If manager in invalidManager, create the manager
 	for _, v := range invalidManager.([]interface{}) {
 		if admin.Name == v.(string) {
 			found = true
@@ -30,7 +30,7 @@ func CreateManager(admin *Models.ManagerBasic, db *gorm.DB) error {
 	return nil
 }
 
-// CheckAdminAlreadyIn  检查管理员是否已被注册
+// CheckAdminAlreadyIn  Check if the admin is already in the database
 func CheckAdminAlreadyIn(db *gorm.DB, admin *Models.ManagerBasic) (bool, error) {
 	var tempAdmin Models.ManagerBasic
 	err := db.Where("name = ?", admin.Name).Take(&tempAdmin).Error
@@ -39,14 +39,14 @@ func CheckAdminAlreadyIn(db *gorm.DB, admin *Models.ManagerBasic) (bool, error) 
 			// 没有找到记录，管理员未被注册
 			return false, nil
 		}
-		// 查询过程中发生错误
+		// If an error occurs during the query
 		return false, err
 	}
-	// 找到了记录，管理员已被注册
+	// Found the record
 	return true, nil
 }
 
-// Login 管理员登录
+// Login Manager login
 func Login(db *gorm.DB, admin *Models.ManagerBasic) (string, error) {
 	var tempAdmin Models.ManagerBasic
 	err := db.Where("admin_id = ?", admin.AdminID).Take(&tempAdmin).Error
@@ -55,18 +55,18 @@ func Login(db *gorm.DB, admin *Models.ManagerBasic) (string, error) {
 			// 没有找到记录，管理员未被注册
 			return "", errors.New("manager not found")
 		}
-		// 查询过程中发生错误
+		// If an error occurs during the query
 		return "", err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(tempAdmin.Password), []byte(admin.Password)); err != nil {
-		// 密码不匹配
+		// If the password does not match
 		return "", errors.New("password mismatch")
 	}
-	// 生成JWT
+	// Generate token
 	return User.GenerateToken(tempAdmin.ID, tempAdmin.AdminID, "admin")
 }
 
-// GetManagerByAdminID 通过邮箱获取管理员
+// GetManagerByAdminID Get the manager by admin ID
 func GetManagerByAdminID(db *gorm.DB, adminID string) (*Models.ManagerBasic, error) {
 	var admin Models.ManagerBasic
 	err := db.Where("admin_id = ?", adminID).Take(&admin).Error
