@@ -1,6 +1,13 @@
 version: '3.8'  # 使用docker-compose的版本
 
 services:
+  frontend:
+    build:
+      context: ../frontend  # 前端项目的路径
+      dockerfile: Dockerfile  # 前端的Dockerfile
+    ports:
+      - "3000:3000"  # 映射前端端口
+
   backend:
     build:
       context: .  # Dockerfile所在的上下文路径

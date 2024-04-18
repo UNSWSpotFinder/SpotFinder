@@ -190,6 +190,32 @@ const ReserveConfirm = styled('button')({
     cursor: 'not-allowed',
   },
 });
+export const SendWelcomeMessage = (receiverID, Content) => {
+  console.log('Connecting to WebSocket...');
+  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  const token = localStorage.getItem('token') || null;
+  websocket.onopen = () => {
+    // 当WebSocket连接打开时的回调函数
+    console.log('WebSocket Connected');
+    websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // 发送认证信息
+    const message = {
+      Type: 'message',
+      receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
+      content: Content,
+    };
+    console.log(message);
+    websocket.send(JSON.stringify(message));
+  };
+  websocket.onerror = (error) => {
+    console.error('WebSocket Error:', error);
+  };
+
+  return () => {
+    if (websocket) {
+      websocket.close();
+    }
+  };
+};
 // This is the confirm page for the user to confirm the booking
 export const ConfirmBook = ({ data, isOpen, close }) => {
   // get the set open snackbar function
@@ -224,16 +250,6 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   // when the payment method is selected, the selectedOption state will be changed
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-    // 根据选项执行相应的操作
-    if (event.target.value === '0') {
-      // 如果选中了 SpotAccount，则执行相关操作
-      console.log('Spot Account 被选中');
-      // 在这里执行你的操作
-    } else if (event.target.value === '1') {
-      // 如果选中了 VisaCard，则执行相关操作
-      console.log('Visa Card 被选中');
-      // 在这里执行你的操作
-    }
   };
   // get token from the context
   let token = localStorage.getItem('token') || null;
@@ -310,6 +326,23 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
               message: 'You successfully pay your order!Thank you.',
               timestamp: new Date().getTime(),
             });
+            console.log(data.OwnerID);
+            SendWelcomeMessage(data.OwnerID,'Hi, I have successfully paid the order for your spot "'+data.SpotName+'", please check it.');
+                  // if the user use the vocher
+            if(useDiscount){
+              // call the api to use the vocher
+              callAPIUseSpecificVocher('vouchers/use/' + theVocher, token)
+              .then((response)=>{
+                // reset the discount
+                setDisAccount(0);
+                setUseDiscount(false);
+                setTheVocher('');
+                console.log(response);
+              })
+              .catch((error)=>{
+                console.log(error);
+              })
+            }
             // set the confirm state to true
             setConfirmState(k_r);
           })
@@ -337,9 +370,10 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
   };
   // try to got the vocher
   const VerifyVocher = () => {
-    console.log(token);
+    // call the api to get the specific vocher
     callAPIGetSpecificVocher('vouchers/info/' + theVocher, token)
     .then((response)=>{
+      // if the vocher is valid and not used, the snackbar will be opened
       console.log(response);
       if(response.value && response.used === false){
         setOpenSnackbar({
@@ -347,10 +381,13 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           message: 'Voucher is valid got discount $' + response.value + '.',
           timestamp: new Date().getTime(),
         });
+        // if the discount is more than the total price, the discount will be set to total price - 1
         if(response.value > data.TotalPrice){
           response.value = data.TotalPrice-1;
         }
+        // set the discount account
         setDisAccount(response.value);
+        // set the use discount state to true
         setUseDiscount(true);
       }
       else{
@@ -434,9 +471,12 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       if (selectedOption === '0') {
         withdrawAccount(TotalPrice);
       }
+      // if the user use the vocher
       if(useDiscount){
+        // call the api to use the vocher
         callAPIUseSpecificVocher('vouchers/use/' + theVocher, token)
         .then((response)=>{
+          // reset the discount
           setDisAccount(0);
           setUseDiscount(false);
           setTheVocher('');
@@ -450,6 +490,8 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       setConfirmState(true);
       // set the can order state to false
       setcanOrder(false);
+      console.log(data.OwnerID);
+      SendWelcomeMessage(data.OwnerID,'Hi, I have successfully paid the order for your spot "'+data.SpotName+'", please check it.');
       return;
     })
     .catch((error) => {
@@ -565,7 +607,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
           <div className='balance-part'>
             <CfmLefttxt>Your Available Balance</CfmLefttxt>
             <p className='balance-value'>
-              ${Number(Balance).toFixed(2) + ' - $' + data.TotalPrice + ' - $' + DisAccount}
+              ${Number(Balance).toFixed(2) + ' - ($' + data.TotalPrice + ' - $' + DisAccount+')'}
             </p>
             <p className='balance-value'>
               ${(Number(Balance) - TotalPrice).toFixed(2)}
@@ -945,6 +987,7 @@ export function HomeSpecificLarge() {
             SpotType: response.message.SpotType,
             Size: response.message.Size,
             BookWay: bookway,
+            OwnerID: response.message.OwnerID
           }));
           // if the pictures is empty, set the pictures to the first picture
           if (res.length === 0) {
@@ -1587,7 +1630,7 @@ export function HomeSpecificLarge() {
               value={contextState.CarPlate}
             ></input>
 
-            <img src='/img/car.jpeg' className='carprofile' alt=''></img>
+            <img src={contextState.CarPicture || '/img/LOGO.svg'} className='carprofile' alt='No Car Select'></img>
             <button className='choose-car' onClick={CarSelect}>
               Select Your Car
             </button>

@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/api/gmail/v1"
 	_ "gorm.io/gorm"
 	"net/http"
 	"time"
@@ -174,7 +173,7 @@ func CreateUser(c *gin.Context) {
 //	@Failure		400		{object}	nil			"Bad Request"
 //	@Failure		500		{object}	nil			"Internal Server Error"
 //	@Router			/user/create/sendEmail [post]
-func SendCodeHandler(srv *gmail.Service, c *gin.Context, redisCli *redis.Client) {
+func SendCodeHandler(c *gin.Context, redisCli *redis.Client) {
 	var requestData RequestData
 	err := c.ShouldBindJSON(&requestData)
 	if err != nil {
@@ -190,7 +189,7 @@ func SendCodeHandler(srv *gmail.Service, c *gin.Context, redisCli *redis.Client)
 		return
 	}
 
-	err = SendEmail(srv, requestData.Email, "Credential Code", "您的验证码是 "+code)
+	err = SendEmail(requestData.Email, code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "我怀疑你断网了"})
 		return

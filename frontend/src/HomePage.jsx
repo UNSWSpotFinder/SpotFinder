@@ -4,11 +4,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DatePicker } from '@mui/x-date-pickers';
 import './HomePage.css';
+import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { callAPIGetAllSpot, useError } from './API';
 import { AppContext } from './App';
-// 未登录状态的用户页面
-
 function AllSpoting() {
   // initialize the page number as 1
   const [page,setPage] = useState(1);
@@ -16,6 +15,7 @@ function AllSpoting() {
   const { contextState } = useContext(AppContext);
   // use the navigate function to navigate to the detail page
   const navigate = useNavigate();
+  const [isBottom, setIsBottom] = useState(false);
   // when user want to see the detail of the spot
   const goesSpecific = (event) => {
     // get the target spot id
@@ -52,14 +52,16 @@ function AllSpoting() {
       // call the API to get the new spot list
       callAPIGetAllSpot('spot/list', localStorage.getItem('token'), page)
         .then((response) => {
-          // log the response
-          console.log(response);
           // if the response is not null, then update the spot list
           if (response && response.message) {
             // update the spot list
+            
             setAllSpot((prevSpots) => [...prevSpots, ...response.message]); // Correctly update state
             // page number plus 1
             setPage(page+1);
+          }
+          if(!response.message){
+            setIsBottom(true);
           }
           setIsLoading(false); // 完成加载后设置为 false
         })
@@ -77,7 +79,6 @@ function AllSpoting() {
       // get the new spot list
       getNewSpot();
     }
-    console.log(isLoading);
   }, [isLoading, page, setOpenSnackbar]);
   // load the page
   useEffect(() => {
@@ -88,18 +89,13 @@ function AllSpoting() {
       const sc = contentRef.current;
       // if not loading and the scroll bar reaches the bottom, then load the new spot
       // if we reach the bottom of the page and not loading, then load the new spot
-      console.log(sc.scrollHeight - sc.scrollTop);
-      console.log(sc.clientHeight);
-      console.log(isLoading);
       if (!isLoading && sc.scrollHeight - sc.scrollTop <= sc.clientHeight) {
-         console.log('scrolling');
         setIsLoading(true);
         console.log('Reached the bottom');
       }
     };
     // get the content reference
     const element = contentRef.current;
-    console.log(element);
     // add the scroll listener
     element.addEventListener('scroll', scListener);
     // remove the scroll listener for the cleanup
@@ -160,7 +156,6 @@ function AllSpoting() {
     // filter the spot list based on the location
     if (contextState.Carlocation !== '') {
       filter = filter.filter((data) => {
-        console.log(data);
         let res = '';
         try {
           // Assuming the JSON.parse(spot.SpotAddr) is an object with a property you want to display
@@ -191,7 +186,23 @@ function AllSpoting() {
         return data.Size === contextState.CarType;
       });
     }
-
+    // filter the spot list based on the start and end day
+    if(contextState.StartDay !== null && contextState.EndDay !== null){
+      // filter the spot list which has one available time that is between the start and end day
+      filter = filter.filter((data) => {
+        let phasedata = JSON.parse(data.AvailableTime);
+        // for each available time, check if the start and end day is between the available time
+        let result = phasedata.find((times) => {
+          return dayjs(times.startDate) <= contextState.StartDay && dayjs(times.endDate)  >= contextState.EndDay;
+        });
+        if(result){
+          return true;
+        }
+        else{
+          return false;
+        }
+      });
+    }
     // get the order method
     if (contextState.order_rank_way === 0) {
       // increasing order of score
@@ -277,9 +288,7 @@ function AllSpoting() {
             className='spaceimg'
             alt=''
             src={
-              (spot.Picture.includes('data:image/jpeg;base64,')
-                ? spot.Picture
-                : 'data:image/jpeg;base64,' + spot.Picture) || 'img/sample.jpeg'
+              spot.Picture || 'img/sample.jpeg'
             }
           ></img>
           <div className='info'>
@@ -345,12 +354,14 @@ function AllSpoting() {
           </div>
         </div>
       ))}
-      {isLoading && <p className='Lod'>Loading...</p>}
+      { !isBottom && isLoading && <p className='Lod'>Loading...</p>}
+      { (isBottom || (filteredSpot.length===0 && !isLoading)) && <p className='Lod'>No more Spots</p>}
     </div>
   );
 }
 // This is the large version of the home page
 export function HomePageLarge() {
+  
   // get the token from the local storage
   let token = localStorage.getItem('token') || null;
   // get the current user from the local storage
@@ -359,7 +370,6 @@ export function HomePageLarge() {
   let AdminId = localStorage.getItem('AdminId') || null;
   // use the navigate function
   let navigate = useNavigate();
-  // according to the current user, navigate to the corresponding page
   useEffect(() => {
     if (AdminId) {
       navigate('/admin/' + AdminId);
@@ -367,7 +377,9 @@ export function HomePageLarge() {
     if (currentuser) {
       navigate('/' + currentuser);
     }
-  }, [ AdminId, currentuser, navigate]);
+  },[]);
+
+  // according to the current user, navigate to the corresponding page
   // get the context state and update function
   const { contextState, updateContextState } = useContext(AppContext);
   // get the min and max price
@@ -461,6 +473,7 @@ export function HomePageLarge() {
   };
   // go to the choose car page
   let ChooseCar = () => {
+
     // get the token from the local storage
     if (token) {
       // navigate to the choose car page
@@ -721,7 +734,6 @@ export function HomePageSmall() {
   };
   // when the book way change
   const handleOrdwayChange = (event) => {
-    console.log(event.target.value);
     updateContextState({
       BookWay: event.target.value,
     });
@@ -900,47 +912,46 @@ export function HomePageSmall() {
               <option value='0'>Highest rates</option>
               <option value='1'>Lowest rates</option>
             </select>
-          </div>
-          <div className='input-group width-20'>
-            <span className='input-group-text'>MIN$</span>
-            <input
-              type='text'
-              className='form-control'
-              aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.minPrise}
-              onChange={handleminpriceChange}
-            ></input>
-          </div>
-          <div className='input-group width-20'>
-            <span className='input-group-text'>MAX$</span>
-            <input
-              type='text'
-              className='form-control'
-              aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.maxPrise}
-              onChange={handlemaxpriceChange}
-            ></input>
-          </div>
-          {/* <div className='hflex'>
-            <label className='pricerange-s'>MAX$</label>
-            <input className='pricerange-s'></input>
-          </div> */}
-
-          <button className='selectcar' onClick={ChooseCar}>
-            SELECT YOUR CAR
-          </button>
-        </div>
-        <div className='filter-bottom'>
-          <select
+            <select
             defaultValue={contextState.BookWay}
             className='form-select mglr-s-r'
             aria-label='Default select example'
             onChange={handleOrdwayChange}
-          >
+            >
             <option value='H'>Hourly</option>
             <option value='D'>Daily</option>
             <option value='W'>Weekly</option>
-          </select>
+            </select>
+          </div>
+          <div className='inner-left'>
+            <div className='input-group width-20'>
+              <span className='input-group-text'>MIN$</span>
+              <input
+                type='text'
+                className='form-control'
+                aria-label='Dollar amount (with dot and two decimal places)'
+                value={contextState.minPrise}
+                maxLength={5}
+                onChange={handleminpriceChange}
+              ></input>
+            </div>
+            <div className='input-group width-20'>
+              <span className='input-group-text'>MAX$</span>
+              <input
+                type='text'
+                className='form-control'
+                aria-label='Dollar amount (with dot and two decimal places)'
+                value={contextState.maxPrise}
+                maxLength={5}
+                onChange={handlemaxpriceChange}
+              ></input>
+            </div>
+            <button className='selectcar' onClick={ChooseCar}>
+              SELECT CAR
+            </button>
+          </div>
+        </div>
+        <div className='filter-bottom'>
           {contextState.BookWay === 'H' ? (
             <div className='fx-100-x'>
               <div className='timechoice-s'>

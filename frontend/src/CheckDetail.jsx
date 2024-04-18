@@ -29,6 +29,7 @@ const CfmContent = styled('div')({
   borderRadius: '10px',
   boxShadow: '0px 1px 10px 1px rgba(42, 42, 42, 0.5)',
 });
+// style css
 const CfmHeight = styled('div')({
   width: '100%',
   height: '50px',
@@ -128,34 +129,39 @@ const ReserveConfirmgray = styled('button')({
     backgroundColor: 'rgb(235, 235, 235)',
   },
 });
-
+// style css finished
+// this is the function to send the spot feedback to the provider
 export const SendAllKindFeedback = (receiverID, Content) => {
+  // connect to the websocket
   console.log('Connecting to WebSocket...');
   let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  // get the current token
   const token = localStorage.getItem('token');
   websocket.onopen = () => {
-    // 当WebSocket连接打开时的回调函数
+    // when the websocket is open, send the authentication information
     console.log('WebSocket Connected');
+    // send the authentication information
     websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // 发送认证信息
+    // define the message
     const message = {
       Type: 'notification',
       receiverId: parseInt(receiverID, 10), // 将receiverID转换为十进制
       content: Content,
     };
-    console.log(message);
+    // send the message
     websocket.send(JSON.stringify(message));
   };
+  // when the websocket meet an error
   websocket.onerror = (error) => {
     console.error('WebSocket Error:', error);
   };
-
   return () => {
     if (websocket) {
       websocket.close();
     }
   };
 };
-// 修改
+// when a manager approve a spot
 export const ApproveCheck = ({ data, isOpen, close }) => {
   // get the set open snackbar function
   const { setOpenSnackbar } = useError();
@@ -176,23 +182,27 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
+    // get the feedback
     let WholeFeedback =
       'Your Spot named "' +
       data.spotName +
       '" has been edit and Published. Because ' +
       Feedback;
+    // send the feedback 
     SendAllKindFeedback(data.Owner, WholeFeedback);
+    // go to the user page
     navigate('/admin/' + adminid);
   };
+  // when the user try to approve the spot
   const Approve = (id) => {
+    // call the api to approve the spot
     callAPIApproveSpot('manager/approve', id, localStorage.getItem('token'))
       .then((response) => {
-        console.log(response);
+        // if the response is success
         SendFeedback();
       })
       .catch((error) => {
-        console.log('np');
-        console.log(data);
+        // if the response is error
         setOpenSnackbar({
           severity: 'warning',
           message: error,
@@ -200,27 +210,26 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
         });
       });
   };
+  // when the user try to edit the spot
   const EditInfo = (id) => {
+    // call the api to edit the spot
     callAPIEditSpot(
       'spot/modifySpotInfo/' + id,
       data,
       localStorage.getItem('token')
     )
       .then((response) => {
-        console.log(response);
+        // if the response is success
         Approve(id);
       })
       .catch((error) => {
-        console.log('np');
-        console.log(data);
+        // if the response is error
         setOpenSnackbar({
           severity: 'warning',
           message: error,
           timestamp: new Date().getTime(),
         });
       });
-    // change the conponment
-    console.log(data);
   };
   let conponment = (
     <div className='CfmAll'>
@@ -228,7 +237,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Approve Response</CfmHead>
+          <CfmHead>Spot Approve</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
@@ -245,16 +254,18 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
             EditInfo(Spotid);
           }}
         >
-          Send Feedback & Edit & Approve
+          Send Feedback & Approve
         </ReserveConfirm>
       </CfmContent>
     </div>
   );
   return isOpen ? conponment : null;
 };
+// when a ,manager edit a spot
 export const EditCheck = ({ data, isOpen, close }) => {
-  console.log(data);
+  // initialize the feedback
   const [Feedback, setFeedback] = useState('No change.');
+  // get admin id, spot id, report id from the url
   const { adminid, Spotid, Reportid } = useParams();
   // use the navigate to go to the user page
   const navigate = useNavigate();
@@ -264,18 +275,23 @@ export const EditCheck = ({ data, isOpen, close }) => {
   const back = () => {
     close();
   };
+  // this is when the manager need to send the feedback to the provider
   const SendFeedback = () => {
+    // set the open snackbar
     setOpenSnackbar({
       severity: 'success',
       message: 'Spot successfully approved!',
       timestamp: new Date().getTime(),
     });
+    // get the whole feedback
     let WholeFeedback =
       'Your Spot named "' +
       data.spotName +
       '" has been Edited. Because ' +
       Feedback;
+    // send the feedback
     SendAllKindFeedback(data.Owner, WholeFeedback);
+    // go to the user page
     if (Reportid) {
       callAPIsolved(Reportid).then(() => {
         navigate('/admin/' + adminid);
@@ -288,23 +304,25 @@ export const EditCheck = ({ data, isOpen, close }) => {
   const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const EditInfo = (id) => {
+    // call the api to edit the spot
     callAPIEditSpot(
       'spot/modifySpotInfo/' + id,
       data,
       localStorage.getItem('token')
     )
       .then((response) => {
+        // if the response is successful
         console.log(response);
         setOpenSnackbar({
           severity: 'success',
           message: 'Edit Spot Successful!',
           timestamp: new Date().getTime(),
         });
+        // send the feedback
         SendFeedback();
       })
       .catch((error) => {
-        console.log('np');
-        console.log(data);
+        // if the response is not successful
         setOpenSnackbar({
           severity: 'warning',
           message: error,
@@ -312,7 +330,6 @@ export const EditCheck = ({ data, isOpen, close }) => {
         });
       });
     // change the conponment
-    console.log(data);
   };
   let conponment = (
     <div className='CfmAll'>
@@ -320,7 +337,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Edit Response</CfmHead>
+          <CfmHead>Spot Edit</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
@@ -344,9 +361,11 @@ export const EditCheck = ({ data, isOpen, close }) => {
   );
   return isOpen ? conponment : null;
 };
-// 删除
+// when a manager delete a spot
 export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
+  // get the admin id, spot id, report id from the url
   const { adminid, Spotid, Reportid } = useParams();
+  // initialize the feedback
   const [Feedback, setFeedback] = useState(
     'The spot is not suitable for our platform.'
   );
@@ -358,18 +377,23 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
   const back = () => {
     close();
   };
+  // this is when the manager need to send the feedback to the provider
   const SendFeedback = () => {
+    // set the open snackbar
     setOpenSnackbar({
       severity: 'success',
       message: 'Spot has been Blocked! All user would never see it.',
       timestamp: new Date().getTime(),
     });
+    // initialize the whole feedback
     let WholeFeedback =
       'Your Spot named "' +
       spotName +
       '" has been Blocked. Because ' +
       Feedback;
+    // send the feedback
     SendAllKindFeedback(Owner, WholeFeedback);
+    // go to the user page
     if (Reportid) {
       callAPIsolved(Reportid).then(() => {
         navigate('/admin/' + adminid);
@@ -382,21 +406,21 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
   const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const DeleteInfo = (id) => {
+    // call the api to delete the spot
     callAPIBlockSpot('manager/block', id, localStorage.getItem('token'))
       .then((response) => {
-        console.log(response);
+        // if the response is successful
+        // send the feedback
         SendFeedback();
       })
       .catch((error) => {
-        console.log('np');
+        // if the response is not successful
         setOpenSnackbar({
           severity: 'warning',
           message: error,
           timestamp: new Date().getTime(),
         });
       });
-    // change the conponment
-    console.log('DELETE SUCCESS' + id);
   };
   let conponment = (
     <div className='CfmAll'>
@@ -404,7 +428,7 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Delete/Reject Response</CfmHead>
+          <CfmHead>Spot Delete/Reject</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
@@ -421,15 +445,18 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
             DeleteInfo(Spotid);
           }}
         >
-          {'Send Feedback  &  (Delete/Reject)'}
+          {'Send Block Feedback '}
         </ReserveConfirmblack>
       </CfmContent>
     </div>
   );
   return isOpen ? conponment : null;
 };
+// when a manager hide a spot
 export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
+  // get the admin id, spot id, report id from the url
   const { adminid, Spotid, Reportid } = useParams();
+  // initialize the feedback
   const [Feedback, setFeedback] = useState(
     'The spot has many problems, please fix it. Thank you.'
   );
@@ -441,15 +468,19 @@ export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
   const back = () => {
     close();
   };
+  // this is when the manager need to send the feedback to the provider
   const SendFeedback = () => {
+    // set the open snackbar
     setOpenSnackbar({
       severity: 'success',
       message: 'Spot has been Hidden! You can republish it later.',
       timestamp: new Date().getTime(),
     });
+    // initialize the whole feedback
     let WholeFeedback =
       'Your Spot named "' + spotName + '" has been Hidden. Because ' + Feedback;
     SendAllKindFeedback(Owner, WholeFeedback);
+    // go to the user page
     if (Reportid) {
       callAPIsolved(Reportid).then((response) => {
         navigate('/admin/' + adminid);
@@ -462,21 +493,21 @@ export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
   const { setOpenSnackbar } = useError();
   // this function used when the user click the confirm button
   const HiddenInfo = (id) => {
+    // call the api to Hide the spot
     callAPIHiddenSpot('manager/invisible', id, localStorage.getItem('token'))
       .then((response) => {
-        console.log(response);
+        // if the response is successful
+        // send the feedback
         SendFeedback();
       })
       .catch((error) => {
-        console.log('np');
+        // if the response is not successful
         setOpenSnackbar({
           severity: 'warning',
           message: error,
           timestamp: new Date().getTime(),
         });
       });
-    // change the conponment
-    console.log('DELETE SUCCESS' + id);
   };
   let conponment = (
     <div className='CfmAll'>
@@ -484,7 +515,7 @@ export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Hidden Response</CfmHead>
+          <CfmHead>Spot Hidden</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
@@ -509,16 +540,14 @@ export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
   return isOpen ? conponment : null;
 };
 
-// EditHostingPage
+// Admin Process Edit Space
 export const ManagerEditSpace = () => {
   const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
   const [OwnerId, setOwnerId] = useState(null);
-  const { adminid, Spotid } = useParams();
-  console.log(adminid);
-  console.log(Spotid);
+  const { Spotid } = useParams();
   useEffect(() => {
     let getDetail = (Spotid) => {
       callAPIGetSpecSpot('spot/' + Spotid)
@@ -539,10 +568,8 @@ export const ManagerEditSpace = () => {
           setThumbil(response.message.Pictures);
           const res = JSON.parse(response.message.MorePictures);
           setSelectedImageString(res);
-          console.log(res);
           try {
             const ads = JSON.parse(response.message.SpotAddr);
-            console.log(ads);
             setState(ads.State);
             setStreet(ads.Street);
             setCity(ads.City);
@@ -550,27 +577,18 @@ export const ManagerEditSpace = () => {
             setPostcode(ads.Postcode);
           } catch (e) {
             const ads = response.message.SpotAddr.split(',');
-            console.log(ads);
             setState(ads[0]);
             setStreet(ads[0]);
             setCity(ads.City[1]);
             setCountry(ads[2]);
             setPostcode(ads.Postcode[2]);
           }
-          const ads = JSON.parse(response.message.SpotAddr);
-          console.log(ads);
-          setState(ads.State);
-          setStreet(ads.Street);
-          setCity(ads.City);
-          setCountry(ads.Country);
-          setPostcode(ads.Postcode);
           let all_time = JSON.parse(response.message.AvailableTime);
           all_time = all_time.map((item) => ({
             ...item,
             startDate: dayjs(item.startDate),
             endDate: dayjs(item.endDate),
           }));
-          console.log(all_time);
           setFirstStart(all_time[0].startDate);
           setFirstEnd(all_time[0].endDate);
           setDistance(all_time[0].distance);
@@ -794,7 +812,6 @@ export const ManagerEditSpace = () => {
             if (isValidBase64Image(base64Data)) {
               // valid file
               setAllfalse();
-              console.log(base64Data);
               setThumbil(base64Data);
             } else {
               // invalid file
@@ -928,7 +945,6 @@ export const ManagerEditSpace = () => {
     // if the ref is not null
     if (ref.current) {
       // scroll to the element
-      console.log(ref.current);
       ref.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -1036,7 +1052,6 @@ export const ManagerEditSpace = () => {
     const pricePattern = /^[1-9]\d{0,4}$/;
     // set confirmflag to true
     let Confirmflag = true;
-    console.log(data);
     if (data) {
       // inital the data
       // if the title is empty
@@ -1926,16 +1941,16 @@ export const ManagerEditSpace = () => {
           Edit Spot
         </button>
         <button className='CreatButton-b white' onClick={() => HiddenNow()}>
-          Hidden This Spot
+          Hidden Spot
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Delete This Spot
+          Delete Spot
         </button>
       </div>
     </div>
   );
 };
-
+// Admin Process Approve and Edit Space
 export const ManagerApproveEditSpace = () => {
   const { setOpenSnackbar } = useError();
   const { adminid, Spotid } = useParams();
@@ -3335,19 +3350,19 @@ export const ManagerApproveEditSpace = () => {
           onClick={() => EditNow()}
           type='button'
         >
-          Edit & Approve Spot
+          Approve Spot
         </button>
         <button className='CreatButton-b white' onClick={goesHost}>
           Process later
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Reject This Spot
+          Reject Spot
         </button>
       </div>
     </div>
   );
 };
-
+// Admin Process Report
 export const ManagerProcessReport = () => {
   const { setOpenSnackbar } = useError();
   const [isOpenDelete, setOpenDelete] = useState(false);
@@ -4763,10 +4778,10 @@ export const ManagerProcessReport = () => {
           Edit Spot
         </button>
         <button className='CreatButton-b white' onClick={() => HiddenNow()}>
-          Hidden This Spot
+          Hidden Spot
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Delete This Spot
+          Delete Spot
         </button>
       </div>
     </div>

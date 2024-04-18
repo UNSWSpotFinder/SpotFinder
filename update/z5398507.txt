@@ -1,0 +1,71 @@
+Week1
+1.choose the teammember of this course
+2. initial an empty frontend react project
+3. choose the project topic with my teammate
+4. start to design the HomePage of our project
+5. write the project proposal PART 4
+Week2
+1. Design the HomePage
+2. Design the Login Page for user admin
+3. Design the Regist Page for user admin
+4. Design the Specific Spot Page for user
+5. Design the Car selection Page
+6. Choose the logo for our website
+7. Looking the exist Spot Renter website
+8. Write the proposal part4 for already designed
+Week3
+1. Write the proposal part4 all content and designed all web site Page.
+2. Finished the user Login Page
+3. Finished the user email verification code function
+3. Finished the Home Page dashboard part and welcome part
+4. Cooperation with the backend to test some API spereately
+5. Finish a spereate Creat Spot Page with out any function
+6. review our proposal and submit it.
+Week4
+1. Finished all the user Regist Page
+2. Finished all the Password Forget Page
+3. Finished the logout function
+4. Make sure the user can regist,login,logout,reset password
+5. Finished all the Create Spot Page and the Spot can be Create
+6. Can get all the spot in the HomePage but UI is not correct
+7. Implement all the filter but cannot use to filter
+8. Finished the Admin Login Page
+Week5
+1. Finished the Admin Regist Page
+2. Finished the Home page Get all published Spoting
+3. For all filters the RANK, Bookway, price range, location can be filtered correctly
+4. Complete the Specific Spot Page with can Order
+5. Complete the Admin HomePage with all the spot can be shown and a serch bar can work
+6. Complete the Edit Spot Page
+7. Complete the Review and the score can be shown
+Week6
+1.Complete the Car selection Page
+2.Complete the Order that can contains more than one duration
+3.Can auto calculate the price
+4.The Admin can shown the Wait for Approved Spot
+5.The car selection can be filter and the Date filter also work
+6.Add the visa card payment page
+Week7
+1.The admin can send the message to the user when the spot has been, approved, edit, blocked and hiddened
+2.The admin can Approve, edit, delete, hidden the spot
+3.Can View All the user Report
+4.When the User Booking the Spot can send the message to the Admin
+5.When the user balance not enought, link them to topup
+6.The user can verify the vocher when payment
+Week8
+1. Finished the report solve and can check a Specific report
+2. User can use Vocher if their Vocher has been verified
+3. Can get all the system information
+4. Finished the system statistic for the whole admin Part
+5. Complete the infinate scroll of the program
+Week9
+1. Add the comment and fixed all of the bugs in the project
+2. prevent all many click for the button in the project
+3. fixed all warning in the program. 
+4. Add the loading tag and when the scroll to the end show the error message
+5. warper the frontend to the docker
+Week10
+1. fixed some small bugs in the project
+2. write the file catalog of the frontend
+3. write the final report
+4. finished the peer review

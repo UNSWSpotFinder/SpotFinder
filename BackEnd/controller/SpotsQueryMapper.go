@@ -9,21 +9,22 @@ import (
 
 // tempSpotBasic 临时车位基本信息，首页展示用
 type tempSpotBasic struct {
-	ID           uint
-	SpotName     string
-	SpotAddr     string
-	SpotType     string
-	Rate         float64
-	Size         string
-	IsDayRent    bool
-	IsWeekRent   bool
-	IsHourRent   bool
-	PricePerDay  float64
-	PricePerWeek float64
-	PricePerHour float64
-	OrderNum     uint
-	Picture      string
-	IsBlocked    bool
+	ID            uint
+	SpotName      string
+	SpotAddr      string
+	SpotType      string
+	Rate          float64
+	Size          string
+	AvailableTime string
+	IsDayRent     bool
+	IsWeekRent    bool
+	IsHourRent    bool
+	PricePerDay   float64
+	PricePerWeek  float64
+	PricePerHour  float64
+	OrderNum      uint
+	Picture       string
+	IsBlocked     bool
 }
 
 // GetSpotList 从数据库中获取所有车位数据
@@ -42,7 +43,7 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 	// 构建查询并进行分页
 
 	err := query.Select(
-		"id, spot_name, spot_addr, spot_type, rate, size, is_blocked," +
+		"id, spot_name, spot_addr, spot_type, rate, size, available_time, is_blocked," +
 			"is_day_rent, is_week_rent, is_hour_rent, price_per_day, price_per_week, " +
 			"price_per_hour, order_num, pictures, available_time").
 		Offset(offset).Limit(pageSize).
@@ -55,21 +56,22 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 	var resultSpots []*tempSpotBasic // 这将是你的最终返回值
 	for _, spot := range allSpots {
 		tempSpot := &tempSpotBasic{
-			ID:           spot.ID,
-			SpotName:     spot.SpotName,
-			SpotAddr:     spot.SpotAddr,
-			SpotType:     spot.SpotType,
-			Rate:         float64(spot.Rate),
-			Size:         spot.Size,
-			IsBlocked:    spot.IsBlocked,
-			IsDayRent:    spot.IsDayRent,
-			IsWeekRent:   spot.IsWeekRent,
-			IsHourRent:   spot.IsHourRent,
-			PricePerDay:  spot.PricePerDay,
-			PricePerWeek: spot.PricePerWeek,
-			PricePerHour: spot.PricePerHour,
-			OrderNum:     spot.OrderNum,
-			Picture:      spot.Pictures,
+			ID:            spot.ID,
+			SpotName:      spot.SpotName,
+			SpotAddr:      spot.SpotAddr,
+			SpotType:      spot.SpotType,
+			Rate:          spot.Rate,
+			Size:          spot.Size,
+			AvailableTime: spot.AvailableTime,
+			IsBlocked:     spot.IsBlocked,
+			IsDayRent:     spot.IsDayRent,
+			IsWeekRent:    spot.IsWeekRent,
+			IsHourRent:    spot.IsHourRent,
+			PricePerDay:   spot.PricePerDay,
+			PricePerWeek:  spot.PricePerWeek,
+			PricePerHour:  spot.PricePerHour,
+			OrderNum:      spot.OrderNum,
+			Picture:       spot.Pictures,
 		}
 		resultSpots = append(resultSpots, tempSpot)
 	}
