@@ -195,7 +195,7 @@ export const GlobalSnackbar = () => {
 // the api to send the email code
 export const callAPIsendEmailCode = (path, input) => {
   return new Promise((resolve, reject) => {
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -220,8 +220,8 @@ export const callAPIsendEmailCode = (path, input) => {
 // the api to verify the email code
 export const callAPIverifyEmailCode = (path, input) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -247,8 +247,8 @@ export const callAPIverifyEmailCode = (path, input) => {
 export const callAPILoginAdmin = (path, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -279,8 +279,8 @@ export const callAPILoginAdmin = (path, input) => {
 export const callAPIRegistUser = (path, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -317,8 +317,8 @@ export const callAPIRegistUser = (path, input) => {
 export const callAPIRegistAdmin = (path, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -355,8 +355,8 @@ export const callAPIRegistAdmin = (path, input) => {
 export const callAPILoginUser = (path, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -387,8 +387,8 @@ export const callAPILoginUser = (path, input) => {
 export const callAPIResetPwdUser = (path, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -416,8 +416,8 @@ export const callAPICreateSpot = (path, input, token) => {
   return new Promise((resolve, reject) => {
     console.log(input);
     console.log('token: ' + token);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${String(token)}`,
@@ -459,8 +459,8 @@ export const callAPIEditSpot = (path, input, token) => {
   return new Promise((resolve, reject) => {
     console.log(input);
     console.log('token: ' + token);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${String(token)}`,
@@ -501,11 +501,9 @@ export const callAPIEditSpot = (path, input, token) => {
 export const callAPIGetAllSpot = (path, token, page) => {
   return new Promise((resolve, reject) => {
     console.log('token: ' + token);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
+    console.log('/api/' + String(path));
     fetch(
-      'http://localhost:' +
-        String(port) +
-        '/' +
+        '/api/' +
         String(path) +
         '/?isVisible=true&page=' +
         page +
@@ -550,8 +548,8 @@ export const callAPIGetAllSpot = (path, token, page) => {
 // the api to get the specific spot
 export const callAPIGetSpecSpot = (path) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'GET',
       headers: {},
     })
@@ -587,8 +585,8 @@ export const callAPIGetSpecSpot = (path) => {
 // the api to get the specific user info
 export const callAPIGetSpecUserInfo = (path) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'GET',
       headers: {},
     })
@@ -625,11 +623,7 @@ export const callAPIGetSpecUserInfo = (path) => {
 export const callAPIApproveSpot = (path, SpotId, token) => {
   return new Promise((resolve, reject) => {
     fetch(
-      'http://localhost:' +
-        String(port) +
-        '/' +
-        String(path) +
-        '/' +
+      '/api/' +
         String(SpotId),
       {
         method: 'POST',
@@ -674,11 +668,7 @@ export const callAPIApproveSpot = (path, SpotId, token) => {
 export const callAPIBlockSpot = (path, SpotId, token) => {
   return new Promise((resolve, reject) => {
     fetch(
-      'http://localhost:' +
-        String(port) +
-        '/' +
-        String(path) +
-        '/' +
+      '/api/' +
         String(SpotId),
       {
         method: 'PUT',
@@ -723,11 +713,7 @@ export const callAPIBlockSpot = (path, SpotId, token) => {
 export const callAPIHiddenSpot = (path, SpotId, token) => {
   return new Promise((resolve, reject) => {
     fetch(
-      'http://localhost:' +
-        String(port) +
-        '/' +
-        String(path) +
-        '/' +
+      '/api/' +
         String(SpotId),
       {
         method: 'PUT',
@@ -773,8 +759,8 @@ export const callAPICreateOrder = (path, token, input) => {
   return new Promise((resolve, reject) => {
     console.log(input);
     console.log('token: ' + token);
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${String(token)}`,
@@ -815,8 +801,8 @@ export const callAPICreateOrder = (path, token, input) => {
 // the api to get all review
 export const callAPIGetAllreview = (path) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'GET',
       headers: {},
     })
@@ -852,8 +838,8 @@ export const callAPIGetAllreview = (path) => {
 // the api to get a specific vocher
 export const callAPIGetSpecificVocher = (path, token) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${String(token)}`,
@@ -891,8 +877,8 @@ export const callAPIGetSpecificVocher = (path, token) => {
 // the api to use a specific vocher
 export const callAPIUseSpecificVocher = (path, token) => {
   return new Promise((resolve, reject) => {
-    console.log('http://localhost:' + String(port) + '/' + String(path));
-    fetch('http://localhost:' + String(port) + '/' + String(path), {
+    console.log('/api/' + String(path));
+    fetch('/api/' + String(path), {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${String(token)}`,

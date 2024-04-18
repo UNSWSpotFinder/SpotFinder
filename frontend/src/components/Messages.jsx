@@ -34,7 +34,7 @@ const Messages = () => {
               setUserAvatar(info.message.avatar);
             }).catch(error => console.error('Failed to fetch user info:', error));
             
-            websocket = new WebSocket(`ws://localhost:8080/ws`); // 实例化WebSocket对象
+            websocket = new WebSocket(`ws://api/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
                 // 当WebSocket连接打开时的回调函数
                 console.log('WebSocket Connected');
