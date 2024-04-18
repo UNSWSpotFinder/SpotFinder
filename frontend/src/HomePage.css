@@ -609,8 +609,8 @@ div.reporter-owner-d{
 }
 @media (max-width: 800px) and (min-width: 376px) {
     div.SpaceOverall{
-        width: calc(100vw - 15px);
-        min-width: 385px;
+        width: calc(100vw - 20px);
+        min-width: 355px;
     }
     img.spaceimg{
         border-radius: 12px;
