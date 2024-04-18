@@ -19,7 +19,6 @@ const OrdersModal = ({ closeOrdersModal, spot, orders, fetchOrders }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const handleSnackbarClose = () => setOpenSnackbar(false);
-  const [voucher, setVoucher] = useState(null);
 
   useEffect(() => {
     let webSocket;
