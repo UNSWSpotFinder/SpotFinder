@@ -79,7 +79,7 @@ function AllSpoting() {
       // get the new spot list
       getNewSpot();
     }
-  }, [isLoading, page, setOpenSnackbar]);
+  }, [isLoading, page]);
   // load the page
   useEffect(() => {
     
