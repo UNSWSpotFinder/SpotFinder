@@ -46,7 +46,7 @@ const Dashboard = () => {
         }
         if(data.message){
           // data contains user information
-          console.log('data:', data.message)
+          console.log('data:', data.message);
           setUserInfo({
             name: data.message.Name,
             account: data.message.Account,
@@ -228,7 +228,8 @@ const Dashboard = () => {
           </div>
         </div>
         {/* 第二列显示当前预定数量 */}
-        {/* second column: number of current bookings */}
+        {/* second column: number of current bookings
+         */}
         <div className='second-column-booking'>
           <h5>My Bookings</h5>
           <div className='booking-number'>{pendingBookingsCount}</div>
