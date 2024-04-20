@@ -8,7 +8,7 @@ import (
 func CreateReport(db *gorm.DB, userID uint, spotID uint, reason string) error {
 	user := Models.UserBasic{}
 	spot := Models.SpotBasic{}
-	// 创建举报
+	// Check if the user exists
 	report := Models.ReportBasic{
 		ReporterID: userID,
 		SpotID:     spotID,

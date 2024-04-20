@@ -95,7 +95,7 @@ func tokenFromFile(file string, c *gin.Context) (*oauth2.Token, error) {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			c.JSON(500, "文件关闭失败")
+			c.JSON(500, "Cannot close file")
 			return
 		}
 	}(f)
@@ -114,7 +114,7 @@ func saveToken(path string, token *oauth2.Token, c *gin.Context) {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			c.JSON(500, "文件关闭失败")
+			c.JSON(500, "Cannot close file")
 			return
 		}
 	}(f)
@@ -125,7 +125,7 @@ func saveToken(path string, token *oauth2.Token, c *gin.Context) {
 	}
 }
 
-// getTokenFromWeb 第一次登录的时候会收到一个token
+// getTokenFromWeb Your program flow should have already authorized the user before getting here.
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authUrl := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Println("Go to the following link and type the authorization code:\n", authUrl)
@@ -144,11 +144,11 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 }
 
 func InitMySQL() *gorm.DB {
-	// 自定义日志
+	// dsn := "root
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,  // 慢 SQL 阈值
+			SlowThreshold: time.Second,  // Slow SQL threshold
 			LogLevel:      logger.Error, // Log level
 			Colorful:      true,
 		},

@@ -17,7 +17,7 @@ type CreateCarRequestData struct {
 }
 
 func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err error) {
-	// 1. 找到相应的用户记录
+	// 1. Find the user
 	var user Models.UserBasic
 	fmt.Println(userId)
 	resultUser := db.Where("id = ?", userId).First(&user)
@@ -35,13 +35,13 @@ func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err e
 		Charge:  carData.Charge,
 	}
 
-	// 2. 创建车辆
+	// 2. Create the car
 
 	if resultCar := db.Create(&car); resultCar.Error != nil {
 		return resultCar.Error // 如果数据库更新失败，返回错误
 	}
 
-	// 3. 解析用户的车辆信息
+	// 3. Unmarshal the car info
 	var cars []uint
 	if user.CarID != "" { // 假设 CarID 是存储JSON数组的字段
 		if err = json.Unmarshal([]byte(user.CarID), &cars); err != nil {
@@ -49,14 +49,14 @@ func CreateCar(userId string, carData *CreateCarRequestData, db *gorm.DB) (err e
 		}
 	}
 
-	// 4. 添加新车辆信息到数组中
+	// 4. Add the car ID to the user's car info
 	cars = append(cars, car.ID)
 	newCarInfo, err := json.Marshal(cars)
 	if err != nil {
 		return err // 如果JSON编码失败，返回错误
 	}
 	if result := db.Model(&Models.UserBasic{}).Where("id = ?", userId).Update("car_info", newCarInfo); result.Error != nil {
-		return result.Error // 如果数据库更新失败，返回错误
+		return result.Error
 	}
 
 	return nil

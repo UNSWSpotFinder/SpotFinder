@@ -4,7 +4,7 @@ package Message;
 
 import "google/protobuf/timestamp.proto";
 
-// 定义消息格式
+// Define the message
 message Message {
   string sender_id = 1;
   string receiver_id = 2;
@@ -12,22 +12,22 @@ message Message {
   google.protobuf.Timestamp time = 4;
 }
 
-// 定义服务接口
+// Define the service
 service ChatService {
-  // 发送消息
+  // Send a message
   rpc SendMessage(Message) returns (SendMessageResponse);
 
-  // 接收消息
+  // Get a stream of messages
   rpc ReceiveMessage(StreamMessagesRequest) returns (stream Message);
 }
 
-// 发送消息的响应
+// Send message response
 message SendMessageResponse {
   bool success = 1;
   string error = 2; // 错误消息
 }
 
-// 接收消息的请求参数
+// Get message request
 message StreamMessagesRequest {
   string receiver_id = 1;
 }

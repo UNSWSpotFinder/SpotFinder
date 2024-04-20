@@ -13,21 +13,21 @@ import (
 	"time"
 )
 
-// IsOrderCompleted 检查订单状态，如果未完成则更新订单状态为已支付
+// IsOrderCompleted Check if an order is completed
 func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) {
 	var order Models.OrderBasic
-	// 首先检查订单是否存在并获取订单信息
+	// Firstly, find the order
 	if err := db.Preload("Booker").First(&order, "id = ?", orderID).Error; err != nil {
 		return false, err // 包含了记录未找到的情况
 	}
 
-	// 解析预订时间
+	// Unmarshal booking time
 	var bookingTimes []Models.TimeRange
 	if err := json.Unmarshal([]byte(order.BookingTime), &bookingTimes); err != nil {
 		return false, err // 解析JSON失败
 	}
 
-	// 检查订单状态和预订时间
+	// Check if the order is completed
 	now := time.Now()
 	for _, bt := range bookingTimes {
 		startDate, err := time.Parse(time.RFC3339, bt.StartDate)
@@ -37,20 +37,20 @@ func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) 
 
 		if now.After(startDate.Add(-time.Hour)) && status != "Completed" {
 			err := db.Transaction(func(tx *gorm.DB) error {
-				// 更新订单状态
+				// Update order status to completed
 				order.Status = "Completed"
 				if err := tx.Save(&order).Error; err != nil {
 					return err
 				}
 
-				// 获取车位拥有者
+				// Get owner information
 				var owner Models.UserBasic
 				ownerID := controller.GetUserIDBySpotID(order.SpotID, db)
 				if err := tx.First(&owner, "id = ?", ownerID).Error; err != nil {
 					return err
 				}
 
-				// 更新用户余额和收益
+				// update account balance
 				order.Booker.Account -= order.Cost
 				owner.Earning += order.Cost
 				owner.Account += order.Cost
@@ -61,7 +61,7 @@ func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) 
 					return err
 				}
 
-				return nil // 事务提交
+				return nil // tx.Commit() will be called automatically
 			})
 			if err != nil {
 				return false, err
@@ -77,8 +77,8 @@ func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) 
 }
 
 // CanceledOrderHandler godoc
-// @Summary 取消订单
-// @Description 客户取消订单，执行软删除
+// @Summary Cancel an order
+// @Description Cancel an order, soft delete
 // @Tags Order
 // @Accept json
 // @Produce json
@@ -89,7 +89,7 @@ func IsOrderCompleted(db *gorm.DB, orderID string, status string) (bool, error) 
 // @Router /order/{orderID}/cancel [put]
 // @Security BearerAuth
 func CanceledOrderHandler(c *gin.Context) {
-	orderID := c.Param("orderID") // 从 URL 路径中获取订单 ID
+	orderID := c.Param("orderID") // Get order ID
 	var order Models.OrderBasic
 
 	isCompleted, err := IsOrderCompleted(Service.DB, orderID, "Cancelled")
@@ -102,7 +102,7 @@ func CanceledOrderHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "order is already completed"})
 		return
 	}
-	// 查找订单
+	// Find the order
 	if err := Service.DB.First(&order, "id = ?", orderID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
@@ -113,7 +113,7 @@ func CanceledOrderHandler(c *gin.Context) {
 	}
 	order.Status = "Cancelled"
 	Service.DB.Save(&order)
-	// 执行软删除以取消订单
+	// Delete the order by soft delete
 	if err := Service.DB.Delete(&order).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to cancel order"})
 		return
@@ -122,9 +122,9 @@ func CanceledOrderHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Order canceled successfully"})
 }
 
-// RefundOrderHandler 退款订单
-// @Summary 退款订单
-// @Description 退款订单
+// RefundOrderHandler Refund an order
+// @Summary Refund an order
+// @Description Refund an order
 // @Tags Order
 // @Accept json
 // @Produce json
@@ -148,13 +148,13 @@ func RefundOrderHandler(c *gin.Context) {
 		return
 	}
 
-	// 查找订单
+	// Find the order
 	if err := Service.DB.First(&order, orderID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
 		return
 	}
 
-	// 更新订单状态为已退款
+	// Update order status to refunded
 	order.Status = "Refunded"
 	if err := Service.DB.Save(&order).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to refund order"})

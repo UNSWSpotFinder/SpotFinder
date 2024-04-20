@@ -13,9 +13,9 @@ type loginRequestData struct {
 	Passwd string `json:"password" example:"123456"`
 }
 
-// LoginHandler 登陆
-// @Summary 登陆
-// @Description 登陆
+// LoginHandler User Login
+// @Summary User Login
+// @Description User Login
 // @Tags User
 // @Accept json
 // @Produce json
@@ -36,7 +36,7 @@ func LoginHandler(c *gin.Context) {
 	user.Password = newData.Passwd
 	JWT, err := User.Login(Service.DB, &user)
 	if err != nil {
-		// 根据错误类型返回不同的HTTP状态码
+		// Return error message to client
 		if err.Error() == "user not found" || err.Error() == "password mismatch" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		} else {
@@ -44,7 +44,7 @@ func LoginHandler(c *gin.Context) {
 		}
 		return
 	}
-	// 如果一切正常，将JWT令牌发送给客户端
+	// If login success, return JWT to client
 	c.JSON(http.StatusOK, gin.H{"token": JWT})
 	return
 }

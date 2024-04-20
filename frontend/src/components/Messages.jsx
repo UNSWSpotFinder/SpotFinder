@@ -5,19 +5,15 @@ import './Messages.css';
 
 const Messages = () => {
   const [ws, setWs] = useState(null);
-  // const [receiverID, setReceiverID] = useState('');
-  const [, setShouldReconnect] = useState(true); // 控制是否在WebSocket断开后尝试重连
-
-  const [notifications, setNotifications] = useState([]); // 用于存储通知
-  const [messages, setMessages] = useState([]); // 用于存储消息
-
-  const [showNotifications, setShowNotifications] = useState(true); // 控制显示或隐藏通知
-  const [showMessages, setShowMessages] = useState(true); // 控制显示或隐藏消息
-
+  const [, setShouldReconnect] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(true);
+  const [showMessages, setShowMessages] = useState(true);
   const [userID, setUserID] = useState(localStorage.getItem('userID') || 0);
   const [userAvatar, setUserAvatar] = useState('');
 
-  // 对话映射，键是参与者对组合，值是消息数组
+  // the key is the participant pair combination, the value is the message array
   const [conversations, setConversations] = useState({});
   const [conversationVisibility, setConversationVisibility] = useState({});
 
@@ -29,23 +25,21 @@ const Messages = () => {
             const payload = JSON.parse(atob(jwtParts[1]));
             // console.log("userID",payload.userID);
             setUserID(Number(payload.userID));
-             // 获取用户自己的头像信息
+            //  get user avatar
             getUserSimpleInfo(Number(payload.userID)).then(info => {
               setUserAvatar(info.message.avatar);
             }).catch(error => console.error('Failed to fetch user info:', error));
             
             websocket = new WebSocket(`ws://longsizhuo.com/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
-                // 当WebSocket连接打开时的回调函数
-                console.log('WebSocket Connected');
-                websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // 发送认证信息
+                // Callback function when the WebSocket connection is opened
+                websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // set up authentication
             };
 
             websocket.onmessage = (event) => {
-                // 当WebSocket接收到消息时的回调函数
+                // Callback function when WebSocket receives a message
                 try {
                     const data = JSON.parse(event.data);
-                    console.log("Parsed data:", data);
                     if (data.type === 'message') {
                       setConversations(prevConversations => {
                         const participants = [data.content.SenderID, data.content.ReceiverID].sort().join('-');
@@ -63,14 +57,13 @@ const Messages = () => {
                         
                         if (!conversation.userInfo[receiverId]) {
                           getUserSimpleInfo(receiverId).then(info => {
-                            // console.log('Fetched user info:', info);
                             setConversations(prev => ({
                               ...prev,
                               [participants]: {
                                 ...prev[participants],
                                 userInfo: {
                                   ...prev[participants].userInfo,
-                                  [receiverId]: info.message  // 存储用户信息
+                                  [receiverId]: info.message
                                 }
                               }
                             }));
@@ -95,18 +88,17 @@ const Messages = () => {
             setWs(websocket);
         }
 
-        connect(); // 调用connect函数以连接WebSocket
+        connect(); // Call the connect function to connect to WebSocket
 
         return () => {
-            setShouldReconnect(false); // 更新状态为不再尝试重连
+            setShouldReconnect(false);
             if (websocket) {
                 websocket.close();
             }
         };
     }, []);
 
-
-  // 发送消息
+  // handle send message
   const handleSendMessage = (participantsKey) => {
     const receiverId = participantsKey.split('-').map(Number).find(id => id !== userID);
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -132,7 +124,7 @@ const Messages = () => {
             const conversation = updatedConversations[participantsKey] || { messages: [], content: '' };
             conversation.messages.push(newMessage);
             conversation.messages = conversation.messages.sort((a, b) => new Date(a.content.SentAt) - new Date(b.content.SentAt));
-            conversation.content = ''; // 清空输入框内容
+            conversation.content = '';
             updatedConversations[participantsKey] = conversation;
             return updatedConversations;
         });
@@ -141,14 +133,12 @@ const Messages = () => {
     }
   };
 
-  
-
-  // 切换显示/隐藏通知
+  // switch show/hide notifications
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     };
 
-  // 切换对话框显示的函数
+  // toggle dialog display
   const toggleConversationVisibility = (participantsKey) => {
     setConversationVisibility(prevVisibility => ({
       ...prevVisibility,
@@ -156,15 +146,13 @@ const Messages = () => {
     }));
   };
 
-
-
+  // render conversations
   const renderConversations = () => {
     return Object.entries(conversations).map(([participantsKey, { messages, content, userInfo }], index) => {
       const isConversationVisible = conversationVisibility[participantsKey] !== false;
       const participantIDs = participantsKey.split('-').map(Number);
-      const receiverId = participantIDs.find(id => id !== userID);
-  
-      const otherUserInfo = userInfo[receiverId] || {};  // 默认空对象防止未定义错误
+      const receiverId = participantIDs.find(id => id !== userID); 
+      const otherUserInfo = userInfo[receiverId] || {};
   
       return (
         <div key={index} className='conversation'>
@@ -177,13 +165,12 @@ const Messages = () => {
           <div className='conversation-messages' style={{ display: isConversationVisible ? 'block' : 'none' }}>
             {messages.map((message, msgIndex) => {
               const messageClass = message.content.SenderID === userID ? 'message-sent' : 'message-received';
-  
+ 
               return (
                 <div className='receiver-info'>                
                   <div key={msgIndex} className={`message-row ${messageClass}`}>
                     {message.content.SenderID !== userID && otherUserInfo.avatar && (
-                      <img src={otherUserInfo.avatar} alt="Avatar" className="avatar" />
-                      
+                      <img src={otherUserInfo.avatar} alt="Avatar" className="avatar" />                      
                     )}
                     {/* <div>{otherUserInfo.name}</div> */}
                     <div className='message-container'>
@@ -195,7 +182,6 @@ const Messages = () => {
                       )}                    
                   </div>
               </div>
-
               );
             })}
             <div className='input-and-send-btn'>
@@ -216,16 +202,12 @@ const Messages = () => {
     });
   };
   
-  
-
-
-
     return (
         <div className='DashboardMessages'>
             <div className='msg-title'>
                 Notifications
                 <button onClick={toggleNotifications} className="toggle-button">
-                {showNotifications ? <MdExpandLess /> : <MdExpandMore />} {/* 根据状态选择图标 */}
+                {showNotifications ? <MdExpandLess /> : <MdExpandMore />} {/* Select icon based on status */}
                 </button>
             </div>
             <div id="notifications" style={{ display: showNotifications ? 'block' : 'none' }}>

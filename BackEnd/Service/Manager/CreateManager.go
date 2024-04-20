@@ -17,9 +17,9 @@ type createManagerRequestData struct {
 	Phone      string `json:"phone" example:"123456"`
 }
 
-// CreateManagerHandler 创建管理员
-// @Summary 创建管理员
-// @Description 创建管理员
+// CreateManagerHandler Create Manager Handler
+// @Summary Create Manager Handler
+// @Description Create Manager Handler
 // @Tags Manager
 // @Accept json
 // @Produce json
@@ -46,7 +46,7 @@ func CreateManagerHandler(c *gin.Context) {
 	admin.Name = request.Name
 	admin.AdminID = request.AdminID
 
-	// 密码加密
+	// Crypt the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -58,7 +58,7 @@ func CreateManagerHandler(c *gin.Context) {
 	admin.Phone = request.Phone
 	admin.AdminID = request.AdminID
 
-	// 判断管理员是否已经存在
+	// Check if the admin already exists
 	isRegistry, err := controller.CheckAdminAlreadyIn(Service.DB, &admin)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -73,7 +73,7 @@ func CreateManagerHandler(c *gin.Context) {
 		return
 	}
 
-	// 创建管理员
+	// create the manager
 	err = controller.CreateManager(&admin, Service.DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

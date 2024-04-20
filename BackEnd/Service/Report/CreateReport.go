@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-// CreateReportHandler 创建举报
-// @Summary 创建举报
-// @Description 创建举报
+// CreateReportHandler Create a report
+// @Summary Create a report
+// @Description Create a report
 // @Tags Report
 // @Accept json
 // @Produce json
@@ -21,7 +21,7 @@ import (
 // @Router /spots/{spotID}/report [post]
 // @Security BearerAuth
 func CreateReportHandler(c *gin.Context) {
-	// 从请求中获取用户的 ID
+	// Get user ID from JWT
 	userIDStr := c.GetString("userID")
 	userID, err := strconv.ParseUint(userIDStr, 10, 64)
 	if err != nil {
@@ -29,7 +29,7 @@ func CreateReportHandler(c *gin.Context) {
 		return
 	}
 
-	// 从请求中获取 spot ID
+	// Get spot ID from URL
 	spotIDStr := c.Param("spotID")
 	spotID, err := strconv.ParseUint(spotIDStr, 10, 64)
 	if err != nil {
@@ -37,7 +37,7 @@ func CreateReportHandler(c *gin.Context) {
 		return
 	}
 
-	// 从请求体中解析 message
+	// Unmarshal request body
 	var requestBody struct {
 		Message string `json:"message"`
 	}
@@ -47,7 +47,7 @@ func CreateReportHandler(c *gin.Context) {
 	}
 	message := requestBody.Message
 
-	// 创建举报
+	// Create report
 	if err := controller.CreateReport(Service.DB, uint(userID), uint(spotID), message); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create report"})
 		return

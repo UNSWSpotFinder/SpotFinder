@@ -19,9 +19,9 @@ type AdminInfo struct {
 	Phone   string `json:"phone"`
 }
 
-// LoginHandler 管理员登陆
-// @Summary 管理员登陆
-// @Description 管理员登陆
+// LoginHandler Manager login handler
+// @Summary Manager login handler
+// @Description Manager login handler
 // @Tags Manager
 // @Accept json
 // @Produce json
@@ -42,7 +42,7 @@ func LoginHandler(c *gin.Context) {
 	manager.Password = request.Password
 	JWT, err := controller.Login(Service.DB, &manager)
 	if err != nil {
-		// 根据错误类型返回不同的HTTP状态码
+		// Return error message
 		if err.Error() == "manager not found" || err.Error() == "password mismatch" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid adminID or password" + err.Error()})
 		} else {
@@ -50,7 +50,7 @@ func LoginHandler(c *gin.Context) {
 		}
 		return
 	}
-	// 如果一切正常，将JWT令牌发送给客户端
+	// If login success, return JWT
 	c.JSON(http.StatusOK, gin.H{"token": JWT})
 	return
 }

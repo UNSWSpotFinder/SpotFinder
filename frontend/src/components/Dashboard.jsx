@@ -34,19 +34,16 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const data = await getUserInfo();
-        // console.log('data:', data);
         // store spotID
         let parsedOwnedSpot = [];
         if (data.message.ownedSpot) {
           const ownedSpotObject = JSON.parse(data.message.ownedSpot);
           if (ownedSpotObject.OwnedSpot) {
             parsedOwnedSpot = ownedSpotObject.OwnedSpot;
-            // console.log('parsedOwnedSpot:', parsedOwnedSpot);
           }
         }
         if(data.message){
           // data contains user information
-          console.log('data:', data.message);
           setUserInfo({
             name: data.message.Name,
             account: data.message.Account,
@@ -189,8 +186,7 @@ const Dashboard = () => {
     try {
       // get user's bookings 
       const bookingDataResult = await getMyBookingsInfo();
-      const bookingsArray = bookingDataResult.orders;
-      console.log('My Bookings array:', bookingsArray);     
+      const bookingsArray = bookingDataResult.orders;    
       setMyBookingsInfo(bookingsArray);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -209,7 +205,6 @@ const Dashboard = () => {
     <div className="dashboard">
       {/* top */}
       <div className='top-info-part'>
-        {/* 第一列显示用户头像及账户余额 */}
         {/* first column: user avatar and account balance */}
         <div className="first-column-account">
           <h5>Welcome back, {userInfo.name}</h5>
@@ -227,29 +222,29 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* 第二列显示当前预定数量 */}
-        {/* second column: number of current bookings
-         */}
-        <div className='second-column-booking'>
-          <h5>My Bookings</h5>
-          <div className='booking-number'>{pendingBookingsCount}</div>
-          <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
-        </div>
+        {/* second column: number of current bookings */}
 
-        {/* 第三列显示当前用户的车位数量 */}
-        {/* third column: number of user's spots */}
-        <div className='second-column-booking'>
-          <h5>My Listings</h5>
-          <div className='listing-number'>{receivedBookingsInfo.length}</div>
-          <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
-        </div>
       </div>
+      <div className='book-list-info'>
+        <div className='second-column-booking'>
+            <h5>My Bookings</h5>
+            <div className='booking-number'>{pendingBookingsCount}</div>
+            <Link to="#" onClick={ClickToFindSpot}>Find a spot</Link>
+          </div>
+
+          {/* third column: number of user's spots */}
+          <div className='second-column-booking'>
+            <h5>My Listings</h5>
+            <div className='listing-number'>{receivedBookingsInfo.length}</div>
+            <Link to="#" onClick={goesCreateSpot}>Lease my spot</Link>
+          </div>
+        </div>
 
       {/* Bottom: Voucher */}
-      <div className="second-vouchers">
+      {/* <div className="second-vouchers">
         <h3>Vouchers</h3>
         <div>You have no vouchers.</div>
-      </div>
+      </div> */}
       
       {/* top up modal */}
       {isTopUpModalVisible && (

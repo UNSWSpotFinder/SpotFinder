@@ -18,7 +18,7 @@ var Ctx = context.Background()
 // CodeStructData Struct for code
 type CodeStructData struct {
 	Email string `json:"email"`
-	// Code 验证码
+	// Code 6 characters
 	Code string `json:"code"`
 }
 
@@ -155,7 +155,7 @@ func verifyCode(email, code string, RedisClient *redis.Client) bool {
 	}
 	if ttl <= 0 {
 		valid = false
-		fmt.Println("验证码已过期")
+		fmt.Println("Code expired")
 	}
 	fmt.Println(valid)
 	return valid

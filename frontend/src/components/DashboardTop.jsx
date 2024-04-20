@@ -31,32 +31,26 @@ const DashboardTop = () => {
     name: '',
   });
 
-    // get user info when entering Dashboard
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const data = await getUserInfo(); 
-          setUserInfo({
-            name: data.message.Name,
-          });
-        } catch (error) {
-          console.error('Error fetching user info:', error);
-        }
-      };
-      fetchData();
-    }, []);
+  // get user info when entering Dashboard
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getUserInfo(); 
+        setUserInfo({
+          name: data.message.Name,
+        });
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="dashboard-top">
       <div className="Navbar">
         {/* Logo image */}
         <img src='/img/LOGO.svg' alt='logo' className='Applogo' onClick={goesHome}></img>
-        {/* search part */}
-        {/* <div className='SearchPart'>
-          <img className='searchbtn' alt='search btn' src='/img/search.png'></img>
-          <input className='Searchbar' placeholder='Search by location'></input>
-        </div> */}
-        {/* buttons for creating spots and finding spots */}
         <div className='btn-part'>
           <button className='top-button' onClick={goesCreateSpot} >Lease my spots</button>
           <button className='top-button' onClick={goesHome}>Find a spot</button>
@@ -64,16 +58,12 @@ const DashboardTop = () => {
         <div>
           <span> Hi,</span>
           <span>{userInfo.name}</span>
-        </div>
-
-        {/* user name */}
-       
+        </div>       
         {/* logout button */}
         <button className="button-with-image">
           <img src='/img/SignOut.svg' alt='Sign Out' className='sign-out-img' onClick={logout}/>
         </button>
       </div>
-
       {/* areas below top part */}
       <div className="content-area">
         {/* side bar */}

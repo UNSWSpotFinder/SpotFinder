@@ -1,4 +1,3 @@
-/* 整体布局 */
 .profile-container {
     display: flex;
     flex-direction: column;
@@ -13,11 +12,9 @@
   }
   
   .personal-info, .avatar-section {
-    width: 48%; 
-    
+    width: 48%;    
   }
 
-  /* 信息部分 */
   .input-box {
     color: slategray;
     border: 1px solid slategray;
@@ -25,8 +22,6 @@
     font-size: 15px;
   }
 
-
-  /* 头像部分 */
   .avatar-section {
     display: flex;
     flex-direction: column;
@@ -37,11 +32,11 @@
   }
 
   .avatar-container {
-    width: 100%; /* 使容器宽度填满其父元素 */
+    width: 100%;
     display: flex;
-    flex-direction: column; /* 子元素垂直排列 */
-    align-items: center; /* 子元素在容器中水平居中 */
-    justify-content: center; /* 在主轴方向居中对齐子元素 */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   #file-upload {
@@ -64,18 +59,15 @@
     margin-top: 10px;
   }
   
-  
   .custom-file-upload:hover {
-      box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+      box-shadow: 0 0 10px #f66;
   }
-
 
   .action-buttons-container {
     display: flex;
     justify-content: flex-end;
     padding: 10px 0;
-  }
-  
+  } 
   
   .cancel-button {
     margin-right: 10px; 
@@ -88,9 +80,9 @@
     cursor: pointer;
   }
 
-    .cancel-button:hover {
-        box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
-    }
+  .cancel-button:hover {
+      box-shadow: 0 0 10px #f66;
+  }
 
   .save-button {
     margin-right: 10px; 
@@ -104,11 +96,9 @@
   }
 
     .save-button:hover {
-        box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
-        
+        box-shadow: 0 0 10px #f66;       
     }
 
-/* 使label占据整行 */
 .form-group label {
     display: block; 
     margin-bottom: 0.5em;
@@ -121,7 +111,7 @@
     margin-bottom: 1em;
   }
 
-/* city, state，postcode 横行信息 */
+/* city, state，postcode  */
   .form-row {
     display: flex;
     justify-content: space-between;
@@ -148,12 +138,8 @@
   .form-group.postcode {
     flex-basis: 30%;
   }
-  
 
   .profile-avatar {
     width: 200px;
     height: auto;
   }
-
-
-
