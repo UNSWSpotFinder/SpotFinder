@@ -134,7 +134,7 @@ const ReserveConfirmgray = styled('button')({
 export const SendAllKindFeedback = (receiverID, Content) => {
   // connect to the websocket
   console.log('Connecting to WebSocket...');
-  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  let websocket = new WebSocket('ws://longsizhuo.com/ws');
   // get the current token
   const token = localStorage.getItem('token');
   websocket.onopen = () => {

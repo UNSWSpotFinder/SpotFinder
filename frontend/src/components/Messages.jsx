@@ -30,7 +30,7 @@ const Messages = () => {
               setUserAvatar(info.message.avatar);
             }).catch(error => console.error('Failed to fetch user info:', error));
             
-            websocket = new WebSocket(`ws://localhost:8080/ws`);
+            websocket = new WebSocket(`ws://longsizhuo.com/ws`); // 实例化WebSocket对象
             websocket.onopen = () => {
                 // Callback function when the WebSocket connection is opened
                 websocket.send(JSON.stringify({ type: 'authenticate', token: token })); // set up authentication
