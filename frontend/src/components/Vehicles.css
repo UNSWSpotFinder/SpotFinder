@@ -7,7 +7,7 @@
     margin:20px 20px;
  }
  
- /* 最上方title button部分 */
+ /* top title and button part */
   .button-part {
     display: flex;
     justify-content: space-between;
@@ -25,7 +25,7 @@
   }
 
   .vehicle-title:hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66;
 
   }
 
@@ -44,7 +44,7 @@
     background-color: #f66;
   }
 
-  /* 下方listing区域 */
+  /* listing part */
   .specific-vehicle {
     display: grid;
     grid-template-columns: auto 1fr auto auto;
@@ -96,14 +96,11 @@
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   }
   
-
-
   .right-btn-part {
     display: flex;
     flex-direction: column;
     padding-left: 15px;
   }
-
 
   .edit-btn {
     background-color: #e11e2c; 
@@ -137,14 +134,13 @@
     color: black;
   }
 
-  /* 弹窗遮罩效果 */
   .modal-overlay {
-    position: fixed; /* 固定定位 */
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明的遮罩层 */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,7 +156,6 @@
     overflow-y: auto;
     padding: 20px;
   }
-  
   
   .edit-form, .add-form {
     display: flex;
@@ -180,9 +175,6 @@
     margin-top: 10px;
   }
 
-  
-
-
   .form-buttons {
     display: flex;
     flex-direction: column;
@@ -190,7 +182,6 @@
     gap: 5px; 
   }
   
-
   .submit-btn {
     background-color: #e11e2c; 
     width: 200px;
@@ -206,7 +197,6 @@
   .submit-btn:hover {
     background-color: #f66;
   }
-
 
   .cancel-btn {
     width: 200px;

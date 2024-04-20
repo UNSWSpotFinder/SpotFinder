@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// GetSpotDetails 从数据库中获取当前的车位数据
+// GetSpotDetails Get the details of the spot
 func GetSpotDetails(spotID string, db *gorm.DB) (Models.SpotBasic, error) {
 	var spot Models.SpotBasic
 	if err := db.First(&spot, spotID).Error; err != nil {
@@ -23,7 +23,6 @@ func GetUserIDBySpotID(spotID uint, db *gorm.DB) uint {
 }
 
 func ModifySpotDetails(spot *Models.SpotBasic, db *gorm.DB) error {
-	//更新数据库中的所有字段
 	if err := db.Model(&Models.SpotBasic{}).Where("id=?", spot.ID).Updates(spot).Error; err != nil {
 		return err
 	}

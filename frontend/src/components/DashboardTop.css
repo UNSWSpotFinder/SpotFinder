@@ -1,12 +1,18 @@
-/* 整体布局 */
 .dashboard-top {
     display: flex;
     flex-direction: column;
     height: 100vh;
   }
   
-/* 顶部导航部分 */
-/* 搜索框 */
+.Navbar {
+  justify-content: space-between;
+}
+
+.btn-part{
+  display: flex;
+  justify-content: space-between;
+}
+
 div.SearchPart{
   width: calc(100% - 520px);
   min-width: 200px;
@@ -39,14 +45,14 @@ img.searchbtn{
   cursor: pointer;
 }
 
-
-/* 顶部按钮 */
 .top-button {
-    padding: 7px 10px;
-    margin: 0 5px;
+    padding: 10px 10px;
+    /* margin:  5px; */
+    margin-left: 10px;
+    margin-right: 10px;
     border: 1px solid #e11e2c;
     border-radius: 25px;
-    width: 130px;
+    width: 180px;
     outline: none;
     background-color: #fff;
     cursor: pointer;
@@ -58,39 +64,35 @@ img.searchbtn{
   }
 
 .top-button:hover {
-    box-shadow: 0 0 10px #f66; /* 鼠标悬停时的外部阴影 */
+    box-shadow: 0 0 10px #f66;
   }
   
 .top-button:active {
-    box-shadow: inset 0 0 10px #f66; /* 点击时的内部阴影 */
+    box-shadow: inset 0 0 10px #f66;
   }
 
-/* Sign out按钮样式 */
 .sign-out-img {
     height: 25px;
     margin-right: 10px;
   }
 
 .button-with-image {
-    background: none; /* 无背景 */
-    border: none; /* 无边框 */
-    padding: 0; /* 无内边距 */
+    background: none;
+    border: none;
+    padding: 0;
     margin: 0 2px;
   }
 
-
-/* Top以下区域，包含侧边导航和主内容区 */
 .content-area {
     display: flex;
-    flex-grow: 1; /* 占据剩余空间 */
+    flex-grow: 1;
   }
   
-/* 侧边导航样式 */
 .side-nav {
     display: flex;
     flex-direction: column;
-    width: 200px; /* 定宽 */
-    padding: 4px; /* 内边距 */
+    width: 200px;
+    padding: 4px;
     height: 100%;
   }
 
@@ -102,34 +104,38 @@ img.searchbtn{
     padding: 10px;
     border: 1px solid #cccccc; 
     background-color: #f2f2f2; 
-    cursor: pointer; /* 鼠标悬停时变为手形图标 */
-    transition: background-color 0.3s, box-shadow 0.3s; /* 过渡动画效果 */
-    display: flex; /* 使用flex布局 */
-    align-items: center; /* 垂直居中 */
-    justify-content: center; /* 水平居中 */
-    font-weight: bold; /* 文字加粗 */
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    text-decoration: none; /* 去除下划线 */
+    text-decoration: none;
     color: #242424;
     
   }
 
 .side-nav-spcific:hover {
-    background-color: #ffffff; /* 悬停时的背景颜色变为白色 */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 悬停时的外部阴影效果 */
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
 
 .side-nav-spcific:active {
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* 点击时的内部阴影效果 */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
   }
 
-  /* 当前激活的导航项样式 */
 .side-nav-spcific.active {
-    background-color: #fff; /* 选中项的背景颜色 */
+    background-color: #fff;
   }
   
-/* 主内容区域样式 */
 .main-content {
-    flex-grow: 1; /* 占据剩余空间 */
-    padding: 10px; /* 内边距 */
+    flex-grow: 1;
+    padding: 10px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .top-button {
+      width: 120px;
+    }
   }

@@ -79,7 +79,7 @@ function AllSpoting() {
       // get the new spot list
       getNewSpot();
     }
-  }, [isLoading, page, setOpenSnackbar]);
+  }, [isLoading, page]);
   // load the page
   useEffect(() => {
     
@@ -912,47 +912,46 @@ export function HomePageSmall() {
               <option value='0'>Highest rates</option>
               <option value='1'>Lowest rates</option>
             </select>
-          </div>
-          <div className='input-group width-20'>
-            <span className='input-group-text'>MIN$</span>
-            <input
-              type='text'
-              className='form-control'
-              aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.minPrise}
-              onChange={handleminpriceChange}
-            ></input>
-          </div>
-          <div className='input-group width-20'>
-            <span className='input-group-text'>MAX$</span>
-            <input
-              type='text'
-              className='form-control'
-              aria-label='Dollar amount (with dot and two decimal places)'
-              value={contextState.maxPrise}
-              onChange={handlemaxpriceChange}
-            ></input>
-          </div>
-          {/* <div className='hflex'>
-            <label className='pricerange-s'>MAX$</label>
-            <input className='pricerange-s'></input>
-          </div> */}
-
-          <button className='selectcar' onClick={ChooseCar}>
-            SELECT YOUR CAR
-          </button>
-        </div>
-        <div className='filter-bottom'>
-          <select
+            <select
             defaultValue={contextState.BookWay}
             className='form-select mglr-s-r'
             aria-label='Default select example'
             onChange={handleOrdwayChange}
-          >
+            >
             <option value='H'>Hourly</option>
             <option value='D'>Daily</option>
             <option value='W'>Weekly</option>
-          </select>
+            </select>
+          </div>
+          <div className='inner-left'>
+            <div className='input-group width-20'>
+              <span className='input-group-text'>MIN$</span>
+              <input
+                type='text'
+                className='form-control'
+                aria-label='Dollar amount (with dot and two decimal places)'
+                value={contextState.minPrise}
+                maxLength={5}
+                onChange={handleminpriceChange}
+              ></input>
+            </div>
+            <div className='input-group width-20'>
+              <span className='input-group-text'>MAX$</span>
+              <input
+                type='text'
+                className='form-control'
+                aria-label='Dollar amount (with dot and two decimal places)'
+                value={contextState.maxPrise}
+                maxLength={5}
+                onChange={handlemaxpriceChange}
+              ></input>
+            </div>
+            <button className='selectcar' onClick={ChooseCar}>
+              SELECT CAR
+            </button>
+          </div>
+        </div>
+        <div className='filter-bottom'>
           {contextState.BookWay === 'H' ? (
             <div className='fx-100-x'>
               <div className='timechoice-s'>

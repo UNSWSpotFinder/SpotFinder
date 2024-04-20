@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-// ApproveSpotHandler 审核车位
-// @Summary 审核车位
-// @Description 审核车位，用的是URL参数，一次只能查询一辆哦
+// ApproveSpotHandler Approve a spot
+// @Summary Approve a spot
+// @Description URL parameter is used to approve a spot, only one at a time
 // @Tags Manager
 // @Accept json
 // @Produce json
@@ -35,9 +35,9 @@ func ApproveSpotHandler(c *gin.Context) {
 	}
 }
 
-// BlockSpotHandler ban掉车位
-// @Summary 把车位ban掉
-// @Description 审核车位，用的是URL参数，一次只能查询一辆哦
+// BlockSpotHandler Ban a spot
+// @Summary Ban a spot
+// @Description URL parameter is used to ban a spot, only one at a time
 // @Tags Manager
 // @Accept json
 // @Produce json
@@ -62,9 +62,9 @@ func BlockSpotHandler(c *gin.Context) {
 	}
 }
 
-// UnblockSpotHandler unban掉车位
-// @Summary 把车位unban掉
-// @Description 审核车位，用的是URL参数，一次只能查询一辆哦
+// UnblockSpotHandler Unblock a spot
+// @Summary Unblock a spot
+// @Description URL parameter is used to unblock a spot, only one at a time
 // @Tags Manager
 // @Accept json
 // @Produce json
@@ -89,9 +89,9 @@ func UnblockSpotHandler(c *gin.Context) {
 	}
 }
 
-// InvisibleSpotHandler 隐藏车位
-// @Summary 隐藏车位
-// @Description 审核车位，用的是URL参数，一次只能查询一辆哦
+// InvisibleSpotHandler Invisible a spot
+// @Summary Invisible a spot
+// @Description URL parameter is used to invisible a spot, only one at a time
 // @Tags Manager
 // @Accept json
 // @Produce json

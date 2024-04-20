@@ -34,7 +34,7 @@ dayjs.extend(isSameOrBefore);
 const CfmContent = styled('div')({
   position: 'absolute',
   zIndex: '4',
-  width: '80%',
+  width: '90%',
   height: '640px',
   backgroundColor: 'rgb(255, 255, 255)',
   borderRadius: '10px',
@@ -192,7 +192,7 @@ const ReserveConfirm = styled('button')({
 });
 export const SendWelcomeMessage = (receiverID, Content) => {
   console.log('Connecting to WebSocket...');
-  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  let websocket =  new WebSocket('ws://longsizhuo.com/ws');
   const token = localStorage.getItem('token') || null;
   websocket.onopen = () => {
     // 当WebSocket连接打开时的回调函数
@@ -284,12 +284,12 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
       // set the topup state to false
       settp(false);
     }
-  }, [Balance, data.TotalPrice, isOpen, selectedOption, setOpenSnackbar, DisAccount,TotalPrice]);
+  }, [Balance, data.TotalPrice, isOpen, selectedOption, DisAccount,TotalPrice]);
   // when the user pay by visa card, waiting for payment
   // when the payment state is changed, the confirm state will be changed
+  // use the lodash library
+  const _lodash = require('lodash');
   useEffect(() => {
-    // use the lodash library
-    const _lodash = require('lodash');
     // when the payed has a value, the confirm state will be changed
     if (localStorage.getItem('payed')) {
       // get the payed value
@@ -358,7 +358,7 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
     }
     // after the payment, the payed value will be removed
     localStorage.removeItem('payed');
-  }, [localStorage.getItem('payed'), data, setOpenSnackbar, TotalPrice]);
+  }, [localStorage.getItem('payed'), data, TotalPrice]);
   // initial the navigate function
   const navigate = useNavigate();
   // get the username and Spot id from the url
@@ -616,16 +616,15 @@ export const ConfirmBook = ({ data, isOpen, close }) => {
         )}
         {selectedOption === '1' && (
           <div className='balance-part'>
-            <CfmLefttxt>
+            <p className='payment-message'>
               Your payment would through online payment platform.
-            </CfmLefttxt>
-            <p className='balance-value'>{'BPay'}</p>
+            </p>
           </div>
         )}
         <div className='vochar-part'>
           <CfmLefttxt>{'Vocher Code(if applicatable)'}</CfmLefttxt>
           <input className='vorcher-inp' maxLength={8} value={theVocher} onChange={(event)=>{setTheVocher(event.target.value);setUseDiscount(false);setDisAccount(0);}}></input>
-          <button disabled={useDiscount} className='verify-vocher' onClick={VerifyVocher}>{useDiscount?'$'+DisAccount + ' Discount':'Verify'}</button>
+          <button disabled={useDiscount} className='verify-vocher' onClick={VerifyVocher}>{ useDiscount ? '$' + DisAccount + ' Discount' : 'Verify' }</button>
         </div>
         <CfmBottom>
           {(selectedOption === '1' || !topup) && (
@@ -811,7 +810,7 @@ export const VisaPayment = () => {
 // this is the component for the user to browse a specific parking spot
 export function HomeSpecificLarge() {
   // set the snackbar to tell the user some system message
-  const { setOpenSnackbar } = useError();
+  const { snackbarData, setOpenSnackbar } = useError();
   // get the username and spot id from the url
   const { username } = useParams();
   // get the context state and update function
@@ -1069,7 +1068,7 @@ export function HomeSpecificLarge() {
         });
     };
     getReview();
-  }, [isbook, bookway, username, setOpenSnackbar]);
+  }, [isbook, bookway, username, snackbarData]);
   // initial the navigation
   let navigate = useNavigate();
   // initial the location

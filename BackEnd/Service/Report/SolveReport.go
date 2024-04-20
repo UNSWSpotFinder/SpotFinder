@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-// SolveReportHandler 处理举报结果
-// @Summary 处理举报
-// @Description 根据举报结果禁用相关的车位或标记报告为已解决。
+// SolveReportHandler Solve a report
+// @Summary Solve a report
+// @Description Disable the relevant parking space or mark according to the report result and report it as resolved.
 // @Tags Report
 // @Accept json
 // @Produce json
@@ -33,7 +33,7 @@ func SolveReportHandler(c *gin.Context) {
 		return
 	}
 
-	// 一次查询获取报告及相关车位
+	// Retrieve the report
 	var report Models.ReportBasic
 	tx := Service.DB.Begin()
 	if err := tx.Preload("Spot").First(&report, reportID).Error; err != nil {
@@ -43,7 +43,7 @@ func SolveReportHandler(c *gin.Context) {
 	}
 
 	if result == "success" {
-		// 处理成功
+		// Success, mark the report as solved and disable the spot
 		if err := tx.Model(&report).Update("is_solved", true).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update report"})
@@ -55,7 +55,7 @@ func SolveReportHandler(c *gin.Context) {
 			return
 		}
 	} else {
-		// 处理失败，仅标记报告为已解决
+		// unsuccessful, only mark the report as solved
 		if err := tx.Model(&report).Update("is_solved", true).Error; err != nil {
 			tx.Rollback()
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update report"})

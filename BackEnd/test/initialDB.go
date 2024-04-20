@@ -8,10 +8,10 @@ import (
 )
 
 func deleteData(db *gorm.DB) {
-	// 清空现有测试数据并生成新的测试数据
+	// Define the models to be deleted
 	models := []interface{}{&Models.UserBasic{}, &Models.OrderBasic{}, &Models.SpotBasic{}}
 	for _, model := range models {
-		// 使用 Unscoped() 来确保执行硬删除
+		// Unscoped() is used to delete the data permanently
 		if err := db.Unscoped().Where("1 = 1").Delete(model).Error; err != nil {
 			fmt.Println("Failed to delete data:", err)
 			return

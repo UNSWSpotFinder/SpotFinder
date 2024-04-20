@@ -496,12 +496,25 @@ p.bkt{
 }
 div.CfmAll{
   width: 100%;
+  padding: 0px 10px;
+  margin: 0px;
   height: 100%;
   position: fixed;
   z-index: 3;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+p.payment-message{
+  text-align: left;
+  margin: 0px;
+  margin-bottom: 5px;
+  padding: 0px;
+  font-Size: 15px;
+  color: rgb(42, 42, 42);
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 div.CfmBack{
   z-index: 1;
@@ -527,9 +540,9 @@ p.payment_method{
 }
 select.payment-choice{
   font-size: 16px;
-  width: 170px;
+  width: 185px;
   margin: 5px;
-  padding: 5px 0px 5px 10px;
+  padding: 5px 5px 5px 5px;
   border-radius: 10px;
 }
 option.choice-p{

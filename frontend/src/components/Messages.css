@@ -59,7 +59,6 @@
   margin-bottom: 10px;
 }
 
-
 .avatar {
   width: 40px;
   height: 40px;
@@ -96,26 +95,19 @@
     border-radius: 10%;
     /* margin-left: 10px; */
   }
-
-  /* .avatar {
-    width: 40px;
-    height: 40px;
-    margin-left: 10px; 
-  } */
   
   .message-sent {
-    margin-left: auto;  /* 推到右侧 */
+    margin-left: auto;  /* push to right */
     text-align: right;
     justify-content: flex-end;
   }
   
   .message-received {
     background-color: #ffffff;
-    margin-right: auto;  /* 推到左侧 */
+    margin-right: auto;  /* push to left */
     text-align: left;
   }
   
-
   .input-and-send-btn {
     display: flex;
     gap: 10px;

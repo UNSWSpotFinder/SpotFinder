@@ -92,7 +92,6 @@ const EditVehicleModal = ({ onClose, closeEditModal,  onEdited, EditingCarId, Ve
               <div className='current-state-title'> Edit a new Vehicle</div>
               <button className="close-btn" onClick={closeEditModal}>✖</button>
             </div>
-  
           <form className='edit-form' onSubmit={handleEditSubmit}> 
               {/* form content */}
               <div className="form-group">

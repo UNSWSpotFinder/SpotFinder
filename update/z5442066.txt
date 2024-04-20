@@ -1,5 +1,77 @@
-z5437995 10
-z5436774 10
-z5398507 10
-z5263115 10
-z5397297 10
+##### Week1
+
+Complete team formation + name + register.
+
+
+
+##### Week2
+
+Create github+jira wroking space.
+
+
+
+##### Week3
+
+According to the requirement document, I used Axure with another front-end engineer to design and create a prototype of the web page, implemented all web pages and added interactions to complete Proposal Part 4.
+
+Collaborate to create user stories in Jira.
+
+
+
+##### Week4
+
+Complete the Dashboard routing framework.
+
+Allow users to view and modify personal information.
+
+
+
+##### Week5
+
+Administrators can view which parking spaces are currently available.
+
+Users can check their account balances, current earnings, and recharge and withdraw cash.
+
+
+
+##### Week6
+
+Users can create, modify, and delete their own vehicle information.
+
+
+
+##### Week7
+
+As a provider, users can check who has booked their parking space and the order details.
+
+As a booker, users can view their orders.
+
+
+
+##### Week8
+
+As a provider, users can cancel orders placed in their parking space.
+
+As a booker, user can view their current orders according to In Progress/Completed. If the order has not started yet, user can cancel it for free one day before the order starts.
+
+
+
+##### Week9
+
+Allow the provider to send messages to the customer.
+
+Users can view the messages they have received.
+
+If the user finds a problem with the spot, they can submit a report to the administrator.
+
+
+
+##### Week10
+
+After the order is completed, the user can write a review for Spot.
+
+User can accept system messages.
+
+Chat between car rental users and providers.
+
+If the provider cancels the order, the system will send a voucher to the car renter and notify the user.

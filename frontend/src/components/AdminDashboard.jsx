@@ -486,7 +486,7 @@ const AdminDashboard = () => {
       <p className='title-for-spot'>Reported Information</p>
       <div className='container-half' ref={ReportRef}>
         {reports.map((rep, index) => (
-          <div key={index} className='SpaceOverall manager'>
+          <div key={index} className='SpaceOverall reporter-owner-d'>
             <div className='info-report'>
               <div className='right-top'>
                 <p className='space-title'>

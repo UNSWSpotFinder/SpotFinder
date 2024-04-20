@@ -1482,7 +1482,7 @@ export const EditSpace = () => {
       });
   };
     getDetail(Spotid);
-  }, [Spotid,setOpenSnackbar]);
+  }, [Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);

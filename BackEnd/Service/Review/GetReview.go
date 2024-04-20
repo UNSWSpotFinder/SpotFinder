@@ -11,9 +11,9 @@ import (
 	"strconv"
 )
 
-// GetReviewsBySpotID 获取车位ID对应的评论
-// @Summary 获取车位ID对应的评论
-// @Description 获取车位ID对应的评论
+// GetReviewsBySpotID Get all reviews of a spot
+// @Summary Get all reviews of a spot
+// @Description Get all reviews of a spot
 // @Tags Review
 // @Accept json
 // @Produce json
@@ -22,7 +22,7 @@ import (
 // @Failure 500 {string} string "Failed to fetch reviews"
 // @Router /spots/{spotID}/reviews [get]
 func GetReviewsBySpotID(c *gin.Context) {
-	// 从URL路径中获取车位ID
+	// Get the spot ID from the URL
 	spotIDStr := c.Param("spotID")
 	spotID, err := strconv.ParseUint(spotIDStr, 10, 64)
 	if err != nil {
@@ -32,7 +32,7 @@ func GetReviewsBySpotID(c *gin.Context) {
 
 	var reviews []Models.Review
 	fmt.Println("spotID:", spotID)
-	// 查询数据库中所有与该车位ID关联的评论
+	// Query the database for all reviews of this spot
 	if err := Service.DB.Preload("Rater").Preload("Order").Where("spot_id = ?", spotID).Find(&reviews).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -41,9 +41,9 @@ func GetReviewsBySpotID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"reviews": reviews})
 }
 
-// GetReviewByIDHandler 获取单个评论的详情
-// @Summary 获取单个评论的详情
-// @Description 获取单个评论的详情
+// GetReviewByIDHandler Get a review by its ID
+// @Summary Get a review by its ID
+// @Description Get a review by its ID
 // @Tags Review
 // @Accept json
 // @Produce json
@@ -53,7 +53,7 @@ func GetReviewsBySpotID(c *gin.Context) {
 // @Failure 500 {string} string "Failed to fetch review"
 // @Router /reviews/{reviewID} [get]
 func GetReviewByIDHandler(c *gin.Context) {
-	// 从URL路径中获取评论ID
+	// Get the review ID from the URL
 	reviewIDStr := c.Param("reviewID")
 	reviewID, err := strconv.ParseUint(reviewIDStr, 10, 64)
 	if err != nil {
@@ -62,7 +62,7 @@ func GetReviewByIDHandler(c *gin.Context) {
 	}
 
 	var review Models.Review
-	// 查询数据库中的这个评论详情
+	// Query the database for the review
 	if err := Service.DB.Preload("Rater").Preload("Order").
 		First(&review, reviewID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

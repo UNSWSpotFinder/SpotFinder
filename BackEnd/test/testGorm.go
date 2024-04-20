@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// randomAvatar 生成随机头像
+// randomAvatar Generates a random avatar image and returns it as a base64 string
 func randomAvatar() (string, error) {
 	const S = 1024
 	dc := gg.NewContext(S, S)
@@ -35,7 +35,7 @@ func randomAvatar() (string, error) {
 	dc.DrawCircle(S/2, S/2, S/3)
 	dc.Fill()
 
-	// 将图像编码为 PNG 并存储到缓冲区
+	// Save the image to a buffer
 	var buf bytes.Buffer
 	err := dc.EncodePNG(&buf)
 	if err != nil {
@@ -43,7 +43,7 @@ func randomAvatar() (string, error) {
 		return "", err
 	}
 
-	// 将图像编码为 base64 字符串
+	// Encode the image to base64
 	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil
 
 }
@@ -51,7 +51,7 @@ func randomAvatar() (string, error) {
 func main() {
 	util.InitConfig()
 	db := util.InitMySQL()
-	// 迁移 schema
+	// Migrate schema
 	if err := db.AutoMigrate(&Models.UserBasic{}); err != nil {
 		fmt.Println("Failed to migrate database:", err)
 		return
@@ -70,7 +70,7 @@ func main() {
 	}
 
 	userCount := 1000
-	batchSize := 100 // 每批处理的用户数量
+	batchSize := 100 // Perform batch insert every 100 records
 
 	var users []Models.UserBasic
 	var spots []Models.SpotBasic
@@ -78,10 +78,10 @@ func main() {
 	var managers []Models.ManagerBasic
 
 	for i := 1; i <= 1; i++ {
-		// 生成随机的日期
-		day := strconv.Itoa(gofakeit.Number(1, 31))       // 将日转换为字符串
-		month := strconv.Itoa(gofakeit.Number(1, 12))     // 将月转换为字符串
-		year := strconv.Itoa(gofakeit.Number(1950, 2000)) // 将年转换为字符串
+		// Generate random user data
+		day := strconv.Itoa(gofakeit.Number(1, 31))       // Turn day into a string
+		month := strconv.Itoa(gofakeit.Number(1, 12))     // Turn month into a string
+		year := strconv.Itoa(gofakeit.Number(1950, 2000)) // Turn year into a string
 		avatar, err := randomAvatar()
 		if err != nil {
 			fmt.Printf("Failed to create avatar at user %d: %v\n\n", i, err)
@@ -89,7 +89,7 @@ func main() {
 		}
 		hashPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 
-		// 构造出生日期字符串
+		// Make the date of birth string
 		dateBirth := day + "/" + month + "/" + year
 		manager := Models.ManagerBasic{
 			Name:       "longsizhuo",
@@ -103,7 +103,7 @@ func main() {
 		managers = append(managers, manager)
 	}
 
-	// 车位类别
+	// Class of spot
 	spotType := []string{"Carport", "Driveway", "Garage", "Parking-lot"}
 	spotSize := []string{"Box", "Sedan", "Hatchback", "4WD/SUV", "Van"}
 	chargeType := []string{
@@ -133,16 +133,16 @@ func main() {
 		topUp := gofakeit.Float64Range(0, 1000)
 		Account := earning + topUp
 
-		// 生成随机的日期
-		day := strconv.Itoa(gofakeit.Number(1, 31))       // 将日转换为字符串
-		month := strconv.Itoa(gofakeit.Number(1, 12))     // 将月转换为字符串
-		year := strconv.Itoa(gofakeit.Number(1950, 2000)) // 将年转换为字符串
+		// Generate random user data
+		day := strconv.Itoa(gofakeit.Number(1, 31))
+		month := strconv.Itoa(gofakeit.Number(1, 12))
+		year := strconv.Itoa(gofakeit.Number(1950, 2000))
 
-		// 构造出生日期字符串
+		// Make the date of birth string
 		dateBirth := day + "/" + month + "/" + year
 
 		hashPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
-		// 为每个用户创建不同的数据
+		// Create User Data
 		user := Models.UserBasic{
 			Name:       gofakeit.Name(),
 			Password:   string(hashPassword),
@@ -192,7 +192,7 @@ func main() {
 			SpotAddr:     gofakeit.Address().Address,
 			SpotType:     spotType[gofakeit.Number(0, 3)],
 			IsVisible:    true,
-			Rate:         uint(gofakeit.Number(0, 100)),
+			Rate:         float64(gofakeit.Number(0, 100)),
 			Size:         spotSize[gofakeit.Number(0, 4)],
 			Pictures:     primaryPicture,
 			Charge:       chargeType,
@@ -218,7 +218,7 @@ func main() {
 		orders = append(orders, order)
 		println(users, spots, orders)
 
-		// 每当达到一定批量或处理完最后一批时，执行批量插入
+		// Perform batch insert every 100 records or at the end of the loop
 		if i%batchSize == 0 || i == userCount {
 			if err := db.CreateInBatches(users, batchSize).Error; err != nil {
 				fmt.Printf("Failed to create batch at user %d: %v\n", i, err)
@@ -233,58 +233,10 @@ func main() {
 				db.CreateInBatches(managers, batchSize).Error; err != nil {
 				fmt.Printf("Failed to create batch at manager %d: %v\n", i, err)
 			}
-			users = []Models.UserBasic{} // 重置切片，准备下一批次
+			users = []Models.UserBasic{} // Clear the slice
 			spots = []Models.SpotBasic{}
 			orders = []Models.OrderBasic{}
 			managers = []Models.ManagerBasic{}
 		}
 	}
-
-	/* TODO: 最困难的部分
-	车位的OwnerId需要与userid对应，即user所拥有的车位列表中应该存在该车位的id
-	连接逻辑：{
-	1. 我们有用户（可同时作为出租者，租借者）和车位和订单、
-	2. 车位的id关联着出租者的id、
-	3. 用户可以租复数个车位，当然也可以拥有复数个车位。
-	}
-	*/
-	// 遍历所有用户
-	//var customers []User.ManagerBasic
-	//db.Find(&customers)
-	//
-	//for _, customer := range customers {
-	//	// 查找一个未被占用的车位
-	//	var spot Spot.ManagerBasic
-	//	db.Where("is_occupy = ?", false).First(&spot)
-	//
-	//	if spot.ID != 0 { // 确保找到了车位
-	//		// 更新车位信息，将当前用户设为车位的拥有者
-	//		spot.OwnerID = customer.ID
-	//		spot.IsOccupy = true
-	//		db.Save(&spot)
-	//
-	//		// 解析用户所拥有的车位列表 JSON
-	//		var ownedSpots []int
-	//		if err := json.Unmarshal([]byte(customer.OwnedSpot), &ownedSpots); err != nil {
-	//			// 处理可能的错误
-	//			fmt.Println("Error unmarshalling OwnedSpots:", err)
-	//			continue // 跳过当前用户
-	//		}
-	//
-	//		// 添加新的车位ID
-	//		ownedSpots = append(ownedSpots, int(spot.ID))
-	//
-	//		// 将更新后的车位列表转回 JSON 字符串
-	//		updatedOwnedSpots, err := json.Marshal(ownedSpots)
-	//		if err != nil {
-	//			// 处理可能的错误
-	//			fmt.Println("Error marshalling OwnedSpots:", err)
-	//			continue // 跳过当前用户
-	//		}
-	//
-	//		// 更新用户所拥有的车位列表
-	//		customer.OwnedSpot = string(updatedOwnedSpots)
-	//		db.Save(&customer)
-	//	}
-	//}
 }

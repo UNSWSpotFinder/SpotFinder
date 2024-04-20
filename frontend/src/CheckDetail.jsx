@@ -134,7 +134,7 @@ const ReserveConfirmgray = styled('button')({
 export const SendAllKindFeedback = (receiverID, Content) => {
   // connect to the websocket
   console.log('Connecting to WebSocket...');
-  let websocket = new WebSocket(`ws://localhost:8080/ws`);
+  let websocket = new WebSocket('ws://longsizhuo.com/ws');
   // get the current token
   const token = localStorage.getItem('token');
   websocket.onopen = () => {
@@ -237,7 +237,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Approve Response</CfmHead>
+          <CfmHead>Spot Approve</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
@@ -254,7 +254,7 @@ export const ApproveCheck = ({ data, isOpen, close }) => {
             EditInfo(Spotid);
           }}
         >
-          Send Feedback & Edit & Approve
+          Send Feedback & Approve
         </ReserveConfirm>
       </CfmContent>
     </div>
@@ -337,7 +337,7 @@ export const EditCheck = ({ data, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Edit Response</CfmHead>
+          <CfmHead>Spot Edit</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Feedback to the provider'}</CfmLefttxt>
@@ -428,7 +428,7 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Delete/Reject Response</CfmHead>
+          <CfmHead>Spot Delete/Reject</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
@@ -445,7 +445,7 @@ export const DeleteCheck = ({ spotName, Owner, isOpen, close }) => {
             DeleteInfo(Spotid);
           }}
         >
-          {'Send Feedback  &  (Delete/Reject)'}
+          {'Send Block Feedback '}
         </ReserveConfirmblack>
       </CfmContent>
     </div>
@@ -515,7 +515,7 @@ export const HiddenCheck = ({ spotName, Owner, isOpen, close }) => {
       <CfmContent>
         <CfmHeight>
           <CfmClose onClick={back}>{'Back'}</CfmClose>
-          <CfmHead>Spot Hidden Response</CfmHead>
+          <CfmHead>Spot Hidden</CfmHead>
         </CfmHeight>
         <CfmRowCol>
           <CfmLefttxt>{'Your Reason to block this spot'}</CfmLefttxt>
@@ -547,9 +547,7 @@ export const ManagerEditSpace = () => {
   const [isOpenApprove, setOpenApprove] = useState(false);
   const [isOpenHidden, setOpenHidden] = useState(false);
   const [OwnerId, setOwnerId] = useState(null);
-  const { adminid, Spotid } = useParams();
-  console.log(adminid);
-  console.log(Spotid);
+  const { Spotid } = useParams();
   useEffect(() => {
     let getDetail = (Spotid) => {
       callAPIGetSpecSpot('spot/' + Spotid)
@@ -570,10 +568,8 @@ export const ManagerEditSpace = () => {
           setThumbil(response.message.Pictures);
           const res = JSON.parse(response.message.MorePictures);
           setSelectedImageString(res);
-          console.log(res);
           try {
             const ads = JSON.parse(response.message.SpotAddr);
-            console.log(ads);
             setState(ads.State);
             setStreet(ads.Street);
             setCity(ads.City);
@@ -581,27 +577,18 @@ export const ManagerEditSpace = () => {
             setPostcode(ads.Postcode);
           } catch (e) {
             const ads = response.message.SpotAddr.split(',');
-            console.log(ads);
             setState(ads[0]);
             setStreet(ads[0]);
             setCity(ads.City[1]);
             setCountry(ads[2]);
             setPostcode(ads.Postcode[2]);
           }
-          const ads = JSON.parse(response.message.SpotAddr);
-          console.log(ads);
-          setState(ads.State);
-          setStreet(ads.Street);
-          setCity(ads.City);
-          setCountry(ads.Country);
-          setPostcode(ads.Postcode);
           let all_time = JSON.parse(response.message.AvailableTime);
           all_time = all_time.map((item) => ({
             ...item,
             startDate: dayjs(item.startDate),
             endDate: dayjs(item.endDate),
           }));
-          console.log(all_time);
           setFirstStart(all_time[0].startDate);
           setFirstEnd(all_time[0].endDate);
           setDistance(all_time[0].distance);
@@ -616,7 +603,7 @@ export const ManagerEditSpace = () => {
         });
     };
     getDetail(Spotid);
-  }, [Spotid, setOpenSnackbar]);
+  }, [Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -825,7 +812,6 @@ export const ManagerEditSpace = () => {
             if (isValidBase64Image(base64Data)) {
               // valid file
               setAllfalse();
-              console.log(base64Data);
               setThumbil(base64Data);
             } else {
               // invalid file
@@ -959,7 +945,6 @@ export const ManagerEditSpace = () => {
     // if the ref is not null
     if (ref.current) {
       // scroll to the element
-      console.log(ref.current);
       ref.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -1067,7 +1052,6 @@ export const ManagerEditSpace = () => {
     const pricePattern = /^[1-9]\d{0,4}$/;
     // set confirmflag to true
     let Confirmflag = true;
-    console.log(data);
     if (data) {
       // inital the data
       // if the title is empty
@@ -1957,10 +1941,10 @@ export const ManagerEditSpace = () => {
           Edit Spot
         </button>
         <button className='CreatButton-b white' onClick={() => HiddenNow()}>
-          Hidden This Spot
+          Hidden Spot
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Delete This Spot
+          Delete Spot
         </button>
       </div>
     </div>
@@ -2042,7 +2026,7 @@ export const ManagerApproveEditSpace = () => {
         });
     };
     getDetail(Spotid);
-  }, [setOpenSnackbar, Spotid]);
+  }, [Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -3366,13 +3350,13 @@ export const ManagerApproveEditSpace = () => {
           onClick={() => EditNow()}
           type='button'
         >
-          Edit & Approve Spot
+          Approve Spot
         </button>
         <button className='CreatButton-b white' onClick={goesHost}>
           Process later
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Reject This Spot
+          Reject Spot
         </button>
       </div>
     </div>
@@ -3454,7 +3438,7 @@ export const ManagerProcessReport = () => {
         });
     };
     getDetail(Spotid);
-  }, [Spotid, setOpenSnackbar]);
+  }, [Spotid]);
   // link the ref for thumb and other img
   const RefT = useRef(null);
   const RefFile = useRef(null);
@@ -4794,10 +4778,10 @@ export const ManagerProcessReport = () => {
           Edit Spot
         </button>
         <button className='CreatButton-b white' onClick={() => HiddenNow()}>
-          Hidden This Spot
+          Hidden Spot
         </button>
         <button className='CreatButton-b black' onClick={() => DeleteNow()}>
-          Delete This Spot
+          Delete Spot
         </button>
       </div>
     </div>

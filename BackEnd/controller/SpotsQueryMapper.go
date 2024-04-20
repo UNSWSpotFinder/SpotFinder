@@ -27,20 +27,20 @@ type tempSpotBasic struct {
 	IsBlocked     bool
 }
 
-// GetSpotList 从数据库中获取所有车位数据
+// GetSpotList Get the list of spots
 func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSpotBasic, error) {
 	if db == nil {
 		return nil, errors.New("db is nil")
 	}
 
 	var allSpots []*Models.SpotBasic
-	offset := (page - 1) * pageSize // 根据当前页计算偏移量
+	offset := (page - 1) * pageSize // Calculate the offset
 	query := db.Model(&Models.SpotBasic{}).Where("is_visible = ?", isVisible)
 	if !isVisible {
 		// If isVisible is false, also check that is_blocked is false
 		query = query.Where("is_blocked = ?", false)
 	}
-	// 构建查询并进行分页
+	// Build the query
 
 	err := query.Select(
 		"id, spot_name, spot_addr, spot_type, rate, size, available_time, is_blocked," +
@@ -52,8 +52,8 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 		return nil, err
 	}
 
-	// 将 *Spot.UserBasic 类型转换为 *tempSpotBasic 类型
-	var resultSpots []*tempSpotBasic // 这将是你的最终返回值
+	//  *Spot.UserBasic transform to *tempSpotBasic
+	var resultSpots []*tempSpotBasic // The result to return
 	for _, spot := range allSpots {
 		tempSpot := &tempSpotBasic{
 			ID:            spot.ID,
@@ -82,12 +82,12 @@ func GetSpotList(db *gorm.DB, isVisible bool, page int, pageSize int) ([]*tempSp
 func CreateSpot(spot *Models.SpotBasic, userEmail string, db *gorm.DB) error {
 	var user Models.UserBasic
 
-	// 先创建一个车位
+	// Create the spot
 	if err := db.Create(&spot).Error; err != nil {
 		return err
 	}
 
-	// 先找到用户
+	// Find the user
 	if err := db.Where("email = ?", userEmail).First(&user).Error; err != nil {
 		return err
 	}
@@ -95,17 +95,17 @@ func CreateSpot(spot *Models.SpotBasic, userEmail string, db *gorm.DB) error {
 	var spotList struct {
 		SpotList []int `json:"OwnedSpot"`
 	}
-	// 解析用户的车位列表, 如果没有就创建一个新的车位列表
+	// Add the spot to the user's spot list
 	if user.OwnedSpot == "" {
 		spotList.SpotList = []int{int(spot.ID)}
 	} else {
 		if err := json.Unmarshal([]byte(user.OwnedSpot), &spotList); err != nil {
 			return err
 		}
-		spotList.SpotList = append(spotList.SpotList, int(spot.ID)) // 加入新的车位
+		spotList.SpotList = append(spotList.SpotList, int(spot.ID)) // Add the spot to the list
 	}
 
-	// 更新用户的车位列表
+	// Update the user's spot list
 	spotListJson, err := json.Marshal(spotList)
 	if err != nil {
 		return err

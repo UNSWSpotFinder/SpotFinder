@@ -4,8 +4,6 @@ import { getUserSimpleInfo, getSpecificCarInfo } from './API';
 
 const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo }) => {
   const [providerInfo, setProviderInfo] = useState({ avatar: '', name: '' });
-  // console.log('Booking Details:', bookingDetails);
-
   const [carInfo, setCarInfo] = useState(null);
   const [loadingCarInfo, setLoadingCarInfo] = useState(true);
 
@@ -60,7 +58,7 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
       try {
         setLoadingCarInfo(true);
         const response = await getSpecificCarInfo(bookingDetails.CarID);
-        console.log('Car Info:', response.car);
+        // console.log('Car Info:', response.car);
         setCarInfo(response.car);
       } catch (error) {
         // If an error occurs, the vehicle has been deleted
@@ -96,8 +94,6 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
               <div className='spot-address'>{parseAddress(spotInfo.SpotAddr)}</div>
               <div className='spot-type'>Fit to {spotInfo.SpotType}</div>
               <div className='way-to-access'>{spotInfo.PassWay}</div>
-              {/* TODO:carousel */}
-              {/* <div className="carousel-container"></div> */}
             </div>         
             {/* right part: provider info */}
             <div className="right-provider-info">
@@ -111,7 +107,6 @@ const BookingDetailModal = ({ closeBookingDetailModal, bookingDetails, spotInfo 
             <div className='booking-period'>{formatBookingTime(bookingDetails.BookingTime)}</div>
             <div className='booking-total-cost'>Total cost:${bookingDetails.Cost}</div>
             <div className='booking-vehicle'>
-
               {loadingCarInfo
               ? 'Loading car information...'
               : carInfo === 'This car has been deleted'

@@ -11,7 +11,7 @@ type Server struct {
 }
 
 func (s *Server) SendMessage(ctx context.Context, message *pb.Message) (*pb.SendMessageResponse, error) {
-	// 这里简单地将消息存储起来
+	// Store the message in the slice
 	s.messages = append(s.messages, *message)
 	return &pb.SendMessageResponse{Success: true}, nil
 }

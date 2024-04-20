@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// SendNotification 发送通知给特定用户
+// SendNotification Send a notification to a user
 func SendNotification(receiverID uint, content string) error {
 	notification := Models.Notification{
 		ReceiverID: receiverID,
@@ -17,7 +17,7 @@ func SendNotification(receiverID uint, content string) error {
 		SentAt:     time.Now(),
 	}
 
-	// 存储通知到数据库
+	// Save notification to database
 	result := Service.DB.Preload("Receiver").Create(&notification)
 	if result.Error != nil {
 		return result.Error
@@ -30,7 +30,7 @@ func SendNotification(receiverID uint, content string) error {
 		"content": notification,
 	}
 
-	// 尝试找到接收者的连接，如果在线，则发送实时通知
+	// Try to send notification to receiver
 	if conn, found := clientConnections[receiverID]; found {
 		notifJson, err := json.Marshal(dataToSend)
 		if err != nil {
@@ -40,7 +40,7 @@ func SendNotification(receiverID uint, content string) error {
 			return fmt.Errorf("error sending notification to receiver: %v", err)
 		}
 	} else {
-		// 如果用户不在线，通知将在他们下次连接时发送
+		// If receiver is not online, save notification for later delivery
 		fmt.Printf("Receiver %d not online. Notification saved for later delivery.\n", receiverID)
 	}
 
