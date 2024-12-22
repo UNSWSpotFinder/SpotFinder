@@ -4,8 +4,8 @@
 DOCKER_COMPOSE_CMD = docker-compose
 DOCKER_COMPOSE_FILE = BackEnd/Docker-compose.yml
 
-# 定义 'run' 目标
 run:
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) build redis
 	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) build $(SERVICE_NAME)
 	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) up -d $(SERVICE_NAME)
 
@@ -26,4 +26,4 @@ docker-compose-logs:
 	$(DOCKER_COMPOSE) logs $(SERVICE_NAME)
 
 # 默认目标
-.PHONY: docker-compose-build docker-compose-up docker-compose-down docker-compose-logs
+.PHONY: build-redis run docker-compose-build docker-compose-up docker-compose-down docker-compose-logs

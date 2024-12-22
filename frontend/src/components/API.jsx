@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:8080';
+const baseUrl = '/api/';
 
 // get user info（get）
 export const getUserInfo = () => {
