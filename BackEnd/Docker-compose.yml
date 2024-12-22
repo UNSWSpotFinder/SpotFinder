@@ -1,12 +1,14 @@
-version: '3.8'  # Use version 3.8 of the Compose file format
-
 services:
-  frontend:
-    build:
-      context: ../frontend  # 前端项目的路径
-      dockerfile: Dockerfile  # 前端的Dockerfile
+  redis:
+    image: redis:latest
     ports:
-      - "3000:3000"  # 映射前端端口
+      - "6379:6379"
+#  frontend:
+#    build:
+#      context: ../frontend  # 前端项目的路径
+#      dockerfile: Dockerfile  # 前端的Dockerfile
+#    ports:
+#      - "3000:3000"  # 映射前端端口
 
   backend:
     build:
